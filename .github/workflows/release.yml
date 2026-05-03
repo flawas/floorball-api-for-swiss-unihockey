@@ -67,11 +67,13 @@ jobs:
             --exclude .git \
             --exclude .github \
             --exclude .gitignore \
+            --exclude .gitattributes \
+            --exclude .distignore \
             --exclude docker-compose.yml \
             --exclude Dockerfile \
             --exclude scripts \
             --exclude verify_api.php \
-            --exclude .gitattributes
+            --exclude README.md
           zip -r swiss-floorball-api.zip swiss-floorball-api
           rm -rf swiss-floorball-api
 
