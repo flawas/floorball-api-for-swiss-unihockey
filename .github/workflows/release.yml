@@ -19,40 +19,43 @@ jobs:
   build:
     name: Build and Release
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get_version.outputs.VERSION }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Get version from tag
         id: get_version
         run: |
-          # Use input tag if provided (manual run)
+          # Use input tag if provided (manual run), else from push
           if [ -n "${{ github.event.inputs.tag }}" ]; then
-            VERSION=${{ github.event.inputs.tag }}
-          # Use tag from push
+            RAW="${{ github.event.inputs.tag }}"
           elif [[ "$GITHUB_REF" == refs/tags/* ]]; then
-            VERSION=${GITHUB_REF#refs/tags/v}
+            RAW="${GITHUB_REF#refs/tags/}"
           else
             echo "Error: No tag provided and not a tag push"
             exit 1
           fi
+          # Strip leading 'v' once, centrally
+          VERSION="${RAW#v}"
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
           echo "Resolved version: $VERSION"
 
       - name: Verify version in main file
         run: |
           PLUGIN_VERSION=$(grep "Version:" swiss-floorball-api.php | awk '{print $NF}')
-          # Strip leading 'v' from tag version
-          TAG_VERSION=${{ steps.get_version.outputs.VERSION }}
-          TAG_VERSION="${TAG_VERSION#v}"
-          
+          TAG_VERSION="${{ steps.get_version.outputs.VERSION }}"
+
           if [ "$PLUGIN_VERSION" != "$TAG_VERSION" ]; then
             echo "Error: Plugin version ($PLUGIN_VERSION) does not match tag version ($TAG_VERSION)"
             exit 1
           fi
           echo "Version verified: $PLUGIN_VERSION"
-          
+
       - name: Generate readme.txt
         run: php scripts/convert_readme.php
 
@@ -73,10 +76,32 @@ jobs:
           rm -rf swiss-floorball-api
 
       - name: Create Release
-        uses: softprops/action-gh-release@v1
-        # Run for tag push OR manual run with tag input
+        uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && github.event.inputs.tag != '')
         with:
-          tag_name: ${{ steps.get_version.outputs.VERSION }}
+          tag_name: v${{ steps.get_version.outputs.VERSION }}
           files: swiss-floorball-api.zip
           generate_release_notes: true
+
+  deploy-wporg:
+    name: Deploy to WordPress.org
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && github.event.inputs.tag != '')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate readme.txt
+        run: php scripts/convert_readme.php
+
+      - name: WordPress.org Plugin Deploy
+        uses: 10up/action-wordpress-plugin-deploy@stable
+        env:
+          SVN_USERNAME: ${{ secrets.WPORG_SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.WPORG_SVN_PASSWORD }}
+          SLUG: swiss-floorball-api
+          VERSION: ${{ needs.build.outputs.version }}

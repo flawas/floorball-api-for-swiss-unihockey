@@ -20,53 +20,153 @@
 }
 
 /* WordPress Admin Notices - Fix white text on white background */
-.notice,
-.updated,
-.error,
-.settings-error {
+.sfa-admin-wrap .notice,
+.sfa-admin-wrap .updated,
+.sfa-admin-wrap .error,
+.sfa-admin-wrap .settings-error {
     background: white !important;
-    border-left: 4px solid #00a0d2 !important;
+    border-left: 4px solid var(--sfa-primary) !important;
     box-shadow: 0 1px 1px rgba(0, 0, 0, .04) !important;
     margin: 15px 0 !important;
     padding: 12px !important;
 }
 
-.notice p,
-.updated p,
-.error p,
-.settings-error p {
+.sfa-admin-wrap .notice p,
+.sfa-admin-wrap .updated p,
+.sfa-admin-wrap .error p,
+.sfa-admin-wrap .settings-error p {
     margin: 0.5em 0 !important;
     padding: 2px !important;
     color: #2c3e50 !important;
     font-size: 14px !important;
 }
 
-.notice.notice-success,
-.updated {
+.sfa-admin-wrap .notice.notice-success,
+.sfa-admin-wrap .updated {
     border-left-color: var(--sfa-success) !important;
 }
 
-.notice.notice-error,
-.error {
+.sfa-admin-wrap .notice.notice-error,
+.sfa-admin-wrap .error {
     border-left-color: var(--sfa-danger) !important;
 }
 
-.notice.notice-warning {
+.sfa-admin-wrap .notice.notice-warning {
     border-left-color: var(--sfa-warning) !important;
 }
 
-.notice.notice-info {
+.sfa-admin-wrap .notice.notice-info {
     border-left-color: var(--sfa-primary) !important;
 }
 
-.notice-dismiss {
+.sfa-admin-wrap .notice-dismiss {
     color: #2c3e50 !important;
 }
 
-.notice-dismiss:hover,
-.notice-dismiss:focus {
+.sfa-admin-wrap .notice-dismiss:hover,
+.sfa-admin-wrap .notice-dismiss:focus {
     color: var(--sfa-danger) !important;
 }
+
+/* Section title used in display templates */
+.sfa-section-title {
+    margin: 0 0 20px 0;
+    font-size: 20px;
+    color: var(--sfa-primary);
+}
+
+/* Inline team logo in calendar/game rows */
+.sfa-logo-inline {
+    height: 20px;
+    vertical-align: middle;
+    margin-right: 5px;
+}
+
+/* Calendar subscribe link */
+.sfa-calendar-subscribe {
+    text-decoration: underline;
+    color: var(--sfa-text-light);
+}
+
+/* Flat table container (no shadow/border) */
+.sfa-table-container-flat {
+    box-shadow: none;
+    padding: 0;
+    border: none;
+}
+
+/* Image inside a table cell */
+.sfa-cell-image {
+    max-width: 50px;
+    height: auto;
+}
+
+/* Logo in game cards */
+.sfa-card-logo {
+    max-height: 75px;
+    height: auto;
+}
+
+/* Region title inside match details */
+.sfa-region-title {
+    margin-top: 20px;
+    color: var(--sfa-primary);
+}
+
+/* Quick-access nav description */
+.sfa-nav-description {
+    margin: 0 0 15px 0;
+    color: var(--sfa-text-light);
+}
+
+/* Quick-access nav item paragraph */
+.sfa-nav-item {
+    margin: 5px 0;
+}
+
+/* Card spacing modifiers */
+.sfa-card--spaced-top {
+    margin-top: 30px;
+}
+
+.sfa-card--spaced-bottom {
+    margin-bottom: 30px;
+}
+
+/* Section divider */
+.sfa-divider {
+    margin: 40px 0;
+    border: 0;
+    border-top: 1px solid var(--sfa-border);
+}
+
+/* Spaced form */
+.sfa-form--spaced-top {
+    margin-top: 15px;
+}
+
+/* Info box (used in shortcodes page) */
+.sfa-info-box {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: var(--sfa-light-bg);
+    border-left: 4px solid var(--sfa-primary);
+    border-radius: 4px;
+}
+
+.sfa-info-box__title {
+    margin-top: 0;
+    color: var(--sfa-primary);
+}
+
+/* Shortcode table column widths */
+.sfa-col-shortcode  { width: 20%; }
+.sfa-col-description { width: 30%; }
+.sfa-col-params     { width: 25%; }
+.sfa-col-example    { width: 25%; }
+.sfa-col-function   { width: 25%; }
+.sfa-col-description-wide { width: 40%; }
+.sfa-col-usage      { width: 35%; }
 
 /* Main Container */
 .sfa-admin-wrap {
@@ -350,7 +450,7 @@
 }
 
 /* Enhanced Submit Button */
-.button-primary {
+.sfa-admin-wrap .button-primary {
     background: linear-gradient(135deg, var(--sfa-primary) 0%, var(--sfa-primary-dark) 100%) !important;
     border: none !important;
     text-shadow: none !important;
@@ -362,7 +462,7 @@
     transition: all 0.3s ease !important;
 }
 
-.button-primary:hover {
+.sfa-admin-wrap .button-primary:hover {
     background: linear-gradient(135deg, var(--sfa-primary-dark) 0%, var(--sfa-primary) 100%) !important;
     box-shadow: 0 6px 20px rgba(0, 102, 204, 0.4) !important;
     transform: translateY(-2px) !important;
@@ -542,7 +642,7 @@
 
 /* Dark Mode Support for WordPress Admin */
 @media (prefers-color-scheme: dark) {
-    :root {
+    .sfa-admin-wrap {
         --sfa-light-bg: #1a1a1a;
         --sfa-border: #333333;
         --sfa-text: #ffffff;
@@ -682,22 +782,22 @@
     }
 
     /* WordPress notices - ensure readability in dark mode */
-    .notice,
-    .updated,
-    .error,
-    .settings-error {
+    .sfa-admin-wrap .notice,
+    .sfa-admin-wrap .updated,
+    .sfa-admin-wrap .error,
+    .sfa-admin-wrap .settings-error {
         background: #1a1a1a !important;
         border-left-color: var(--sfa-primary) !important;
     }
 
-    .notice p,
-    .updated p,
-    .error p,
-    .settings-error p {
+    .sfa-admin-wrap .notice p,
+    .sfa-admin-wrap .updated p,
+    .sfa-admin-wrap .error p,
+    .sfa-admin-wrap .settings-error p {
         color: #ffffff !important;
     }
 
-    .notice-dismiss {
+    .sfa-admin-wrap .notice-dismiss {
         color: #ffffff !important;
     }
 }

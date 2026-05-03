@@ -50,7 +50,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<div class="sfa-form-section">
 		<h2>🗑️ Cache Verwaltung</h2>
 		<p class="sfa-helper-text">Löschen Sie alle zwischengespeicherten API-Daten, um frische Daten vom Server zu laden.</p>
-		<form method="POST" action="<?php echo esc_url( admin_url('admin-post.php') ); ?>" style="margin-top: 15px;">
+		<form method="POST" action="<?php echo esc_url( admin_url('admin-post.php') ); ?>" class="sfa-form--spaced-top">
 			<input type="hidden" name="action" value="sfa_clear_cache">
 			<?php wp_nonce_field( 'sfa_clear_cache_action', 'sfa_clear_cache_nonce' ); ?>
 			<button type="submit" class="button button-secondary" onclick="return confirm('Möchten Sie wirklich den gesamten Cache leeren?');">

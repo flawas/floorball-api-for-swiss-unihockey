@@ -69,43 +69,19 @@ class Swiss_Floorball_Api_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_styles() {
-
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Swiss_Floorball_Api_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Swiss_Floorball_Api_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
-
+		$page = isset( $_GET['page'] ) ? sanitize_key( $_GET['page'] ) : '';
+		if ( strpos( $page, $this->plugin_name ) === false ) {
+			return;
+		}
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/swiss-floorball-api-admin.css', array(), $this->version, 'all' );
 	}
 
-	/**
-	 * Register the JavaScript for the admin area.
-	 *
-	 * @since    1.0.0
-	 */
 	public function enqueue_scripts() {
-
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Swiss_Floorball_Api_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Swiss_Floorball_Api_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
-
+		$page = isset( $_GET['page'] ) ? sanitize_key( $_GET['page'] ) : '';
+		if ( strpos( $page, $this->plugin_name ) === false ) {
+			return;
+		}
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/swiss-floorball-api-admin.js', array( 'jquery' ), $this->version, false );
-
 	}
 
 	/**
@@ -251,8 +227,11 @@ public function sanitize_club_number( $club_number ) {
 	// If club number changed, clear all cached API data
 	if ( $old_club_number != $club_number && ! empty( $club_number ) ) {
 		global $wpdb;
-		// Delete all transients that start with 'sfa_' (Swiss Floorball API cache)
-		$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_sfa_%' OR option_name LIKE '_transient_timeout_sfa_%'" );
+		$wpdb->query( $wpdb->prepare(
+			"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
+			'_transient_sfa_%',
+			'_transient_timeout_sfa_%'
+		) );
 	}
 	
 	// If club number is empty, return it as is
@@ -326,7 +305,11 @@ public function handle_clear_cache() {
 	
 	// Clear all cached API data
 	global $wpdb;
-	$deleted = $wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_sfa_%' OR option_name LIKE '_transient_timeout_sfa_%'" );
+	$deleted = $wpdb->query( $wpdb->prepare(
+		"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
+		'_transient_sfa_%',
+		'_transient_timeout_sfa_%'
+	) );
 	
 	// Redirect back to settings page with success message
 	$redirect_url = add_query_arg(

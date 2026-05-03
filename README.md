@@ -7,7 +7,7 @@
 **Tags:** floorball, api, swiss floorball, unihockey, sports  
 **Requires at least:** 5.0
 **Tested up to:** 6.4  
-**Stable tag:** 1.0.0  
+**Stable tag:** 1.0.3  
 **License:** GPLv2 or later  
 
 The **Swiss Floorball API** plugin brings the power of the Swiss Unihockey API v2 to your WordPress site. Display games, rankings, team rosters, and player statistics with ease using simple shortcodes.
@@ -110,6 +110,28 @@ A: Just drop me a message on [GitHub](https://github.com/flawas), [LinkedIn](htt
 ![Rankings](assets/screenshot-ranking-frontend.png)
 
 ## 📜 Changelog
+
+### 1.0.3 (2026-05-03)
+
+* Security: Use `$wpdb->prepare()` for all database queries to prevent SQL injection
+* Security: Sanitize all shortcode attributes with `absint()` before passing to API
+* Security: Escape all `admin_url()` outputs with `esc_url()`
+* Fix: Scoped all CSS to plugin containers to prevent styling conflicts with other theme elements (buttons, notices, etc.)
+* Fix: Dark mode CSS variables scoped to `.swiss-floorball-plugin` / `.sfa-admin-wrap` instead of `:root`
+* Fix: `prefers-reduced-motion` rule scoped to plugin elements only
+* Fix: `scroll-behavior: smooth` scoped to plugin container instead of `html`
+* Fix: Admin `.button-primary` styles scoped to `.sfa-admin-wrap` to avoid overriding WordPress core buttons
+* Performance: CSS and JS only enqueued on pages/posts that contain a plugin shortcode (frontend) or on plugin admin pages (backend)
+* Improvement: Replaced all inline styles in templates with reusable CSS classes
+* Improvement: Added `aria-label` to admin search input for accessibility
+* Improvement: Removed `console.log` statements from admin JavaScript
+* Improvement: Use `const`/`let` and `.includes()` in admin JavaScript
+* Improvement: Use `require_once` instead of `require` for the main plugin class
+* Fix: Version constant `SWISS_FLOORBALL_API_VERSION` now matches plugin header version
+* Improvement: Calendar link now has correct desktop styles (was previously only styled on mobile)
+* Improvement: Replaced remaining inline styles in admin partials (matches, settings, shortcodes) with CSS classes
+* Improvement: Replaced hardcoded colors in admin CSS with CSS variables
+* Improvement: Escaped remaining `admin_url()` outputs in shortcodes partial
 
 ### 1.0.2 (2026-01-02)
 

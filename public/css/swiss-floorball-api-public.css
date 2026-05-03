@@ -573,9 +573,9 @@
 /* Accessibility Improvements */
 @media (prefers-reduced-motion: reduce) {
 
-    *,
-    *::before,
-    *::after {
+    .swiss-floorball-plugin *,
+    .swiss-floorball-plugin *::before,
+    .swiss-floorball-plugin *::after {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
@@ -598,7 +598,7 @@
 
 /* Dark Mode Support - Fixed for readability */
 @media (prefers-color-scheme: dark) {
-    :root {
+    .swiss-floorball-plugin {
         --sfa-light-bg: #1a1a1a;
         --sfa-border: #333333;
         --sfa-text: #ffffff;
@@ -862,7 +862,53 @@
     }
 }
 
-/* Smooth scroll for better UX */
-html {
+/* Smooth scroll for better UX - scoped to plugin container */
+.swiss-floorball-plugin {
     scroll-behavior: smooth;
+}
+
+/* Section title used in display templates */
+.sfa-section-title {
+    margin: 0 0 20px 0;
+    font-size: 20px;
+    color: var(--sfa-primary);
+}
+
+/* Inline team logo in calendar/game rows */
+.sfa-logo-inline {
+    height: 20px;
+    vertical-align: middle;
+    margin-right: 5px;
+}
+
+/* Calendar link wrapper — desktop base styles */
+.swiss-floorball-plugin .sfa-calendar-link {
+    display: inline-block;
+    margin-top: 16px;
+}
+
+/* Calendar subscribe link */
+.sfa-calendar-subscribe {
+    text-decoration: underline;
+    color: var(--sfa-text-light);
+    font-size: 0.9em;
+}
+
+/* Flat table container (no shadow/border) */
+.sfa-table-container-flat {
+    box-shadow: none;
+    padding: 0;
+    border: none;
+}
+
+/* Image inside a table cell */
+.sfa-cell-image {
+    max-width: 50px;
+    height: auto;
+}
+
+/* Logo in game cards */
+.sfa-card-logo {
+    max-height: 75px;
+    height: auto;
 }

@@ -28,10 +28,10 @@ if ( ! defined( 'ABSPATH' ) ) {
         <table class="sfa-data-table">
             <thead>
                 <tr>
-                    <th style="width: 20%;">Shortcode</th>
-                    <th style="width: 30%;">Beschreibung</th>
-                    <th style="width: 25%;">Parameter</th>
-                    <th style="width: 25%;">Beispiel</th>
+                    <th class="sfa-col-shortcode">Shortcode</th>
+                    <th class="sfa-col-description">Beschreibung</th>
+                    <th class="sfa-col-params">Parameter</th>
+                    <th class="sfa-col-example">Beispiel</th>
                 </tr>
             </thead>
             <tbody>
@@ -52,7 +52,7 @@ if ( ! defined( 'ABSPATH' ) ) {
                     <td>Zeigt die Spiele eines spezifischen Teams.</td>
                     <td>
                         <strong>team_id</strong> (erforderlich): Die ID des Teams.<br>
-                        <em>Zu finden auf der <a href="<?php echo admin_url('admin.php?page=swiss-floorball-api-teams'); ?>">Teams Übersicht</a> oder im <a href="<?php echo admin_url('admin.php?page=swiss-floorball-api'); ?>">Dashboard</a>.</em>
+                        <em>Zu finden auf der <a href="<?php echo esc_url( admin_url('admin.php?page=swiss-floorball-api-teams') ); ?>">Teams Übersicht</a> oder im <a href="<?php echo esc_url( admin_url('admin.php?page=swiss-floorball-api') ); ?>">Dashboard</a>.</em>
                     </td>
                     <td><code>[suh-team-games team_id="427892"]</code></td>
                 </tr>
@@ -72,7 +72,7 @@ if ( ! defined( 'ABSPATH' ) ) {
                         <strong>league</strong>: Die Liga.<br>
                         <strong>game_class</strong>: Die Spielklasse.<br>
                         <strong>group</strong>: Die Gruppe.<br>
-                        <em>Team IDs finden Sie auf der <a href="<?php echo admin_url('admin.php?page=swiss-floorball-api-teams'); ?>">Teams Übersicht</a>.</em>
+                        <em>Team IDs finden Sie auf der <a href="<?php echo esc_url( admin_url('admin.php?page=swiss-floorball-api-teams') ); ?>">Teams Übersicht</a>.</em>
                     </td>
                     <td>
                         <strong>Team Kalender:</strong><br>
@@ -159,9 +159,9 @@ if ( ! defined( 'ABSPATH' ) ) {
         <table class="sfa-data-table">
             <thead>
                 <tr>
-                    <th style="width: 25%;">Funktion</th>
-                    <th style="width: 40%;">Beschreibung</th>
-                    <th style="width: 35%;">Verwendung</th>
+                    <th class="sfa-col-function">Funktion</th>
+                    <th class="sfa-col-description-wide">Beschreibung</th>
+                    <th class="sfa-col-usage">Verwendung</th>
                 </tr>
             </thead>
             <tbody>
@@ -203,8 +203,8 @@ if ( ! defined( 'ABSPATH' ) ) {
             </tbody>
         </table>
 
-        <div style="margin-top: 20px; padding: 15px; background-color: #f0f6fc; border-left: 4px solid #0969da; border-radius: 4px;">
-            <h3 style="margin-top: 0; color: #0969da;">ℹ️ Hinweis</h3>
+        <div class="sfa-info-box">
+            <h3 class="sfa-info-box__title">ℹ️ Hinweis</h3>
             <p style="margin-bottom: 0;">
                 Wenn Sie eine dieser Backend-Funktionen als öffentlichen Shortcode benötigen, können Sie dies als Feature-Request einreichen. 
                 Die Funktionen sind bereits in der API-Client-Klasse implementiert und könnten bei Bedarf als Shortcodes verfügbar gemacht werden.

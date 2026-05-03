@@ -48,7 +48,7 @@ $match_id = isset( $_GET['match_id'] ) ? sanitize_text_field( $_GET['match_id'] 
         Swiss_Floorball_API_Display::render_game_details_table( $match_id );
         
         // Show Game Events (Match Telegramm)
-        echo '<div class="sfa-card" style="margin-top: 30px;">';
+        echo '<div class="sfa-card sfa-card--spaced-top">';
         Swiss_Floorball_API_Display::render_game_events( $match_id, true );
         echo '</div>';
         ?>
@@ -61,7 +61,7 @@ $match_id = isset( $_GET['match_id'] ) ? sanitize_text_field( $_GET['match_id'] 
         Swiss_Floorball_API_Display::render_club_games( $club_id, $current_season, true );
         ?>
 
-        <hr style="margin: 40px 0; border: 0; border-top: 1px solid #ddd;">
+        <hr class="sfa-divider">
         
         <div class="sfa-admin-header">
             <h1>🏑 <?php esc_html_e( 'Spiele pro Team', 'swiss-floorball-api' ); ?></h1>
@@ -81,9 +81,9 @@ $match_id = isset( $_GET['match_id'] ) ? sanitize_text_field( $_GET['match_id'] 
                 $team_id = $team['team_id'];
                 $team_name = isset($team['cells'][0]['text'][0]) ? $team['cells'][0]['text'][0] : 'Team ' . $team_id;
                 
-                echo '<div class="sfa-card" style="margin-bottom: 30px;">';
+                echo '<div class="sfa-card sfa-card--spaced-bottom">';
                 echo '<h3>' . esc_html( $team_name ) . '</h3>';
-                echo '<div class="sfa-table-container" style="box-shadow: none; padding: 0; border: none;">';
+                echo '<div class="sfa-table-container sfa-table-container-flat">';
                 
                 // Use the display class to render games for this team
                 Swiss_Floorball_API_Display::render_team_games( $team_id, $current_season, true );

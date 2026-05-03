@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	</div>
 
 	<div class="sfa-search-container">
-		<input type="text" id="sfa-team-search" class="sfa-search-input" placeholder="🔍 Club suchen (Name oder ID)...">
+		<input type="text" id="sfa-team-search" class="sfa-search-input" placeholder="🔍 Club suchen (Name oder ID)..." aria-label="<?php esc_attr_e( 'Club suchen', 'swiss-floorball-api' ); ?>">
 	</div>
 
 	<div class="sfa-table-container">

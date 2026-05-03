@@ -1,0 +1,10 @@
+.git
+.github
+.gitignore
+.gitattributes
+.distignore
+docker-compose.yml
+Dockerfile
+scripts
+verify_api.php
+README.md

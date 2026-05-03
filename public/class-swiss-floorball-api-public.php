@@ -64,45 +64,37 @@ class Swiss_Floorball_Api_Public {
 	 *
 	 * @since    1.0.0
 	 */
-	public function enqueue_styles() {
-
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Swiss_Floorball_Api_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Swiss_Floorball_Api_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
-
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/swiss-floorball-api-public.css', array(), $this->version, 'all' );
-
+	private function page_has_shortcode() {
+		$post = get_post();
+		if ( ! is_a( $post, 'WP_Post' ) ) {
+			return false;
+		}
+		$shortcodes = array(
+			'suh-club-teams', 'suh-club-games', 'suh-team-games', 'suh-clubs',
+			'suh-calendars', 'suh-cups', 'suh-groups', 'suh-teams',
+			'suh-rankings', 'suh-player', 'suh-national-players',
+			'suh-topscorers', 'suh-game-events',
+		);
+		foreach ( $shortcodes as $shortcode ) {
+			if ( has_shortcode( $post->post_content, $shortcode ) ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
-	/**
-	 * Register the JavaScript for the public-facing side of the site.
-	 *
-	 * @since    1.0.0
-	 */
+	public function enqueue_styles() {
+		if ( ! $this->page_has_shortcode() ) {
+			return;
+		}
+		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/swiss-floorball-api-public.css', array(), $this->version, 'all' );
+	}
+
 	public function enqueue_scripts() {
-
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Swiss_Floorball_Api_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Swiss_Floorball_Api_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
-
+		if ( ! $this->page_has_shortcode() ) {
+			return;
+		}
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/swiss-floorball-api-public.js', array( 'jquery' ), $this->version, false );
-
 	}
 
 	public function load_dependencies() {
@@ -159,7 +151,7 @@ class Swiss_Floorball_Api_Public {
 
 		ob_start();
 		echo '<div class="swiss-floorball-plugin">';
-		Swiss_Floorball_API_Display::render_team_games($a['team_id'], get_option('swissfloorball_actual_season'));
+		Swiss_Floorball_API_Display::render_team_games( absint( $a['team_id'] ), get_option('swissfloorball_actual_season') );
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();
@@ -188,7 +180,14 @@ class Swiss_Floorball_Api_Public {
 
         ob_start();
         echo '<div class="swiss-floorball-plugin">';
-        Swiss_Floorball_API_Display::render_calendars($a['team_id'], $a['club_id'], $a['season'], $a['league'], $a['game_class'], $a['group']);
+        Swiss_Floorball_API_Display::render_calendars(
+            $a['team_id']    ? absint( $a['team_id'] )    : null,
+            $a['club_id']    ? absint( $a['club_id'] )    : null,
+            $a['season']     ? absint( $a['season'] )     : null,
+            $a['league']     ? absint( $a['league'] )     : null,
+            $a['game_class'] ? absint( $a['game_class'] ) : null,
+            $a['group']      ? absint( $a['group'] )      : null
+        );
         echo '</div>';
         $output = ob_get_contents();
         ob_end_clean();
@@ -214,7 +213,7 @@ class Swiss_Floorball_Api_Public {
 
         ob_start();
         echo '<div class="swiss-floorball-plugin">';
-        Swiss_Floorball_API_Display::render_groups($a['season'], $a['league'], $a['game_class']);
+        Swiss_Floorball_API_Display::render_groups( absint( $a['season'] ), absint( $a['league'] ), absint( $a['game_class'] ) );
         echo '</div>';
         $output = ob_get_contents();
         ob_end_clean();
@@ -241,7 +240,7 @@ class Swiss_Floorball_Api_Public {
 
         ob_start();
         echo '<div class="swiss-floorball-plugin">';
-        Swiss_Floorball_API_Display::render_rankings($a['season'], $a['league'], $a['game_class'], $a['group']);
+        Swiss_Floorball_API_Display::render_rankings( absint( $a['season'] ), absint( $a['league'] ), absint( $a['game_class'] ), absint( $a['group'] ) );
         echo '</div>';
         $output = ob_get_contents();
         ob_end_clean();
@@ -255,7 +254,7 @@ class Swiss_Floorball_Api_Public {
 
         ob_start();
         echo '<div class="swiss-floorball-plugin">';
-        Swiss_Floorball_API_Display::render_player($a['player_id']);
+        Swiss_Floorball_API_Display::render_player( absint( $a['player_id'] ) );
         echo '</div>';
         $output = ob_get_contents();
         ob_end_clean();
@@ -282,7 +281,7 @@ class Swiss_Floorball_Api_Public {
 
         ob_start();
         echo '<div class="swiss-floorball-plugin">';
-        Swiss_Floorball_API_Display::render_topscorers($a['season'], $a['league'], $a['game_class'], $a['group']);
+        Swiss_Floorball_API_Display::render_topscorers( absint( $a['season'] ), absint( $a['league'] ), absint( $a['game_class'] ), absint( $a['group'] ) );
         echo '</div>';
         $output = ob_get_contents();
         ob_end_clean();
@@ -296,7 +295,7 @@ class Swiss_Floorball_Api_Public {
 
         ob_start();
         echo '<div class="swiss-floorball-plugin">';
-        Swiss_Floorball_API_Display::render_game_events($a['game_id']);
+        Swiss_Floorball_API_Display::render_game_events( absint( $a['game_id'] ) );
         echo '</div>';
         $output = ob_get_contents();
         ob_end_clean();

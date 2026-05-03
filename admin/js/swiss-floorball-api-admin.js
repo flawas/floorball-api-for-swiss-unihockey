@@ -30,39 +30,26 @@
 	 */
 
 	$(document).ready(function () {
-		console.log('SFA Admin JS loaded');
-
 		// Team search functionality
-		var searchInput = $('#sfa-team-search');
-		var dataTable = $('.sfa-data-table');
+		const searchInput = $('#sfa-team-search');
+		const dataTable = $('.sfa-data-table');
 
 		if (searchInput.length && dataTable.length) {
-			console.log('Search input and table found, attaching search handler');
-
 			searchInput.on('keyup', function () {
-				var searchTerm = $(this).val().toLowerCase();
-				console.log('Searching for:', searchTerm);
+				const searchTerm = $(this).val().toLowerCase();
 
-				var visibleCount = 0;
 				dataTable.find('tbody tr').each(function () {
-					var $row = $(this);
-					var teamName = $row.find('td:first').text().toLowerCase();
-					var teamId = $row.find('td:last').text().toLowerCase();
+					const $row = $(this);
+					const teamName = $row.find('td:first').text().toLowerCase();
+					const teamId = $row.find('td:last').text().toLowerCase();
 
-					if (teamName.indexOf(searchTerm) > -1 || teamId.indexOf(searchTerm) > -1) {
+					if (teamName.includes(searchTerm) || teamId.includes(searchTerm)) {
 						$row.show();
-						visibleCount++;
 					} else {
 						$row.hide();
 					}
 				});
-
-				console.log('Visible rows:', visibleCount);
 			});
-		} else {
-			console.log('Search input or table not found');
-			console.log('Search input exists:', searchInput.length);
-			console.log('Data table exists:', dataTable.length);
 		}
 	});
 

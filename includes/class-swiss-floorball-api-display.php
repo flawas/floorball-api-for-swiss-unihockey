@@ -68,7 +68,7 @@ class Swiss_Floorball_API_Display {
 		$current_season = get_option('swissfloorball_actual_season', date('Y'));
 
 		?>
-		<h2 style="margin: 0 0 20px 0; font-size: 20px; color: #0066cc;"><?php echo esc_html( $title ); ?></h2>
+		<h2 class="sfa-section-title"><?php echo esc_html( $title ); ?></h2>
 		<p><?php printf( esc_html__( 'Teams bei Swiss Unihockey angemeldet: %d', 'swiss-floorball-api' ), intval( $team_count ) ); ?></p>
 
 		<table class="sfa-data-table">
@@ -190,7 +190,7 @@ class Swiss_Floorball_API_Display {
 		$title = isset( $api_response['data']['title'] ) ? $api_response['data']['title'] : '';
 
 		?>
-		<h2 style="margin: 0 0 20px 0; font-size: 20px; color: #0066cc;"><?php echo esc_html( $title ); ?></h2>
+		<h2 class="sfa-section-title"><?php echo esc_html( $title ); ?></h2>
 		<table class="sfa-data-table">
 			<thead>
 				<tr>
@@ -270,7 +270,7 @@ class Swiss_Floorball_API_Display {
 		$title = isset( $api_response['data']['title'] ) ? $api_response['data']['title'] : '';
 
 		?>
-		<h2 style="margin: 0 0 20px 0; font-size: 20px; color: #0066cc;"><?php echo esc_html( $title ); ?></h2>
+		<h2 class="sfa-section-title"><?php echo esc_html( $title ); ?></h2>
 
 		<table class="sfa-data-table">
 			<thead>
@@ -343,7 +343,7 @@ class Swiss_Floorball_API_Display {
 		$title = isset( $api_response['text'] ) ? $api_response['text'] : '';
 
 		?>
-		<h2 style="margin: 0 0 20px 0; font-size: 20px; color: #0066cc;"><?php echo esc_html( $title ); ?></h2>
+		<h2 class="sfa-section-title"><?php echo esc_html( $title ); ?></h2>
 
 		<table class="sfa-data-table">
 			<thead>
@@ -391,7 +391,7 @@ class Swiss_Floorball_API_Display {
 		$title = isset( $api_response['text'] ) ? $api_response['text'] : '';
 
 		?>
-		<h2 style="margin: 0 0 20px 0; font-size: 20px; color: #0066cc;"><?php echo esc_html( $title ); ?></h2>
+		<h2 class="sfa-section-title"><?php echo esc_html( $title ); ?></h2>
 
 		<table class="sfa-data-table">
 			<thead>
@@ -436,7 +436,7 @@ class Swiss_Floorball_API_Display {
 		$title = isset( $api_response['text'] ) ? $api_response['text'] : '';
 
 		?>
-		<h2 style="margin: 0 0 20px 0; font-size: 20px; color: #0066cc;"><?php echo esc_html( $title ); ?></h2>
+		<h2 class="sfa-section-title"><?php echo esc_html( $title ); ?></h2>
 
 		<table class="sfa-data-table">
 			<thead>
@@ -599,13 +599,13 @@ class Swiss_Floorball_API_Display {
                                     <td data-label="<?php esc_attr_e( 'Datum', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $date . ' ' . $time ); ?></td>
                                     <td data-label="<?php esc_attr_e( 'Heim', 'swiss-floorball-api' ); ?>">
                                         <?php if ( $logo_home ) : ?>
-                                            <img src="<?php echo esc_url( $logo_home ); ?>" alt="<?php echo esc_attr( $team_home ); ?>" style="height: 20px; vertical-align: middle; margin-right: 5px;">
+                                            <img src="<?php echo esc_url( $logo_home ); ?>" alt="<?php echo esc_attr( $team_home ); ?>" class="sfa-logo-inline">
                                         <?php endif; ?>
                                         <?php echo esc_html( $team_home ); ?>
                                     </td>
                                     <td data-label="<?php esc_attr_e( 'Gast', 'swiss-floorball-api' ); ?>">
                                         <?php if ( $logo_away ) : ?>
-                                            <img src="<?php echo esc_url( $logo_away ); ?>" alt="<?php echo esc_attr( $team_away ); ?>" style="height: 20px; vertical-align: middle; margin-right: 5px;">
+                                            <img src="<?php echo esc_url( $logo_away ); ?>" alt="<?php echo esc_attr( $team_away ); ?>" class="sfa-logo-inline">
                                         <?php endif; ?>
                                         <?php echo esc_html( $team_away ); ?>
                                     </td>
@@ -622,8 +622,8 @@ class Swiss_Floorball_API_Display {
         }
 
 		?>
-		<div class="sfa-calendar-link" style="margin-top: 10px; font-size: 0.9em;">
-            <a href="<?php echo esc_url( str_replace( 'https://', 'webcal://', $url ) ); ?>" target="_blank" style="text-decoration: underline; color: #666;">
+		<div class="sfa-calendar-link">
+            <a href="<?php echo esc_url( str_replace( 'https://', 'webcal://', $url ) ); ?>" target="_blank" class="sfa-calendar-subscribe">
                 <?php esc_html_e( 'Kalender abonnieren', 'swiss-floorball-api' ); ?>
             </a>
         </div>
@@ -648,7 +648,7 @@ class Swiss_Floorball_API_Display {
 		$title = isset( $api_response['data']['title'] ) ? $api_response['data']['title'] : 'Cups';
 
 		?>
-		<h2 style="margin: 0 0 20px 0; font-size: 20px; color: #0066cc;"><?php echo esc_html( $title ); ?></h2>
+		<h2 class="sfa-section-title"><?php echo esc_html( $title ); ?></h2>
 		<table class="sfa-data-table">
 			<thead>
 				<tr>
@@ -692,7 +692,7 @@ class Swiss_Floorball_API_Display {
 		$title = isset( $api_response['text'] ) ? $api_response['text'] : 'Gruppen';
 
 		?>
-		<h2 style="margin: 0 0 20px 0; font-size: 20px; color: #0066cc;"><?php echo esc_html( $title ); ?></h2>
+		<h2 class="sfa-section-title"><?php echo esc_html( $title ); ?></h2>
 		<table class="sfa-data-table">
 			<thead>
 				<tr>
@@ -728,7 +728,7 @@ class Swiss_Floorball_API_Display {
 		$title = isset( $api_response['data']['title'] ) ? $api_response['data']['title'] : 'Teams';
 
 		?>
-		<h2 style="margin: 0 0 20px 0; font-size: 20px; color: #0066cc;"><?php echo esc_html( $title ); ?></h2>
+		<h2 class="sfa-section-title"><?php echo esc_html( $title ); ?></h2>
 		<table class="sfa-data-table">
 			<thead>
 				<tr>
@@ -866,12 +866,12 @@ class Swiss_Floorball_API_Display {
 									<table class="sfa-data-table">
 										<tr>
 											<th><h5></th>
-											<td><img src="<?php echo esc_url( $game_details[3] ); ?>" alt="Vereinslogo" class="img-fluid rounded-start" style="max-height: 75px"></td>
+											<td><img src="<?php echo esc_url( $game_details[3] ); ?>" alt="Vereinslogo" class="img-fluid rounded-start sfa-card-logo"></td>
 											<td>
 												<?php echo esc_html( $game_details[6] ); ?><br>
 												<p><?php echo esc_html( $game_details[7] . ', ' . $game_details[8] ); ?></p>
 											</td>
-											<td><img src="<?php echo esc_url( $game_details[5] ); ?>" alt="Vereinslogo" class="img-fluid rounded-start" style="max-height: 75px"></td>
+											<td><img src="<?php echo esc_url( $game_details[5] ); ?>" alt="Vereinslogo" class="img-fluid rounded-start sfa-card-logo"></td>
 										</tr>
 									</table>
 									<p><?php echo esc_html( $game_details[1] ); ?></p>
@@ -971,10 +971,10 @@ class Swiss_Floorball_API_Display {
 			if ( isset( $api_response['data']['regions'][0]['rows'] ) ) {
 				foreach($api_response['data']['regions'] as $region) {
 					if (!empty($region['title'])) {
-					echo '<h4 style="margin-top: 20px; color: var(--sfa-primary);">' . esc_html($region['title']) . '</h4>';
+					echo '<h4 class="sfa-region-title">' . esc_html($region['title']) . '</h4>';
 					}
 					if(isset($region['rows'])) {
-						echo '<div class="sfa-table-container" style="box-shadow: none; padding: 0; border: none;">';
+						echo '<div class="sfa-table-container sfa-table-container-flat">';
 						echo '<table class="sfa-data-table">';
 						
 						// Check for headers
@@ -998,7 +998,7 @@ class Swiss_Floorball_API_Display {
 										$img_url = isset($cell['image']['url']) ? $cell['image']['url'] : '';
 										$img_alt = isset($cell['image']['alt']) ? $cell['image']['alt'] : '';
 										if (!empty($img_url)) {
-											echo '<img src="' . esc_url($img_url) . '" alt="' . esc_attr($img_alt) . '" style="max-width: 50px; height: auto;">';
+											echo '<img src="' . esc_url($img_url) . '" alt="' . esc_attr($img_alt) . '" class="sfa-cell-image">';
 										}
 									}
 									// Display text content
@@ -1140,7 +1140,7 @@ class Swiss_Floorball_API_Display {
 		$title = isset( $api_response['data']['title'] ) ? $api_response['data']['title'] : 'Nationalspieler';
 
 		?>
-		<h2 style="margin: 0 0 20px 0; font-size: 20px; color: #0066cc;"><?php echo esc_html( $title ); ?></h2>
+		<h2 class="sfa-section-title"><?php echo esc_html( $title ); ?></h2>
 		<table class="sfa-data-table">
 			<thead>
 				<tr>

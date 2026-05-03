@@ -57,21 +57,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 		<div class="sfa-card">
 			<h3>📊 Schnellzugriff</h3>
-			<p style="margin: 0 0 15px 0; color: #666;">Navigieren Sie zu den verschiedenen Bereichen:</p>
-			<p style="margin: 5px 0;">
-				<a href="<?php echo admin_url('admin.php?page=swiss-floorball-api-settings'); ?>" class="button">Einstellungen</a>
+			<p class="sfa-nav-description">Navigieren Sie zu den verschiedenen Bereichen:</p>
+			<p class="sfa-nav-item">
+				<a href="<?php echo esc_url( admin_url('admin.php?page=swiss-floorball-api-settings') ); ?>" class="button">Einstellungen</a>
 			</p>
-			<p style="margin: 5px 0;">
-				<a href="<?php echo admin_url('admin.php?page=swiss-floorball-api-league'); ?>" class="button">Ligen</a>
+			<p class="sfa-nav-item">
+				<a href="<?php echo esc_url( admin_url('admin.php?page=swiss-floorball-api-league') ); ?>" class="button">Ligen</a>
 			</p>
-			<p style="margin: 5px 0;">
-				<a href="<?php echo admin_url('admin.php?page=swiss-floorball-api-teams'); ?>" class="button">Clubs</a>
+			<p class="sfa-nav-item">
+				<a href="<?php echo esc_url( admin_url('admin.php?page=swiss-floorball-api-teams') ); ?>" class="button">Clubs</a>
 			</p>
-			<p style="margin: 5px 0;">
-				<a href="<?php echo admin_url('admin.php?page=swiss-floorball-api-seasons'); ?>" class="button">Saisons</a>
+			<p class="sfa-nav-item">
+				<a href="<?php echo esc_url( admin_url('admin.php?page=swiss-floorball-api-seasons') ); ?>" class="button">Saisons</a>
 			</p>
-			<p style="margin: 5px 0;">
-				<a href="<?php echo admin_url('admin.php?page=swiss-floorball-api-shortcodes'); ?>" class="button">Shortcodes</a>
+			<p class="sfa-nav-item">
+				<a href="<?php echo esc_url( admin_url('admin.php?page=swiss-floorball-api-shortcodes') ); ?>" class="button">Shortcodes</a>
 			</p>
 		</div>
 	</div>
