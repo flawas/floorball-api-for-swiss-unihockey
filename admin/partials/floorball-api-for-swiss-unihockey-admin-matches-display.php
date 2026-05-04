@@ -12,29 +12,37 @@
  * @subpackage Swiss_Floorball_Api/admin/partials
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+if ( ! current_user_can( 'manage_options' ) ) {
+	wp_die( esc_html__( 'You do not have permission to access this page.', 'floorball-api-for-swiss-unihockey' ) );
+}
+
 // Get the configured club ID
 $club_id = get_option( 'swissfloorball_club_number' );
 $current_season = get_option( 'swissfloorball_actual_season', date('Y') );
 
 // Instantiate the API client
-require_once plugin_dir_path( dirname( dirname( __FILE__ ) ) ) . 'includes/class-swiss-floorball-api-client.php';
-require_once plugin_dir_path( dirname( dirname( __FILE__ ) ) ) . 'includes/class-swiss-floorball-api-display.php';
+require_once plugin_dir_path( dirname( dirname( __FILE__ ) ) ) . 'includes/class-floorball-api-for-swiss-unihockey-client.php';
+require_once plugin_dir_path( dirname( dirname( __FILE__ ) ) ) . 'includes/class-floorball-api-for-swiss-unihockey-display.php';
 $client = new Swiss_Floorball_API_Client();
 
 // Check if we are viewing a specific match
-$match_id = isset( $_GET['match_id'] ) ? sanitize_text_field( $_GET['match_id'] ) : null;
+$match_id = isset( $_GET['match_id'] ) ? absint( $_GET['match_id'] ) : null;
 
 ?>
 
 <div class="wrap sfa-admin-wrap">
     <div class="sfa-admin-header">
         <h1>🏑 <?php echo esc_html( get_admin_page_title() ); ?></h1>
-        <p><?php esc_html_e( 'Übersicht der letzten Spiele und Details', 'swiss-floorball-api' ); ?></p>
+        <p><?php esc_html_e( 'Übersicht der letzten Spiele und Details', 'floorball-api-for-swiss-unihockey' ); ?></p>
     </div>
 
     <?php if ( empty( $club_id ) ) : ?>
         <div class="notice notice-error">
-            <p><?php esc_html_e( 'Bitte konfigurieren Sie zuerst eine Club-Nummer in den Einstellungen.', 'swiss-floorball-api' ); ?></p>
+            <p><?php esc_html_e( 'Bitte konfigurieren Sie zuerst eine Club-Nummer in den Einstellungen.', 'floorball-api-for-swiss-unihockey' ); ?></p>
         </div>
     <?php elseif ( $match_id ) : ?>
         <?php
@@ -42,7 +50,7 @@ $match_id = isset( $_GET['match_id'] ) ? sanitize_text_field( $_GET['match_id'] 
         
         // Back button
         $back_url = remove_query_arg( 'match_id' );
-        echo '<p><a href="' . esc_url( $back_url ) . '" class="button button-primary">' . esc_html__( '← Zurück zur Übersicht', 'swiss-floorball-api' ) . '</a></p>';
+        echo '<p><a href="' . esc_url( $back_url ) . '" class="button button-primary">' . esc_html__( '← Zurück zur Übersicht', 'floorball-api-for-swiss-unihockey' ) . '</a></p>';
 
         // Render Match Details
         Swiss_Floorball_API_Display::render_game_details_table( $match_id );
@@ -64,8 +72,8 @@ $match_id = isset( $_GET['match_id'] ) ? sanitize_text_field( $_GET['match_id'] 
         <hr class="sfa-divider">
         
         <div class="sfa-admin-header">
-            <h1>🏑 <?php esc_html_e( 'Spiele pro Team', 'swiss-floorball-api' ); ?></h1>
-            <p><?php esc_html_e( 'Übersicht der letzten Spiele und Details', 'swiss-floorball-api' ); ?></p>
+            <h1>🏑 <?php esc_html_e( 'Spiele pro Team', 'floorball-api-for-swiss-unihockey' ); ?></h1>
+            <p><?php esc_html_e( 'Übersicht der letzten Spiele und Details', 'floorball-api-for-swiss-unihockey' ); ?></p>
         </div>
         
         <?php
@@ -73,7 +81,7 @@ $match_id = isset( $_GET['match_id'] ) ? sanitize_text_field( $_GET['match_id'] 
         $teams_response = $client->fetch_data( 'clubs/' . $club_id . '/statistics' );
         
         if ( is_wp_error( $teams_response ) || ! isset( $teams_response['data']['regions'][0]['rows'] ) ) {
-            echo '<div class="notice notice-warning"><p>' . esc_html__( 'Konnte Teams nicht laden.', 'swiss-floorball-api' ) . '</p></div>';
+            echo '<div class="notice notice-warning"><p>' . esc_html__( 'Konnte Teams nicht laden.', 'floorball-api-for-swiss-unihockey' ) . '</p></div>';
         } else {
             $teams = $teams_response['data']['regions'][0]['rows'];
             

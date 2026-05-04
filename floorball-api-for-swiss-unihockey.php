@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
 /**
  * The plugin bootstrap file
  *
@@ -15,19 +19,19 @@
  * @wordpress-plugin
  * Plugin Name:       Swiss Floorball API
  * Plugin URI:        https://flaviowaser.ch
- * Description:       Ein kleines Plugin, welches ermöglicht, die aktuellen Daten der Swiss Unihockey API abzufragen und auf der Webseite darzustellen.
- * Version:           1.0.3
+ * Description:       Ein kleines Plugin, welches ermöglicht, die aktuellen Daten der Swiss Floorball API abzufragen und auf der Webseite darzustellen.
+ * Version:           1.0.4
  * Author:            Flavio Waser
  * Author URI:        https://flaviowaser.ch/
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
- * Text Domain:       swiss-floorball-api
+ * Text Domain:       floorball-api-for-swiss-unihockey
  * Domain Path:       /languages
  */
 
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
-	die;
+    die;
 }
 
 /**
@@ -35,34 +39,34 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.1 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'SWISS_FLOORBALL_API_VERSION', '1.0.3' );
+define( 'SWISS_FLOORBALL_API_VERSION', '1.0.4' );
 
 /**
  * The code that runs during plugin activation.
- * This action is documented in includes/class-swiss-floorball-api-activator.php
+ * This action is documented in includes/class-floorball-api-for-swiss-unihockey-activator.php
  */
-function activate_swiss_floorball_api() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-swiss-floorball-api-activator.php';
-	Swiss_Floorball_Api_Activator::activate();
+function activateSwissFloorballApi() {
+    require_once plugin_dir_path( __FILE__ ) . 'includes/class-floorball-api-for-swiss-unihockey-activator.php';
+    Swiss_Floorball_Api_Activator::activate();
 }
 
 /**
  * The code that runs during plugin deactivation.
- * This action is documented in includes/class-swiss-floorball-api-deactivator.php
+ * This action is documented in includes/class-floorball-api-for-swiss-unihockey-deactivator.php
  */
-function deactivate_swiss_floorball_api() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-swiss-floorball-api-deactivator.php';
-	Swiss_Floorball_Api_Deactivator::deactivate();
+function deactivateSwissFloorballApi() {
+    require_once plugin_dir_path( __FILE__ ) . 'includes/class-floorball-api-for-swiss-unihockey-deactivator.php';
+    Swiss_Floorball_Api_Deactivator::deactivate();
 }
 
-register_activation_hook( __FILE__, 'activate_swiss_floorball_api' );
-register_deactivation_hook( __FILE__, 'deactivate_swiss_floorball_api' );
+register_activation_hook( __FILE__, 'activateSwissFloorballApi' );
+register_deactivation_hook( __FILE__, 'deactivateSwissFloorballApi' );
 
 /**
  * The core plugin class that is used to define internationalization,
  * admin-specific hooks, and public-facing site hooks.
  */
-require_once plugin_dir_path( __FILE__ ) . 'includes/class-swiss-floorball-api.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/class-floorball-api-for-swiss-unihockey.php';
 
 /**
  * Begins execution of the plugin.
@@ -73,10 +77,8 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/class-swiss-floorball-api.p
  *
  * @since    1.0.0
  */
-function run_swiss_floorball_api() {
-
-	$plugin = new Swiss_Floorball_Api();
-	$plugin->run();
-
+function runSwissFloorballApi() {
+    $plugin = new Swiss_Floorball_Api();
+    $plugin->run();
 }
-run_swiss_floorball_api();
+runSwissFloorballApi();

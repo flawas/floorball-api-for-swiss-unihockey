@@ -47,7 +47,7 @@ jobs:
 
       - name: Verify version in main file
         run: |
-          PLUGIN_VERSION=$(grep "Version:" swiss-floorball-api.php | awk '{print $NF}')
+          PLUGIN_VERSION=$(grep "Version:" floorball-api-for-swiss-unihockey.php | awk '{print $NF}')
           TAG_VERSION="${{ steps.get_version.outputs.VERSION }}"
 
           if [ "$PLUGIN_VERSION" != "$TAG_VERSION" ]; then
@@ -61,9 +61,9 @@ jobs:
 
       - name: Create ZIP archive
         run: |
-          mkdir swiss-floorball-api
-          rsync -av --progress . swiss-floorball-api \
-            --exclude swiss-floorball-api \
+          mkdir floorball-api-for-swiss-unihockey
+          rsync -av --progress . floorball-api-for-swiss-unihockey \
+            --exclude floorball-api-for-swiss-unihockey \
             --exclude .git \
             --exclude .github \
             --exclude .gitignore \
@@ -74,15 +74,15 @@ jobs:
             --exclude scripts \
             --exclude verify_api.php \
             --exclude README.md
-          zip -r swiss-floorball-api.zip swiss-floorball-api
-          rm -rf swiss-floorball-api
+          zip -r floorball-api-for-swiss-unihockey.zip floorball-api-for-swiss-unihockey
+          rm -rf floorball-api-for-swiss-unihockey
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && github.event.inputs.tag != '')
         with:
           tag_name: v${{ steps.get_version.outputs.VERSION }}
-          files: swiss-floorball-api.zip
+          files: floorball-api-for-swiss-unihockey.zip
           generate_release_notes: true
 
   deploy-wporg:
@@ -105,5 +105,5 @@ jobs:
         env:
           SVN_USERNAME: ${{ secrets.WPORG_SVN_USERNAME }}
           SVN_PASSWORD: ${{ secrets.WPORG_SVN_PASSWORD }}
-          SLUG: swiss-floorball-api
+          SLUG: floorball-api-for-swiss-unihockey
           VERSION: ${{ needs.build.outputs.version }}

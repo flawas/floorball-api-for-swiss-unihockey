@@ -70,10 +70,10 @@ class Swiss_Floorball_Api_Public {
 			return false;
 		}
 		$shortcodes = array(
-			'suh-club-teams', 'suh-club-games', 'suh-team-games', 'suh-clubs',
-			'suh-calendars', 'suh-cups', 'suh-groups', 'suh-teams',
-			'suh-rankings', 'suh-player', 'suh-national-players',
-			'suh-topscorers', 'suh-game-events',
+			'swfl-club-teams', 'swfl-club-games', 'swfl-team-games', 'swfl-clubs',
+			'swfl-calendars', 'swfl-cups', 'swfl-groups', 'swfl-teams',
+			'swfl-rankings', 'swfl-player', 'swfl-national-players',
+			'swfl-topscorers', 'swfl-game-events',
 		);
 		foreach ( $shortcodes as $shortcode ) {
 			if ( has_shortcode( $post->post_content, $shortcode ) ) {
@@ -87,14 +87,14 @@ class Swiss_Floorball_Api_Public {
 		if ( ! $this->page_has_shortcode() ) {
 			return;
 		}
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/swiss-floorball-api-public.css', array(), $this->version, 'all' );
+		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/floorball-api-for-swiss-unihockey-public.css', array(), $this->version, 'all' );
 	}
 
 	public function enqueue_scripts() {
 		if ( ! $this->page_has_shortcode() ) {
 			return;
 		}
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/swiss-floorball-api-public.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/floorball-api-for-swiss-unihockey-public.js', array( 'jquery' ), $this->version, false );
 	}
 
 	public function load_dependencies() {
@@ -108,19 +108,19 @@ class Swiss_Floorball_Api_Public {
 	 */
 	public function register_shortcodes() {
 
-		add_shortcode( 'suh-club-teams', array( $this, 'get_club_teams_func' ) );
-		add_shortcode( 'suh-club-games', array( $this, 'get_club_games_func' ) );
-		add_shortcode( 'suh-team-games', array( $this, 'get_team_games_func' ) );
-        add_shortcode( 'suh-clubs', array( $this, 'get_clubs_func' ) );
-        add_shortcode( 'suh-calendars', array( $this, 'get_calendars_func' ) );
-        add_shortcode( 'suh-cups', array( $this, 'get_cups_func' ) );
-        add_shortcode( 'suh-groups', array( $this, 'get_groups_func' ) );
-        add_shortcode( 'suh-teams', array( $this, 'get_teams_func' ) );
-        add_shortcode( 'suh-rankings', array( $this, 'get_rankings_func' ) );
-        add_shortcode( 'suh-player', array( $this, 'get_player_func' ) );
-        add_shortcode( 'suh-national-players', array( $this, 'get_national_players_func' ) );
-        add_shortcode( 'suh-topscorers', array( $this, 'get_topscorers_func' ) );
-        add_shortcode( 'suh-game-events', array( $this, 'get_game_events_func' ) );
+		add_shortcode( 'swfl-club-teams', array( $this, 'get_club_teams_func' ) );
+		add_shortcode( 'swfl-club-games', array( $this, 'get_club_games_func' ) );
+		add_shortcode( 'swfl-team-games', array( $this, 'get_team_games_func' ) );
+        add_shortcode( 'swfl-clubs', array( $this, 'get_clubs_func' ) );
+        add_shortcode( 'swfl-calendars', array( $this, 'get_calendars_func' ) );
+        add_shortcode( 'swfl-cups', array( $this, 'get_cups_func' ) );
+        add_shortcode( 'swfl-groups', array( $this, 'get_groups_func' ) );
+        add_shortcode( 'swfl-teams', array( $this, 'get_teams_func' ) );
+        add_shortcode( 'swfl-rankings', array( $this, 'get_rankings_func' ) );
+        add_shortcode( 'swfl-player', array( $this, 'get_player_func' ) );
+        add_shortcode( 'swfl-national-players', array( $this, 'get_national_players_func' ) );
+        add_shortcode( 'swfl-topscorers', array( $this, 'get_topscorers_func' ) );
+        add_shortcode( 'swfl-game-events', array( $this, 'get_game_events_func' ) );
 
 	} // register_shortcodes()
 

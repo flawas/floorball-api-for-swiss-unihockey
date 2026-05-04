@@ -76,7 +76,7 @@ class Swiss_Floorball_Api {
 		} else {
 			$this->version = '1.0.0';
 		}
-		$this->plugin_name = 'swiss-floorball-api';
+		$this->plugin_name = 'floorball-api-for-swiss-unihockey';
 
 		$this->load_dependencies();
 		$this->set_locale();
@@ -107,27 +107,27 @@ class Swiss_Floorball_Api {
 		 * The class responsible for orchestrating the actions and filters of the
 		 * core plugin.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-swiss-floorball-api-loader.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-floorball-api-for-swiss-unihockey-loader.php';
 
 		/**
 		 * The class responsible for defining internationalization functionality
 		 * of the plugin.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-swiss-floorball-api-i18n.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-floorball-api-for-swiss-unihockey-i18n.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-swiss-floorball-api-admin.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-floorball-api-for-swiss-unihockey-admin.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-swiss-floorball-api-public.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-floorball-api-for-swiss-unihockey-public.php';
 
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-swiss-floorball-api-client.php';
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-swiss-floorball-api-display.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-floorball-api-for-swiss-unihockey-client.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-floorball-api-for-swiss-unihockey-display.php';
 
 
 		$this->loader = new Swiss_Floorball_Api_Loader();

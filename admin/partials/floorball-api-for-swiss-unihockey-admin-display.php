@@ -20,8 +20,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
 <div class="wrap sfa-admin-wrap">
 	<div class="sfa-admin-header">
-		<h1>🏑 Swiss Unihockey Plugin</h1>
-		<p>Übersicht und Verwaltung Ihrer Swiss Unihockey Daten</p>
+		<h1>🏑 Swiss Floorball Plugin</h1>
+		<p>Übersicht und Verwaltung Ihrer Swiss Floorball Daten</p>
 	</div>
 
 	<div class="sfa-cards-container">
@@ -59,19 +59,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<h3>📊 Schnellzugriff</h3>
 			<p class="sfa-nav-description">Navigieren Sie zu den verschiedenen Bereichen:</p>
 			<p class="sfa-nav-item">
-				<a href="<?php echo esc_url( admin_url('admin.php?page=swiss-floorball-api-settings') ); ?>" class="button">Einstellungen</a>
+				<a href="<?php echo esc_url( admin_url('admin.php?page=floorball-api-for-swiss-unihockey-settings') ); ?>" class="button">Einstellungen</a>
 			</p>
 			<p class="sfa-nav-item">
-				<a href="<?php echo esc_url( admin_url('admin.php?page=swiss-floorball-api-league') ); ?>" class="button">Ligen</a>
+				<a href="<?php echo esc_url( admin_url('admin.php?page=floorball-api-for-swiss-unihockey-league') ); ?>" class="button">Ligen</a>
 			</p>
 			<p class="sfa-nav-item">
-				<a href="<?php echo esc_url( admin_url('admin.php?page=swiss-floorball-api-teams') ); ?>" class="button">Clubs</a>
+				<a href="<?php echo esc_url( admin_url('admin.php?page=floorball-api-for-swiss-unihockey-teams') ); ?>" class="button">Clubs</a>
 			</p>
 			<p class="sfa-nav-item">
-				<a href="<?php echo esc_url( admin_url('admin.php?page=swiss-floorball-api-seasons') ); ?>" class="button">Saisons</a>
+				<a href="<?php echo esc_url( admin_url('admin.php?page=floorball-api-for-swiss-unihockey-seasons') ); ?>" class="button">Saisons</a>
 			</p>
 			<p class="sfa-nav-item">
-				<a href="<?php echo esc_url( admin_url('admin.php?page=swiss-floorball-api-shortcodes') ); ?>" class="button">Shortcodes</a>
+				<a href="<?php echo esc_url( admin_url('admin.php?page=floorball-api-for-swiss-unihockey-shortcodes') ); ?>" class="button">Shortcodes</a>
 			</p>
 		</div>
 	</div>

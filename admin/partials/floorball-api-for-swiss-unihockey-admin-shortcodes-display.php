@@ -36,34 +36,34 @@ if ( ! defined( 'ABSPATH' ) ) {
             </thead>
             <tbody>
                 <tr>
-                    <td><code>[suh-club-teams]</code></td>
+                    <td><code>[swfl-club-teams]</code></td>
                     <td>Listet alle Teams des konfigurierten Vereins auf.</td>
                     <td>Keine (nutzt die Plugin-Einstellungen)</td>
-                    <td><code>[suh-club-teams]</code></td>
+                    <td><code>[swfl-club-teams]</code></td>
                 </tr>
                 <tr>
-                    <td><code>[suh-club-games]</code></td>
+                    <td><code>[swfl-club-games]</code></td>
                     <td>Zeigt alle Spiele des konfigurierten Vereins für die aktuelle Saison.</td>
                     <td>Keine (nutzt die Plugin-Einstellungen)</td>
-                    <td><code>[suh-club-games]</code></td>
+                    <td><code>[swfl-club-games]</code></td>
                 </tr>
                 <tr>
-                    <td><code>[suh-team-games]</code></td>
+                    <td><code>[swfl-team-games]</code></td>
                     <td>Zeigt die Spiele eines spezifischen Teams.</td>
                     <td>
                         <strong>team_id</strong> (erforderlich): Die ID des Teams.<br>
-                        <em>Zu finden auf der <a href="<?php echo esc_url( admin_url('admin.php?page=swiss-floorball-api-teams') ); ?>">Teams Übersicht</a> oder im <a href="<?php echo esc_url( admin_url('admin.php?page=swiss-floorball-api') ); ?>">Dashboard</a>.</em>
+                        <em>Zu finden auf der <a href="<?php echo esc_url( admin_url('admin.php?page=floorball-api-for-swiss-unihockey-teams') ); ?>">Teams Übersicht</a> oder im <a href="<?php echo esc_url( admin_url('admin.php?page=floorball-api-for-swiss-unihockey') ); ?>">Dashboard</a>.</em>
                     </td>
-                    <td><code>[suh-team-games team_id="427892"]</code></td>
+                    <td><code>[swfl-team-games team_id="427892"]</code></td>
                 </tr>
                 <tr>
-                    <td><code>[suh-clubs]</code></td>
+                    <td><code>[swfl-clubs]</code></td>
                     <td>Listet alle Vereine auf.</td>
                     <td>Keine</td>
-                    <td><code>[suh-clubs]</code></td>
+                    <td><code>[swfl-clubs]</code></td>
                 </tr>
                 <tr>
-                    <td><code>[suh-calendars]</code></td>
+                    <td><code>[swfl-calendars]</code></td>
                     <td>Erstellt einen Kalender-Link (Webcal) für ein Team oder eine Liga.</td>
                     <td>
                         <strong>team_id</strong> (erforderlich für Team-Kalender): Die ID des Teams.<br>
@@ -72,40 +72,40 @@ if ( ! defined( 'ABSPATH' ) ) {
                         <strong>league</strong>: Die Liga.<br>
                         <strong>game_class</strong>: Die Spielklasse.<br>
                         <strong>group</strong>: Die Gruppe.<br>
-                        <em>Team IDs finden Sie auf der <a href="<?php echo esc_url( admin_url('admin.php?page=swiss-floorball-api-teams') ); ?>">Teams Übersicht</a>.</em>
+                        <em>Team IDs finden Sie auf der <a href="<?php echo esc_url( admin_url('admin.php?page=floorball-api-for-swiss-unihockey-teams') ); ?>">Teams Übersicht</a>.</em>
                     </td>
                     <td>
                         <strong>Team Kalender:</strong><br>
-                        <code>[suh-calendars team_id="427892"]</code><br><br>
+                        <code>[swfl-calendars team_id="427892"]</code><br><br>
                         
                         <strong>Vereins Kalender:</strong><br>
-                        <code>[suh-calendars club_id="637"]</code>
+                        <code>[swfl-calendars club_id="637"]</code>
                     </td>
                 </tr>
                 <tr>
-                    <td><code>[suh-cups]</code></td>
+                    <td><code>[swfl-cups]</code></td>
                     <td>Listet alle Cup-Wettbewerbe auf.</td>
                     <td>Keine</td>
-                    <td><code>[suh-cups]</code></td>
+                    <td><code>[swfl-cups]</code></td>
                 </tr>
                 <tr>
-                    <td><code>[suh-groups]</code></td>
+                    <td><code>[swfl-groups]</code></td>
                     <td>Listet Gruppen basierend auf Saison, Liga und Spielklasse auf.</td>
                     <td>
                         <strong>season</strong>: Saison (Standard: aktuelle Saison aus Einstellungen).<br>
                         <strong>league</strong>: Liga ID.<br>
                         <strong>game_class</strong>: Spielklasse ID.
                     </td>
-                    <td><code>[suh-groups league="1" game_class="11"]</code></td>
+                    <td><code>[swfl-groups league="1" game_class="11"]</code></td>
                 </tr>
                 <tr>
-                    <td><code>[suh-teams]</code></td>
+                    <td><code>[swfl-teams]</code></td>
                     <td>Listet alle Teams auf.</td>
                     <td>Keine</td>
-                    <td><code>[suh-teams]</code></td>
+                    <td><code>[swfl-teams]</code></td>
                 </tr>
                 <tr>
-                    <td><code>[suh-rankings]</code></td>
+                    <td><code>[swfl-rankings]</code></td>
                     <td>Zeigt die Rangliste für eine bestimmte Gruppe.</td>
                     <td>
                         <strong>season</strong>: Saison (Standard: aktuelle Saison).<br>
@@ -113,24 +113,24 @@ if ( ! defined( 'ABSPATH' ) ) {
                         <strong>game_class</strong>: Spielklasse ID.<br>
                         <strong>group</strong>: Gruppen ID.
                     </td>
-                    <td><code>[suh-rankings group="416947"]</code></td>
+                    <td><code>[swfl-rankings group="416947"]</code></td>
                 </tr>
                 <tr>
-                    <td><code>[suh-player]</code></td>
+                    <td><code>[swfl-player]</code></td>
                     <td>Zeigt Informationen zu einem spezifischen Spieler.</td>
                     <td>
                         <strong>player_id</strong> (erforderlich): Die ID des Spielers.
                     </td>
-                    <td><code>[suh-player player_id="99999"]</code></td>
+                    <td><code>[swfl-player player_id="99999"]</code></td>
                 </tr>
                 <tr>
-                    <td><code>[suh-national-players]</code></td>
+                    <td><code>[swfl-national-players]</code></td>
                     <td>Listet Nationalspieler auf.</td>
                     <td>Keine</td>
-                    <td><code>[suh-national-players]</code></td>
+                    <td><code>[swfl-national-players]</code></td>
                 </tr>
                 <tr>
-                    <td><code>[suh-topscorers]</code></td>
+                    <td><code>[swfl-topscorers]</code></td>
                     <td>Zeigt die Topscorer einer Liga/Gruppe.</td>
                     <td>
                         <strong>season</strong>: Saison (Standard: aktuelle Saison).<br>
@@ -138,15 +138,15 @@ if ( ! defined( 'ABSPATH' ) ) {
                         <strong>game_class</strong>: Spielklasse ID.<br>
                         <strong>group</strong>: Gruppen ID.
                     </td>
-                    <td><code>[suh-topscorers league="1"]</code></td>
+                    <td><code>[swfl-topscorers league="1"]</code></td>
                 </tr>
                 <tr>
-                    <td><code>[suh-game-events]</code></td>
+                    <td><code>[swfl-game-events]</code></td>
                     <td>Zeigt Ereignisse (Tore, Strafen) eines spezifischen Spiels.</td>
                     <td>
                         <strong>game_id</strong> (erforderlich): Die ID des Spiels.
                     </td>
-                    <td><code>[suh-game-events game_id="1000"]</code></td>
+                    <td><code>[swfl-game-events game_id="1000"]</code></td>
                 </tr>
             </tbody>
         </table>

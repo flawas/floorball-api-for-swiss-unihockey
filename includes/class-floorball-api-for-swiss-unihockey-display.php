@@ -58,7 +58,7 @@ class Swiss_Floorball_API_Display {
 		$api_response = $client->fetch_data( 'clubs/' . $swissfloorball_club_number . '/statistics' );
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['data']['regions'][0]['rows'] ) ) {
-			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) . '</p>';
+			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'floorball-api-for-swiss-unihockey' ) . '</p>';
 			return;
 		}
 
@@ -69,18 +69,18 @@ class Swiss_Floorball_API_Display {
 
 		?>
 		<h2 class="sfa-section-title"><?php echo esc_html( $title ); ?></h2>
-		<p><?php printf( esc_html__( 'Teams bei Swiss Unihockey angemeldet: %d', 'swiss-floorball-api' ), intval( $team_count ) ); ?></p>
+		<p><?php printf( esc_html__( 'Teams bei Swiss Floorball angemeldet: %d', 'floorball-api-for-swiss-unihockey' ), intval( $team_count ) ); ?></p>
 
 		<table class="sfa-data-table">
 			<thead>
 				<tr>
-					<th><?php esc_html_e( 'Team ID', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Team Name', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Meisterschaft', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'League ID', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Game Class ID', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Group ID', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Cup', 'swiss-floorball-api' ); ?></th>
+					<th><?php esc_html_e( 'Team ID', 'floorball-api-for-swiss-unihockey' ); ?></th>
+					<th><?php esc_html_e( 'Team Name', 'floorball-api-for-swiss-unihockey' ); ?></th>
+					<th><?php esc_html_e( 'Meisterschaft', 'floorball-api-for-swiss-unihockey' ); ?></th>
+					<th><?php esc_html_e( 'League ID', 'floorball-api-for-swiss-unihockey' ); ?></th>
+					<th><?php esc_html_e( 'Game Class ID', 'floorball-api-for-swiss-unihockey' ); ?></th>
+					<th><?php esc_html_e( 'Group ID', 'floorball-api-for-swiss-unihockey' ); ?></th>
+					<th><?php esc_html_e( 'Cup', 'floorball-api-for-swiss-unihockey' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -108,13 +108,13 @@ class Swiss_Floorball_API_Display {
 					}
 				?>
 					<tr>
-						<td data-label="<?php esc_attr_e( 'Team ID', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $team_id ); ?></td>
-						<td data-label="<?php esc_attr_e( 'Team Name', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $row['cells'][0]['text'][0] ); ?></td>
-						<td data-label="<?php esc_attr_e( 'Meisterschaft', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $row['cells'][1]['text'][0] ); ?></td>
-						<td data-label="<?php esc_attr_e( 'League ID', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $league_id ); ?></td>
-						<td data-label="<?php esc_attr_e( 'Game Class ID', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $game_class_id ); ?></td>
-						<td data-label="<?php esc_attr_e( 'Group ID', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $group_id ); ?></td>
-						<td data-label="<?php esc_attr_e( 'Cup', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $row['cells'][2]['text'][0] ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Team ID', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $team_id ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Team Name', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $row['cells'][0]['text'][0] ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Meisterschaft', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $row['cells'][1]['text'][0] ); ?></td>
+						<td data-label="<?php esc_attr_e( 'League ID', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $league_id ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Game Class ID', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $game_class_id ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Group ID', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $group_id ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Cup', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $row['cells'][2]['text'][0] ); ?></td>
 					</tr>
 				<?php endforeach; ?>
 			</tbody>
@@ -137,7 +137,7 @@ class Swiss_Floorball_API_Display {
 		$api_response = $client->fetch_data( 'clubs/' . $swissfloorball_club_number . '/statistics' );
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['data']['regions'][0]['rows'] ) ) {
-			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) . '</p>';
+			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'floorball-api-for-swiss-unihockey' ) . '</p>';
 			return;
 		}
 
@@ -149,15 +149,15 @@ class Swiss_Floorball_API_Display {
 		<table class="sfa-data-table">
 			<thead>
 				<tr>
-					<th><?php esc_html_e( 'Team Name', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Meisterschaft Platzierung', 'swiss-floorball-api' ); ?></th>
+					<th><?php esc_html_e( 'Team Name', 'floorball-api-for-swiss-unihockey' ); ?></th>
+					<th><?php esc_html_e( 'Meisterschaft Platzierung', 'floorball-api-for-swiss-unihockey' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
 				<?php foreach ( $rows as $row ) : ?>
 					<tr>
-						<td data-label="<?php esc_attr_e( 'Team Name', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $row['cells'][0]['text'][0] ); ?></td>
-						<td data-label="<?php esc_attr_e( 'Meisterschaft Platzierung', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $row['cells'][1]['text'][0] ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Team Name', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $row['cells'][0]['text'][0] ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Meisterschaft Platzierung', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $row['cells'][1]['text'][0] ); ?></td>
 					</tr>
 				<?php endforeach; ?>
 			</tbody>
@@ -182,7 +182,7 @@ class Swiss_Floorball_API_Display {
 		) );
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['data']['regions'][0]['rows'] ) ) {
-			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) . '</p>';
+			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'floorball-api-for-swiss-unihockey' ) . '</p>';
 			return;
 		}
 
@@ -194,14 +194,14 @@ class Swiss_Floorball_API_Display {
 		<table class="sfa-data-table">
 			<thead>
 				<tr>
-					<th><?php esc_html_e( 'Datum / Zeit', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Liga / Gruppe', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Heimteam', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Gastteam', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Ort', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Resultat', 'swiss-floorball-api' ); ?></th>
+					<th><?php esc_html_e( 'Datum / Zeit', 'floorball-api-for-swiss-unihockey' ); ?></th>
+					<th><?php esc_html_e( 'Liga / Gruppe', 'floorball-api-for-swiss-unihockey' ); ?></th>
+					<th><?php esc_html_e( 'Heimteam', 'floorball-api-for-swiss-unihockey' ); ?></th>
+					<th><?php esc_html_e( 'Gastteam', 'floorball-api-for-swiss-unihockey' ); ?></th>
+					<th><?php esc_html_e( 'Ort', 'floorball-api-for-swiss-unihockey' ); ?></th>
+					<th><?php esc_html_e( 'Resultat', 'floorball-api-for-swiss-unihockey' ); ?></th>
 					<?php if ( $is_backend ) : ?>
-						<th><?php esc_html_e( 'Aktionen', 'swiss-floorball-api' ); ?></th>
+						<th><?php esc_html_e( 'Aktionen', 'floorball-api-for-swiss-unihockey' ); ?></th>
 					<?php endif; ?>
 				</tr>
 			</thead>
@@ -218,12 +218,12 @@ class Swiss_Floorball_API_Display {
 					$result         = $row['cells'][5]['text'][0];
 					?>
 					<tr>
-						<td data-label="<?php esc_attr_e( 'Datum / Zeit', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $date . ' ' . $time ); ?></td>
-						<td data-label="<?php esc_attr_e( 'Liga / Gruppe', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $league ); ?></td>
-						<td data-label="<?php esc_attr_e( 'Heimteam', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $team_home ); ?></td>
-						<td data-label="<?php esc_attr_e( 'Gastteam', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $team_away ); ?></td>
-						<td data-label="<?php esc_attr_e( 'Ort', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $place_location . ' ' . $place_name ); ?></td>
-						<td data-label="<?php esc_attr_e( 'Resultat', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $result ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Datum / Zeit', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $date . ' ' . $time ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Liga / Gruppe', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $league ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Heimteam', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $team_home ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Gastteam', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $team_away ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Ort', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $place_location . ' ' . $place_name ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Resultat', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $result ); ?></td>
 						<?php if ( $is_backend ) : 
 							$game_id = isset( $row['link']['ids'][0] ) ? $row['link']['ids'][0] : '';
 							$details_url = add_query_arg( 'match_id', $game_id );
@@ -231,7 +231,7 @@ class Swiss_Floorball_API_Display {
 							<td>
 								<?php if ( $game_id ) : ?>
 									<a href="<?php echo esc_url( $details_url ); ?>" class="button button-small">
-										<?php esc_html_e( 'Details', 'swiss-floorball-api' ); ?>
+										<?php esc_html_e( 'Details', 'floorball-api-for-swiss-unihockey' ); ?>
 									</a>
 								<?php endif; ?>
 							</td>
@@ -262,7 +262,7 @@ class Swiss_Floorball_API_Display {
 		) );
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['data']['regions'][0]['rows'] ) ) {
-			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) . '</p>';
+			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'floorball-api-for-swiss-unihockey' ) . '</p>';
 			return;
 		}
 
@@ -276,15 +276,15 @@ class Swiss_Floorball_API_Display {
 			<thead>
 				<tr>
 					<?php if ( $is_backend ) : ?>
-						<th><?php esc_html_e( 'Game ID', 'swiss-floorball-api' ); ?></th>
+						<th><?php esc_html_e( 'Game ID', 'floorball-api-for-swiss-unihockey' ); ?></th>
 					<?php endif; ?>
-					<th><?php esc_html_e( 'Datum / Zeit', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Heimteam', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Gastteam', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Ort', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Resultat', 'swiss-floorball-api' ); ?></th>
+					<th><?php esc_html_e( 'Datum / Zeit', 'floorball-api-for-swiss-unihockey' ); ?></th>
+					<th><?php esc_html_e( 'Heimteam', 'floorball-api-for-swiss-unihockey' ); ?></th>
+					<th><?php esc_html_e( 'Gastteam', 'floorball-api-for-swiss-unihockey' ); ?></th>
+					<th><?php esc_html_e( 'Ort', 'floorball-api-for-swiss-unihockey' ); ?></th>
+					<th><?php esc_html_e( 'Resultat', 'floorball-api-for-swiss-unihockey' ); ?></th>
 					<?php if ( $is_backend ) : ?>
-						<th><?php esc_html_e( 'Aktionen', 'swiss-floorball-api' ); ?></th>
+						<th><?php esc_html_e( 'Aktionen', 'floorball-api-for-swiss-unihockey' ); ?></th>
 					<?php endif; ?>
 				</tr>
 			</thead>
@@ -302,17 +302,17 @@ class Swiss_Floorball_API_Display {
 					?>
 					<tr>
 						<?php if ( $is_backend ) : ?>
-							<td data-label="<?php esc_attr_e( 'Game ID', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $game_id ); ?></td>
+							<td data-label="<?php esc_attr_e( 'Game ID', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $game_id ); ?></td>
 						<?php endif; ?>
-						<td data-label="<?php esc_attr_e( 'Datum / Zeit', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $date . ' ' . $time ); ?></td>
-						<td data-label="<?php esc_attr_e( 'Heimteam', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $team_home ); ?></td>
-						<td data-label="<?php esc_attr_e( 'Gastteam', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $team_away ); ?></td>
-						<td data-label="<?php esc_attr_e( 'Ort', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $place_location . ', ' . $place_name ); ?></td>
-						<td data-label="<?php esc_attr_e( 'Resultat', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $result ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Datum / Zeit', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $date . ' ' . $time ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Heimteam', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $team_home ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Gastteam', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $team_away ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Ort', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $place_location . ', ' . $place_name ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Resultat', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $result ); ?></td>
 						<?php if ( $is_backend ) : ?>
 							<td>
-								<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'swiss-floorball-api-matches', 'match_id' => $game_id ), admin_url( 'admin.php' ) ) ); ?>" class="button button-small">
-									<?php esc_html_e( 'Details', 'swiss-floorball-api' ); ?>
+								<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'floorball-api-for-swiss-unihockey-matches', 'match_id' => $game_id ), admin_url( 'admin.php' ) ) ); ?>" class="button button-small">
+									<?php esc_html_e( 'Details', 'floorball-api-for-swiss-unihockey' ); ?>
 								</a>
 							</td>
 						<?php endif; ?>
@@ -335,7 +335,7 @@ class Swiss_Floorball_API_Display {
 		$api_response = $client->fetch_data( 'leagues' );
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['entries'] ) ) {
-			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) . '</p>';
+			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'floorball-api-for-swiss-unihockey' ) . '</p>';
 			return;
 		}
 
@@ -348,9 +348,9 @@ class Swiss_Floorball_API_Display {
 		<table class="sfa-data-table">
 			<thead>
 				<tr>
-					<th><?php esc_html_e( 'Name', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'League Nummer', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Game_class', 'swiss-floorball-api' ); ?></th>
+					<th><?php esc_html_e( 'Name', 'floorball-api-for-swiss-unihockey' ); ?></th>
+					<th><?php esc_html_e( 'League Nummer', 'floorball-api-for-swiss-unihockey' ); ?></th>
+					<th><?php esc_html_e( 'Game_class', 'floorball-api-for-swiss-unihockey' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -361,9 +361,9 @@ class Swiss_Floorball_API_Display {
 					$game_class = $entry['set_in_context']['game_class'];
 					?>
 					<tr>
-						<td data-label="<?php esc_attr_e( 'Name', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $name ); ?></td>
-						<td data-label="<?php esc_attr_e( 'League Nummer', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $league ); ?></td>
-						<td data-label="<?php esc_attr_e( 'Game_class', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $game_class ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Name', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $name ); ?></td>
+						<td data-label="<?php esc_attr_e( 'League Nummer', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $league ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Game_class', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $game_class ); ?></td>
 					</tr>
 					<?php
 				}
@@ -383,7 +383,7 @@ class Swiss_Floorball_API_Display {
 		$api_response = $client->fetch_data( 'seasons' );
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['entries'] ) ) {
-			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) . '</p>';
+			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'floorball-api-for-swiss-unihockey' ) . '</p>';
 			return;
 		}
 
@@ -396,8 +396,8 @@ class Swiss_Floorball_API_Display {
 		<table class="sfa-data-table">
 			<thead>
 				<tr>
-					<th><?php esc_html_e( 'Club Name', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Season_id', 'swiss-floorball-api' ); ?></th>
+					<th><?php esc_html_e( 'Club Name', 'floorball-api-for-swiss-unihockey' ); ?></th>
+					<th><?php esc_html_e( 'Season_id', 'floorball-api-for-swiss-unihockey' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -407,8 +407,8 @@ class Swiss_Floorball_API_Display {
 					$season_id = $entry['set_in_context']['season'];
 					?>
 					<tr>
-						<td data-label="<?php esc_attr_e( 'Club Name', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $name ); ?></td>
-						<td data-label="<?php esc_attr_e( 'Season_id', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $season_id ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Club Name', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $name ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Season_id', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $season_id ); ?></td>
 					</tr>
 					<?php
 				}
@@ -428,7 +428,7 @@ class Swiss_Floorball_API_Display {
 		$api_response = $client->fetch_data( 'clubs' );
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['entries'] ) ) {
-			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) . '</p>';
+			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'floorball-api-for-swiss-unihockey' ) . '</p>';
 			return;
 		}
 
@@ -441,8 +441,8 @@ class Swiss_Floorball_API_Display {
 		<table class="sfa-data-table">
 			<thead>
 				<tr>
-					<th><?php esc_html_e( 'Club Name', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Club_id', 'swiss-floorball-api' ); ?></th>
+					<th><?php esc_html_e( 'Club Name', 'floorball-api-for-swiss-unihockey' ); ?></th>
+					<th><?php esc_html_e( 'Club_id', 'floorball-api-for-swiss-unihockey' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -452,8 +452,8 @@ class Swiss_Floorball_API_Display {
 					$club_id = $entry['set_in_context']['club_id'];
 					?>
 					<tr>
-						<td data-label="<?php esc_attr_e( 'Club Name', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $name ); ?></td>
-						<td data-label="<?php esc_attr_e( 'Club_id', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $club_id ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Club Name', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $name ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Club_id', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $club_id ); ?></td>
 					</tr>
 					<?php
 				}
@@ -502,7 +502,7 @@ class Swiss_Floorball_API_Display {
             // Let's assume for now we try to fetch games if we have a team or club.
             // If we only have group params, we might need a different endpoint or strategy, but let's focus on team/club first as per request.
 		} else {
-			echo '<p>' . esc_html__( 'Fehlende Parameter für Kalender.', 'swiss-floorball-api' ) . '</p>';
+			echo '<p>' . esc_html__( 'Fehlende Parameter für Kalender.', 'floorball-api-for-swiss-unihockey' ) . '</p>';
 			return;
 		}
 
@@ -546,17 +546,17 @@ class Swiss_Floorball_API_Display {
                 // Render Table if we have upcoming games
                 if ( ! empty( $upcoming_games ) ) {
                     ?>
-                    <h3 class="sfa-calendar-title"><?php esc_html_e( 'Nächste Spiele', 'swiss-floorball-api' ); ?></h3>
+                    <h3 class="sfa-calendar-title"><?php esc_html_e( 'Nächste Spiele', 'floorball-api-for-swiss-unihockey' ); ?></h3>
                     <table class="sfa-data-table sfa-calendar-table">
                         <thead>
                             <tr>
-                                <th><?php esc_html_e( 'Datum', 'swiss-floorball-api' ); ?></th>
-                                <th><?php esc_html_e( 'Goal', 'swiss-floorball-api' ); ?></th>
-                                <th><?php esc_html_e( 'Resultat', 'swiss-floorball-api' ); ?></th>
+                                <th><?php esc_html_e( 'Datum', 'floorball-api-for-swiss-unihockey' ); ?></th>
+                                <th><?php esc_html_e( 'Goal', 'floorball-api-for-swiss-unihockey' ); ?></th>
+                                <th><?php esc_html_e( 'Resultat', 'floorball-api-for-swiss-unihockey' ); ?></th>
                         <?php if ( $is_backend ) : ?>
-                            <th><?php esc_html_e( 'Aktionen', 'swiss-floorball-api' ); ?></th>
+                            <th><?php esc_html_e( 'Aktionen', 'floorball-api-for-swiss-unihockey' ); ?></th>
                         <?php endif; ?>
-                                <th><?php esc_html_e( 'Ort', 'swiss-floorball-api' ); ?></th>
+                                <th><?php esc_html_e( 'Ort', 'floorball-api-for-swiss-unihockey' ); ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -596,27 +596,27 @@ class Swiss_Floorball_API_Display {
 
                                 ?>
                                 <tr>
-                                    <td data-label="<?php esc_attr_e( 'Datum', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $date . ' ' . $time ); ?></td>
-                                    <td data-label="<?php esc_attr_e( 'Heim', 'swiss-floorball-api' ); ?>">
+                                    <td data-label="<?php esc_attr_e( 'Datum', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $date . ' ' . $time ); ?></td>
+                                    <td data-label="<?php esc_attr_e( 'Heim', 'floorball-api-for-swiss-unihockey' ); ?>">
                                         <?php if ( $logo_home ) : ?>
                                             <img src="<?php echo esc_url( $logo_home ); ?>" alt="<?php echo esc_attr( $team_home ); ?>" class="sfa-logo-inline">
                                         <?php endif; ?>
                                         <?php echo esc_html( $team_home ); ?>
                                     </td>
-                                    <td data-label="<?php esc_attr_e( 'Gast', 'swiss-floorball-api' ); ?>">
+                                    <td data-label="<?php esc_attr_e( 'Gast', 'floorball-api-for-swiss-unihockey' ); ?>">
                                         <?php if ( $logo_away ) : ?>
                                             <img src="<?php echo esc_url( $logo_away ); ?>" alt="<?php echo esc_attr( $team_away ); ?>" class="sfa-logo-inline">
                                         <?php endif; ?>
                                         <?php echo esc_html( $team_away ); ?>
                                     </td>
-                                    <td data-label="<?php esc_attr_e( 'Ort', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $place_location ); ?></td>
+                                    <td data-label="<?php esc_attr_e( 'Ort', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $place_location ); ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
                     </table>
                     <?php
                 } else {
-                     echo '<p>' . esc_html__( 'Keine kommenden Spiele gefunden.', 'swiss-floorball-api' ) . '</p>';
+                     echo '<p>' . esc_html__( 'Keine kommenden Spiele gefunden.', 'floorball-api-for-swiss-unihockey' ) . '</p>';
                 }
             }
         }
@@ -624,7 +624,7 @@ class Swiss_Floorball_API_Display {
 		?>
 		<div class="sfa-calendar-link">
             <a href="<?php echo esc_url( str_replace( 'https://', 'webcal://', $url ) ); ?>" target="_blank" class="sfa-calendar-subscribe">
-                <?php esc_html_e( 'Kalender abonnieren', 'swiss-floorball-api' ); ?>
+                <?php esc_html_e( 'Kalender abonnieren', 'floorball-api-for-swiss-unihockey' ); ?>
             </a>
         </div>
 		<?php
@@ -640,7 +640,7 @@ class Swiss_Floorball_API_Display {
 		$api_response = $client->fetch_data( 'cups' );
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['data']['regions'][0]['rows'] ) ) {
-			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) . '</p>';
+			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'floorball-api-for-swiss-unihockey' ) . '</p>';
 			return;
 		}
 
@@ -652,13 +652,13 @@ class Swiss_Floorball_API_Display {
 		<table class="sfa-data-table">
 			<thead>
 				<tr>
-					<th><?php esc_html_e( 'Runde', 'swiss-floorball-api' ); ?></th>
+					<th><?php esc_html_e( 'Runde', 'floorball-api-for-swiss-unihockey' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
 				<?php foreach ( $rows as $row ) : ?>
 					<tr>
-						<td data-label="<?php esc_attr_e( 'Runde', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $row['cells'][0]['text'][0] ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Runde', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $row['cells'][0]['text'][0] ); ?></td>
 					</tr>
 				<?php endforeach; ?>
 			</tbody>
@@ -684,7 +684,7 @@ class Swiss_Floorball_API_Display {
 		) );
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['entries'] ) ) {
-			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) . '</p>';
+			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'floorball-api-for-swiss-unihockey' ) . '</p>';
 			return;
 		}
 
@@ -696,13 +696,13 @@ class Swiss_Floorball_API_Display {
 		<table class="sfa-data-table">
 			<thead>
 				<tr>
-					<th><?php esc_html_e( 'Gruppe', 'swiss-floorball-api' ); ?></th>
+					<th><?php esc_html_e( 'Gruppe', 'floorball-api-for-swiss-unihockey' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
 				<?php foreach ( $entries as $entry ) : ?>
 					<tr>
-						<td data-label="<?php esc_attr_e( 'Gruppe', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $entry['text'] ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Gruppe', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $entry['text'] ); ?></td>
 					</tr>
 				<?php endforeach; ?>
 			</tbody>
@@ -720,7 +720,7 @@ class Swiss_Floorball_API_Display {
 		$api_response = $client->fetch_data( 'teams' );
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['data']['regions'][0]['rows'] ) ) {
-			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) . '</p>';
+			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'floorball-api-for-swiss-unihockey' ) . '</p>';
 			return;
 		}
 
@@ -732,8 +732,8 @@ class Swiss_Floorball_API_Display {
 		<table class="sfa-data-table">
 			<thead>
 				<tr>
-					<th><?php esc_html_e( 'Name', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Website', 'swiss-floorball-api' ); ?></th>
+					<th><?php esc_html_e( 'Name', 'floorball-api-for-swiss-unihockey' ); ?></th>
+					<th><?php esc_html_e( 'Website', 'floorball-api-for-swiss-unihockey' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -743,8 +743,8 @@ class Swiss_Floorball_API_Display {
 					$website = isset( $row['cells'][2]['url']['href'] ) ? $row['cells'][2]['url']['href'] : '';
 					?>
 					<tr>
-						<td data-label="<?php esc_attr_e( 'Name', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $name ); ?></td>
-						<td data-label="<?php esc_attr_e( 'Website', 'swiss-floorball-api' ); ?>"><a href="<?php echo esc_url( $website ); ?>" target="_blank"><?php echo esc_html( $website ); ?></a></td>
+						<td data-label="<?php esc_attr_e( 'Name', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $name ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Website', 'floorball-api-for-swiss-unihockey' ); ?>"><a href="<?php echo esc_url( $website ); ?>" target="_blank"><?php echo esc_html( $website ); ?></a></td>
 					</tr>
 					<?php
 				}
@@ -833,7 +833,7 @@ class Swiss_Floorball_API_Display {
 		) );
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['data']['regions'][0]['rows'] ) ) {
-			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) . '</p>';
+			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'floorball-api-for-swiss-unihockey' ) . '</p>';
 			return;
 		}
 
@@ -957,7 +957,7 @@ class Swiss_Floorball_API_Display {
 		$api_response = $client->fetch_data( 'games/' . $game_id );
 
 		if ( is_wp_error( $api_response ) ) {
-			echo '<div class="notice notice-error"><p>' . esc_html__( 'Fehler beim Laden der Match-Details.', 'swiss-floorball-api' ) . '</p></div>';
+			echo '<div class="notice notice-error"><p>' . esc_html__( 'Fehler beim Laden der Match-Details.', 'floorball-api-for-swiss-unihockey' ) . '</p></div>';
 			return;
 		}
 
@@ -1022,7 +1022,7 @@ class Swiss_Floorball_API_Display {
 			
 			echo '</div>';
 		} else {
-			echo '<div class="sfa-empty-state"><p class="sfa-empty-state-text">' . esc_html__( 'Keine Details verfügbar.', 'swiss-floorball-api' ) . '</p></div>';
+			echo '<div class="sfa-empty-state"><p class="sfa-empty-state-text">' . esc_html__( 'Keine Details verfügbar.', 'floorball-api-for-swiss-unihockey' ) . '</p></div>';
 		}
 	}
 
@@ -1045,7 +1045,7 @@ class Swiss_Floorball_API_Display {
 		) );
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['data']['regions'][0]['rows'] ) ) {
-			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) . '</p>';
+			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'floorball-api-for-swiss-unihockey' ) . '</p>';
 			return;
 		}
 
@@ -1057,11 +1057,11 @@ class Swiss_Floorball_API_Display {
 		<table class="sfa-data-table">
 			<thead>
 				<tr>
-					<th><?php esc_html_e( 'Rang', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Team', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Spiele', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Tordifferenz', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Punkte', 'swiss-floorball-api' ); ?></th>
+					<th><?php esc_html_e( 'Rang', 'floorball-api-for-swiss-unihockey' ); ?></th>
+					<th><?php esc_html_e( 'Team', 'floorball-api-for-swiss-unihockey' ); ?></th>
+					<th><?php esc_html_e( 'Spiele', 'floorball-api-for-swiss-unihockey' ); ?></th>
+					<th><?php esc_html_e( 'Tordifferenz', 'floorball-api-for-swiss-unihockey' ); ?></th>
+					<th><?php esc_html_e( 'Punkte', 'floorball-api-for-swiss-unihockey' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -1074,11 +1074,11 @@ class Swiss_Floorball_API_Display {
 					$points     = isset( $row['cells'][12]['text'][0] ) ? $row['cells'][12]['text'][0] : '';
 					?>
 					<tr>
-						<td data-label="<?php esc_attr_e( 'Rang', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $rank ); ?></td>
-						<td data-label="<?php esc_attr_e( 'Team', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $team ); ?></td>
-						<td data-label="<?php esc_attr_e( 'Spiele', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $games ); ?></td>
-						<td data-label="<?php esc_attr_e( 'Tordifferenz', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $goal_diff ); ?></td>
-						<td data-label="<?php esc_attr_e( 'Punkte', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $points ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Rang', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $rank ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Team', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $team ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Spiele', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $games ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Tordifferenz', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $goal_diff ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Punkte', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $points ); ?></td>
 					</tr>
 					<?php
 				}
@@ -1112,7 +1112,7 @@ class Swiss_Floorball_API_Display {
 		$api_response = $client->fetch_data( 'players/' . $player_id );
 
 		if ( is_wp_error( $api_response ) ) {
-			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) . '</p>';
+			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'floorball-api-for-swiss-unihockey' ) . '</p>';
 			return;
 		}
 
@@ -1132,7 +1132,7 @@ class Swiss_Floorball_API_Display {
 		$api_response = $client->fetch_data( 'national_players' );
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['data']['regions'][0]['rows'] ) ) {
-			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) . '</p>';
+			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'floorball-api-for-swiss-unihockey' ) . '</p>';
 			return;
 		}
 
@@ -1144,9 +1144,9 @@ class Swiss_Floorball_API_Display {
 		<table class="sfa-data-table">
 			<thead>
 				<tr>
-					<th><?php esc_html_e( 'Nr', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Position', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Name', 'swiss-floorball-api' ); ?></th>
+					<th><?php esc_html_e( 'Nr', 'floorball-api-for-swiss-unihockey' ); ?></th>
+					<th><?php esc_html_e( 'Position', 'floorball-api-for-swiss-unihockey' ); ?></th>
+					<th><?php esc_html_e( 'Name', 'floorball-api-for-swiss-unihockey' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -1157,9 +1157,9 @@ class Swiss_Floorball_API_Display {
 					$name = isset( $row['cells'][2]['text'][0] ) ? $row['cells'][2]['text'][0] : '';
 					?>
 					<tr>
-						<td data-label="<?php esc_attr_e( 'Nr', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $nr ); ?></td>
-						<td data-label="<?php esc_attr_e( 'Position', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $pos ); ?></td>
-						<td data-label="<?php esc_attr_e( 'Name', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $name ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Nr', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $nr ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Position', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $pos ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Name', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $name ); ?></td>
 					</tr>
 					<?php
 				}
@@ -1188,7 +1188,7 @@ class Swiss_Floorball_API_Display {
 		) );
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['data']['regions'][0]['rows'] ) ) {
-			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) . '</p>';
+			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'floorball-api-for-swiss-unihockey' ) . '</p>';
 			return;
 		}
 
@@ -1200,12 +1200,12 @@ class Swiss_Floorball_API_Display {
 		<table class="sfa-data-table">
 			<thead>
 				<tr>
-					<th><?php esc_html_e( 'Rang', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Spieler', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Team', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Tore', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Assists', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Punkte', 'swiss-floorball-api' ); ?></th>
+					<th><?php esc_html_e( 'Rang', 'floorball-api-for-swiss-unihockey' ); ?></th>
+					<th><?php esc_html_e( 'Spieler', 'floorball-api-for-swiss-unihockey' ); ?></th>
+					<th><?php esc_html_e( 'Team', 'floorball-api-for-swiss-unihockey' ); ?></th>
+					<th><?php esc_html_e( 'Tore', 'floorball-api-for-swiss-unihockey' ); ?></th>
+					<th><?php esc_html_e( 'Assists', 'floorball-api-for-swiss-unihockey' ); ?></th>
+					<th><?php esc_html_e( 'Punkte', 'floorball-api-for-swiss-unihockey' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -1219,12 +1219,12 @@ class Swiss_Floorball_API_Display {
 					$points  = isset( $row['cells'][5]['text'][0] ) ? $row['cells'][5]['text'][0] : '';
 					?>
 					<tr>
-						<td data-label="<?php esc_attr_e( 'Rang', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $rank ); ?></td>
-						<td data-label="<?php esc_attr_e( 'Spieler', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $player ); ?></td>
-						<td data-label="<?php esc_attr_e( 'Team', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $team ); ?></td>
-						<td data-label="<?php esc_attr_e( 'Tore', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $goals ); ?></td>
-						<td data-label="<?php esc_attr_e( 'Assists', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $assists ); ?></td>
-						<td data-label="<?php esc_attr_e( 'Punkte', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $points ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Rang', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $rank ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Spieler', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $player ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Team', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $team ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Tore', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $goals ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Assists', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $assists ); ?></td>
+						<td data-label="<?php esc_attr_e( 'Punkte', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $points ); ?></td>
 					</tr>
 					<?php
 				}
@@ -1246,21 +1246,21 @@ class Swiss_Floorball_API_Display {
 		$api_response = $client->fetch_data( 'game_events/' . $game_id );
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['data']['regions'][0]['rows'] ) ) {
-			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) . '</p>';
+			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'floorball-api-for-swiss-unihockey' ) . '</p>';
 			return;
 		}
 
 		$rows = $api_response['data']['regions'][0]['rows'];
 
 		?>
-		<h3><?php esc_html_e( 'Match-Telegramm', 'swiss-floorball-api' ); ?></h3>
+		<h3><?php esc_html_e( 'Match-Telegramm', 'floorball-api-for-swiss-unihockey' ); ?></h3>
 		<table class="sfa-data-table">
 			        <thead>
             <tr>
-                <th><?php esc_html_e( 'Zeit', 'swiss-floorball-api' ); ?></th>
-                <th><?php esc_html_e( 'Ereignis', 'swiss-floorball-api' ); ?></th>
-                <th><?php esc_html_e( 'Goal', 'swiss-floorball-api' ); ?></th>
-                <th><?php esc_html_e( 'Team', 'swiss-floorball-api' ); ?></th>
+                <th><?php esc_html_e( 'Zeit', 'floorball-api-for-swiss-unihockey' ); ?></th>
+                <th><?php esc_html_e( 'Ereignis', 'floorball-api-for-swiss-unihockey' ); ?></th>
+                <th><?php esc_html_e( 'Goal', 'floorball-api-for-swiss-unihockey' ); ?></th>
+                <th><?php esc_html_e( 'Team', 'floorball-api-for-swiss-unihockey' ); ?></th>
             </tr>
         </thead>
         <tbody>
@@ -1280,14 +1280,14 @@ class Swiss_Floorball_API_Display {
                 }
                 ?>
                 <tr>
-                    <td data-label="<?php esc_attr_e( 'Zeit', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $time ); ?></td>
-                    <td data-label="<?php esc_attr_e( 'Ereignis', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $event ); ?></td>
-                    <td data-label="<?php esc_attr_e( 'Goal', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $goal ); ?></td>
-                    <td data-label="<?php esc_attr_e( 'Team', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $team ); ?></td>
+                    <td data-label="<?php esc_attr_e( 'Zeit', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $time ); ?></td>
+                    <td data-label="<?php esc_attr_e( 'Ereignis', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $event ); ?></td>
+                    <td data-label="<?php esc_attr_e( 'Goal', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $goal ); ?></td>
+                    <td data-label="<?php esc_attr_e( 'Team', 'floorball-api-for-swiss-unihockey' ); ?>"><?php echo esc_html( $team ); ?></td>
                         <?php if ( isset( $is_backend ) && $is_backend ) : // Assuming $is_backend and $game_id are available in this scope, or need to be passed. ?>
                             <td>
-                                <a href="<?php echo esc_url( add_query_arg( array( 'page' => 'swiss-floorball-api-matches', 'match_id' => $game_id ), admin_url( 'admin.php' ) ) ); ?>" class="button button-small">
-                                    <?php esc_html_e( 'Details', 'swiss-floorball-api' ); ?>
+                                <a href="<?php echo esc_url( add_query_arg( array( 'page' => 'floorball-api-for-swiss-unihockey-matches', 'match_id' => $game_id ), admin_url( 'admin.php' ) ) ); ?>" class="button button-small">
+                                    <?php esc_html_e( 'Details', 'floorball-api-for-swiss-unihockey' ); ?>
                                 </a>
                             </td>
                         <?php endif; ?>

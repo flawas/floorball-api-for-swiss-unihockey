@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 <div class="wrap sfa-admin-wrap">
 	<div class="sfa-admin-header">
 		<h1>⚙️ Einstellungen</h1>
-		<p>Konfigurieren Sie Ihre Swiss Unihockey API Verbindung</p>
+		<p>Konfigurieren Sie Ihre Swiss Floorball API Verbindung</p>
 	</div>
 
 	<?php
@@ -36,12 +36,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<div class="sfa-form-section">
 		<h2>Plugin Einstellungen</h2>
 		<?php settings_errors(); ?>
-		<p class="sfa-helper-text">Geben Sie hier die erforderlichen Informationen für die Verbindung zur Swiss Unihockey API ein.</p>
+		<p class="sfa-helper-text">Geben Sie hier die erforderlichen Informationen für die Verbindung zur Swiss Floorball API ein.</p>
 		
 		<form method="POST" action="options.php">  
 			<?php 
-				settings_fields( 'settings_page_general_settings' );
-				do_settings_sections( 'settings_page_general_settings' ); 
+				settings_fields( 'sfa_general_settings' );
+				do_settings_sections( 'sfa_general_settings' ); 
 			?>             
 			<?php submit_button('Einstellungen speichern'); ?>  
 		</form>
@@ -61,7 +61,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 	<div class="sfa-card">
 		<h3>ℹ️ Hilfe</h3>
-		<p><strong>Club Number:</strong> Die eindeutige ID Ihres Clubs bei Swiss Unihockey</p>
+		<p><strong>Club Number:</strong> Die eindeutige ID Ihres Clubs bei Swiss Floorball</p>
 		<p><strong>Club Name:</strong> Der offizielle Name Ihres Clubs (wird automatisch geladen)</p>
 		<p><strong>Aktuelle Saison:</strong> Das Jahr der aktuellen Saison (z.B. 2024)</p>
 	</div>

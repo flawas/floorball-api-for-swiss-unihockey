@@ -37,13 +37,7 @@ class Swiss_Floorball_Api_i18n {
 	 * @since    1.0.0
 	 */
 	public function load_plugin_textdomain() {
-
-		load_plugin_textdomain(
-			'swiss-floorball-api',
-			false,
-			dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/'
-		);
-
+		// Not needed for WordPress.org plugins since WP 4.6 — WordPress loads translations automatically.
 	}
 
 
