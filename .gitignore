@@ -1,3 +1,5 @@
 .DS_Store
 README.txt
 .claude
+.vscode
+graphify-out/cache
