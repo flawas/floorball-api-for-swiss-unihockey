@@ -3,8 +3,12 @@
 .gitignore
 .gitattributes
 .distignore
+.vscode
+.claude
+.DS_Store
 docker-compose.yml
 Dockerfile
 scripts
 verify_api.php
 README.md
+graphify-out

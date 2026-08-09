@@ -266,7 +266,7 @@ public function sanitize_club_number( $club_number ) {
 		add_settings_error(
 			'swissfloorball_club_name',
 			'club_name_updated',
-			sprintf( __( 'Club name automatically set to: %s', 'floorball-api-for-swiss-unihockey' ), $club_name ),
+			sprintf( __( 'Club name automatically set to: %s', 'swiss-floorball-api' ), $club_name ),
 			'success'
 		);
 	} else {
@@ -276,7 +276,7 @@ public function sanitize_club_number( $club_number ) {
 		add_settings_error(
 			'swissfloorball_club_name',
 			'club_name_not_found',
-			sprintf( __( 'Could not find club name for club ID: %s', 'floorball-api-for-swiss-unihockey' ), $club_number ),
+			sprintf( __( 'Could not find club name for club ID: %s', 'swiss-floorball-api' ), $club_number ),
 			'error'
 		);
 		// Log error for debugging
@@ -295,12 +295,12 @@ public function sanitize_club_number( $club_number ) {
 public function handle_clear_cache() {
 	// Check nonce for security
 	if ( ! isset( $_POST['sfa_clear_cache_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['sfa_clear_cache_nonce'] ) ), 'sfa_clear_cache_action' ) ) {
-		wp_die( __( 'Security check failed', 'floorball-api-for-swiss-unihockey' ) );
+		wp_die( __( 'Security check failed', 'swiss-floorball-api' ) );
 	}
 	
 	// Check user permissions
 	if ( ! current_user_can( 'manage_options' ) ) {
-		wp_die( __( 'You do not have permission to perform this action', 'floorball-api-for-swiss-unihockey' ) );
+		wp_die( __( 'You do not have permission to perform this action', 'swiss-floorball-api' ) );
 	}
 	
 	// Clear all cached API data

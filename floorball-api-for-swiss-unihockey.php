@@ -25,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Author URI:        https://flaviowaser.ch/
  * License:           GPLv2 or later
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
- * Text Domain:       floorball-api-for-swiss-unihockey
+ * Text Domain:       swiss-floorball-api
  * Domain Path:       /languages
  */
 

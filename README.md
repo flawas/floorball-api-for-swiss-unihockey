@@ -6,7 +6,7 @@
 **Donate link:** https://www.paypal.me/flaviowaser  
 **Tags:** floorball, api, swiss floorball, unihockey, sports  
 **Requires at least:** 5.0  
-**Tested up to:** 6.9  
+**Tested up to:** 7.0  
 **Requires PHP:** 7.4  
 **Stable tag:** 1.0.5  
 **License:** GPLv2 or later  
@@ -26,7 +26,7 @@ The **Swiss Floorball API** plugin brings the power of the Swiss Floorball API v
 
 ## 🛠 Installation
 
-1. Download the plugin from the [releases page on GitHub](https://github.com/flawas/floorball-api-for-swiss-unihockey/releases) and upload the `floorball-api-for-swiss-unihockey.zip` file to your WordPress plugins.
+1. Download the plugin from the [releases page on GitHub](https://github.com/flawas/floorball-api-for-swiss-unihockey/releases) and upload the `swiss-floorball-api.zip` file to your WordPress plugins.
 2. Activate the plugin through the **Plugins** menu in WordPress.
 3. Navigate to **Settings > Swiss Floorball API**.
 4. Enter your **Club ID** (e.g., `427892`) and the **Current Season** (e.g., `2025`).
@@ -128,7 +128,12 @@ This plugin connects to the **Swiss Unihockey API** (api-v2.swissunihockey.ch) t
 
 * Fix: Remove FAQ answer restricting the plugin to "personal and non-commercial use" — this contradicted the GPLv2-or-later license, which grants unrestricted use including commercial. Not allowed under WordPress.org plugin guidelines.
 * Fix: Add `Requires PHP` and `License URI` fields to the readme header
-* Fix: Align plugin file license header (`GPL-2.0-or-later`) with the readme's `GPLv2 or later`
+* Fix: Correct Text Domain (header + all translation strings) from `floorball-api-for-swiss-unihockey` to `swiss-floorball-api` to match the assigned WordPress.org slug
+* Fix: Rename `languages/floorball-api-for-swiss-unihockey.pot` to `languages/swiss-floorball-api.pot` to match the text domain
+* Fix: Update "Tested up to" to WordPress 7.0
+* Fix: Exclude `graphify-out/`, `.vscode`, `.claude`, and `.DS_Store` from the release ZIP and SVN deploy via `.distignore` — these dev-tool artifacts (including files with `&`/`()` in their names) were failing the automated plugin scan
+* Fix: Update release workflow `SLUG` and build/zip folder names from `floorball-api-for-swiss-unihockey` to `swiss-floorball-api`
+* Fix: Correct `.gitignore` readme.txt casing for case-sensitive CI filesystems
 
 ### 1.0.4 (2026-05-04)
 

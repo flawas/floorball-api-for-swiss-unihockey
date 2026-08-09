@@ -61,28 +61,32 @@ jobs:
 
       - name: Create ZIP archive
         run: |
-          mkdir floorball-api-for-swiss-unihockey
-          rsync -av --progress . floorball-api-for-swiss-unihockey \
-            --exclude floorball-api-for-swiss-unihockey \
+          mkdir swiss-floorball-api
+          rsync -av --progress . swiss-floorball-api \
+            --exclude swiss-floorball-api \
             --exclude .git \
             --exclude .github \
             --exclude .gitignore \
             --exclude .gitattributes \
             --exclude .distignore \
+            --exclude .vscode \
+            --exclude .claude \
+            --exclude .DS_Store \
             --exclude docker-compose.yml \
             --exclude Dockerfile \
             --exclude scripts \
             --exclude verify_api.php \
-            --exclude README.md
-          zip -r floorball-api-for-swiss-unihockey.zip floorball-api-for-swiss-unihockey
-          rm -rf floorball-api-for-swiss-unihockey
+            --exclude README.md \
+            --exclude graphify-out
+          zip -r swiss-floorball-api.zip swiss-floorball-api
+          rm -rf swiss-floorball-api
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && github.event.inputs.tag != '')
         with:
           tag_name: v${{ steps.get_version.outputs.VERSION }}
-          files: floorball-api-for-swiss-unihockey.zip
+          files: swiss-floorball-api.zip
           generate_release_notes: true
 
   deploy-wporg:
@@ -105,5 +109,5 @@ jobs:
         env:
           SVN_USERNAME: ${{ secrets.WPORG_SVN_USERNAME }}
           SVN_PASSWORD: ${{ secrets.WPORG_SVN_PASSWORD }}
-          SLUG: floorball-api-for-swiss-unihockey
+          SLUG: swiss-floorball-api
           VERSION: ${{ needs.build.outputs.version }}
