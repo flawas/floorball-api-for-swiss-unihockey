@@ -5,10 +5,12 @@
 **Contributors:** flaviowaser  
 **Donate link:** https://www.paypal.me/flaviowaser  
 **Tags:** floorball, api, swiss floorball, unihockey, sports  
-**Requires at least:** 5.0
+**Requires at least:** 5.0  
 **Tested up to:** 6.9  
-**Stable tag:** 1.0.4  
+**Requires PHP:** 7.4  
+**Stable tag:** 1.0.5  
 **License:** GPLv2 or later  
+**License URI:** https://www.gnu.org/licenses/gpl-2.0.html  
 
 The **Swiss Floorball API** plugin brings the power of the Swiss Floorball API v2 to your WordPress site. Display games, rankings, team rosters, and player statistics with ease using simple shortcodes.
 
@@ -91,7 +93,7 @@ A: Yep! It’s open-source and completely free to use.
 A: Nope. This plugin isn’t official and has no connection to Swiss Floorball.
 
 **Q: Can I use this plugin for commercial purposes?**  
-A: Sorry, no. It’s meant only for personal and non-commercial use. It’s designed for Swiss Floorball clubs and teams to show their data on their websites.
+A: Yes. As GPLv2-or-later licensed software, it can be used on any site, including commercial ones. It was built for Swiss Floorball clubs and teams to show their data on their websites, but nothing stops other use.
 
 **Q: Any further questions?**  
 A: Just drop me a message on [GitHub](https://github.com/flawas), [LinkedIn](https://www.linkedin.com/in/flawas/), or via my [homepage](https://flaviowaser.ch/contact/).
@@ -121,6 +123,12 @@ This plugin connects to the **Swiss Unihockey API** (api-v2.swissunihockey.ch) t
 ![Rankings](assets/screenshot-ranking-frontend.png)
 
 ## 📜 Changelog
+
+### 1.0.5 (2026-08-09)
+
+* Fix: Remove FAQ answer restricting the plugin to "personal and non-commercial use" — this contradicted the GPLv2-or-later license, which grants unrestricted use including commercial. Not allowed under WordPress.org plugin guidelines.
+* Fix: Add `Requires PHP` and `License URI` fields to the readme header
+* Fix: Align plugin file license header (`GPL-2.0-or-later`) with the readme's `GPLv2 or later`
 
 ### 1.0.4 (2026-05-04)
 

@@ -20,10 +20,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Plugin Name:       Swiss Floorball API
  * Plugin URI:        https://flaviowaser.ch
  * Description:       Ein kleines Plugin, welches ermöglicht, die aktuellen Daten der Swiss Floorball API abzufragen und auf der Webseite darzustellen.
- * Version:           1.0.4
+ * Version:           1.0.5
  * Author:            Flavio Waser
  * Author URI:        https://flaviowaser.ch/
- * License:           GPL-2.0+
+ * License:           GPL-2.0-or-later
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       floorball-api-for-swiss-unihockey
  * Domain Path:       /languages
@@ -39,7 +39,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.1 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'SWISS_FLOORBALL_API_VERSION', '1.0.4' );
+define( 'SWISS_FLOORBALL_API_VERSION', '1.0.5' );
 
 /**
  * The code that runs during plugin activation.

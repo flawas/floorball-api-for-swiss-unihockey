@@ -1,0 +1,6 @@
+{
+    "sonarlint.connectedMode.project": {
+        "connectionId": "flawas",
+        "projectKey": "flawas_swiss-floorball-api"
+    }
+}
