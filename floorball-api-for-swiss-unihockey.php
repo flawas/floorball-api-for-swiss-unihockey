@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Version:           1.0.5
  * Author:            Flavio Waser
  * Author URI:        https://flaviowaser.ch/
- * License:           GPL-2.0-or-later
+ * License:           GPLv2 or later
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       floorball-api-for-swiss-unihockey
  * Domain Path:       /languages
