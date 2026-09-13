@@ -475,6 +475,7 @@ class Swiss_Floorball_API_Display {
 	 * @return void
 	 */
 	public static function render_calendars( $team_id = null, $club_id = null, $season = null, $league = null, $game_class = null, $group = null ) {
+		$is_backend = false;
 		// 1. Construct WebCal Link URL (keep existing logic)
 		$url = 'https://api-v2.swissunihockey.ch/api/calendars?';
 		$params = array();
@@ -530,7 +531,7 @@ class Swiss_Floorball_API_Display {
                 
                 // Filter for upcoming games
                 $upcoming_games = array();
-                $now = current_time( 'timestamp' ); // Use WP time
+                $now = time();
 
                 foreach ( $rows as $row ) {
                     $date_str = $row['cells'][0]['text'][0]; // e.g. "26.11.2025"

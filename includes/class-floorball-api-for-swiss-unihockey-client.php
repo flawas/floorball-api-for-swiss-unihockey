@@ -53,7 +53,7 @@ class Swiss_Floorball_API_Client {
 		}
 
 		// Generate a unique cache key for this request
-		$cache_key = 'sfa_' . md5( $url );
+		$cache_key = 'swfl_' . md5( $url );
 		$cached_data = get_transient( $cache_key );
 
 		if ( false !== $cached_data ) {

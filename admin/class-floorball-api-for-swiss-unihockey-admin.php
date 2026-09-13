@@ -57,7 +57,7 @@ class Swiss_Floorball_Api_Admin {
 		$this->version = $version;
 		add_action('admin_menu', array( $this, 'addPluginAdminMenu' ), 9);   
 		add_action('admin_init', array( $this, 'registerAndBuildFields' )); 
-		add_action('admin_post_sfa_clear_cache', array( $this, 'handle_clear_cache' ));
+		add_action('admin_post_swfl_clear_cache', array( $this, 'handle_clear_cache' ));
 
 	}
 	
@@ -91,15 +91,15 @@ class Swiss_Floorball_Api_Admin {
 	 */
 	public function addPluginAdminMenu() {
 		//add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $function, $icon_url, $position );
-		add_menu_page(  $this->plugin_name, 'Swiss Floorball', 'administrator', $this->plugin_name, array( $this, 'displayPluginAdminDashboard' ), 'dashicons-database-import', 26 );
-		
+		add_menu_page(  $this->plugin_name, 'Swiss Floorball', 'manage_options', $this->plugin_name, array( $this, 'displayPluginAdminDashboard' ), 'dashicons-database-import', 26 );
+
 		//add_submenu_page( '$parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function );
-		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Einstellungen', 'administrator', $this->plugin_name.'-settings', array( $this, 'displayPluginAdminSettings' ));
-		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Liga', 'administrator', $this->plugin_name.'-league', array( $this, 'displayPluginAdminHelperLeague' ));
-		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Clubs', 'administrator', $this->plugin_name.'-teams', array( $this, 'displayPluginAdminHelperTeams' ));
-		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Spiele', 'administrator', $this->plugin_name.'-matches', array( $this, 'displayPluginAdminMatches' ));
-		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Saison', 'administrator', $this->plugin_name.'-seasons', array( $this, 'displayPluginAdminHelperSeasons' ));
-		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Shortcodes', 'administrator', $this->plugin_name.'-shortcodes', array( $this, 'displayPluginAdminShortcodes' ));
+		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Einstellungen', 'manage_options', $this->plugin_name.'-settings', array( $this, 'displayPluginAdminSettings' ));
+		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Liga', 'manage_options', $this->plugin_name.'-league', array( $this, 'displayPluginAdminHelperLeague' ));
+		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Clubs', 'manage_options', $this->plugin_name.'-teams', array( $this, 'displayPluginAdminHelperTeams' ));
+		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Spiele', 'manage_options', $this->plugin_name.'-matches', array( $this, 'displayPluginAdminMatches' ));
+		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Saison', 'manage_options', $this->plugin_name.'-seasons', array( $this, 'displayPluginAdminHelperSeasons' ));
+		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Shortcodes', 'manage_options', $this->plugin_name.'-shortcodes', array( $this, 'displayPluginAdminShortcodes' ));
 
 	}
 
@@ -198,7 +198,7 @@ class Swiss_Floorball_Api_Admin {
 	public function settingsPageSettingsMessages($error_message){
 		switch ($error_message) {
 				case '1':
-						$message = __( 'There was an error adding this setting. Please try again.  If this persists, shoot us an email.', 'my-text-domain' );                 $err_code = esc_attr( 'swissfloorball_api_key' );                 $setting_field = 'swissfloorball_api_key';                 
+						$message = __( 'There was an error adding this setting. Please try again.  If this persists, shoot us an email.', 'swiss-floorball-api' );                 $err_code = esc_attr( 'swissfloorball_api_key' );                 $setting_field = 'swissfloorball_api_key';                 
 						break;
 		}
 		$type = 'error';
@@ -229,11 +229,11 @@ public function sanitize_club_number( $club_number ) {
 		global $wpdb;
 		$wpdb->query( $wpdb->prepare(
 			"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
-			'_transient_sfa_%',
-			'_transient_timeout_sfa_%'
+			'_transient_swfl_%',
+			'_transient_timeout_swfl_%'
 		) );
 	}
-	
+
 	// If club number is empty, return it as is
 	if ( empty( $club_number ) ) {
 		return $club_number;
@@ -294,7 +294,7 @@ public function sanitize_club_number( $club_number ) {
  */
 public function handle_clear_cache() {
 	// Check nonce for security
-	if ( ! isset( $_POST['sfa_clear_cache_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['sfa_clear_cache_nonce'] ) ), 'sfa_clear_cache_action' ) ) {
+	if ( ! isset( $_POST['swfl_clear_cache_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['swfl_clear_cache_nonce'] ) ), 'swfl_clear_cache_action' ) ) {
 		wp_die( __( 'Security check failed', 'swiss-floorball-api' ) );
 	}
 	
@@ -307,8 +307,8 @@ public function handle_clear_cache() {
 	global $wpdb;
 	$deleted = $wpdb->query( $wpdb->prepare(
 		"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
-		'_transient_sfa_%',
-		'_transient_timeout_sfa_%'
+		'_transient_swfl_%',
+		'_transient_timeout_swfl_%'
 	) );
 	
 	// Redirect back to settings page with success message
@@ -338,13 +338,13 @@ public function handle_clear_cache() {
 		 */     
 		add_settings_section(
 			// ID used to identify this section and with which to register options
-			'sfa_general_section', 
+			'swfl_general_section', 
 			// Title to be displayed on the administration page
 			'Einstellungen',  
 			// Callback used to render the description of the section
 				array( $this, 'settings_page_display_general_account' ),    
 			// Page on which to add this section of options
-			'sfa_general_settings'                   
+			'swfl_general_settings'                   
 		);
 
 
@@ -364,13 +364,13 @@ public function handle_clear_cache() {
 			'swissfloorball_api_key',
 			'Swiss Floorball API Key (Optional)',
 			array( $this, 'settings_page_render_settings_field' ),
-			'sfa_general_settings',
-			'sfa_general_section',
+			'swfl_general_settings',
+			'swfl_general_section',
 			$args
 		);
 
 		register_setting(
-			'sfa_general_settings',
+			'swfl_general_settings',
 			'swissfloorball_api_key',
 			'sanitize_text_field'
 		);
@@ -390,13 +390,13 @@ public function handle_clear_cache() {
 			'swissfloorball_club_number',
 			'Swiss Floorball Club Number',
 			array( $this, 'settings_page_render_settings_field' ),
-			'sfa_general_settings',
-			'sfa_general_section',
+			'swfl_general_settings',
+			'swfl_general_section',
 			$args
 		);
 
 		register_setting(
-			'sfa_general_settings',
+			'swfl_general_settings',
 			'swissfloorball_club_number',
 			array( $this, 'sanitize_club_number' )
 		);
@@ -417,8 +417,8 @@ public function handle_clear_cache() {
 			'swissfloorball_club_name',
 			'Swiss Floorball Club Name',
 			array( $this, 'settings_page_render_settings_field' ),
-			'sfa_general_settings',
-			'sfa_general_section',
+			'swfl_general_settings',
+			'swfl_general_section',
 			$args
 		);
 
@@ -437,13 +437,13 @@ public function handle_clear_cache() {
 			'swissfloorball_actual_season',
 			'Swiss Floorball Aktuelle Saison (Jahrzahl, z.B. 2023)',
 			array( $this, 'settings_page_render_settings_field' ),
-			'sfa_general_settings',
-			'sfa_general_section',
+			'swfl_general_settings',
+			'swfl_general_section',
 			$args
 		);
 
 		register_setting(
-			'sfa_general_settings', 
+			'swfl_general_settings', 
 			'swissfloorball_actual_season',
 			'absint'
 			);

@@ -6,7 +6,7 @@
 **Donate link:** https://www.paypal.me/flaviowaser  
 **Tags:** floorball, api, swiss floorball, unihockey, sports  
 **Requires at least:** 5.0  
-**Tested up to:** 7.0  
+**Tested up to:** 6.8  
 **Requires PHP:** 7.4  
 **Stable tag:** 1.0.5  
 **License:** GPLv2 or later  
