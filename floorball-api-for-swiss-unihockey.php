@@ -45,7 +45,7 @@ define( 'SWISS_FLOORBALL_API_VERSION', '1.0.5' );
  * The code that runs during plugin activation.
  * This action is documented in includes/class-floorball-api-for-swiss-unihockey-activator.php
  */
-function activateSwissFloorballApi() {
+function activate_swiss_floorball_api() {
     require_once plugin_dir_path( __FILE__ ) . 'includes/class-floorball-api-for-swiss-unihockey-activator.php';
     Swiss_Floorball_Api_Activator::activate();
 }
@@ -54,13 +54,13 @@ function activateSwissFloorballApi() {
  * The code that runs during plugin deactivation.
  * This action is documented in includes/class-floorball-api-for-swiss-unihockey-deactivator.php
  */
-function deactivateSwissFloorballApi() {
+function deactivate_swiss_floorball_api() {
     require_once plugin_dir_path( __FILE__ ) . 'includes/class-floorball-api-for-swiss-unihockey-deactivator.php';
     Swiss_Floorball_Api_Deactivator::deactivate();
 }
 
-register_activation_hook( __FILE__, 'activateSwissFloorballApi' );
-register_deactivation_hook( __FILE__, 'deactivateSwissFloorballApi' );
+register_activation_hook( __FILE__, 'activate_swiss_floorball_api' );
+register_deactivation_hook( __FILE__, 'deactivate_swiss_floorball_api' );
 
 /**
  * The core plugin class that is used to define internationalization,
@@ -77,8 +77,8 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/class-floorball-api-for-swi
  *
  * @since    1.0.0
  */
-function runSwissFloorballApi() {
+function run_swiss_floorball_api() {
     $plugin = new Swiss_Floorball_Api();
     $plugin->run();
 }
-runSwissFloorballApi();
+run_swiss_floorball_api();
