@@ -1,7 +1,7 @@
 <?php
 
 if ( ! defined( 'ABSPATH' ) ) {
-    exit;
+	exit;
 }
 
 /**
@@ -31,7 +31,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
-    die;
+	die;
 }
 
 /**
@@ -46,8 +46,8 @@ define( 'SWISS_FLOORBALL_API_VERSION', '1.0.5' );
  * This action is documented in includes/class-floorball-api-for-swiss-unihockey-activator.php
  */
 function activate_swiss_floorball_api() {
-    require_once plugin_dir_path( __FILE__ ) . 'includes/class-floorball-api-for-swiss-unihockey-activator.php';
-    Swiss_Floorball_Api_Activator::activate();
+	require_once plugin_dir_path( __FILE__ ) . 'includes/class-floorball-api-for-swiss-unihockey-activator.php';
+	Swiss_Floorball_Api_Activator::activate();
 }
 
 /**
@@ -55,8 +55,8 @@ function activate_swiss_floorball_api() {
  * This action is documented in includes/class-floorball-api-for-swiss-unihockey-deactivator.php
  */
 function deactivate_swiss_floorball_api() {
-    require_once plugin_dir_path( __FILE__ ) . 'includes/class-floorball-api-for-swiss-unihockey-deactivator.php';
-    Swiss_Floorball_Api_Deactivator::deactivate();
+	require_once plugin_dir_path( __FILE__ ) . 'includes/class-floorball-api-for-swiss-unihockey-deactivator.php';
+	Swiss_Floorball_Api_Deactivator::deactivate();
 }
 
 register_activation_hook( __FILE__, 'activate_swiss_floorball_api' );
@@ -78,7 +78,7 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/class-floorball-api-for-swi
  * @since    1.0.0
  */
 function run_swiss_floorball_api() {
-    $plugin = new Swiss_Floorball_Api();
-    $plugin->run();
+	$plugin = new Swiss_Floorball_Api();
+	$plugin->run();
 }
 run_swiss_floorball_api();

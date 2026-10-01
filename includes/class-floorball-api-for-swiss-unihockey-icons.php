@@ -130,7 +130,7 @@ class Swiss_Floorball_Api_Icons {
 			);
 		}
 
-		$file = plugin_dir_path( dirname( __FILE__ ) ) . 'public/icons/' . $name . '.svg';
+		$file     = plugin_dir_path( __DIR__ ) . 'public/icons/' . $name . '.svg';
 		$contents = is_readable( $file ) ? file_get_contents( $file ) : false; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local plugin file.
 		if ( ! is_string( $contents ) || ! preg_match( '/<path[^>]*\sd="([^"]+)"/', $contents, $path ) ) {
 			return null;

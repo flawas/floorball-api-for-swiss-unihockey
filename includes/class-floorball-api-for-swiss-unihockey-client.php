@@ -39,9 +39,9 @@ class Swiss_Floorball_API_Client {
 	 * Fetch data from the API.
 	 *
 	 * @since    1.0.0
-	 * @param    string    $endpoint    The API endpoint to fetch.
-	 * @param    array     $args        Optional. Arguments for the API request.
-	 * @param    int       $cache_time  Optional. Time in seconds to cache the response. Default 3600 (1 hour).
+	 * @param    string $endpoint    The API endpoint to fetch.
+	 * @param    array  $args        Optional. Arguments for the API request.
+	 * @param    int    $cache_time  Optional. Time in seconds to cache the response. Default 3600 (1 hour).
 	 * @return   array|WP_Error         The decoded JSON response or WP_Error on failure.
 	 */
 	public function fetch_data( $endpoint, $args = array(), $cache_time = 3600 ) {
@@ -53,7 +53,7 @@ class Swiss_Floorball_API_Client {
 		}
 
 		// Generate a unique cache key for this request
-		$cache_key = 'swfl_' . md5( $url );
+		$cache_key   = 'swfl_' . md5( $url );
 		$cached_data = get_transient( $cache_key );
 
 		if ( false !== $cached_data ) {

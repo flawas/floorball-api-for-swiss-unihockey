@@ -29,6 +29,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	</div>
 
 	<div class="sfa-table-container">
-		<?php Swiss_Floorball_API_Display::render_clubs();?>
+		<?php Swiss_Floorball_API_Display::render_clubs(); ?>
 	</div>
 </div>

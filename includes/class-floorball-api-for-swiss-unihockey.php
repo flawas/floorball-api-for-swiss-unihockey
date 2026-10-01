@@ -82,7 +82,6 @@ class Swiss_Floorball_Api {
 		$this->set_locale();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
-
 	}
 
 	/**
@@ -107,32 +106,30 @@ class Swiss_Floorball_Api {
 		 * The class responsible for orchestrating the actions and filters of the
 		 * core plugin.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-floorball-api-for-swiss-unihockey-loader.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-floorball-api-for-swiss-unihockey-loader.php';
 
 		/**
 		 * The class responsible for defining internationalization functionality
 		 * of the plugin.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-floorball-api-for-swiss-unihockey-i18n.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-floorball-api-for-swiss-unihockey-i18n.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-floorball-api-for-swiss-unihockey-admin.php';
+		require_once plugin_dir_path( __DIR__ ) . 'admin/class-floorball-api-for-swiss-unihockey-admin.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-floorball-api-for-swiss-unihockey-public.php';
+		require_once plugin_dir_path( __DIR__ ) . 'public/class-floorball-api-for-swiss-unihockey-public.php';
 
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-floorball-api-for-swiss-unihockey-client.php';
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-floorball-api-for-swiss-unihockey-display.php';
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-floorball-api-for-swiss-unihockey-icons.php';
-
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-floorball-api-for-swiss-unihockey-client.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-floorball-api-for-swiss-unihockey-display.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-floorball-api-for-swiss-unihockey-icons.php';
 
 		$this->loader = new Swiss_Floorball_Api_Loader();
-
 	}
 
 	/**
@@ -149,7 +146,6 @@ class Swiss_Floorball_Api {
 		$plugin_i18n = new Swiss_Floorball_Api_i18n();
 
 		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
-
 	}
 
 	/**
@@ -165,7 +161,6 @@ class Swiss_Floorball_Api {
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
-
 	}
 
 	/**
@@ -181,7 +176,6 @@ class Swiss_Floorball_Api {
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
-
 	}
 
 	/**
@@ -223,6 +217,4 @@ class Swiss_Floorball_Api {
 	public function get_version() {
 		return $this->version;
 	}
-
 }
-

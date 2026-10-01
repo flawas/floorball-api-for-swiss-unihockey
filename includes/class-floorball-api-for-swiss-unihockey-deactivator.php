@@ -34,7 +34,5 @@ class Swiss_Floorball_Api_Deactivator {
 	 * @since    1.0.0
 	 */
 	public static function deactivate() {
-
 	}
-
 }

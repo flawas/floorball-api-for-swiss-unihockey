@@ -39,7 +39,4 @@ class Swiss_Floorball_Api_i18n {
 	public function load_plugin_textdomain() {
 		// Not needed for WordPress.org plugins since WP 4.6 — WordPress loads translations automatically.
 	}
-
-
-
 }

@@ -48,20 +48,19 @@ class Swiss_Floorball_Api_Admin {
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
-	 * @param      string    $plugin_name       The name of this plugin.
-	 * @param      string    $version    The version of this plugin.
+	 * @param      string $plugin_name       The name of this plugin.
+	 * @param      string $version    The version of this plugin.
 	 */
 	public function __construct( $plugin_name, $version ) {
 
 		$this->plugin_name = $plugin_name;
-		$this->version = $version;
-		add_action('admin_menu', array( $this, 'addPluginAdminMenu' ), 9);   
-		add_action('admin_init', array( $this, 'registerAndBuildFields' )); 
-		add_action('admin_post_swfl_clear_cache', array( $this, 'handle_clear_cache' ));
-
+		$this->version     = $version;
+		add_action( 'admin_menu', array( $this, 'addPluginAdminMenu' ), 9 );
+		add_action( 'admin_init', array( $this, 'registerAndBuildFields' ) );
+		add_action( 'admin_post_swfl_clear_cache', array( $this, 'handle_clear_cache' ) );
 	}
-	
-	
+
+
 
 	/**
 	 * Register the stylesheets for the admin area.
@@ -93,17 +92,16 @@ class Swiss_Floorball_Api_Admin {
 		// Material Symbols "storage" icon (inline, base64 SVG) instead of a Dashicon, for a consistent icon set across admin UI and menu.
 		$menu_icon = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBmaWxsPSJibGFjayI+PHBhdGggZD0iTTIgMjBoMjB2LTRIMnY0em0yLTNoMnYySDR2LTJ6TTIgNHY0aDIwVjRIMnptNCAzSDRWNWgydjJ6bS00IDdoMjB2LTRIMnY0em0yLTNoMnYySDR2LTJ6Ii8+PC9zdmc+';
 
-		//add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $function, $icon_url, $position );
-		add_menu_page(  $this->plugin_name, 'Swiss Floorball', 'manage_options', $this->plugin_name, array( $this, 'displayPluginAdminDashboard' ), $menu_icon, 26 );
+		// add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $function, $icon_url, $position );
+		add_menu_page( $this->plugin_name, 'Swiss Floorball', 'manage_options', $this->plugin_name, array( $this, 'displayPluginAdminDashboard' ), $menu_icon, 26 );
 
-		//add_submenu_page( '$parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function );
-		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Einstellungen', 'manage_options', $this->plugin_name.'-settings', array( $this, 'displayPluginAdminSettings' ));
-		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Liga', 'manage_options', $this->plugin_name.'-league', array( $this, 'displayPluginAdminHelperLeague' ));
-		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Clubs', 'manage_options', $this->plugin_name.'-teams', array( $this, 'displayPluginAdminHelperTeams' ));
-		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Spiele', 'manage_options', $this->plugin_name.'-matches', array( $this, 'displayPluginAdminMatches' ));
-		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Saison', 'manage_options', $this->plugin_name.'-seasons', array( $this, 'displayPluginAdminHelperSeasons' ));
-		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Shortcodes', 'manage_options', $this->plugin_name.'-shortcodes', array( $this, 'displayPluginAdminShortcodes' ));
-
+		// add_submenu_page( '$parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function );
+		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Einstellungen', 'manage_options', $this->plugin_name . '-settings', array( $this, 'displayPluginAdminSettings' ) );
+		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Liga', 'manage_options', $this->plugin_name . '-league', array( $this, 'displayPluginAdminHelperLeague' ) );
+		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Clubs', 'manage_options', $this->plugin_name . '-teams', array( $this, 'displayPluginAdminHelperTeams' ) );
+		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Spiele', 'manage_options', $this->plugin_name . '-matches', array( $this, 'displayPluginAdminMatches' ) );
+		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Saison', 'manage_options', $this->plugin_name . '-seasons', array( $this, 'displayPluginAdminHelperSeasons' ) );
+		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Shortcodes', 'manage_options', $this->plugin_name . '-shortcodes', array( $this, 'displayPluginAdminShortcodes' ) );
 	}
 
 	/**
@@ -112,8 +110,8 @@ class Swiss_Floorball_Api_Admin {
 	 * @since    1.0.0
 	 */
 	public function displayPluginAdminDashboard() {
-		require_once 'partials/'.$this->plugin_name.'-admin-display.php';
-  	}
+		require_once 'partials/' . $this->plugin_name . '-admin-display.php';
+	}
 
 	/**
 	 * Return admin display page settings
@@ -127,7 +125,7 @@ class Swiss_Floorball_Api_Admin {
 			add_action( 'admin_notices', array( $this, 'settingsPageSettingsMessages' ) );
 			do_action( 'admin_notices', absint( $_GET['error_message'] ) );
 		}
-		require_once 'partials/'.$this->plugin_name.'-admin-settings-display.php';
+		require_once 'partials/' . $this->plugin_name . '-admin-settings-display.php';
 	}
 
 	/**
@@ -142,7 +140,7 @@ class Swiss_Floorball_Api_Admin {
 			add_action( 'admin_notices', array( $this, 'settingsPageSettingsMessages' ) );
 			do_action( 'admin_notices', absint( $_GET['error_message'] ) );
 		}
-		require_once 'partials/'.$this->plugin_name.'-admin-helper-league-display.php';
+		require_once 'partials/' . $this->plugin_name . '-admin-helper-league-display.php';
 	}
 
 	/**
@@ -157,7 +155,7 @@ class Swiss_Floorball_Api_Admin {
 			add_action( 'admin_notices', array( $this, 'settingsPageSettingsMessages' ) );
 			do_action( 'admin_notices', absint( $_GET['error_message'] ) );
 		}
-		require_once 'partials/'.$this->plugin_name.'-admin-helper-seasons-display.php';
+		require_once 'partials/' . $this->plugin_name . '-admin-helper-seasons-display.php';
 	}
 
 	/**
@@ -172,7 +170,7 @@ class Swiss_Floorball_Api_Admin {
 			add_action( 'admin_notices', array( $this, 'settingsPageSettingsMessages' ) );
 			do_action( 'admin_notices', absint( $_GET['error_message'] ) );
 		}
-		require_once 'partials/'.$this->plugin_name.'-admin-helper-teams-display.php';
+		require_once 'partials/' . $this->plugin_name . '-admin-helper-teams-display.php';
 	}
 
 	/**
@@ -181,7 +179,7 @@ class Swiss_Floorball_Api_Admin {
 	 * @since    1.0.0
 	 */
 	public function displayPluginAdminShortcodes() {
-		require_once 'partials/'.$this->plugin_name.'-admin-shortcodes-display.php';
+		require_once 'partials/' . $this->plugin_name . '-admin-shortcodes-display.php';
 	}
 
 	/**
@@ -190,7 +188,7 @@ class Swiss_Floorball_Api_Admin {
 	 * @since    1.0.0
 	 */
 	public function displayPluginAdminMatches() {
-		require_once 'partials/'.$this->plugin_name.'-admin-matches-display.php';
+		require_once 'partials/' . $this->plugin_name . '-admin-matches-display.php';
 	}
 
 	/**
@@ -198,135 +196,141 @@ class Swiss_Floorball_Api_Admin {
 	 *
 	 * @since    1.0.0
 	 */
-	public function settingsPageSettingsMessages($error_message){
-		switch ($error_message) {
-				case '1':
-						$message = __( 'There was an error adding this setting. Please try again.  If this persists, shoot us an email.', 'swiss-floorball-api' );                 $err_code = esc_attr( 'swissfloorball_api_key' );                 $setting_field = 'swissfloorball_api_key';                 
-						break;
+	public function settingsPageSettingsMessages( $error_message ) {
+		switch ( $error_message ) {
+			case '1':
+					$message   = __( 'There was an error adding this setting. Please try again.  If this persists, shoot us an email.', 'swiss-floorball-api' );
+				$err_code      = esc_attr( 'swissfloorball_api_key' );
+				$setting_field = 'swissfloorball_api_key';
+				break;
 		}
 		$type = 'error';
 		add_settings_error(
-					$setting_field,
-					$err_code,
-					$message,
-					$type
+			$setting_field,
+			$err_code,
+			$message,
+			$type
+		);
+	}
+
+	/**
+	 * Sanitize club number and auto-fetch club name
+	 *
+	 * @since    1.0.0
+	 * @param    int $club_number    The club number to sanitize
+	 * @return   int                    The sanitized club number
+	 */
+	public function sanitize_club_number( $club_number ) {
+		// Sanitize the club number
+		$club_number = absint( $club_number );
+
+		// Get the old club number to check if it changed
+		$old_club_number = get_option( 'swissfloorball_club_number' );
+
+		// If club number changed, clear all cached API data
+		if ( $old_club_number != $club_number && ! empty( $club_number ) ) {
+			global $wpdb;
+			$wpdb->query(
+				$wpdb->prepare(
+					"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
+					'_transient_swfl_%',
+					'_transient_timeout_swfl_%'
+				)
 			);
-	}
+		}
 
-/**
- * Sanitize club number and auto-fetch club name
- *
- * @since    1.0.0
- * @param    int    $club_number    The club number to sanitize
- * @return   int                    The sanitized club number
- */
-public function sanitize_club_number( $club_number ) {
-	// Sanitize the club number
-	$club_number = absint( $club_number );
-	
-	// Get the old club number to check if it changed
-	$old_club_number = get_option( 'swissfloorball_club_number' );
-	
-	// If club number changed, clear all cached API data
-	if ( $old_club_number != $club_number && ! empty( $club_number ) ) {
-		global $wpdb;
-		$wpdb->query( $wpdb->prepare(
-			"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
-			'_transient_swfl_%',
-			'_transient_timeout_swfl_%'
-		) );
-	}
+		// If club number is empty, return it as is
+		if ( empty( $club_number ) ) {
+			return $club_number;
+		}
 
-	// If club number is empty, return it as is
-	if ( empty( $club_number ) ) {
-		return $club_number;
-	}
-	
-	// Fetch club details from API
-	require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-floorball-api-for-swiss-unihockey-client.php';
-	$client = new Swiss_Floorball_API_Client();
-	// Use short cache time (60 seconds) to ensure fresh data when club number changes
-	// Note: The API doesn't have a /clubs/{id} endpoint, so we fetch all clubs and search
-	$api_response = $client->fetch_data( 'clubs', array(), 60 );
-	
-	$club_name = '';
-	
-	// Check if we got a valid response
-	if ( ! is_wp_error( $api_response ) && isset( $api_response['entries'] ) ) {
-		// Search through all clubs to find the one with matching club_id
-		foreach ( $api_response['entries'] as $entry ) {
-			if ( isset( $entry['set_in_context']['club_id'] ) && $entry['set_in_context']['club_id'] == $club_number ) {
-				$club_name = $entry['text'];
-				break;
+		// Fetch club details from API
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-floorball-api-for-swiss-unihockey-client.php';
+		$client = new Swiss_Floorball_API_Client();
+		// Use short cache time (60 seconds) to ensure fresh data when club number changes
+		// Note: The API doesn't have a /clubs/{id} endpoint, so we fetch all clubs and search
+		$api_response = $client->fetch_data( 'clubs', array(), 60 );
+
+		$club_name = '';
+
+		// Check if we got a valid response
+		if ( ! is_wp_error( $api_response ) && isset( $api_response['entries'] ) ) {
+			// Search through all clubs to find the one with matching club_id
+			foreach ( $api_response['entries'] as $entry ) {
+				if ( isset( $entry['set_in_context']['club_id'] ) && $entry['set_in_context']['club_id'] == $club_number ) {
+					$club_name = $entry['text'];
+					break;
+				}
 			}
 		}
+
+		// Update the club name option
+		if ( ! empty( $club_name ) ) {
+			update_option( 'swissfloorball_club_name', sanitize_text_field( $club_name ) );
+			// Add success notice
+			add_settings_error(
+				'swissfloorball_club_name',
+				'club_name_updated',
+				sprintf( __( 'Club name automatically set to: %s', 'swiss-floorball-api' ), $club_name ),
+				'success'
+			);
+		} else {
+			// If API call failed or no name found, clear the club name
+			update_option( 'swissfloorball_club_name', '' );
+			// Add error notice
+			add_settings_error(
+				'swissfloorball_club_name',
+				'club_name_not_found',
+				sprintf( __( 'Could not find club name for club ID: %s', 'swiss-floorball-api' ), $club_number ),
+				'error'
+			);
+			// Log error for debugging
+			error_log( 'Swiss Floorball API: Could not fetch club name for club ID ' . $club_number );
+		}
+
+		return $club_number;
 	}
-	
-	// Update the club name option
-	if ( ! empty( $club_name ) ) {
-		update_option( 'swissfloorball_club_name', sanitize_text_field( $club_name ) );
-		// Add success notice
-		add_settings_error(
-			'swissfloorball_club_name',
-			'club_name_updated',
-			sprintf( __( 'Club name automatically set to: %s', 'swiss-floorball-api' ), $club_name ),
-			'success'
-		);
-	} else {
-		// If API call failed or no name found, clear the club name
-		update_option( 'swissfloorball_club_name', '' );
-		// Add error notice
-		add_settings_error(
-			'swissfloorball_club_name',
-			'club_name_not_found',
-			sprintf( __( 'Could not find club name for club ID: %s', 'swiss-floorball-api' ), $club_number ),
-			'error'
-		);
-		// Log error for debugging
-		error_log( 'Swiss Floorball API: Could not fetch club name for club ID ' . $club_number );
-	}
-	
-	return $club_number;
-}
 
 
-/**
- * Handle cache clearing request
- *
- * @since    1.0.0
- */
-public function handle_clear_cache() {
-	// Check nonce for security
-	if ( ! isset( $_POST['swfl_clear_cache_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['swfl_clear_cache_nonce'] ) ), 'swfl_clear_cache_action' ) ) {
-		wp_die( __( 'Security check failed', 'swiss-floorball-api' ) );
+	/**
+	 * Handle cache clearing request
+	 *
+	 * @since    1.0.0
+	 */
+	public function handle_clear_cache() {
+		// Check nonce for security
+		if ( ! isset( $_POST['swfl_clear_cache_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['swfl_clear_cache_nonce'] ) ), 'swfl_clear_cache_action' ) ) {
+			wp_die( __( 'Security check failed', 'swiss-floorball-api' ) );
+		}
+
+		// Check user permissions
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( __( 'You do not have permission to perform this action', 'swiss-floorball-api' ) );
+		}
+
+		// Clear all cached API data
+		global $wpdb;
+		$deleted = $wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
+				'_transient_swfl_%',
+				'_transient_timeout_swfl_%'
+			)
+		);
+
+		// Redirect back to settings page with success message
+		$redirect_url = add_query_arg(
+			array(
+				'page'          => 'floorball-api-for-swiss-unihockey-settings',
+				'cache_cleared' => '1',
+				'deleted_count' => $deleted,
+			),
+			admin_url( 'admin.php' )
+		);
+
+		wp_redirect( $redirect_url );
+		exit;
 	}
-	
-	// Check user permissions
-	if ( ! current_user_can( 'manage_options' ) ) {
-		wp_die( __( 'You do not have permission to perform this action', 'swiss-floorball-api' ) );
-	}
-	
-	// Clear all cached API data
-	global $wpdb;
-	$deleted = $wpdb->query( $wpdb->prepare(
-		"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
-		'_transient_swfl_%',
-		'_transient_timeout_swfl_%'
-	) );
-	
-	// Redirect back to settings page with success message
-	$redirect_url = add_query_arg(
-		array(
-			'page' => 'floorball-api-for-swiss-unihockey-settings',
-			'cache_cleared' => '1',
-			'deleted_count' => $deleted
-		),
-		admin_url( 'admin.php' )
-	);
-	
-	wp_redirect( $redirect_url );
-	exit;
-}
 
 	/**
 	 * Register and build fields
@@ -338,31 +342,29 @@ public function handle_clear_cache() {
 		 * First, we add_settings_section. This is necessary since all future settings must belong to one.
 		 * Second, add_settings_field
 		 * Third, register_setting
-		 */     
+		 */
 		add_settings_section(
 			// ID used to identify this section and with which to register options
-			'swfl_general_section', 
+			'swfl_general_section',
 			// Title to be displayed on the administration page
-			'Einstellungen',  
+			'Einstellungen',
 			// Callback used to render the description of the section
-				array( $this, 'settings_page_display_general_account' ),    
+				array( $this, 'settings_page_display_general_account' ),
 			// Page on which to add this section of options
-			'swfl_general_settings'                   
+			'swfl_general_settings'
 		);
 
-
-
-		unset($args);
-		$args = array (
-							'type'      => 'input',
-							'subtype'   => 'text',
-							'id'    => 'swissfloorball_api_key',
-							'name'      => 'swissfloorball_api_key',
-							'required' => 'false',
-							'get_options_list' => '',
-							'value_type'=>'normal',
-							'wp_data' => 'option'
-					);
+		unset( $args );
+		$args = array(
+			'type'             => 'input',
+			'subtype'          => 'text',
+			'id'               => 'swissfloorball_api_key',
+			'name'             => 'swissfloorball_api_key',
+			'required'         => 'false',
+			'get_options_list' => '',
+			'value_type'       => 'normal',
+			'wp_data'          => 'option',
+		);
 		add_settings_field(
 			'swissfloorball_api_key',
 			'Swiss Floorball API Key (Optional)',
@@ -378,17 +380,17 @@ public function handle_clear_cache() {
 			'sanitize_text_field'
 		);
 
-		unset($args);
-		$args = array (
-							'type'      => 'input',
-							'subtype'   => 'number',
-							'id'    => 'swissfloorball_club_number',
-							'name'      => 'swissfloorball_club_number',
-							'required' => 'false',
-							'get_options_list' => '',
-							'value_type'=>'normal',
-							'wp_data' => 'option'
-					);
+		unset( $args );
+		$args = array(
+			'type'             => 'input',
+			'subtype'          => 'number',
+			'id'               => 'swissfloorball_club_number',
+			'name'             => 'swissfloorball_club_number',
+			'required'         => 'false',
+			'get_options_list' => '',
+			'value_type'       => 'normal',
+			'wp_data'          => 'option',
+		);
 		add_settings_field(
 			'swissfloorball_club_number',
 			'Swiss Floorball Club Number',
@@ -404,18 +406,18 @@ public function handle_clear_cache() {
 			array( $this, 'sanitize_club_number' )
 		);
 
-		unset($args);
-		$args = array (
-							'type'      => 'input',
-							'subtype'   => 'text',
-							'id'    => 'swissfloorball_club_name',
-							'name'      => 'swissfloorball_club_name',
-							'required' => 'false',
-							'get_options_list' => '',
-							'value_type'=>'normal',
-							'wp_data' => 'option',
-							'disabled' => true
-					);
+		unset( $args );
+		$args = array(
+			'type'             => 'input',
+			'subtype'          => 'text',
+			'id'               => 'swissfloorball_club_name',
+			'name'             => 'swissfloorball_club_name',
+			'required'         => 'false',
+			'get_options_list' => '',
+			'value_type'       => 'normal',
+			'wp_data'          => 'option',
+			'disabled'         => true,
+		);
 		add_settings_field(
 			'swissfloorball_club_name',
 			'Swiss Floorball Club Name',
@@ -425,17 +427,17 @@ public function handle_clear_cache() {
 			$args
 		);
 
-		unset($args);
-		$args = array (
-							'type'      => 'input',
-							'subtype'   => 'number',
-							'id'    => 'swissfloorball_actual_season',
-							'name'      => 'swissfloorball_actual_season',
-							'required' => 'false',
-							'get_options_list' => '',
-							'value_type'=>'normal',
-							'wp_data' => 'option'
-					);
+		unset( $args );
+		$args = array(
+			'type'             => 'input',
+			'subtype'          => 'number',
+			'id'               => 'swissfloorball_actual_season',
+			'name'             => 'swissfloorball_actual_season',
+			'required'         => 'false',
+			'get_options_list' => '',
+			'value_type'       => 'normal',
+			'wp_data'          => 'option',
+		);
 		add_settings_field(
 			'swissfloorball_actual_season',
 			'Swiss Floorball Aktuelle Saison (Jahrzahl, z.B. 2023)',
@@ -446,23 +448,23 @@ public function handle_clear_cache() {
 		);
 
 		register_setting(
-			'swfl_general_settings', 
+			'swfl_general_settings',
 			'swissfloorball_actual_season',
 			'absint'
-			);
+		);
 
-		unset($args);
-		$args = array (
-							'type'      => 'input',
-							'subtype'   => 'checkbox',
-							'id'    => 'swissfloorball_show_icons',
-							'name'      => 'swissfloorball_show_icons',
-							'required' => '',
-							'get_options_list' => '',
-							'value_type'=>'normal',
-							'wp_data' => 'option',
-							'default' => '1'
-					);
+		unset( $args );
+		$args = array(
+			'type'             => 'input',
+			'subtype'          => 'checkbox',
+			'id'               => 'swissfloorball_show_icons',
+			'name'             => 'swissfloorball_show_icons',
+			'required'         => '',
+			'get_options_list' => '',
+			'value_type'       => 'normal',
+			'wp_data'          => 'option',
+			'default'          => '1',
+		);
 		add_settings_field(
 			'swissfloorball_show_icons',
 			__( 'Show icons', 'swiss-floorball-api' ),
@@ -477,7 +479,6 @@ public function handle_clear_cache() {
 			'swissfloorball_show_icons',
 			array( $this, 'sanitize_show_icons' )
 		);
-
 	}
 
 	/**
@@ -497,15 +498,16 @@ public function handle_clear_cache() {
 	 */
 	public function settings_page_display_general_account() {
 		echo '<p>Damit die Funktionalität des Plugins gewährleistet werden kann, müssen folgende Informationen ausgefüllt werden:</p>';
-	} 
+	}
 
 	/**
 	 * Render page and settings fields
 	 *
 	 * @since    1.0.0
 	 */
-	public function settings_page_render_settings_field($args) {
-			/* EXAMPLE INPUT
+	public function settings_page_render_settings_field( $args ) {
+			/*
+			EXAMPLE INPUT
 								'type'      => 'input',
 								'subtype'   => '',
 								'id'    => $this->plugin_name.'_example_setting',
@@ -515,38 +517,37 @@ public function handle_clear_cache() {
 									'value_type' = serialized OR normal,
 			'wp_data'=>(option or post_meta),
 			'post_id' =>
-			*/     
-		if($args['wp_data'] == 'option'){
-			$wp_data_value = get_option($args['name'], isset($args['default']) ? $args['default'] : false);
-		} elseif($args['wp_data'] == 'post_meta'){
-			$wp_data_value = get_post_meta($args['post_id'], $args['name'], true );
+			*/
+		if ( $args['wp_data'] == 'option' ) {
+			$wp_data_value = get_option( $args['name'], isset( $args['default'] ) ? $args['default'] : false );
+		} elseif ( $args['wp_data'] == 'post_meta' ) {
+			$wp_data_value = get_post_meta( $args['post_id'], $args['name'], true );
 		}
 
-		switch ($args['type']) {
+		switch ( $args['type'] ) {
 
 			case 'input':
-					$value = ($args['value_type'] == 'serialized') ? serialize($wp_data_value) : $wp_data_value;
-					if($args['subtype'] != 'checkbox'){
-							$prependStart = ( isset( $args['prepend_value'] ) ) ? '<div class="input-prepend"> <span class="add-on">' . esc_html( $args['prepend_value'] ) . '</span>' : '';
-							$prependEnd = ( isset( $args['prepend_value'] ) ) ? '</div>' : '';
-							$step = ( isset( $args['step'] ) ) ? 'step="' . esc_attr( $args['step'] ) . '"' : '';
-							$min  = ( isset( $args['min'] ) ) ? 'min="' . esc_attr( $args['min'] ) . '"' : '';
-							$max  = ( isset( $args['max'] ) ) ? 'max="' . esc_attr( $args['max'] ) . '"' : '';
-							if ( isset( $args['disabled'] ) ) {
-								// hide the actual input bc if it was just a disabled input the info saved in the database would be wrong - bc it would pass empty values and wipe the actual information
-								echo $prependStart . '<input type="' . esc_attr( $args['subtype'] ) . '" id="' . esc_attr( $args['id'] ) . '_disabled" ' . $step . ' ' . $max . ' ' . $min . ' name="' . esc_attr( $args['name'] ) . '_disabled" size="40" disabled value="' . esc_attr( $value ) . '" /><input type="hidden" id="' . esc_attr( $args['id'] ) . '" ' . $step . ' ' . $max . ' ' . $min . ' name="' . esc_attr( $args['name'] ) . '" size="40" value="' . esc_attr( $value ) . '" />' . $prependEnd; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-							} else {
-								echo $prependStart . '<input type="' . esc_attr( $args['subtype'] ) . '" id="' . esc_attr( $args['id'] ) . '" ' . esc_attr( $args['required'] ) . ' ' . $step . ' ' . $max . ' ' . $min . ' name="' . esc_attr( $args['name'] ) . '" size="40" value="' . esc_attr( $value ) . '" />' . $prependEnd; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-							}
-
+					$value = ( $args['value_type'] == 'serialized' ) ? serialize( $wp_data_value ) : $wp_data_value;
+				if ( $args['subtype'] != 'checkbox' ) {
+						$prependStart = ( isset( $args['prepend_value'] ) ) ? '<div class="input-prepend"> <span class="add-on">' . esc_html( $args['prepend_value'] ) . '</span>' : '';
+						$prependEnd   = ( isset( $args['prepend_value'] ) ) ? '</div>' : '';
+						$step         = ( isset( $args['step'] ) ) ? 'step="' . esc_attr( $args['step'] ) . '"' : '';
+						$min          = ( isset( $args['min'] ) ) ? 'min="' . esc_attr( $args['min'] ) . '"' : '';
+						$max          = ( isset( $args['max'] ) ) ? 'max="' . esc_attr( $args['max'] ) . '"' : '';
+					if ( isset( $args['disabled'] ) ) {
+						// hide the actual input bc if it was just a disabled input the info saved in the database would be wrong - bc it would pass empty values and wipe the actual information
+						echo $prependStart . '<input type="' . esc_attr( $args['subtype'] ) . '" id="' . esc_attr( $args['id'] ) . '_disabled" ' . $step . ' ' . $max . ' ' . $min . ' name="' . esc_attr( $args['name'] ) . '_disabled" size="40" disabled value="' . esc_attr( $value ) . '" /><input type="hidden" id="' . esc_attr( $args['id'] ) . '" ' . $step . ' ' . $max . ' ' . $min . ' name="' . esc_attr( $args['name'] ) . '" size="40" value="' . esc_attr( $value ) . '" />' . $prependEnd; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					} else {
-							$checked = ( $value ) ? 'checked' : '';
-							echo '<input type="' . esc_attr( $args['subtype'] ) . '" id="' . esc_attr( $args['id'] ) . '" ' . esc_attr( $args['required'] ) . ' name="' . esc_attr( $args['name'] ) . '" size="40" value="1" ' . esc_attr( $checked ) . ' />';
+						echo $prependStart . '<input type="' . esc_attr( $args['subtype'] ) . '" id="' . esc_attr( $args['id'] ) . '" ' . esc_attr( $args['required'] ) . ' ' . $step . ' ' . $max . ' ' . $min . ' name="' . esc_attr( $args['name'] ) . '" size="40" value="' . esc_attr( $value ) . '" />' . $prependEnd; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					}
-					break;
+				} else {
+						$checked = ( $value ) ? 'checked' : '';
+						echo '<input type="' . esc_attr( $args['subtype'] ) . '" id="' . esc_attr( $args['id'] ) . '" ' . esc_attr( $args['required'] ) . ' name="' . esc_attr( $args['name'] ) . '" size="40" value="1" ' . esc_attr( $checked ) . ' />';
+				}
+				break;
 			default:
-					# code...
-					break;
+					// code...
+				break;
 		}
 	}
 }
