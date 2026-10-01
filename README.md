@@ -146,6 +146,10 @@ This plugin connects to the **Swiss Unihockey API** (api-v2.swissunihockey.ch) t
 * New: Icon infrastructure. `Swiss_Floorball_Api_Icons::get()` accepts an argument array (`class`, `label`) and loads Material Symbols SVGs from `public/icons/` (`calendar_month`, `location_on`, `error`, `info`, `refresh`)
 * New: Setting `swissfloorball_show_icons` and filter `swfl_icon_svg`
 
+### Unreleased
+
+* Fix: Rename global functions to snake_case (WPCS)
+
 ### 1.0.5 (2026-08-09)
 
 * Fix: Remove FAQ answer restricting the plugin to "personal and non-commercial use" — this contradicted the GPLv2-or-later license, which grants unrestricted use including commercial. Not allowed under WordPress.org plugin guidelines.
