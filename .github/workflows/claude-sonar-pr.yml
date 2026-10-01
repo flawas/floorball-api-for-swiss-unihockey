@@ -1,0 +1,80 @@
+name: Claude Sonar PR Check
+
+# Label "sonarqube" an einem Claude-PR (Branch claude/issue-<nr>) -> SonarQube-Findings des PR holen.
+# Gibt es welche, behebt der developer sie (Fix-Modus) und reviewer/writer laufen danach erneut.
+# Das Label wird danach wieder entfernt, damit es erneut gesetzt werden kann.
+#
+# Voraussetzung: Sonar hat den PR analysiert; Secret SONAR_TOKEN, Variable SONAR_PROJECT_KEY
+# (optional SONAR_HOST_URL, Standard https://sonarcloud.io).
+# pull_request_target: nutzt immer die Workflow-Datei vom Default-Branch und braucht keine Freigabe für
+# Bot-PRs. Sicher, weil hier kein PR-Code ausgecheckt oder ausgeführt wird (nur API-Aufrufe).
+on:
+  pull_request_target:
+    types: [labeled]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+  actions: write
+
+jobs:
+  sonar_pr:
+    if: >-
+      github.event.label.name == 'sonarqube' &&
+      startsWith(github.event.pull_request.head.ref, 'claude/issue-') &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}   # gh braucht ohne Checkout den Repo-Kontext
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL || 'https://sonarcloud.io' }}
+      SONAR_PROJECT_KEY: ${{ vars.SONAR_PROJECT_KEY || secrets.SONAR_PROJECT_KEY }}
+      PR: ${{ github.event.pull_request.number }}
+      REF: ${{ github.event.pull_request.head.ref }}
+      DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+    steps:
+      - name: Check Sonar findings and start fix
+        run: |
+          set -euo pipefail
+          note() { gh pr comment "$PR" --body "$1" >/dev/null; }
+          done_label() { gh pr edit "$PR" --remove-label sonarqube >/dev/null 2>&1 || true; }
+
+          [ -n "$SONAR_TOKEN" ] && [ -n "$SONAR_PROJECT_KEY" ] || { note "Sonar-Prüfung nicht möglich: Secret \`SONAR_TOKEN\` oder Variable \`SONAR_PROJECT_KEY\` fehlt."; done_label; exit 1; }
+          ISSUE="${REF#claude/issue-}"
+          case "$ISSUE" in ''|*[!0-9]*) exit 0;; esac
+
+          if ! curl -fsS -G -u "$SONAR_TOKEN:" "$SONAR_HOST_URL/api/issues/search" \
+               --data-urlencode "componentKeys=$SONAR_PROJECT_KEY" \
+               --data-urlencode "pullRequest=$PR" \
+               --data-urlencode "resolved=false" \
+               --data-urlencode "ps=100" > findings.json; then
+            note "Sonar hat keine Analyse für diesen PR (oder die Abfrage schlug fehl). Warte, bis die Sonar-Analyse für PR #$PR gelaufen ist, und setze das Label \`sonarqube\` erneut."
+            done_label; exit 0
+          fi
+
+          TOTAL=$(jq '.issues | length' findings.json)
+          if [ "$TOTAL" -eq 0 ]; then
+            note "Sonar: keine offenen Findings für PR #$PR. ✅ (Stand der letzten Sonar-Analyse; liegt sie hinter dem neuesten Commit, Label nach der Analyse erneut setzen.)"
+            done_label; exit 0
+          fi
+
+          # Findings als Hinweis für den developer (schwerste zuerst, begrenzt)
+          HINT=$(jq -r --arg key "$SONAR_PROJECT_KEY" '
+            def rank: {"BLOCKER":0,"CRITICAL":1,"MAJOR":2,"MINOR":3,"INFO":4}[.] // 5;
+            .issues | sort_by(.severity | rank) | .[0:30][]
+            | "- \(.component | sub("^" + $key + ":"; "")):\(.line // "?") [\(.severity)/\(.type)] \(.rule): \(.message)"' findings.json)
+          HINT="SonarQube-Findings für PR #$PR ($TOTAL gesamt, hier die schwersten). Behebe nur diese, ohne Verhaltensänderung; False Positives nicht per NOSONAR verstecken, sondern abbrechen und begründen:
+          $HINT"
+          HINT=$(printf '%s' "$HINT" | head -c 4000)
+
+          LABELS=$(gh issue view "$ISSUE" --json labels --jq '.labels[].name')
+          if printf '%s\n' "$LABELS" | grep -qx 'claude-feature'; then WF=claude-feature.yml; else WF=claude-auto-fix.yml; fi
+
+          note "Sonar: $TOTAL offene Findings in PR #$PR. Der developer behebt sie jetzt, danach prüft der reviewer erneut."
+          done_label
+          gh issue edit "$ISSUE" --remove-label claude-aborted >/dev/null 2>&1 || true
+          gh workflow run "$WF" --ref "$DEFAULT_BRANCH" \
+            -f issue_number="$ISSUE" -f stage=from-developer -f fix=true -f hint="$HINT"

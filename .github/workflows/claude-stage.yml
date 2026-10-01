@@ -128,6 +128,9 @@ jobs:
           prompt: ${{ steps.prompt.outputs.text }}
           # temporär: vollständiges Log zur Fehlersuche (Stufen, die ohne Ergebnis enden)
           show_full_output: true
+          # Dispatches aus unseren eigenen Workflows (Sonar-Fixer, Kommentar-Handler) laufen als Bot
+          # "github-actions"; "sonarqubecloud" ist der Sonar-Bot. Andere Bots bleiben gesperrt.
+          allowed_bots: "github-actions,sonarqubecloud"
           claude_args: |
             --model ${{ steps.model.outputs.model }}
             --max-turns 30

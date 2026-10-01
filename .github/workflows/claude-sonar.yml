@@ -1,0 +1,97 @@
+name: Claude SonarQube Fixer
+
+# Holt offene Findings aus SonarQube/SonarCloud, legt pro Regel+Datei ein GitHub-Issue an
+# (Label claude-fix + sonarqube) und startet damit den normalen Fix-Ablauf
+# (architect -> developer -> PR -> reviewer -> writer, Abbruch im Zweifel).
+#
+# Einrichtung: Secret SONAR_TOKEN, Variable oder Secret SONAR_PROJECT_KEY und
+# (nur bei eigenem Server) SONAR_HOST_URL. Standard-Host: https://sonarcloud.io
+on:
+  workflow_dispatch:
+    inputs:
+      severities:
+        description: Schweregrade (kommagetrennt)
+        default: BLOCKER,CRITICAL,MAJOR
+      types:
+        description: Typen (kommagetrennt)
+        default: BUG,VULNERABILITY,CODE_SMELL
+      max_issues:
+        description: Max. neue GitHub-Issues pro Lauf (je Regel+Datei)
+        default: '3'
+
+permissions:
+  contents: read
+  issues: write
+  actions: write
+
+jobs:
+  sonar:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}   # gh braucht ohne Checkout den Repo-Kontext
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL || 'https://sonarcloud.io' }}
+      SONAR_PROJECT_KEY: ${{ vars.SONAR_PROJECT_KEY || secrets.SONAR_PROJECT_KEY }}
+      SEVERITIES: ${{ inputs.severities }}
+      TYPES: ${{ inputs.types }}
+      MAX_ISSUES: ${{ inputs.max_issues }}
+      DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+    steps:
+      - name: Create issues from SonarQube findings
+        run: |
+          set -euo pipefail
+          [ -n "$SONAR_TOKEN" ] || { echo "::error::Secret SONAR_TOKEN fehlt"; exit 1; }
+          [ -n "$SONAR_PROJECT_KEY" ] || { echo "::error::Repository-Variable SONAR_PROJECT_KEY fehlt"; exit 1; }
+          case "$MAX_ISSUES" in ''|*[!0-9]*) echo "::error::max_issues muss eine Zahl sein"; exit 1;; esac
+
+          curl -fsS -G -u "$SONAR_TOKEN:" "$SONAR_HOST_URL/api/issues/search" \
+            --data-urlencode "componentKeys=$SONAR_PROJECT_KEY" \
+            --data-urlencode "resolved=false" \
+            --data-urlencode "severities=$SEVERITIES" \
+            --data-urlencode "types=$TYPES" \
+            --data-urlencode "ps=500" > findings.json
+          TOTAL=$(jq '.issues | length' findings.json)
+          echo "Offene Findings: $TOTAL"
+          [ "$TOTAL" -gt 0 ] || exit 0
+
+          gh label create sonarqube --color 4e9bcd --description "Finding aus SonarQube" 2>/dev/null || true
+
+          # Gruppen je Regel + Datei, schwerste zuerst
+          jq -c --arg key "$SONAR_PROJECT_KEY" '
+            def rank: {"BLOCKER":0,"CRITICAL":1,"MAJOR":2,"MINOR":3,"INFO":4}[.] // 5;
+            [.issues[] | . + {file: (.component | sub("^" + $key + ":"; ""))}]
+            | group_by(.rule + "|" + .file)
+            | map({rule: .[0].rule, file: .[0].file, severity: (map(.severity | rank) | min),
+                   findings: map({key, line, message, severity, type, effort})})
+            | sort_by(.severity)
+            | .[]' findings.json > groups.jsonl
+
+          OPEN=$(gh issue list --label sonarqube --state open --limit 500 --json body --jq '.[].body')
+          CREATED=0
+          while IFS= read -r G && [ "$CREATED" -lt "$MAX_ISSUES" ]; do
+            RULE=$(jq -r .rule <<<"$G"); FILE=$(jq -r .file <<<"$G")
+            MARK="<!-- sonar:$RULE|$FILE -->"
+            if printf '%s' "$OPEN" | grep -qF -- "$MARK"; then echo "bereits offen: $RULE $FILE"; continue; fi
+
+            LINES=$(jq -r '.findings[] | "- Zeile \(.line // "?") [\(.severity)/\(.type)]: \(.message)"' <<<"$G")
+            {
+              echo "$MARK"
+              echo "**Quelle:** SonarQube-Finding(s) in \`$FILE\` (Regel \`$RULE\`)."
+              echo
+              echo "$LINES"
+              echo
+              echo "Regel-Doku: $SONAR_HOST_URL/coding_rules?open=$RULE"
+              echo
+              echo "**Vorgaben:** Behebe nur diese Findings, ohne das Verhalten zu ändern und ohne Refactoring darüber hinaus. Die Zeilennummern können leicht abweichen. Ist ein Finding ein False Positive oder lässt sich nicht ohne Verhaltensänderung beheben, brich ab und begründe es im Issue (nichts suppressen oder mit \`// NOSONAR\` verstecken)."
+            } > body.md
+
+            URL=$(gh issue create --title "[SonarQube] $RULE in $FILE" --body-file body.md --label claude-fix --label sonarqube)
+            N="${URL##*/}"
+            echo "Issue #$N erstellt: $URL"
+            # Events von GITHUB_TOKEN starten keine Workflows -> Fix-Ablauf explizit starten
+            gh workflow run claude-auto-fix.yml --ref "$DEFAULT_BRANCH" -f issue_number="$N" -f stage=all
+            CREATED=$((CREATED+1))
+          done < groups.jsonl
+          echo "Neue Issues: $CREATED"
