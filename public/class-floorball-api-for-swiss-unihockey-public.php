@@ -107,7 +107,7 @@ class Swiss_Floorball_Api_Public {
 	}
 
 	public function load_dependencies() {
-		// Functions are now loaded via the main plugin class and Swiss_Floorball_API_Display
+		// Functions are now loaded via the main plugin class and Swiss_Floorball_API_Display.
 	}
 
 	/**

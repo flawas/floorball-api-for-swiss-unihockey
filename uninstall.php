@@ -27,14 +27,14 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 function swiss_floorball_api_uninstall_site() {
 	global $wpdb;
 
-	// Delete plugin options
+	// Delete plugin options.
 	delete_option( 'swissfloorball_api_key' );
 	delete_option( 'swissfloorball_club_number' );
 	delete_option( 'swissfloorball_club_name' );
 	delete_option( 'swissfloorball_actual_season' );
 
 	// Delete all cached API data (transients with 'swfl_' prefix)
-	// This includes both the transient values and their timeout entries
+	// This includes both the transient values and their timeout entries.
 	$wpdb->query(
 		"DELETE FROM {$wpdb->options}
 		WHERE option_name LIKE '_transient_swfl_%'
@@ -51,16 +51,16 @@ function swiss_floorball_api_uninstall_site() {
  * @since    1.0.0
  */
 if ( is_multisite() ) {
-	// Get all sites in the network
+	// Get all sites in the network.
 	$sites = get_sites( array( 'number' => 0 ) );
 
 	foreach ( $sites as $site ) {
-		// Switch to each site and run cleanup
+		// Switch to each site and run cleanup.
 		switch_to_blog( $site->blog_id );
 		swiss_floorball_api_uninstall_site();
 		restore_current_blog();
 	}
 } else {
-	// Single site installation
+	// Single site installation.
 	swiss_floorball_api_uninstall_site();
 }

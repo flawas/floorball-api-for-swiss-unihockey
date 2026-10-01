@@ -91,7 +91,7 @@ class Swiss_Floorball_API_Display {
 					$game_class_id = '-';
 					$group_id      = '-';
 
-					// Fetch team games to get league/game_class/group IDs
+					// Fetch team games to get league/game_class/group IDs.
 					$games_response = $client->fetch_data(
 						'games',
 						array(
@@ -103,7 +103,7 @@ class Swiss_Floorball_API_Display {
 
 					if ( ! is_wp_error( $games_response ) && isset( $games_response['data']['tabs'][0]['link']['ids'] ) ) {
 						$ids = $games_response['data']['tabs'][0]['link']['ids'];
-						// IDs format: [season, league, game_class, group]
+						// IDs format: [season, league, game_class, group].
 						if ( count( $ids ) >= 4 ) {
 							$league_id     = $ids[1];
 							$game_class_id = $ids[2];
@@ -503,7 +503,7 @@ class Swiss_Floorball_API_Display {
 		$url    = 'https://api-v2.swissunihockey.ch/api/calendars?';
 		$params = array();
 
-		// Determine mode for games API
+		// Determine mode for games API.
 		$games_params = array();
 		$mode         = '';
 
@@ -552,22 +552,22 @@ class Swiss_Floorball_API_Display {
 			if ( ! is_wp_error( $api_response ) && isset( $api_response['data']['regions'][0]['rows'] ) ) {
 				$rows = $api_response['data']['regions'][0]['rows'];
 
-				// Filter for upcoming games
+				// Filter for upcoming games.
 				$upcoming_games = array();
 				$now            = time();
 
 				foreach ( $rows as $row ) {
-					$date_str = $row['cells'][0]['text'][0]; // e.g. "26.11.2025"
-					$time_str = $row['cells'][0]['text'][1]; // e.g. "20:00"
+					$date_str = $row['cells'][0]['text'][0]; // e.g. "26.11.2025".
+					$time_str = $row['cells'][0]['text'][1]; // e.g. "20:00".
 
-					// Parse date
+					// Parse date.
 					$dt = DateTime::createFromFormat( 'd.m.Y H:i', $date_str . ' ' . $time_str );
 					if ( $dt && $dt->getTimestamp() >= $now ) {
 						$upcoming_games[] = $row;
 					}
 				}
 
-				// Render Table if we have upcoming games
+				// Render Table if we have upcoming games.
 				if ( ! empty( $upcoming_games ) ) {
 					?>
 					<h3 class="sfa-calendar-title"><?php esc_html_e( 'Nächste Spiele', 'swiss-floorball-api' ); ?></h3>
@@ -589,9 +589,9 @@ class Swiss_Floorball_API_Display {
 								$date           = $game['cells'][0]['text'][0];
 								$time           = $game['cells'][0]['text'][1];
 								$place_location = $game['cells'][1]['text'][0];
-								$place_name     = $game['cells'][1]['text'][1]; // Sometimes location is split
+								$place_name     = $game['cells'][1]['text'][1]; // Sometimes location is split.
 
-								// Fetch game details for logos
+								// Fetch game details for logos.
 								$game_id   = isset( $game['link']['ids'][0] ) ? $game['link']['ids'][0] : '';
 								$logo_home = '';
 								$logo_away = '';
@@ -608,7 +608,7 @@ class Swiss_Floorball_API_Display {
 									}
 								}
 
-								// Fallback if details fail or no ID (though unlikely for valid games)
+								// Fallback if details fail or no ID (though unlikely for valid games).
 								if ( empty( $team_home ) ) {
 									if ( $mode === 'club' ) {
 										$team_home = $game['cells'][3]['text'][0];
@@ -998,7 +998,7 @@ class Swiss_Floorball_API_Display {
 		if ( isset( $api_response['data'] ) ) {
 			echo '<div class="sfa-card">';
 
-			// Title/Header
+			// Title/Header.
 			$title = isset( $api_response['data']['title'] ) ? $api_response['data']['title'] : 'Match Details';
 			echo '<h3>' . esc_html( $title ) . '</h3>';
 
@@ -1011,7 +1011,7 @@ class Swiss_Floorball_API_Display {
 						echo '<div class="sfa-table-container sfa-table-container-flat">';
 						echo '<table class="sfa-data-table">';
 
-						// Check for headers
+						// Check for headers.
 						$headers = isset( $api_response['data']['headers'] ) ? $api_response['data']['headers'] : null;
 						if ( ! empty( $headers ) ) {
 							echo '<thead><tr>';
@@ -1027,7 +1027,7 @@ class Swiss_Floorball_API_Display {
 							if ( isset( $row['cells'] ) ) {
 								foreach ( $row['cells'] as $cell ) {
 									echo '<td>';
-									// Check if cell contains an image
+									// Check if cell contains an image.
 									if ( isset( $cell['image'] ) ) {
 										$img_url = isset( $cell['image']['url'] ) ? $cell['image']['url'] : '';
 										$img_alt = isset( $cell['image']['alt'] ) ? $cell['image']['alt'] : '';
@@ -1035,7 +1035,7 @@ class Swiss_Floorball_API_Display {
 											echo '<img src="' . esc_url( $img_url ) . '" alt="' . esc_attr( $img_alt ) . '" class="sfa-cell-image">';
 										}
 									}
-									// Display text content
+									// Display text content.
 									if ( isset( $cell['text'] ) ) {
 										foreach ( $cell['text'] as $text ) {
 											echo esc_html( $text ) . '<br>';
@@ -1310,7 +1310,7 @@ class Swiss_Floorball_API_Display {
 				$event  = isset( $row['cells'][1]['text'][0] ) ? $row['cells'][1]['text'][0] : '';
 				$player = isset( $row['cells'][3]['text'][0] ) ? $row['cells'][3]['text'][0] : '';
 				$team   = isset( $row['cells'][2]['text'][0] ) ? $row['cells'][2]['text'][0] : '';
-				// Extract goal score from event string if present (e.g., "Torschütze 1:0")
+				// Extract goal score from event string if present (e.g., "Torschütze 1:0").
 				$goal = '';
 				if ( preg_match( '/(\d+:\d+)/', $event, $matches ) ) {
 					$goal = $matches[1];
