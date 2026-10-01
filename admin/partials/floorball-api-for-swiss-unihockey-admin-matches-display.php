@@ -30,7 +30,8 @@ require_once plugin_dir_path( dirname( __DIR__ ) ) . 'includes/class-floorball-a
 $client = new Swiss_Floorball_API_Client();
 
 // Check if we are viewing a specific match
-$match_id = isset( $_GET['match_id'] ) ? absint( $_GET['match_id'] ) : null;
+// Read-only admin navigation parameter, no state change.
+$match_id = isset( $_GET['match_id'] ) ? absint( $_GET['match_id'] ) : null; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 ?>
 

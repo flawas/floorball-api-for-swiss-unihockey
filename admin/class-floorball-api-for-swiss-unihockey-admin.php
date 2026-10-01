@@ -68,7 +68,8 @@ class Swiss_Floorball_Api_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_styles() {
-		$page = isset( $_GET['page'] ) ? sanitize_key( $_GET['page'] ) : '';
+		// Read-only admin navigation parameter, no state change.
+		$page = isset( $_GET['page'] ) ? sanitize_key( $_GET['page'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( strpos( $page, $this->plugin_name ) === false ) {
 			return;
 		}
@@ -76,7 +77,8 @@ class Swiss_Floorball_Api_Admin {
 	}
 
 	public function enqueue_scripts() {
-		$page = isset( $_GET['page'] ) ? sanitize_key( $_GET['page'] ) : '';
+		// Read-only admin navigation parameter, no state change.
+		$page = isset( $_GET['page'] ) ? sanitize_key( $_GET['page'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( strpos( $page, $this->plugin_name ) === false ) {
 			return;
 		}
@@ -120,11 +122,14 @@ class Swiss_Floorball_Api_Admin {
 	 */
 	public function displayPluginAdminSettings() {
 		// set this var to be used in the settings-display view
+		// Read-only admin navigation parameters, no state change.
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
 		$active_tab = isset( $_GET['tab'] ) ? sanitize_key( $_GET['tab'] ) : 'general';
 		if ( isset( $_GET['error_message'] ) ) {
 			add_action( 'admin_notices', array( $this, 'settingsPageSettingsMessages' ) );
 			do_action( 'admin_notices', absint( $_GET['error_message'] ) );
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 		require_once 'partials/' . $this->plugin_name . '-admin-settings-display.php';
 	}
 
@@ -135,11 +140,14 @@ class Swiss_Floorball_Api_Admin {
 	 */
 	public function displayPluginAdminHelperLeague() {
 		// set this var to be used in the settings-display view
+		// Read-only admin navigation parameters, no state change.
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
 		$active_tab = isset( $_GET['tab'] ) ? sanitize_key( $_GET['tab'] ) : 'general';
 		if ( isset( $_GET['error_message'] ) ) {
 			add_action( 'admin_notices', array( $this, 'settingsPageSettingsMessages' ) );
 			do_action( 'admin_notices', absint( $_GET['error_message'] ) );
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 		require_once 'partials/' . $this->plugin_name . '-admin-helper-league-display.php';
 	}
 
@@ -150,11 +158,14 @@ class Swiss_Floorball_Api_Admin {
 	 */
 	public function displayPluginAdminHelperSeasons() {
 		// set this var to be used in the settings-display view
+		// Read-only admin navigation parameters, no state change.
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
 		$active_tab = isset( $_GET['tab'] ) ? sanitize_key( $_GET['tab'] ) : 'general';
 		if ( isset( $_GET['error_message'] ) ) {
 			add_action( 'admin_notices', array( $this, 'settingsPageSettingsMessages' ) );
 			do_action( 'admin_notices', absint( $_GET['error_message'] ) );
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 		require_once 'partials/' . $this->plugin_name . '-admin-helper-seasons-display.php';
 	}
 
@@ -165,11 +176,14 @@ class Swiss_Floorball_Api_Admin {
 	 */
 	public function displayPluginAdminHelperTeams() {
 		// set this var to be used in the settings-display view
+		// Read-only admin navigation parameters, no state change.
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
 		$active_tab = isset( $_GET['tab'] ) ? sanitize_key( $_GET['tab'] ) : 'general';
 		if ( isset( $_GET['error_message'] ) ) {
 			add_action( 'admin_notices', array( $this, 'settingsPageSettingsMessages' ) );
 			do_action( 'admin_notices', absint( $_GET['error_message'] ) );
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 		require_once 'partials/' . $this->plugin_name . '-admin-helper-teams-display.php';
 	}
 
