@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	</div>
 
 	<?php
-	// Display cache cleared success message
+	// Display cache cleared success message.
 	// Read-only status notice after the nonce-protected cache clear redirect.
 	if ( isset( $_GET['cache_cleared'] ) && '1' === $_GET['cache_cleared'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$deleted_count = isset( $_GET['deleted_count'] ) ? intval( $_GET['deleted_count'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended

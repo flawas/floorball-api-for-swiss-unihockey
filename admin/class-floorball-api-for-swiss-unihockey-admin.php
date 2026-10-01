@@ -235,13 +235,13 @@ class Swiss_Floorball_Api_Admin {
 	 * @return   int                    The sanitized club number
 	 */
 	public function sanitize_club_number( $club_number ) {
-		// Sanitize the club number
+		// Sanitize the club number.
 		$club_number = absint( $club_number );
 
-		// Get the old club number to check if it changed
+		// Get the old club number to check if it changed.
 		$old_club_number = get_option( 'swissfloorball_club_number' );
 
-		// If club number changed, clear all cached API data
+		// If club number changed, clear all cached API data.
 		if ( $old_club_number != $club_number && ! empty( $club_number ) ) {
 			global $wpdb;
 			$wpdb->query(
@@ -253,23 +253,23 @@ class Swiss_Floorball_Api_Admin {
 			);
 		}
 
-		// If club number is empty, return it as is
+		// If club number is empty, return it as is.
 		if ( empty( $club_number ) ) {
 			return $club_number;
 		}
 
-		// Fetch club details from API
+		// Fetch club details from API.
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-floorball-api-for-swiss-unihockey-client.php';
 		$client = new Swiss_Floorball_API_Client();
 		// Use short cache time (60 seconds) to ensure fresh data when club number changes
-		// Note: The API doesn't have a /clubs/{id} endpoint, so we fetch all clubs and search
+		// Note: The API doesn't have a /clubs/{id} endpoint, so we fetch all clubs and search.
 		$api_response = $client->fetch_data( 'clubs', array(), 60 );
 
 		$club_name = '';
 
-		// Check if we got a valid response
+		// Check if we got a valid response.
 		if ( ! is_wp_error( $api_response ) && isset( $api_response['entries'] ) ) {
-			// Search through all clubs to find the one with matching club_id
+			// Search through all clubs to find the one with matching club_id.
 			foreach ( $api_response['entries'] as $entry ) {
 				if ( isset( $entry['set_in_context']['club_id'] ) && $entry['set_in_context']['club_id'] == $club_number ) {
 					$club_name = $entry['text'];
@@ -278,10 +278,10 @@ class Swiss_Floorball_Api_Admin {
 			}
 		}
 
-		// Update the club name option
+		// Update the club name option.
 		if ( ! empty( $club_name ) ) {
 			update_option( 'swissfloorball_club_name', sanitize_text_field( $club_name ) );
-			// Add success notice
+			// Add success notice.
 			add_settings_error(
 				'swissfloorball_club_name',
 				'club_name_updated',
@@ -289,16 +289,16 @@ class Swiss_Floorball_Api_Admin {
 				'success'
 			);
 		} else {
-			// If API call failed or no name found, clear the club name
+			// If API call failed or no name found, clear the club name.
 			update_option( 'swissfloorball_club_name', '' );
-			// Add error notice
+			// Add error notice.
 			add_settings_error(
 				'swissfloorball_club_name',
 				'club_name_not_found',
 				sprintf( __( 'Could not find club name for club ID: %s', 'swiss-floorball-api' ), $club_number ),
 				'error'
 			);
-			// Log error for debugging
+			// Log error for debugging.
 			error_log( 'Swiss Floorball API: Could not fetch club name for club ID ' . $club_number );
 		}
 
@@ -312,17 +312,17 @@ class Swiss_Floorball_Api_Admin {
 	 * @since    1.0.0
 	 */
 	public function handle_clear_cache() {
-		// Check nonce for security
+		// Check nonce for security.
 		if ( ! isset( $_POST['swfl_clear_cache_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['swfl_clear_cache_nonce'] ) ), 'swfl_clear_cache_action' ) ) {
 			wp_die( __( 'Security check failed', 'swiss-floorball-api' ) );
 		}
 
-		// Check user permissions
+		// Check user permissions.
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_die( __( 'You do not have permission to perform this action', 'swiss-floorball-api' ) );
 		}
 
-		// Clear all cached API data
+		// Clear all cached API data.
 		global $wpdb;
 		$deleted = $wpdb->query(
 			$wpdb->prepare(
@@ -332,7 +332,7 @@ class Swiss_Floorball_Api_Admin {
 			)
 		);
 
-		// Redirect back to settings page with success message
+		// Redirect back to settings page with success message.
 		$redirect_url = add_query_arg(
 			array(
 				'page'          => 'floorball-api-for-swiss-unihockey-settings',
@@ -358,13 +358,13 @@ class Swiss_Floorball_Api_Admin {
 		 * Third, register_setting
 		 */
 		add_settings_section(
-			// ID used to identify this section and with which to register options
+			// ID used to identify this section and with which to register options.
 			'swfl_general_section',
-			// Title to be displayed on the administration page
+			// Title to be displayed on the administration page.
 			'Einstellungen',
-			// Callback used to render the description of the section
+			// Callback used to render the description of the section.
 				array( $this, 'settings_page_display_general_account' ),
-			// Page on which to add this section of options
+			// Page on which to add this section of options.
 			'swfl_general_settings'
 		);
 
@@ -549,7 +549,7 @@ class Swiss_Floorball_Api_Admin {
 						$min          = ( isset( $args['min'] ) ) ? 'min="' . esc_attr( $args['min'] ) . '"' : '';
 						$max          = ( isset( $args['max'] ) ) ? 'max="' . esc_attr( $args['max'] ) . '"' : '';
 					if ( isset( $args['disabled'] ) ) {
-						// hide the actual input bc if it was just a disabled input the info saved in the database would be wrong - bc it would pass empty values and wipe the actual information
+						// hide the actual input bc if it was just a disabled input the info saved in the database would be wrong - bc it would pass empty values and wipe the actual information.
 						echo $prependStart . '<input type="' . esc_attr( $args['subtype'] ) . '" id="' . esc_attr( $args['id'] ) . '_disabled" ' . $step . ' ' . $max . ' ' . $min . ' name="' . esc_attr( $args['name'] ) . '_disabled" size="40" disabled value="' . esc_attr( $value ) . '" /><input type="hidden" id="' . esc_attr( $args['id'] ) . '" ' . $step . ' ' . $max . ' ' . $min . ' name="' . esc_attr( $args['name'] ) . '" size="40" value="' . esc_attr( $value ) . '" />' . $prependEnd; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					} else {
 						echo $prependStart . '<input type="' . esc_attr( $args['subtype'] ) . '" id="' . esc_attr( $args['id'] ) . '" ' . esc_attr( $args['required'] ) . ' ' . $step . ' ' . $max . ' ' . $min . ' name="' . esc_attr( $args['name'] ) . '" size="40" value="' . esc_attr( $value ) . '" />' . $prependEnd; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
