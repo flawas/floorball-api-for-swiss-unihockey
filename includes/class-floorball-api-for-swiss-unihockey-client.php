@@ -60,7 +60,10 @@ class Swiss_Floorball_API_Client {
 			return $cached_data;
 		}
 
-		$response = wp_remote_get( $url );
+		// Request timeout in seconds; overridable via the swfl_request_timeout filter.
+		$timeout = max( 1, (float) apply_filters( 'swfl_request_timeout', 5, $url ) );
+
+		$response = wp_remote_get( $url, array( 'timeout' => $timeout ) );
 
 		if ( is_wp_error( $response ) ) {
 			return $response;
