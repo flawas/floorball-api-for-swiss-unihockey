@@ -25,8 +25,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 	<?php
 	// Display cache cleared success message
-	if ( isset( $_GET['cache_cleared'] ) && $_GET['cache_cleared'] == '1' ) {
-		$deleted_count = isset( $_GET['deleted_count'] ) ? intval( $_GET['deleted_count'] ) : 0;
+	// Read-only status notice after the nonce-protected cache clear redirect.
+	if ( isset( $_GET['cache_cleared'] ) && '1' === $_GET['cache_cleared'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$deleted_count = isset( $_GET['deleted_count'] ) ? intval( $_GET['deleted_count'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		echo '<div class="notice notice-success is-dismissible">';
 		echo '<p><strong>' . Swiss_Floorball_Api_Icons::get( 'check' ) . ' Cache erfolgreich geleert!</strong> ' . esc_html( $deleted_count ) . ' zwischengespeicherte Einträge wurden gelöscht.</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Icon markup sanitized via wp_kses() in Swiss_Floorball_Api_Icons::get().
 		echo '</div>';
