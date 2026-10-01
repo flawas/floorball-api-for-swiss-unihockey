@@ -29,3 +29,10 @@ Favoriten, uneindeutige Ursache, Änderung an Workflows/Secrets/Berechtigungen, 
 ## Erfolg
 Schliesse mit einem Issue-Kommentar ab, dessen erste Zeile die Marker-Zeile mit `status:ok` ist
 (Details je Stufe unten), gefolgt von einer kurzen Zusammenfassung.
+
+## Pflicht zum Abschluss
+Eine reine Textantwort ist KEIN Ergebnis. Deine Stufe ist erst fertig, wenn der Marker-Kommentar im Issue
+tatsächlich existiert: Schreibe den Kommentartext mit dem Write-Tool in eine Datei (z.B. `/tmp/stage-comment.md`),
+poste ihn mit `gh issue comment __ISSUE__ --body-file /tmp/stage-comment.md` und prüfe danach mit
+`gh issue view __ISSUE__ --comments`, dass er erscheint. Beende erst danach. Auch bei Abbruch gilt: Kommentar
+posten, dann stoppen. Beginne nicht mit der Analyse, ohne die Stufe vollständig durchzuführen.
