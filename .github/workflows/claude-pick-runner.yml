@@ -1,0 +1,56 @@
+name: Claude Pick Runner
+
+# Wählt den Runner für die rechenintensiven Stufen (developer, reviewer):
+#   - Variable RUNNER_HEAVY leer/Cloud-Label            -> Cloud (ubuntu-24.04, wie gehabt)
+#   - RUNNER_HEAVY = self-hosted-Labels und ein passender Runner ist ONLINE -> self-hosted
+#   - RUNNER_HEAVY = self-hosted-Labels, aber kein Runner online             -> Cloud (Fallback)
+# Die Online-Prüfung braucht das optionale Secret RUNNER_CHECK_TOKEN (Fine-grained PAT, Repository-Recht
+# "Administration: Read"; GITHUB_TOKEN darf Runner nicht auflisten). Ohne das Secret wird RUNNER_HEAVY
+# ungeprüft verwendet: ist dann kein Runner online, hängen die Jobs in der Warteschlange.
+on:
+  workflow_call:
+    secrets:
+      RUNNER_CHECK_TOKEN:
+        required: false
+    outputs:
+      heavy:
+        description: runs-on als JSON
+        value: ${{ jobs.pick.outputs.heavy }}
+
+jobs:
+  pick:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    outputs:
+      heavy: ${{ steps.p.outputs.heavy }}
+    env:
+      CLOUD: '"ubuntu-24.04"'
+      HEAVY_VAR: ${{ vars.RUNNER_HEAVY }}
+      CHECK_TOKEN: ${{ secrets.RUNNER_CHECK_TOKEN }}
+      REPO: ${{ github.repository }}
+      OWNER: ${{ github.repository_owner }}
+    steps:
+      - id: p
+        run: |
+          set -uo pipefail
+          out() { echo "heavy=$1" >> "$GITHUB_OUTPUT"; echo "Runner für developer/reviewer: $1"; }
+
+          [ -n "$HEAVY_VAR" ] || { out "$CLOUD"; exit 0; }
+          if ! WANT=$(jq -c 'if type=="array" then . else [.] end' <<<"$HEAVY_VAR" 2>/dev/null); then
+            echo "::warning::RUNNER_HEAVY ist kein gültiges JSON - verwende Cloud"; out "$CLOUD"; exit 0
+          fi
+          # nur self-hosted-Runner müssen geprüft werden; Cloud-Labels gehen direkt durch
+          if ! jq -e 'index("self-hosted") != null' <<<"$WANT" >/dev/null; then out "$HEAVY_VAR"; exit 0; fi
+
+          if [ -z "$CHECK_TOKEN" ]; then
+            echo "::notice::RUNNER_CHECK_TOKEN fehlt - RUNNER_HEAVY wird ungeprüft verwendet"
+            out "$HEAVY_VAR"; exit 0
+          fi
+
+          ALL=$( { GH_TOKEN="$CHECK_TOKEN" gh api "repos/$REPO/actions/runners" --paginate --jq '.runners[]' 2>/dev/null;
+                   GH_TOKEN="$CHECK_TOKEN" gh api "orgs/$OWNER/actions/runners" --paginate --jq '.runners[]' 2>/dev/null; } || true)
+          # online und alle gewünschten Labels vorhanden
+          N=$(printf '%s\n' "$ALL" | jq -s --argjson want "$WANT" \
+              '[.[] | select(.status=="online") | select(([.labels[].name] | . as $l | $want | all(. as $w | $l | index($w) != null)))] | length' 2>/dev/null || echo 0)
+          if [ "${N:-0}" -gt 0 ]; then out "$HEAVY_VAR"
+          else echo "::warning::Kein passender self-hosted Runner online - Fallback auf Cloud"; out "$CLOUD"; fi

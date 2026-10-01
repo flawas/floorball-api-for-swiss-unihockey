@@ -55,7 +55,16 @@ jobs:
           HINT=""
           if [ "$IS_PR" = true ]; then
             REF=$(gh pr view "$NUMBER" --json headRefName --jq .headRefName)
-            case "$REF" in claude/issue-*) ;; *) exit 0 ;; esac    # nur Claude-PRs
+            case "$REF" in
+              claude/issue-*) ;;
+              *) # beliebiger PR (kein Claude-Issue-PR): nur auf ausdrücklichen Befehl, über claude-pr.yml
+                 [ "$EXPLICIT" = true ] || exit 0
+                 MODE=fix; HINT="$TEXT"
+                 if [ "$WORD" = reviewer ]; then MODE=review; HINT=$(strip_first_word "$TEXT" reviewer); fi
+                 gh api -X POST "repos/$GITHUB_REPOSITORY/issues/comments/$COMMENT_ID/reactions" -f content=eyes >/dev/null || true
+                 gh workflow run claude-pr.yml --ref "$DEFAULT_BRANCH" -f pr_number="$NUMBER" -f mode="$MODE" -f hint="$HINT"
+                 exit 0 ;;
+            esac
             ISSUE="${REF#claude/issue-}"
             if [ "$EXPLICIT" = true ] && [ "$WORD" = reviewer ]; then
               STAGE=reviewer; HINT=$(strip_first_word "$TEXT" reviewer)

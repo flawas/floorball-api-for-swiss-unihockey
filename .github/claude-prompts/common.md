@@ -17,7 +17,7 @@ Du führst die Stufe `__STAGE__` für Issue #__ISSUE__ aus. Andere Stufen laufen
 ## Token sparen
 `graphify-out/graph.json` und `graphify-out/GRAPH_REPORT.md` existieren bereits. Orientiere dich zuerst mit
 `graphify query "<Frage>"`, `graphify path "A" "B"` bzw. `graphify explain "X"` und lies danach nur die
-betroffenen Dateien/Zeilen (Read mit offset/limit). Schreibe diesen Hinweis in jeden Task-Auftrag.
+betroffenen Dateien/Zeilen (Read mit offset/limit). Fehlt `graphify-out/` (z.B. in der Stufe writer), lies die betroffenen Dateien direkt. Schreibe diesen Hinweis in jeden Task-Auftrag.
 `graphify-out/` wird nie committet.
 
 ## Abbruchregel (hat Vorrang)

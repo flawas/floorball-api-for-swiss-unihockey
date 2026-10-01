@@ -44,12 +44,19 @@ jobs:
           echo "issue=$ISSUE" >> "$GITHUB_OUTPUT"
           echo "kind=$KIND" >> "$GITHUB_OUTPUT"
 
-  developer_fix:
+  runner:
     needs: [meta]
+    if: needs.meta.result == 'success'
+    uses: ./.github/workflows/claude-pick-runner.yml
+    secrets: inherit
+
+  developer_fix:
+    needs: [meta, runner]
     uses: ./.github/workflows/claude-stage.yml
     secrets: inherit
     with:
       stage: developer
+      runner: ${{ needs.runner.outputs.heavy || '"ubuntu-24.04"' }}
       kind: ${{ needs.meta.outputs.kind }}
       issue: ${{ needs.meta.outputs.issue }}
       fix: true

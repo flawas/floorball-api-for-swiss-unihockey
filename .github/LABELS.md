@@ -9,12 +9,17 @@
 | `claude-fix` | Issue | Bugfix-Ablauf: debugger (nur bei zusätzlichem Label `bug`) → architect → developer → PR → reviewer → writer | [claude-auto-fix.yml](workflows/claude-auto-fix.yml) |
 | `claude-feature` | Issue | Feature-Ablauf: architect → developer → PR → reviewer → writer (keine debugger-Stufe) | [claude-feature.yml](workflows/claude-feature.yml) |
 | `claude-release` | Issue (Release-Tracking) | Release-Ablauf: plan → prepare → CI → verify → publish | [claude-release.yml](workflows/claude-release.yml) |
+| `claude-fix` | **PR** (beliebiger PR aus diesem Repo) | Der Reviewer prüft den PR, bei Findings behebt der developer sie im PR-Branch, danach prüft der Reviewer ein letztes Mal. Ohne das Label wird der PR nur geprüft. | [claude-pr.yml](workflows/claude-pr.yml) |
 | `sonarqube` | **PR** (Branch `claude/issue-<nr>`) | Holt die Sonar-Findings des PR; bei Findings behebt der developer sie, danach reviewer/writer erneut. Das Label wird danach entfernt, damit es erneut gesetzt werden kann. | [claude-sonar-pr.yml](workflows/claude-sonar-pr.yml) |
 
 Hinweise:
 - `claude-fix` und `claude-feature` nicht gleichzeitig setzen.
 - `sonarqube` an einem **Issue** bewirkt nichts; es markiert dort nur Issues, die der Sonar-Fixer angelegt hat ([claude-sonar.yml](workflows/claude-sonar.yml)). Dieser setzt sie zusammen mit `claude-fix`.
 - Ein bereits gesetztes Label löst nichts aus: zum Neustart entfernen und neu setzen, oder per Kommentar steuern (siehe unten).
+
+## Pull Requests automatisch bearbeiten
+
+[claude-pr.yml](workflows/claude-pr.yml) prüft jeden PR aus diesem Repo (nicht Fork, nicht Entwurf, nicht Bot; Claude-Issue-PRs laufen im Issue-Ablauf) automatisch mit dem Reviewer-Agent als formales GitHub-Review (Approve / Request changes). Mit dem Label `claude-fix` am PR behebt der developer die Findings zusätzlich selbst. Per Kommentar: `/claude reviewer` (nur prüfen) oder `/claude <hinweis>` (Findings beheben).
 
 ## Status-Labels (setzt Claude)
 

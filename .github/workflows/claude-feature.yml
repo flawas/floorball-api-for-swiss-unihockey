@@ -74,6 +74,12 @@ jobs:
             echo "run_$S=$V" >> "$GITHUB_OUTPUT"
           done
 
+  runner:
+    needs: [meta]
+    if: needs.meta.result == 'success'
+    uses: ./.github/workflows/claude-pick-runner.yml
+    secrets: inherit
+
   architect:
     needs: [meta]
     if: >-
@@ -89,7 +95,7 @@ jobs:
       hint: ${{ inputs.hint }}
 
   developer:
-    needs: [meta, architect]
+    needs: [meta, architect, runner]
     if: >-
       !cancelled() && needs.meta.result == 'success' &&
       !contains(needs.*.result, 'failure') && !contains(needs.*.outputs.status, 'abort') &&
@@ -98,13 +104,14 @@ jobs:
     secrets: inherit
     with:
       stage: developer
+      runner: ${{ needs.runner.outputs.heavy || '"ubuntu-24.04"' }}
       kind: feature
       issue: ${{ needs.meta.outputs.issue }}
       hint: ${{ inputs.hint }}
       fix: ${{ inputs.fix == true }}
 
   reviewer:
-    needs: [meta, architect, developer]
+    needs: [meta, architect, developer, runner]
     if: >-
       !cancelled() && needs.meta.result == 'success' &&
       !contains(needs.*.result, 'failure') && !contains(needs.*.outputs.status, 'abort') &&
@@ -113,12 +120,13 @@ jobs:
     secrets: inherit
     with:
       stage: reviewer
+      runner: ${{ needs.runner.outputs.heavy || '"ubuntu-24.04"' }}
       kind: feature
       issue: ${{ needs.meta.outputs.issue }}
       hint: ${{ inputs.hint }}
 
   developer_fix:
-    needs: [meta, architect, developer, reviewer]
+    needs: [meta, architect, developer, reviewer, runner]
     if: >-
       !cancelled() && needs.meta.result == 'success' &&
       !contains(needs.*.result, 'failure') && !contains(needs.*.outputs.status, 'abort') &&
@@ -127,12 +135,13 @@ jobs:
     secrets: inherit
     with:
       stage: developer
+      runner: ${{ needs.runner.outputs.heavy || '"ubuntu-24.04"' }}
       kind: feature
       issue: ${{ needs.meta.outputs.issue }}
       fix: true
 
   reviewer_2:
-    needs: [meta, architect, developer, reviewer, developer_fix]
+    needs: [meta, architect, developer, reviewer, developer_fix, runner]
     if: >-
       !cancelled() && needs.meta.result == 'success' &&
       !contains(needs.*.result, 'failure') && !contains(needs.*.outputs.status, 'abort') &&
@@ -141,6 +150,7 @@ jobs:
     secrets: inherit
     with:
       stage: reviewer
+      runner: ${{ needs.runner.outputs.heavy || '"ubuntu-24.04"' }}
       kind: feature
       issue: ${{ needs.meta.outputs.issue }}
       final: true

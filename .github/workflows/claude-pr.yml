@@ -1,0 +1,133 @@
+name: Claude PR Handling
+
+# Bearbeitet Pull Requests automatisch (ausser den Claude-Issue-PRs `claude/issue-*`, die laufen im Issue-Ablauf):
+#   1. Jeder PR aus diesem Repo (kein Fork, kein Entwurf, kein Bot) wird vom Reviewer-Agent geprüft
+#      -> formales GitHub-Review (Approve / Request changes).
+#   2. Trägt der PR das Label `claude-fix`, behebt der developer-Agent die Findings direkt im PR-Branch
+#      und der Reviewer prüft ein letztes Mal (max. 1 Fix-Runde).
+# Manuell/Kommentar: "Run workflow" bzw. `/claude [reviewer|<hinweis>]` im PR (siehe claude-comment.yml).
+# Läuft als pull_request_target (Workflow-Datei immer von main). Fork-PRs und Dependabot werden bewusst
+# ausgeschlossen; der PR-Branch wird nur für Branches dieses Repos ausgecheckt.
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review, labeled]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: PR-Nummer
+        required: true
+      mode:
+        description: review = nur prüfen, fix = prüfen und Findings beheben
+        type: choice
+        default: review
+        options: [review, fix]
+      hint:
+        description: Optionaler Zusatzhinweis (wird als Daten behandelt)
+        required: false
+
+concurrency:
+  group: claude-pr-${{ github.event.pull_request.number || inputs.pr_number }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  id-token: write
+
+jobs:
+  meta:
+    runs-on: ubuntu-24.04
+    outputs:
+      go: ${{ steps.m.outputs.go }}
+      pr: ${{ steps.m.outputs.pr }}
+      ref: ${{ steps.m.outputs.ref }}
+      fix: ${{ steps.m.outputs.fix }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      EVENT: ${{ github.event_name }}
+      ACTION: ${{ github.event.action }}
+      SENDER_TYPE: ${{ github.event.sender.type }}
+      SENDER: ${{ github.event.sender.login }}
+      LABEL: ${{ github.event.label.name }}
+      PR: ${{ github.event.pull_request.number || inputs.pr_number }}
+      MODE: ${{ inputs.mode }}
+    steps:
+      - id: m
+        run: |
+          set -euo pipefail
+          echo "go=false" >> "$GITHUB_OUTPUT"
+          case "$PR" in ''|*[!0-9]*) echo "::error::ungültige PR-Nummer"; exit 1;; esac
+          echo "pr=$PR" >> "$GITHUB_OUTPUT"
+
+          J=$(gh pr view "$PR" --json headRefName,isDraft,isCrossRepository,state,labels,author)
+          REF=$(jq -r .headRefName <<<"$J")
+          echo "ref=$REF" >> "$GITHUB_OUTPUT"
+          [ "$(jq -r .state <<<"$J")" = OPEN ] || { echo "PR nicht offen"; exit 0; }
+          [ "$(jq -r .isCrossRepository <<<"$J")" = false ] || { echo "Fork-PR: übersprungen"; exit 0; }
+          case "$REF" in claude/issue-*) echo "Claude-Issue-PR: läuft im Issue-Ablauf"; exit 0;; esac
+          AUTHOR=$(jq -r '.author.login' <<<"$J")
+          case "$AUTHOR" in dependabot*|*"[bot]") echo "Bot-PR ($AUTHOR): übersprungen"; exit 0;; esac
+
+          HAS_FIX=$(jq -r '[.labels[].name] | index("claude-fix") != null' <<<"$J")
+          if [ "$EVENT" = workflow_dispatch ]; then
+            FIX=false; [ "$MODE" = fix ] && FIX=true
+          else
+            # keine Läufe durch Bots (verhindert Schleifen nach Pushes von Claude), Entwürfe überspringen
+            [ "$SENDER_TYPE" != Bot ] || { echo "Auslöser ist ein Bot"; exit 0; }
+            [ "$(jq -r .isDraft <<<"$J")" = false ] || { echo "Entwurf: übersprungen"; exit 0; }
+            # labeled: nur das Label claude-fix löst aus
+            if [ "$ACTION" = labeled ] && [ "$LABEL" != claude-fix ]; then echo "anderes Label"; exit 0; fi
+            FIX=$HAS_FIX
+          fi
+          echo "fix=$FIX" >> "$GITHUB_OUTPUT"
+          echo "go=true" >> "$GITHUB_OUTPUT"
+
+  runner:
+    needs: [meta]
+    if: needs.meta.outputs.go == 'true'
+    uses: ./.github/workflows/claude-pick-runner.yml
+    secrets: inherit
+
+  review:
+    needs: [meta, runner]
+    if: needs.meta.outputs.go == 'true'
+    uses: ./.github/workflows/claude-stage.yml
+    secrets: inherit
+    with:
+      stage: reviewer
+      kind: pr
+      issue: ${{ needs.meta.outputs.pr }}
+      ref: ${{ needs.meta.outputs.ref }}
+      runner: ${{ needs.runner.outputs.heavy || '"ubuntu-24.04"' }}
+      hint: ${{ inputs.hint }}
+
+  fix:
+    needs: [meta, review, runner]
+    if: >-
+      !cancelled() && needs.meta.outputs.fix == 'true' && needs.review.outputs.status == 'changes'
+    uses: ./.github/workflows/claude-stage.yml
+    secrets: inherit
+    with:
+      stage: developer
+      kind: pr
+      issue: ${{ needs.meta.outputs.pr }}
+      ref: ${{ needs.meta.outputs.ref }}
+      runner: ${{ needs.runner.outputs.heavy || '"ubuntu-24.04"' }}
+      fix: true
+      hint: ${{ inputs.hint }}
+
+  review_final:
+    needs: [meta, review, fix, runner]
+    if: >-
+      !cancelled() && needs.fix.outputs.status == 'ok'
+    uses: ./.github/workflows/claude-stage.yml
+    secrets: inherit
+    with:
+      stage: reviewer
+      kind: pr
+      issue: ${{ needs.meta.outputs.pr }}
+      ref: ${{ needs.meta.outputs.ref }}
+      runner: ${{ needs.runner.outputs.heavy || '"ubuntu-24.04"' }}
+      final: true
