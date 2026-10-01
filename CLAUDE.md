@@ -22,9 +22,10 @@ This auto-installs WordPress at `http://localhost:8000`, activates the plugin, a
 "Shortcuts" page pre-populated with every shortcode for manual testing. WP-CLI is available via the
 `wp-cli` service.
 
-There are no automated PHP tests and no linter config in this repo — verification is manual (through
-the Docker site) plus `verify_api.php`, a standalone script that mocks the WordPress HTTP functions
-to hit the real Swiss Unihockey API directly:
+Automated checks live in `.github/workflows/ci.yml` (PHP lint on 7.4–8.4, `scripts/check_release.php`
+for version/ABSPATH/text-domain consistency, WordPress Plugin Check). Run the consistency check locally with
+`php scripts/check_release.php`. Beyond that, verification is manual (through the Docker site). Note:
+`verify_api.php` is stale (it requires a non-existent `includes/functions.php`) and does not run:
 
 ```bash
 php verify_api.php
@@ -35,6 +36,15 @@ Use it to sanity-check real API responses/shapes when changing anything in
 `includes/class-floorball-api-for-swiss-unihockey-display.php`.
 
 ## Release process
+
+**Claude-gated release (preferred):** open an issue and add the label `claude-release` (or run the
+"Claude Release" workflow with the issue number). `claude-release.yml` runs plan → prepare (release PR
+`release/vX.Y.Z`, version bump + changelog) → `ci.yml` on the release branch → verify (Claude's go/no-go) →
+publish (merges the PR, tags, dispatches `release.yml`). `publish` runs in the GitHub environment `release`;
+add required reviewers there to keep a human as the last gate. `release.yml` itself also runs `ci.yml` first,
+so no release path skips the tests.
+
+Manual path:
 
 Releases are tag-driven via `.github/workflows/release.yml`, triggered by pushing a `vX.Y.Z` tag (or
 manual dispatch with a tag input):

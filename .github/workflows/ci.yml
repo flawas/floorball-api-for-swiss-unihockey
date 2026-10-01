@@ -1,0 +1,81 @@
+name: CI
+
+# Tests für PRs und main. Wird ausserdem vom Release-Ablauf (release.yml, claude-release.yml) aufgerufen:
+# nur wenn alles grün ist, darf released werden.
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_call:
+    inputs:
+      ref:
+        description: Git-Ref, der getestet wird (Default = Aufrufer-Ref)
+        type: string
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: PHP lint (${{ matrix.php }})
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['7.4', '8.1', '8.3', '8.4']
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref }}
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: none
+      - name: Syntax check
+        run: |
+          find . -name '*.php' -not -path './.git/*' -not -path './graphify-out/*' -print0 \
+            | xargs -0 -n1 php -l | grep -v '^No syntax errors' || true
+          ! find . -name '*.php' -not -path './.git/*' -not -path './graphify-out/*' -print0 \
+            | xargs -0 -n1 php -l 2>&1 | grep -q '^\(Parse\|Fatal\) error'
+
+  consistency:
+    name: Version, ABSPATH, Textdomain, readme
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref }}
+          fetch-depth: 0
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: none
+      - run: php scripts/check_release.php
+      - name: readme.txt lässt sich generieren
+        run: |
+          php scripts/convert_readme.php
+          test -s readme.txt
+          grep -q '^=== ' readme.txt
+          grep -q '^== Changelog ==' readme.txt
+
+  plugin-check:
+    name: WordPress Plugin Check
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref }}
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: none
+      - name: Build dist directory (wie im Release)
+        run: |
+          php scripts/convert_readme.php
+          mkdir -p dist/swiss-floorball-api
+          rsync -a --exclude-from=.distignore --exclude dist ./ dist/swiss-floorball-api/
+      - uses: WordPress/plugin-check-action@v1
+        with:
+          build-dir: dist/swiss-floorball-api
+          wp-version: latest

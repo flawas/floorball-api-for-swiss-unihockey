@@ -16,8 +16,14 @@ permissions:
   packages: write
 
 jobs:
+  # Release nur, wenn alle Tests grün sind
+  test:
+    name: Tests
+    uses: ./.github/workflows/ci.yml
+
   build:
     name: Build and Release
+    needs: test
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.get_version.outputs.VERSION }}
