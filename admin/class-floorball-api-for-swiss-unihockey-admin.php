@@ -451,6 +451,43 @@ public function handle_clear_cache() {
 			'absint'
 			);
 
+		unset($args);
+		$args = array (
+							'type'      => 'input',
+							'subtype'   => 'checkbox',
+							'id'    => 'swissfloorball_show_icons',
+							'name'      => 'swissfloorball_show_icons',
+							'required' => '',
+							'get_options_list' => '',
+							'value_type'=>'normal',
+							'wp_data' => 'option',
+							'default' => '1'
+					);
+		add_settings_field(
+			'swissfloorball_show_icons',
+			__( 'Show icons', 'swiss-floorball-api' ),
+			array( $this, 'settings_page_render_settings_field' ),
+			'swfl_general_settings',
+			'swfl_general_section',
+			$args
+		);
+
+		register_setting(
+			'swfl_general_settings',
+			'swissfloorball_show_icons',
+			array( $this, 'sanitize_show_icons' )
+		);
+
+	}
+
+	/**
+	 * Sanitize the "show icons" checkbox: checked => '1', unchecked/missing => '0'.
+	 *
+	 * @param mixed $value Raw submitted value.
+	 * @return string '1' or '0'.
+	 */
+	public function sanitize_show_icons( $value ) {
+		return empty( $value ) ? '0' : '1';
 	}
 
 	/**
@@ -480,7 +517,7 @@ public function handle_clear_cache() {
 			'post_id' =>
 			*/     
 		if($args['wp_data'] == 'option'){
-			$wp_data_value = get_option($args['name']);
+			$wp_data_value = get_option($args['name'], isset($args['default']) ? $args['default'] : false);
 		} elseif($args['wp_data'] == 'post_meta'){
 			$wp_data_value = get_post_meta($args['post_id'], $args['name'], true );
 		}

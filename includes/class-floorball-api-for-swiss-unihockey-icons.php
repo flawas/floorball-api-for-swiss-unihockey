@@ -47,36 +47,104 @@ class Swiss_Floorball_Api_Icons {
 	 * Build the sanitized inline SVG markup for an icon.
 	 *
 	 * @since 1.0.6
-	 * @param string $name        One of the keys in self::$paths.
-	 * @param string $extra_class Optional. Additional CSS class(es) to append.
-	 * @return string Sanitized inline SVG markup, or an empty string if $name is unknown.
+	 * Names resolve against the built-in path map first, then against
+	 * public/icons/<name>.svg (Material Symbols Outlined, FILL=1).
+	 *
+	 * @param string       $name Icon name (lowercase letters, digits, underscore).
+	 * @param string|array $args Optional. A string is used as additional CSS class(es).
+	 *                           An array may contain 'class' and 'label' (text alternative).
+	 * @return string Sanitized inline SVG markup, or an empty string if icons are disabled or $name is unknown.
 	 */
-	public static function get( $name, $extra_class = '' ) {
-		if ( ! isset( self::$paths[ $name ] ) ) {
+	public static function get( $name, $args = '' ) {
+		if ( '1' !== (string) get_option( 'swissfloorball_show_icons', '1' ) || ! is_string( $name ) || ! preg_match( '/^[a-z0-9_]+$/', $name ) ) {
 			return '';
 		}
 
-		$class = trim( 'sfa-icon ' . $extra_class );
-
-		$svg = sprintf(
-			'<svg class="%1$s" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor" aria-hidden="true" focusable="false"><path d="%2$s"/></svg>',
-			esc_attr( $class ),
-			esc_attr( self::$paths[ $name ] )
+		if ( ! is_array( $args ) ) {
+			$args = array( 'class' => (string) $args );
+		}
+		$args = wp_parse_args(
+			$args,
+			array(
+				'class' => '',
+				'label' => '',
+			)
 		);
 
-		return wp_kses( $svg, self::allowed_svg_html() );
+		$icon = self::resolve( $name );
+		if ( null === $icon ) {
+			return '';
+		}
+
+		$class = trim( 'sfa-icon swfl-icon ' . $args['class'] );
+
+		if ( '' !== (string) $args['label'] ) {
+			$a11y = sprintf( 'role="img" aria-label="%s"', esc_attr( $args['label'] ) );
+		} else {
+			$a11y = 'aria-hidden="true"';
+		}
+
+		$svg = sprintf(
+			'<svg class="%1$s" xmlns="http://www.w3.org/2000/svg" viewBox="%2$s" width="1em" height="1em" fill="currentColor" %3$s focusable="false"><path d="%4$s"/></svg>',
+			esc_attr( $class ),
+			esc_attr( $icon['viewbox'] ),
+			$a11y,
+			esc_attr( $icon['path'] )
+		);
+
+		/**
+		 * Filters the icon SVG markup. The result is sanitized again with wp_kses().
+		 *
+		 * @param string $svg  SVG markup.
+		 * @param string $name Icon name.
+		 * @param array  $args Icon arguments (class, label).
+		 */
+		$svg = apply_filters( 'swfl_icon_svg', $svg, $name, $args );
+
+		return wp_kses( (string) $svg, self::allowed_svg_html() );
 	}
 
 	/**
 	 * Echo the sanitized inline SVG markup for an icon.
 	 *
 	 * @since 1.0.6
-	 * @param string $name        One of the keys in self::$paths.
-	 * @param string $extra_class Optional. Additional CSS class(es) to append.
+	 * @param string       $name Icon name.
+	 * @param string|array $args Optional. See self::get().
 	 * @return void
 	 */
-	public static function render( $name, $extra_class = '' ) {
-		echo self::get( $name, $extra_class ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Sanitized via wp_kses() in self::get().
+	public static function render( $name, $args = '' ) {
+		echo self::get( $name, $args ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Sanitized via wp_kses() in self::get().
+	}
+
+	/**
+	 * Look up the path data and viewBox for an icon.
+	 *
+	 * @param string $name Validated icon name.
+	 * @return array|null Array with 'path' and 'viewbox', or null if unknown/unreadable.
+	 */
+	private static function resolve( $name ) {
+		if ( isset( self::$paths[ $name ] ) ) {
+			return array(
+				'path'    => self::$paths[ $name ],
+				'viewbox' => '0 0 24 24',
+			);
+		}
+
+		$file = plugin_dir_path( dirname( __FILE__ ) ) . 'public/icons/' . $name . '.svg';
+		$contents = is_readable( $file ) ? file_get_contents( $file ) : false; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local plugin file.
+		if ( ! is_string( $contents ) || ! preg_match( '/<path[^>]*\sd="([^"]+)"/', $contents, $path ) ) {
+			return null;
+		}
+
+		$viewbox = '0 0 24 24';
+		if ( preg_match( '/viewBox="(-?[0-9. -]+)"/', $contents, $vb ) ) {
+			$viewbox = $vb[1];
+		}
+
+		return array(
+			'path'    => $path[1],
+			'viewbox' => $viewbox,
+		);
 	}
 
 	/**
@@ -95,11 +163,16 @@ class Swiss_Floorball_Api_Icons {
 				'height'      => true,
 				'fill'        => true,
 				'aria-hidden' => true,
+				'aria-label'  => true,
+				'role'        => true,
 				'focusable'   => true,
 			),
 			'path' => array(
 				'd'    => true,
 				'fill' => true,
+			),
+			'span' => array(
+				'class' => true,
 			),
 		);
 	}

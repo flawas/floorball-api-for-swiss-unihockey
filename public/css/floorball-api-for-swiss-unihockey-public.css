@@ -41,9 +41,19 @@
 
 .swiss-floorball-plugin {
     font-family: 'SFA Roboto', Roboto, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --swfl-icon-size: 1em;
+    --swfl-icon-color: currentColor;
 }
 
 /* Inline SVG icons (Material Symbols) */
+.swiss-floorball-plugin .swfl-icon {
+    display: inline-block;
+    vertical-align: -0.125em;
+    width: var(--swfl-icon-size);
+    height: var(--swfl-icon-size);
+    fill: var(--swfl-icon-color);
+}
+
 .swiss-floorball-plugin .sfa-icon {
     display: inline-block;
     vertical-align: -0.15em;
