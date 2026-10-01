@@ -47,12 +47,12 @@ class Swiss_Floorball_API_Client {
 	public function fetch_data( $endpoint, $args = array(), $cache_time = 3600 ) {
 		$url = $this->api_base_url . $endpoint;
 
-		// Add query args if present
+		// Add query args if present.
 		if ( ! empty( $args ) ) {
 			$url = add_query_arg( $args, $url );
 		}
 
-		// Generate a unique cache key for this request
+		// Generate a unique cache key for this request.
 		$cache_key   = 'swfl_' . md5( $url );
 		$cached_data = get_transient( $cache_key );
 
@@ -81,7 +81,7 @@ class Swiss_Floorball_API_Client {
 			return new WP_Error( 'json_error', 'Failed to decode JSON response' );
 		}
 
-		// Cache the successful response
+		// Cache the successful response.
 		set_transient( $cache_key, $data, $cache_time );
 
 		return $data;
