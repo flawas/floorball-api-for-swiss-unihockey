@@ -1,7 +1,8 @@
-name: Claude Auto-Fix Issues
+name: Claude Feature Requests
 
-# Automatisch: Label "claude" am Issue -> alle Stufen nacheinander.
-# Manuell (Actions -> Run workflow): eine einzelne Stufe für ein Issue erneut ausführen.
+# Automatisch: Label "claude-feature" am Issue -> architect, developer, reviewer (+1 Fix-Runde), writer.
+# Manuell (Actions -> Run workflow): eine einzelne Stufe für ein Feature-Issue erneut ausführen.
+# Nicht zusammen mit dem Label "claude" verwenden (Bugfix-Workflow).
 on:
   issues:
     types: [opened, labeled]
@@ -14,11 +15,12 @@ on:
         description: Stufe (all = kompletter Ablauf)
         type: choice
         default: all
-        options: [all, debugger, architect, developer, reviewer, writer]
+        options: [all, architect, developer, reviewer, writer]
       hint:
         description: Optionaler Zusatzhinweis für die Stufe
         required: false
 
+# gleiche Gruppe wie der Bugfix-Workflow: pro Issue läuft nur ein Lauf gleichzeitig
 concurrency:
   group: claude-auto-fix-${{ github.event.issue.number || inputs.issue_number }}
   cancel-in-progress: false
@@ -33,8 +35,8 @@ jobs:
   meta:
     if: >-
       github.event_name == 'workflow_dispatch' ||
-      (github.event.action == 'labeled' && github.event.label.name == 'claude') ||
-      (github.event.action == 'opened' && contains(github.event.issue.labels.*.name, 'claude'))
+      (github.event.action == 'labeled' && github.event.label.name == 'claude-feature') ||
+      (github.event.action == 'opened' && contains(github.event.issue.labels.*.name, 'claude-feature'))
     runs-on: ubuntu-24.04
     outputs:
       issue: ${{ steps.m.outputs.issue }}
@@ -49,31 +51,19 @@ jobs:
           echo "issue=$ISSUE" >> "$GITHUB_OUTPUT"
           echo "stage=$STAGE" >> "$GITHUB_OUTPUT"
 
-  debugger:
-    needs: [meta]
-    if: needs.meta.outputs.stage == 'all' || needs.meta.outputs.stage == 'debugger'
-    uses: ./.github/workflows/claude-stage.yml
-    secrets: inherit
-    with:
-      stage: debugger
-      issue: ${{ needs.meta.outputs.issue }}
-      hint: ${{ inputs.hint }}
-
   architect:
-    needs: [meta, debugger]
-    if: >-
-      !cancelled() && needs.meta.result == 'success' &&
-      !contains(needs.*.result, 'failure') && !contains(needs.*.outputs.status, 'abort') &&
-      (needs.meta.outputs.stage == 'all' || needs.meta.outputs.stage == 'architect')
+    needs: [meta]
+    if: needs.meta.outputs.stage == 'all' || needs.meta.outputs.stage == 'architect'
     uses: ./.github/workflows/claude-stage.yml
     secrets: inherit
     with:
       stage: architect
+      kind: feature
       issue: ${{ needs.meta.outputs.issue }}
       hint: ${{ inputs.hint }}
 
   developer:
-    needs: [meta, debugger, architect]
+    needs: [meta, architect]
     if: >-
       !cancelled() && needs.meta.result == 'success' &&
       !contains(needs.*.result, 'failure') && !contains(needs.*.outputs.status, 'abort') &&
@@ -82,11 +72,12 @@ jobs:
     secrets: inherit
     with:
       stage: developer
+      kind: feature
       issue: ${{ needs.meta.outputs.issue }}
       hint: ${{ inputs.hint }}
 
   reviewer:
-    needs: [meta, debugger, architect, developer]
+    needs: [meta, architect, developer]
     if: >-
       !cancelled() && needs.meta.result == 'success' &&
       !contains(needs.*.result, 'failure') && !contains(needs.*.outputs.status, 'abort') &&
@@ -95,12 +86,12 @@ jobs:
     secrets: inherit
     with:
       stage: reviewer
+      kind: feature
       issue: ${{ needs.meta.outputs.issue }}
       hint: ${{ inputs.hint }}
 
-  # Review-Runde 2 (nur im Gesamtablauf): developer behebt die Findings, reviewer prüft final.
   developer_fix:
-    needs: [meta, debugger, architect, developer, reviewer]
+    needs: [meta, architect, developer, reviewer]
     if: >-
       !cancelled() && needs.meta.outputs.stage == 'all' &&
       !contains(needs.*.result, 'failure') && !contains(needs.*.outputs.status, 'abort') &&
@@ -109,11 +100,12 @@ jobs:
     secrets: inherit
     with:
       stage: developer
+      kind: feature
       issue: ${{ needs.meta.outputs.issue }}
       fix: true
 
   reviewer_2:
-    needs: [meta, debugger, architect, developer, reviewer, developer_fix]
+    needs: [meta, architect, developer, reviewer, developer_fix]
     if: >-
       !cancelled() && needs.meta.outputs.stage == 'all' &&
       !contains(needs.*.result, 'failure') && !contains(needs.*.outputs.status, 'abort') &&
@@ -122,11 +114,12 @@ jobs:
     secrets: inherit
     with:
       stage: reviewer
+      kind: feature
       issue: ${{ needs.meta.outputs.issue }}
       final: true
 
   writer:
-    needs: [meta, debugger, architect, developer, reviewer, developer_fix, reviewer_2]
+    needs: [meta, architect, developer, reviewer, developer_fix, reviewer_2]
     if: >-
       !cancelled() && needs.meta.result == 'success' &&
       !contains(needs.*.result, 'failure') && !contains(needs.*.outputs.status, 'abort') &&
@@ -137,5 +130,6 @@ jobs:
     secrets: inherit
     with:
       stage: writer
+      kind: feature
       issue: ${{ needs.meta.outputs.issue }}
       hint: ${{ inputs.hint }}
