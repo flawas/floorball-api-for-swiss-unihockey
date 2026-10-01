@@ -54,6 +54,8 @@ jobs:
     steps:
       - id: m
         env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
           ISSUE: ${{ github.event.issue.number || inputs.issue_number }}
           STAGE: ${{ inputs.stage || 'all' }}
         run: |
@@ -68,9 +70,12 @@ jobs:
           echo "issue=$ISSUE" >> "$GITHUB_OUTPUT"
           echo "stage=$STAGE" >> "$GITHUB_OUTPUT"
           echo "run_loop=$LOOP" >> "$GITHUB_OUTPUT"
+          LABELS=$(gh issue view "$ISSUE" --json labels --jq '.labels[].name')
           for S in debugger architect developer reviewer writer; do
             I=$(idx "$S")
             if [ "$I" -ge "$START" ] && [ "$I" -le "$END" ]; then V=true; else V=false; fi
+            # debugger nur bei echten Bugs (Label "bug"); explizit gewählt (stage=debugger) läuft er immer
+            if [ "$S" = debugger ] && [ "$V" = true ] && [ "$STAGE" != debugger ] && ! printf '%s\n' "$LABELS" | grep -qx bug; then V=false; fi
             echo "run_$S=$V" >> "$GITHUB_OUTPUT"
           done
 

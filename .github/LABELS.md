@@ -6,7 +6,7 @@
 
 | Label | Setzen an | Wirkung | Workflow |
 |---|---|---|---|
-| `claude-fix` | Issue | Bugfix-Ablauf: debugger → architect → developer → PR → reviewer → writer | [claude-auto-fix.yml](workflows/claude-auto-fix.yml) |
+| `claude-fix` | Issue | Bugfix-Ablauf: debugger (nur bei zusätzlichem Label `bug`) → architect → developer → PR → reviewer → writer | [claude-auto-fix.yml](workflows/claude-auto-fix.yml) |
 | `claude-feature` | Issue | Feature-Ablauf: architect → developer → PR → reviewer → writer (keine debugger-Stufe) | [claude-feature.yml](workflows/claude-feature.yml) |
 | `claude-release` | Issue (Release-Tracking) | Release-Ablauf: plan → prepare → CI → verify → publish | [claude-release.yml](workflows/claude-release.yml) |
 | `sonarqube` | **PR** (Branch `claude/issue-<nr>`) | Holt die Sonar-Findings des PR; bei Findings behebt der developer sie, danach reviewer/writer erneut. Das Label wird danach entfernt, damit es erneut gesetzt werden kann. | [claude-sonar-pr.yml](workflows/claude-sonar-pr.yml) |

@@ -9,7 +9,7 @@ Du befindest dich bereits auf dem Branch `claude/issue-__ISSUE__` (vom Workflow 
    Schreibrechte hat.
 4. Neue Strings sind übersetzbar (Textdomain `swiss-floorball-api`), Ausgaben escaped, neue Shortcode-Attribute
    sanitisiert (`absint()` bei IDs). Neues Verhalten ist abwärtskompatibel; bestehende Ausgaben ändern sich nicht.
-5. Prüfe: `php -l` auf geänderten PHP-Dateien; bei Änderungen am API-Client/Display zusätzlich
+5. Prüfe: `php -l` auf geänderten PHP-Dateien sowie, wo die Spec es verlangt oder sinnvoll ist, `phpcs`/`phpcbf` (`--standard=WordPress`, WPCS ist installiert); bei Änderungen am API-Client/Display zusätzlich
    `php verify_api.php`. Schlägt etwas fehl und ist nicht trivial behebbar -> Abbruchregel.
 6. Committe (Nachricht mit "Refs #__ISSUE__") und pushe `claude/issue-__ISSUE__`. Danach (nur wenn noch kein PR existiert, prüfe mit `gh pr list --head claude/issue-__ISSUE__`) PR gegen den Default-Branch erstellen: Titel `feat: ...`, Beschreibung "Closes #__ISSUE__" und Kurzfassung der Änderung. Kein Merge. Bei `FIX=true` existiert der PR bereits: nur pushen und am PR kommentieren, welche Findings behoben wurden.
 7. Kommentar `<!-- sfa-stage:developer status:ok -->` mit geänderten Dateien, Prüfergebnissen und Link zum PR.

@@ -96,14 +96,25 @@ jobs:
             exit 1
           fi
 
-      - name: Pick model
+      - name: Pick model and turn limit
         id: model
+        env:
+          KIND: ${{ inputs.kind }}
         run: |
           case "$STAGE" in
             writer) M=claude-haiku-4-5-20251001 ;;
             *) M=claude-sonnet-5-5 ;;
           esac
+          # Turn-Limit je Stufe: Schutz vor ausufernden Läufen (Developer und Release brauchen mehr)
+          if [ "$KIND" = release ]; then T=30; else
+            case "$STAGE" in
+              developer) T=30 ;;
+              unblocker) T=20 ;;
+              *) T=15 ;;
+            esac
+          fi
           echo "model=$M" >> "$GITHUB_OUTPUT"
+          echo "turns=$T" >> "$GITHUB_OUTPUT"
 
       # graphify: Wissensgraph aus dem Code (AST, ohne LLM), spart Lese-Tokens.
       - uses: actions/setup-python@v6
@@ -115,6 +126,18 @@ jobs:
           pip install --quiet graphifyy
           graphify update .
           test -f graphify-out/graph.json
+
+      # PHP-Codestandard-Werkzeuge (phpcs/phpcbf mit WordPress Coding Standards) für Umsetzung und Review
+      - name: Install phpcs/phpcbf with WPCS
+        if: inputs.stage == 'developer' || inputs.stage == 'reviewer'
+        run: |
+          composer global config --no-plugins allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+          composer global require --no-interaction --quiet --dev \
+            wp-coding-standards/wpcs dealerdirect/phpcodesniffer-composer-installer
+          echo "$(composer global config bin-dir --absolute --quiet)" >> "$GITHUB_PATH"
+          export PATH="$(composer global config bin-dir --absolute --quiet):$PATH"
+          phpcs -i | grep -q WordPress
+          phpcbf --version
 
       - name: Load Claude token from 1Password
         uses: 1password/load-secrets-action@v5
@@ -128,15 +151,13 @@ jobs:
         with:
           claude_code_oauth_token: ${{ env.CLAUDE_CODE_OAUTH_TOKEN }}
           prompt: ${{ steps.prompt.outputs.text }}
-          # temporär: vollständiges Log zur Fehlersuche (Stufen, die ohne Ergebnis enden)
-          show_full_output: true
           # Dispatches aus unseren eigenen Workflows (Sonar-Fixer, Kommentar-Handler) laufen als Bot
           # "github-actions"; "sonarqubecloud" ist der Sonar-Bot. Andere Bots bleiben gesperrt.
           allowed_bots: "github-actions,sonarqubecloud"
           claude_args: |
             --model ${{ steps.model.outputs.model }}
-            --max-turns 30
-            --allowedTools "Task,Read,Edit,Write,Glob,Grep,Bash(git:*),Bash(gh:*),Bash(php:*),Bash(graphify:*)"
+            --max-turns ${{ steps.model.outputs.turns }}
+            --allowedTools "Task,Read,Edit,Write,Glob,Grep,Bash(git:*),Bash(gh:*),Bash(php:*),Bash(phpcs:*),Bash(phpcbf:*),Bash(graphify:*)"
 
       # Status = Marker des neuesten Stufen-Kommentars seit Start. Fehlt er -> abort (im Zweifel abbrechen).
       - name: Read stage status
