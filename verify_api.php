@@ -34,6 +34,9 @@ class WP_Error {
 function is_wp_error( $thing ) {
 	return $thing instanceof WP_Error;
 }
+function apply_filters( $tag, $value ) {
+	return $value;
+}
 function add_query_arg( $args, $url ) {
 	return $url . ( false === strpos( $url, '?' ) ? '?' : '&' ) . http_build_query( $args );
 }
