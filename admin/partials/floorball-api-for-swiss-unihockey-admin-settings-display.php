@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
 <div class="wrap sfa-admin-wrap">
 	<div class="sfa-admin-header">
-		<h1>⚙️ Einstellungen</h1>
+		<h1><?php Swiss_Floorball_Api_Icons::render( 'settings' ); ?> Einstellungen</h1>
 		<p>Konfigurieren Sie Ihre Swiss Floorball API Verbindung</p>
 	</div>
 
@@ -28,7 +28,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	if ( isset( $_GET['cache_cleared'] ) && $_GET['cache_cleared'] == '1' ) {
 		$deleted_count = isset( $_GET['deleted_count'] ) ? intval( $_GET['deleted_count'] ) : 0;
 		echo '<div class="notice notice-success is-dismissible">';
-		echo '<p><strong>✓ Cache erfolgreich geleert!</strong> ' . $deleted_count . ' zwischengespeicherte Einträge wurden gelöscht.</p>';
+		echo '<p><strong>' . Swiss_Floorball_Api_Icons::get( 'check' ) . ' Cache erfolgreich geleert!</strong> ' . esc_html( $deleted_count ) . ' zwischengespeicherte Einträge wurden gelöscht.</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Icon markup sanitized via wp_kses() in Swiss_Floorball_Api_Icons::get().
 		echo '</div>';
 	}
 	?>
@@ -48,13 +48,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	</div>
 
 	<div class="sfa-form-section">
-		<h2>🗑️ Cache Verwaltung</h2>
+		<h2><?php Swiss_Floorball_Api_Icons::render( 'delete' ); ?> Cache Verwaltung</h2>
 		<p class="sfa-helper-text">Löschen Sie alle zwischengespeicherten API-Daten, um frische Daten vom Server zu laden.</p>
 		<form method="POST" action="<?php echo esc_url( admin_url('admin-post.php') ); ?>" class="sfa-form--spaced-top">
 			<input type="hidden" name="action" value="swfl_clear_cache">
 			<?php wp_nonce_field( 'swfl_clear_cache_action', 'swfl_clear_cache_nonce' ); ?>
 			<button type="submit" class="button button-secondary" onclick="return confirm('Möchten Sie wirklich den gesamten Cache leeren?');">
-				🗑️ Cache leeren
+				<?php Swiss_Floorball_Api_Icons::render( 'delete' ); ?> Cache leeren
 			</button>
 		</form>
 	</div>

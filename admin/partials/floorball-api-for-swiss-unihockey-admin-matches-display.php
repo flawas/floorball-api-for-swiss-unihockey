@@ -36,7 +36,7 @@ $match_id = isset( $_GET['match_id'] ) ? absint( $_GET['match_id'] ) : null;
 
 <div class="wrap sfa-admin-wrap">
     <div class="sfa-admin-header">
-        <h1>🏑 <?php echo esc_html( get_admin_page_title() ); ?></h1>
+        <h1><?php Swiss_Floorball_Api_Icons::render( 'hockey' ); ?> <?php echo esc_html( get_admin_page_title() ); ?></h1>
         <p><?php esc_html_e( 'Übersicht der letzten Spiele und Details', 'swiss-floorball-api' ); ?></p>
     </div>
 
@@ -50,7 +50,7 @@ $match_id = isset( $_GET['match_id'] ) ? absint( $_GET['match_id'] ) : null;
         
         // Back button
         $back_url = remove_query_arg( 'match_id' );
-        echo '<p><a href="' . esc_url( $back_url ) . '" class="button button-primary">' . esc_html__( '← Zurück zur Übersicht', 'swiss-floorball-api' ) . '</a></p>';
+        echo '<p><a href="' . esc_url( $back_url ) . '" class="button button-primary">' . Swiss_Floorball_Api_Icons::get( 'back' ) . ' ' . esc_html__( 'Zurück zur Übersicht', 'swiss-floorball-api' ) . '</a></p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Icon markup sanitized via wp_kses() in Swiss_Floorball_Api_Icons::get().
 
         // Render Match Details
         Swiss_Floorball_API_Display::render_game_details_table( $match_id );
@@ -72,7 +72,7 @@ $match_id = isset( $_GET['match_id'] ) ? absint( $_GET['match_id'] ) : null;
         <hr class="sfa-divider">
         
         <div class="sfa-admin-header">
-            <h1>🏑 <?php esc_html_e( 'Spiele pro Team', 'swiss-floorball-api' ); ?></h1>
+            <h1><?php Swiss_Floorball_Api_Icons::render( 'hockey' ); ?> <?php esc_html_e( 'Spiele pro Team', 'swiss-floorball-api' ); ?></h1>
             <p><?php esc_html_e( 'Übersicht der letzten Spiele und Details', 'swiss-floorball-api' ); ?></p>
         </div>
         

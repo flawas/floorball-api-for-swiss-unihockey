@@ -20,13 +20,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
 <div class="wrap sfa-admin-wrap">
 	<div class="sfa-admin-header">
-		<h1>🏑 Swiss Floorball Plugin</h1>
+		<h1><?php Swiss_Floorball_Api_Icons::render( 'hockey' ); ?> Swiss Floorball Plugin</h1>
 		<p>Übersicht und Verwaltung Ihrer Swiss Floorball Daten</p>
 	</div>
 
 	<div class="sfa-cards-container">
 		<div class="sfa-card">
-			<h3>⚙️ Aktuelle Einstellungen</h3>
+			<h3><?php Swiss_Floorball_Api_Icons::render( 'settings' ); ?> Aktuelle Einstellungen</h3>
 			<table class="sfa-settings-table">
 				<tr>
 					<td>API Key</td>
@@ -56,7 +56,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</div>
 
 		<div class="sfa-card">
-			<h3>📊 Schnellzugriff</h3>
+			<h3><?php Swiss_Floorball_Api_Icons::render( 'chart' ); ?> Schnellzugriff</h3>
 			<p class="sfa-nav-description">Navigieren Sie zu den verschiedenen Bereichen:</p>
 			<p class="sfa-nav-item">
 				<a href="<?php echo esc_url( admin_url('admin.php?page=floorball-api-for-swiss-unihockey-settings') ); ?>" class="button">Einstellungen</a>
@@ -91,7 +91,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	} else {
 		echo '<div class="sfa-card">';
 		echo '<div class="sfa-empty-state">';
-		echo '<div class="sfa-empty-state-icon">⚠️</div>';
+		echo '<div class="sfa-empty-state-icon">' . Swiss_Floorball_Api_Icons::get( 'warning' ) . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Sanitized via wp_kses() in Swiss_Floorball_Api_Icons::get().
 		echo '<div class="sfa-empty-state-text">Bitte konfigurieren Sie zuerst die Einstellungen (Club ID und Saison).</div>';
 		echo '</div>';
 		echo '</div>';

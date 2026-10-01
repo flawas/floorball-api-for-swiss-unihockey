@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <div class="wrap sfa-admin-wrap">
     <div class="sfa-admin-header">
-        <h1>📝 Shortcodes Übersicht</h1>
+        <h1><?php Swiss_Floorball_Api_Icons::render( 'description' ); ?> Shortcodes Übersicht</h1>
         <p>Hier finden Sie eine Übersicht über alle verfügbaren Shortcodes, deren Parameter und Anwendungsbeispiele.</p>
     </div>
 
@@ -153,7 +153,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     </div>
 
     <div class="sfa-table-container">
-        <h2>⚙️ Backend-Only Funktionen</h2>
+        <h2><?php Swiss_Floorball_Api_Icons::render( 'settings' ); ?> Backend-Only Funktionen</h2>
         <p>Die folgenden Funktionen sind nur im Backend verfügbar und haben keine öffentlichen Shortcodes. Sie werden hauptsächlich für administrative Zwecke verwendet.</p>
         
         <table class="sfa-data-table">
