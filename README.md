@@ -124,6 +124,11 @@ This plugin connects to the **Swiss Unihockey API** (api-v2.swissunihockey.ch) t
 
 ## 📜 Changelog
 
+### 1.0.6 (2026-10-01)
+
+* Fix: Add explicit request timeout (5 seconds, minimum 1 second) to API client calls, filterable via `swfl_request_timeout` hook
+* Fix: Add `apply_filters()` stub to verify_api.php for test compatibility
+
 ### 1.0.5 (2026-08-09)
 
 * Fix: Remove FAQ answer restricting the plugin to "personal and non-commercial use" — this contradicted the GPLv2-or-later license, which grants unrestricted use including commercial. Not allowed under WordPress.org plugin guidelines.
