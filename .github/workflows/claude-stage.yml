@@ -24,7 +24,7 @@ on:
         type: string
         default: ''
       kind:
-        description: "fix (Bugs/Issues), feature (Feature Requests), release, unblock oder pr (beliebiger Pull Request)"
+        description: "fix (Bugs/Issues), feature (Feature Requests), release, unblock, pr (beliebiger Pull Request) oder docs (Dokumentation)"
         type: string
         default: fix
       runner:
@@ -100,7 +100,7 @@ jobs:
           BR="claude/issue-$ISSUE"
           if git ls-remote --exit-code --heads origin "$BR" >/dev/null; then
             git checkout -B "$BR" "origin/$BR"
-          elif [ "$STAGE" = developer ]; then
+          elif [ "$STAGE" = developer ] || [ "${{ inputs.kind }}" = docs ]; then
             git checkout -b "$BR" "origin/${{ github.event.repository.default_branch }}"
           else
             echo "::error::Branch $BR existiert nicht - zuerst die Stufe developer ausführen."
@@ -116,12 +116,16 @@ jobs:
             writer) M=claude-haiku-4-5-20251001 ;;
             *) M=claude-sonnet-5-5 ;;
           esac
-          # Turn-Limit je Stufe: Schutz vor ausufernden Läufen (Developer und Release brauchen mehr)
-          if [ "$KIND" = release ]; then T=30; else
+          # Doku über das gesamte Plugin: Sonnet und mehr Turns
+          [ "$KIND" = docs ] && M=claude-sonnet-5-5
+          # Turn-Limit je Stufe (Turns der Subagents zählen mit): Schutz vor ausufernden Läufen
+          if [ "$KIND" = docs ]; then T=80
+          elif [ "$KIND" = release ]; then T=50
+          else
             case "$STAGE" in
-              developer) T=30 ;;
-              unblocker) T=20 ;;
-              *) T=15 ;;
+              developer) T=60 ;;
+              unblocker) T=40 ;;
+              *) T=30 ;;
             esac
           fi
           echo "model=$M" >> "$GITHUB_OUTPUT"
@@ -130,12 +134,12 @@ jobs:
       # graphify: Wissensgraph aus dem Code (AST, ohne LLM), spart Lese-Tokens.
       # Nicht für den writer (liest kaum Code); pip-Cache und Graph-Cache machen den Schritt schnell.
       - uses: actions/setup-python@v6
-        if: inputs.stage != 'writer'
+        if: inputs.stage != 'writer' || inputs.kind == 'docs'
         with:
           python-version: '3.12'
 
       - name: Cache pip and graphify graph
-        if: inputs.stage != 'writer'
+        if: inputs.stage != 'writer' || inputs.kind == 'docs'
         uses: actions/cache@v5
         with:
           path: |
@@ -145,7 +149,7 @@ jobs:
           restore-keys: graphify-${{ runner.os }}-
 
       - name: Build graphify knowledge graph
-        if: inputs.stage != 'writer'
+        if: inputs.stage != 'writer' || inputs.kind == 'docs'
         run: |
           pip install --quiet graphifyy
           graphify update .
@@ -178,7 +182,11 @@ jobs:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
           CLAUDE_CODE_OAUTH_TOKEN: op://Github Actions/Claude OAUTH Token/Anmeldedaten
 
-      - uses: anthropics/claude-code-action@v1
+      - id: claude
+        # Ergebnis zählt der Marker-Kommentar (Schritt "Read stage status"), nicht der Exit-Code der Action:
+        # sie meldet z.B. "Erfolg nach 75 Turns, Limit 30" als Fehler, obwohl die Stufe fertig ist.
+        continue-on-error: true
+        uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ env.CLAUDE_CODE_OAUTH_TOKEN }}
           prompt: ${{ steps.prompt.outputs.text }}

@@ -1,0 +1,54 @@
+name: Claude Documentation
+
+# Manuell ausgelöst (Actions -> Run workflow): der Agent wp-technical-writer schreibt/aktualisiert die Dokumentation
+# für das GESAMTE Plugin unter docs/ und öffnet einen PR (nicht automatisch gemergt).
+# Läuft bewusst nie automatisch.
+on:
+  workflow_dispatch:
+    inputs:
+      language:
+        description: Sprache der Dokumentation
+        type: choice
+        default: en
+        options: [en, de]
+      hint:
+        description: Optionaler Hinweis (z.B. Schwerpunkt oder Zielgruppe; die Doku bleibt trotzdem vollständig)
+        required: false
+
+concurrency:
+  group: claude-docs
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  id-token: write
+
+jobs:
+  tracking:
+    runs-on: ubuntu-24.04
+    outputs:
+      issue: ${{ steps.t.outputs.issue }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - id: t
+        run: |
+          set -euo pipefail
+          gh label create documentation --color 0075ca --description "Improvements or additions to documentation" 2>/dev/null || true
+          URL=$(gh issue create --label documentation \
+            --title "Documentation: update for the whole plugin ($(date -u +%F))" \
+            --body "Tracking-Issue für den Lauf von [Claude Documentation]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID). Der PR schliesst dieses Issue.")
+          echo "issue=${URL##*/}" >> "$GITHUB_OUTPUT"
+
+  docs:
+    needs: [tracking]
+    uses: ./.github/workflows/claude-stage.yml
+    secrets: inherit
+    with:
+      stage: writer
+      kind: docs
+      issue: ${{ needs.tracking.outputs.issue }}
+      hint: "Sprache der Dokumentation: ${{ inputs.language }}. ${{ inputs.hint }}"

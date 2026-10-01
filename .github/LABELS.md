@@ -56,6 +56,10 @@ Bricht eine Stufe ab, startet automatisch [claude-unblock.yml](workflows/claude-
 
 Maximal 2 Versuche je Issue, danach `needs-human`. Manuell starten: Actions → "Claude Unblocker" → Run workflow.
 
+## Dokumentation (manuell)
+
+[claude-docs.yml](workflows/claude-docs.yml) wird nur von Hand gestartet (Actions → "Claude Documentation" → Run workflow, Sprache `en`/`de`). Der Agent `wp-technical-writer` gleicht die Doku jedes Mal für das **gesamte Plugin** unter `docs/` ab und öffnet einen PR (Label `documentation`, Tracking-Issue wird mit dem PR geschlossen). Gemergt wird nicht automatisch. `docs/` ist vom Release-ZIP ausgeschlossen.
+
 ## Steuerung ohne Label: Kommentare
 
 Kommentare von Menschen mit Schreibrechten ([claude-comment.yml](workflows/claude-comment.yml)):

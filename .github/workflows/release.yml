@@ -84,7 +84,8 @@ jobs:
             --exclude verify_api.php \
             --exclude README.md \
             --exclude graphify-out \
-            --exclude assets
+            --exclude assets \
+            --exclude docs
           zip -r swiss-floorball-api.zip swiss-floorball-api
           rm -rf swiss-floorball-api
 
