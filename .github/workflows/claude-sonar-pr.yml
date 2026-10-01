@@ -6,8 +6,10 @@ name: Claude Sonar PR Check
 #
 # Voraussetzung: Sonar hat den PR analysiert; Secret SONAR_TOKEN, Variable SONAR_PROJECT_KEY
 # (optional SONAR_HOST_URL, Standard https://sonarcloud.io).
+# pull_request_target: nutzt immer die Workflow-Datei vom Default-Branch und braucht keine Freigabe für
+# Bot-PRs. Sicher, weil hier kein PR-Code ausgecheckt oder ausgeführt wird (nur API-Aufrufe).
 on:
-  pull_request:
+  pull_request_target:
     types: [labeled]
 
 permissions:
