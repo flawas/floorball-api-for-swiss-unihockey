@@ -62,6 +62,26 @@ jobs:
           grep -q '^=== ' readme.txt
           grep -q '^== Changelog ==' readme.txt
 
+  phpcs:
+    name: WordPress Coding Standards (informativ)
+    runs-on: ubuntu-24.04
+    continue-on-error: true   # Bestandscode hat noch Altlasten; nach dem Aufräumen entfernen, damit der Job blockiert
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref }}
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: cs2pr
+      - name: Install PHPCS + WPCS
+        run: |
+          composer global config --no-interaction allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+          composer global require --no-interaction --no-progress wp-coding-standards/wpcs dealerdirect/phpcodesniffer-composer-installer
+          echo "$(composer global config bin-dir --absolute --quiet)" >> "$GITHUB_PATH"
+      - name: phpcs
+        run: phpcs -q --report=checkstyle | cs2pr
+
   plugin-check:
     name: WordPress Plugin Check
     if: github.event_name != 'push' && github.event_name != 'schedule'   # auf main redundant: lief schon im PR

@@ -124,3 +124,37 @@ change) and is called out in the 1.0.5 changelog.
 - CSS/JS is scoped to plugin containers (`.swiss-floorball-plugin`, `.sfa-admin-wrap`) — never touch
   `:root` or global selectors like `html`, `.button-primary`, so the plugin doesn't leak styles into
   themes or wp-admin globally.
+
+## WordPress Coding Standards
+
+This is a WordPress plugin, so all new and changed code must follow the official
+[WordPress Coding Standards](https://developer.wordpress.org/coding-standards/) (PHP, HTML, CSS,
+JavaScript and inline documentation). Match the existing file's style where it already complies;
+don't reformat untouched code as a drive-by.
+
+- **PHP formatting:** tabs for indentation, Yoda conditions (`if ( 'x' === $var )`), spaces inside
+  parentheses and brackets (`foo( $bar )`, `$a[ 'key' ]`), long array syntax is not required but
+  `array()` / `[]` must be used consistently with the surrounding file, braces always (no
+  single-line `if`), strict comparisons (`===`, `in_array( ..., true )`), no short open tags.
+- **Naming:** `snake_case` for functions, methods and variables; `Capitalized_Words_With_Underscores`
+  for classes; class files named `class-*.php` in lowercase with hyphens; hook names, options and
+  transients prefixed (`swfl_`, `swissfloorball_`) to avoid global collisions.
+- **Security:** sanitize input (`sanitize_text_field`, `absint`, `wp_unslash`), validate, escape
+  late on output, nonce + capability checks on every state-changing request, `$wpdb->prepare()` for
+  any SQL (see Conventions above).
+- **WordPress APIs over PHP natives:** `wp_remote_get`, `wp_json_encode`, `wp_parse_url`,
+  transients/options API, `wp_enqueue_style/script` (never hardcoded `<script>`/`<link>` tags),
+  WP_Filesystem instead of `file_put_contents`/`fopen` where applicable.
+- **Documentation:** PHPDoc block on every file, class, method and function (`@since`, `@param`,
+  `@return`); inline comments end with a period and explain *why*, not *what*.
+- **i18n:** translatable strings use literal text domains (no variables), `sprintf()` with
+  placeholders and translator comments (`/* translators: %s: ... */`) instead of string
+  concatenation, `_n()` for plurals.
+- **CSS/JS:** follow the WordPress CSS and JavaScript coding standards (tabs, lowercase hyphenated
+  class names, no `!important` unless unavoidable, no global variables in JS).
+- **Checking:** the ruleset lives in `.phpcs.xml.dist` (WordPress-Extra + WordPress-Docs, text domain
+  and prefixes configured; legacy class/file naming is excluded on purpose). Run
+  `phpcs` (and `phpcbf` for auto-fixable issues) on touched files; install via
+  `composer global require wp-coding-standards/wpcs dealerdirect/phpcodesniffer-composer-installer`.
+  CI runs it as the informational `phpcs` job in `ci.yml` (existing code still has violations), so new
+  code must not add to them.
