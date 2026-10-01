@@ -1,0 +1,116 @@
+name: Claude Comment Handling
+
+# Reagiert auf JEDEN Kommentar von Menschen mit Schreibrechten (kein /claude nötig):
+#   Issue, Stufe abgebrochen (Rückfrage von Claude)  -> abgebrochene Stufe + folgende werden mit deinem Kommentar fortgesetzt
+#   Issue/PR mit offenem Claude-PR                   -> developer behebt, danach reviewer/writer
+#   sonst (Lauf läuft noch / Issue nicht von Claude) -> keine Aktion; spätere Stufen lesen den Kommentar ohnehin
+# Optionale Befehle (steuern gezielt, Kommentartext = Hinweis):
+#   /claude all | /claude from <stufe> | /claude <stufe>   (debugger|architect|developer|reviewer|writer)
+#   /claude reviewer   (im PR: erneut prüfen)
+# Kommentare von Bots und Claude-Marker-Kommentare lösen nie etwas aus (keine Endlosschleife).
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+  actions: write
+
+jobs:
+  dispatch:
+    if: >-
+      github.event.comment.user.type != 'Bot' &&
+      !startsWith(github.event.comment.body, '<!-- sfa-stage') &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
+    runs-on: ubuntu-24.04
+    env:
+      GH_TOKEN: ${{ github.token }}
+      BODY: ${{ github.event.comment.body }}
+      NUMBER: ${{ github.event.issue.number }}
+      IS_PR: ${{ github.event.issue.pull_request != null }}
+      COMMENT_ID: ${{ github.event.comment.id }}
+      AUTHOR: ${{ github.event.comment.user.login }}
+      DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+    steps:
+      - name: Parse comment and dispatch
+        run: |
+          set -euo pipefail
+          reply() { gh issue comment "$NUMBER" --body "$1" >/dev/null; }
+          strip_first_word() { printf '%s' "$1" | sed "1s#^$2[[:space:]]*##"; }
+          open_pr() { gh pr list --head "claude/issue-$1" --state open --json number --jq length; }
+
+          EXPLICIT=false
+          TEXT="$BODY"
+          if printf '%s' "$BODY" | head -1 | grep -qE '^/claude([[:space:]]|$)'; then
+            EXPLICIT=true
+            TEXT=$(printf '%s' "$BODY" | sed '1s#^/claude[[:space:]]*##')
+          fi
+          WORD=$(printf '%s' "$TEXT" | head -1 | awk '{print $1}')
+
+          FIX=false
+          STAGE=""
+          HINT=""
+          if [ "$IS_PR" = true ]; then
+            REF=$(gh pr view "$NUMBER" --json headRefName --jq .headRefName)
+            case "$REF" in claude/issue-*) ;; *) exit 0 ;; esac    # nur Claude-PRs
+            ISSUE="${REF#claude/issue-}"
+            if [ "$EXPLICIT" = true ] && [ "$WORD" = reviewer ]; then
+              STAGE=reviewer; HINT=$(strip_first_word "$TEXT" reviewer)
+            else
+              STAGE=from-developer; FIX=true; HINT="Kommentar von $AUTHOR am PR #$NUMBER: $TEXT"
+            fi
+          else
+            ISSUE="$NUMBER"
+            LABELS=$(gh issue view "$ISSUE" --json labels --jq '.labels[].name')
+            COMMENTS=$(gh api "repos/$GITHUB_REPOSITORY/issues/$ISSUE/comments" --paginate --jq '.[].body')
+            MARKERS=$(printf '%s\n' "$COMMENTS" | grep -oE 'sfa-stage:[a-z]+ status:[a-z]+' || true)
+            MANAGED=false
+            printf '%s\n' "$LABELS" | grep -qE '^(claude-fix|claude-feature|claude-aborted)$' && MANAGED=true
+            [ -n "$MARKERS" ] && MANAGED=true
+            # Ohne Befehl nur auf Issues reagieren, die Claude bearbeitet
+            if [ "$EXPLICIT" = false ] && [ "$MANAGED" = false ]; then exit 0; fi
+
+            case "$EXPLICIT:$WORD" in
+              true:all)  STAGE=all; HINT=$(strip_first_word "$TEXT" all) ;;
+              true:from) NEXT=$(printf '%s' "$TEXT" | head -1 | awk '{print $2}')
+                         STAGE="from-$NEXT"; HINT=$(printf '%s' "$TEXT" | sed "1s#^from[[:space:]]*$NEXT[[:space:]]*##") ;;
+              true:debugger|true:architect|true:developer|true:reviewer|true:writer)
+                         STAGE=$WORD; HINT=$(strip_first_word "$TEXT" "$WORD") ;;
+              *)         # kein Befehl: Zustand des Issues entscheidet, der ganze Text ist der Hinweis
+                         HINT="Kommentar von $AUTHOR: $TEXT"
+                         LAST=$(printf '%s\n' "$MARKERS" | tail -1)
+                         if [ "${LAST##*status:}" = abort ]; then
+                           S=${LAST#sfa-stage:}; STAGE="from-${S%% *}"
+                         elif [ "$(open_pr "$ISSUE")" -gt 0 ]; then
+                           STAGE=from-developer; FIX=true
+                         elif [ "$EXPLICIT" = true ]; then
+                           reply "Keine abgebrochene Stufe und kein offener PR gefunden. Nutze \`/claude <stufe> [hinweis]\`, \`/claude from <stufe>\` oder \`/claude all\`."
+                           exit 0
+                         else
+                           exit 0   # Lauf läuft noch oder wartet: spätere Stufen lesen den Kommentar
+                         fi ;;
+            esac
+          fi
+
+          # Fix- oder Feature-Workflow anhand der Labels des Issues
+          LABELS=$(gh issue view "$ISSUE" --json labels --jq '.labels[].name')
+          if printf '%s\n' "$LABELS" | grep -qx 'claude-feature'; then WF=claude-feature.yml; KIND=feature
+          elif printf '%s\n' "$LABELS" | grep -qx 'claude-release'; then exit 0   # Release-Issues: nicht per Kommentar
+          else WF=claude-auto-fix.yml; KIND=fix; fi
+
+          case "$STAGE" in
+            all|from-architect|from-developer|from-reviewer|from-writer|architect|developer|reviewer|writer) ;;
+            debugger|from-debugger) [ "$KIND" = fix ] || { reply "Feature-Requests haben keine debugger-Stufe."; exit 0; }
+                                    [ "$STAGE" = from-debugger ] && STAGE=all ;;
+            *) reply "Unbekannte Stufe \`$STAGE\`. Erlaubt: all, from <stufe>, debugger, architect, developer, reviewer, writer."; exit 0 ;;
+          esac
+
+          # Rückmeldung (👀) und Abbruch-Label entfernen, damit der Status stimmt
+          gh api -X POST "repos/$GITHUB_REPOSITORY/issues/comments/$COMMENT_ID/reactions" -f content=eyes >/dev/null || true
+          gh issue edit "$ISSUE" --remove-label claude-aborted >/dev/null 2>&1 || true
+
+          gh workflow run "$WF" --ref "$DEFAULT_BRANCH" \
+            -f issue_number="$ISSUE" -f stage="$STAGE" -f fix="$FIX" -f hint="$HINT"
+          echo "Gestartet: $WF stage=$STAGE fix=$FIX issue=#$ISSUE"

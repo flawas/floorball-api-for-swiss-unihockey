@@ -1,7 +1,8 @@
 name: Claude Auto-Fix Issues
 
 # Automatisch: Label "claude-fix" am Issue -> alle Stufen nacheinander.
-# Manuell (Actions -> Run workflow): eine einzelne Stufe für ein Issue erneut ausführen.
+# Manuell (Actions -> Run workflow) oder per Issue-Kommentar "/claude ..." (siehe claude-comment.yml):
+#   stage = all | from-<stufe> (ab dieser Stufe weiter) | <stufe> (nur diese Stufe)
 on:
   issues:
     types: [opened, labeled]
@@ -11,14 +12,19 @@ on:
         description: Issue-Nummer
         required: true
       stage:
-        description: Stufe (all = kompletter Ablauf)
+        description: Stufe (all = kompletter Ablauf, from-x = ab Stufe x, x = nur Stufe x)
         type: choice
         default: all
-        options: [all, debugger, architect, developer, reviewer, writer]
+        options: [all, from-architect, from-developer, from-reviewer, from-writer, debugger, architect, developer, reviewer, writer]
+      fix:
+        description: developer-Stufe im Fix-Modus (Review-Findings/Kommentare am PR beheben)
+        type: boolean
+        default: false
       hint:
         description: Optionaler Zusatzhinweis für die Stufe
         required: false
 
+# eine Gruppe pro Issue, geteilt mit den anderen Claude-Workflows: es läuft nur ein Lauf gleichzeitig
 concurrency:
   group: claude-auto-fix-${{ github.event.issue.number || inputs.issue_number }}
   cancel-in-progress: false
@@ -39,6 +45,12 @@ jobs:
     outputs:
       issue: ${{ steps.m.outputs.issue }}
       stage: ${{ steps.m.outputs.stage }}
+      run_debugger: ${{ steps.m.outputs.run_debugger }}
+      run_architect: ${{ steps.m.outputs.run_architect }}
+      run_developer: ${{ steps.m.outputs.run_developer }}
+      run_reviewer: ${{ steps.m.outputs.run_reviewer }}
+      run_writer: ${{ steps.m.outputs.run_writer }}
+      run_loop: ${{ steps.m.outputs.run_loop }}
     steps:
       - id: m
         env:
@@ -46,12 +58,26 @@ jobs:
           STAGE: ${{ inputs.stage || 'all' }}
         run: |
           case "$ISSUE" in ''|*[!0-9]*) echo "::error::ungültige Issue-Nummer"; exit 1;; esac
+          idx() { case "$1" in debugger) echo 1;; architect) echo 2;; developer) echo 3;; reviewer) echo 4;; writer) echo 5;; *) echo 0;; esac; }
+          case "$STAGE" in
+            all)    START=1; END=5; LOOP=true ;;
+            from-*) START=$(idx "${STAGE#from-}"); END=5; LOOP=true ;;
+            *)      START=$(idx "$STAGE"); END=$START; LOOP=false ;;
+          esac
+          [ "$START" -gt 0 ] || { echo "::error::unbekannte Stufe $STAGE"; exit 1; }
           echo "issue=$ISSUE" >> "$GITHUB_OUTPUT"
           echo "stage=$STAGE" >> "$GITHUB_OUTPUT"
+          echo "run_loop=$LOOP" >> "$GITHUB_OUTPUT"
+          for S in debugger architect developer reviewer writer; do
+            I=$(idx "$S")
+            if [ "$I" -ge "$START" ] && [ "$I" -le "$END" ]; then V=true; else V=false; fi
+            echo "run_$S=$V" >> "$GITHUB_OUTPUT"
+          done
 
   debugger:
     needs: [meta]
-    if: needs.meta.outputs.stage == 'all' || needs.meta.outputs.stage == 'debugger'
+    if: >-
+      needs.meta.outputs.run_debugger == 'true'
     uses: ./.github/workflows/claude-stage.yml
     secrets: inherit
     with:
@@ -64,7 +90,7 @@ jobs:
     if: >-
       !cancelled() && needs.meta.result == 'success' &&
       !contains(needs.*.result, 'failure') && !contains(needs.*.outputs.status, 'abort') &&
-      (needs.meta.outputs.stage == 'all' || needs.meta.outputs.stage == 'architect')
+      needs.meta.outputs.run_architect == 'true'
     uses: ./.github/workflows/claude-stage.yml
     secrets: inherit
     with:
@@ -77,20 +103,21 @@ jobs:
     if: >-
       !cancelled() && needs.meta.result == 'success' &&
       !contains(needs.*.result, 'failure') && !contains(needs.*.outputs.status, 'abort') &&
-      (needs.meta.outputs.stage == 'all' || needs.meta.outputs.stage == 'developer')
+      needs.meta.outputs.run_developer == 'true'
     uses: ./.github/workflows/claude-stage.yml
     secrets: inherit
     with:
       stage: developer
       issue: ${{ needs.meta.outputs.issue }}
       hint: ${{ inputs.hint }}
+      fix: ${{ inputs.fix == true }}
 
   reviewer:
     needs: [meta, debugger, architect, developer]
     if: >-
       !cancelled() && needs.meta.result == 'success' &&
       !contains(needs.*.result, 'failure') && !contains(needs.*.outputs.status, 'abort') &&
-      (needs.meta.outputs.stage == 'all' || needs.meta.outputs.stage == 'reviewer')
+      needs.meta.outputs.run_reviewer == 'true'
     uses: ./.github/workflows/claude-stage.yml
     secrets: inherit
     with:
@@ -98,13 +125,12 @@ jobs:
       issue: ${{ needs.meta.outputs.issue }}
       hint: ${{ inputs.hint }}
 
-  # Review-Runde 2 (nur im Gesamtablauf): developer behebt die Findings, reviewer prüft final.
   developer_fix:
     needs: [meta, debugger, architect, developer, reviewer]
     if: >-
-      !cancelled() && needs.meta.outputs.stage == 'all' &&
+      !cancelled() && needs.meta.result == 'success' &&
       !contains(needs.*.result, 'failure') && !contains(needs.*.outputs.status, 'abort') &&
-      needs.reviewer.outputs.status == 'changes'
+      needs.meta.outputs.run_loop == 'true' && needs.reviewer.outputs.status == 'changes'
     uses: ./.github/workflows/claude-stage.yml
     secrets: inherit
     with:
@@ -115,9 +141,9 @@ jobs:
   reviewer_2:
     needs: [meta, debugger, architect, developer, reviewer, developer_fix]
     if: >-
-      !cancelled() && needs.meta.outputs.stage == 'all' &&
+      !cancelled() && needs.meta.result == 'success' &&
       !contains(needs.*.result, 'failure') && !contains(needs.*.outputs.status, 'abort') &&
-      needs.developer_fix.outputs.status == 'ok'
+      needs.meta.outputs.run_loop == 'true' && needs.developer_fix.outputs.status == 'ok'
     uses: ./.github/workflows/claude-stage.yml
     secrets: inherit
     with:
@@ -130,9 +156,9 @@ jobs:
     if: >-
       !cancelled() && needs.meta.result == 'success' &&
       !contains(needs.*.result, 'failure') && !contains(needs.*.outputs.status, 'abort') &&
-      (needs.meta.outputs.stage == 'writer' ||
-       (needs.meta.outputs.stage == 'all' &&
-        (needs.reviewer.outputs.status == 'ok' || needs.reviewer_2.outputs.status == 'ok')))
+      needs.meta.outputs.run_writer == 'true' &&
+      (needs.meta.outputs.run_reviewer == 'false' ||
+       needs.reviewer.outputs.status == 'ok' || needs.reviewer_2.outputs.status == 'ok')
     uses: ./.github/workflows/claude-stage.yml
     secrets: inherit
     with:
