@@ -81,6 +81,23 @@ Use these shortcodes in any Page or Post to display data.
 
 The plugin uses standard CSS classes prefixed with `.sfa-`. You can easily override these in your theme's `style.css` or the Customizer to match your site's branding.
 
+## 🖼 Icons
+
+The plugin ships inline SVG icons from [Material Symbols](https://github.com/google/material-design-icons) (Outlined, filled, Apache License 2.0, see `THIRD-PARTY.md`). No fonts or external requests are used.
+
+* **Setting:** Show or hide all icons under **Settings > Swiss Floorball API > Show icons** (option `swissfloorball_show_icons`, on by default).
+* **Styling:** Use the CSS variables `--swfl-icon-size` and `--swfl-icon-color` on `.swiss-floorball-plugin`.
+* **Filter:** `swfl_icon_svg` lets you replace an icon. The result is sanitized with `wp_kses()` (only `svg`, `path` and `span` with a fixed set of attributes are kept).
+
+```php
+add_filter( 'swfl_icon_svg', function ( $svg, $name, $args ) {
+	if ( 'refresh' === $name ) {
+		return '<svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M12 4V1L8 5l4 4V6a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8z"/></svg>';
+	}
+	return $svg;
+}, 10, 3 );
+```
+
 ## ❓ FAQ
 
 **Q: Where do I find the IDs?**  
@@ -123,6 +140,11 @@ This plugin connects to the **Swiss Unihockey API** (api-v2.swissunihockey.ch) t
 ![Rankings](assets/screenshot-ranking-frontend.png)
 
 ## 📜 Changelog
+
+### Unreleased
+
+* New: Icon infrastructure. `Swiss_Floorball_Api_Icons::get()` accepts an argument array (`class`, `label`) and loads Material Symbols SVGs from `public/icons/` (`calendar_month`, `location_on`, `error`, `info`, `refresh`)
+* New: Setting `swissfloorball_show_icons` and filter `swfl_icon_svg`
 
 ### 1.0.5 (2026-08-09)
 
