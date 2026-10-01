@@ -45,7 +45,7 @@ jobs:
           export-env: true
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
-          CLAUDE_CODE_OAUTH_TOKEN: op://Github Actions/Claude OAUTH Token
+          CLAUDE_CODE_OAUTH_TOKEN: op://Github Actions/Claude OAUTH Token/Anmeldedaten
 
       - uses: anthropics/claude-code-action@v1
         with:
