@@ -1,0 +1,132 @@
+name: Claude Release
+
+# Label "claude-release" an einem Issue (= Release-Tracking-Issue) oder manuell (Actions -> Run workflow):
+#   plan -> prepare (Release-PR) -> CI auf Release-Branch -> verify (Claudes Freigabe) -> publish
+# publish läuft im GitHub-Environment "release": dort lässt sich optional ein menschlicher Reviewer
+# als letzte Schranke einstellen (Settings -> Environments -> release -> Required reviewers).
+on:
+  issues:
+    types: [labeled]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Nummer des Release-Tracking-Issues
+        required: true
+      hint:
+        description: Optionaler Hinweis (z.B. "minor"), wird als Daten behandelt
+        required: false
+
+concurrency:
+  group: claude-release
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  actions: write
+  id-token: write
+
+jobs:
+  meta:
+    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'claude-release'
+    runs-on: ubuntu-24.04
+    outputs:
+      issue: ${{ steps.m.outputs.issue }}
+    steps:
+      - id: m
+        env:
+          ISSUE: ${{ github.event.issue.number || inputs.issue_number }}
+        run: |
+          case "$ISSUE" in ''|*[!0-9]*) echo "::error::ungültige Issue-Nummer"; exit 1;; esac
+          echo "issue=$ISSUE" >> "$GITHUB_OUTPUT"
+
+  plan:
+    needs: [meta]
+    uses: ./.github/workflows/claude-stage.yml
+    secrets: inherit
+    with:
+      stage: plan
+      kind: release
+      issue: ${{ needs.meta.outputs.issue }}
+      hint: ${{ inputs.hint }}
+
+  prepare:
+    needs: [meta, plan]
+    if: needs.plan.outputs.status == 'ok'
+    uses: ./.github/workflows/claude-stage.yml
+    secrets: inherit
+    with:
+      stage: prepare
+      kind: release
+      issue: ${{ needs.meta.outputs.issue }}
+
+  version:
+    needs: [meta, prepare]
+    if: needs.prepare.outputs.status == 'ok'
+    runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+      ISSUE: ${{ needs.meta.outputs.issue }}
+    steps:
+      - id: v
+        run: |
+          V=$(gh api "repos/$GITHUB_REPOSITORY/issues/$ISSUE/comments" --paginate \
+            --jq '[.[] | select(.body | startswith("<!-- sfa-stage:prepare "))] | last | .body // "" | split("\n")[0]' \
+            | sed -n 's/.*version:\([0-9][0-9.]*\).*/\1/p')
+          echo "$V" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' || { echo "::error::keine gültige Version im prepare-Kommentar"; exit 1; }
+          echo "version=$V" >> "$GITHUB_OUTPUT"
+
+  # PRs, die mit GITHUB_TOKEN erstellt wurden, lösen keine pull_request-Workflows aus -> CI explizit aufrufen.
+  ci:
+    needs: [version]
+    uses: ./.github/workflows/ci.yml
+    with:
+      ref: release/v${{ needs.version.outputs.version }}
+
+  verify:
+    needs: [meta, version, ci]
+    uses: ./.github/workflows/claude-stage.yml
+    secrets: inherit
+    with:
+      stage: verify
+      kind: release
+      issue: ${{ needs.meta.outputs.issue }}
+
+  publish:
+    needs: [meta, version, ci, verify]
+    if: needs.verify.outputs.status == 'ok'
+    runs-on: ubuntu-24.04
+    environment: release
+    env:
+      GH_TOKEN: ${{ github.token }}
+      ISSUE: ${{ needs.meta.outputs.issue }}
+      VERSION: ${{ needs.version.outputs.version }}
+    steps:
+      - name: Merge release PR, tag, trigger release pipeline
+        run: |
+          BR="release/v$VERSION"
+          PR=$(gh pr list --repo "$GITHUB_REPOSITORY" --head "$BR" --state open --json number --jq '.[0].number')
+          [ -n "$PR" ] || { echo "::error::kein offener Release-PR für $BR"; exit 1; }
+          gh pr merge "$PR" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
+          SHA=$(gh pr view "$PR" --repo "$GITHUB_REPOSITORY" --json mergeCommit --jq '.mergeCommit.oid')
+          gh api "repos/$GITHUB_REPOSITORY/git/refs" -f ref="refs/tags/v$VERSION" -f sha="$SHA"
+          # Tag-Push mit GITHUB_TOKEN löst keinen Workflow aus -> release.yml explizit auf dem Tag starten
+          gh workflow run release.yml --repo "$GITHUB_REPOSITORY" --ref "v$VERSION" -f tag="v$VERSION"
+          gh issue comment "$ISSUE" --repo "$GITHUB_REPOSITORY" --body "<!-- sfa-stage:publish status:ok version:$VERSION -->
+          Release v$VERSION freigegeben: PR #$PR gemergt, Tag v$VERSION gesetzt, Release-Pipeline gestartet ([Actions](https://github.com/$GITHUB_REPOSITORY/actions/workflows/release.yml))."
+          gh issue edit "$ISSUE" --repo "$GITHUB_REPOSITORY" --remove-label claude-release || true
+
+  # CI-Fehler haben keinen Claude-Kommentar -> im Issue sichtbar machen
+  report_failure:
+    needs: [meta, ci]
+    if: always() && needs.ci.result == 'failure'
+    runs-on: ubuntu-24.04
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - run: |
+          gh issue comment "${{ needs.meta.outputs.issue }}" --repo "$GITHUB_REPOSITORY" --body "Release abgebrochen: CI auf dem Release-Branch ist fehlgeschlagen ([Lauf]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)). Keine Freigabe, kein Tag."
+          gh issue edit "${{ needs.meta.outputs.issue }}" --repo "$GITHUB_REPOSITORY" --remove-label claude-release || true

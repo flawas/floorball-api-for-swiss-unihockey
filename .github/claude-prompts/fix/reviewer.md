@@ -2,8 +2,14 @@
 Du befindest dich auf dem Branch `claude/issue-__ISSUE__`. Du änderst keinen Code.
 1. wp-quality-reviewer prüft `git diff origin/HEAD...HEAD` auf Security, Performance und WordPress-Standards.
    Er muss genau ein Verdikt liefern: `APPROVED`, `CHANGES_REQUESTED` (mit konkreten Findings) oder `UNSURE`.
-2. - `APPROVED` -> Kommentar `<!-- sfa-stage:reviewer status:ok -->` mit Begründung.
-   - `CHANGES_REQUESTED` und `FINAL=false` -> Kommentar `<!-- sfa-stage:reviewer status:changes -->` mit den
-     Findings (Datei:Zeile, Fix-Vorschlag). Das ist kein Abbruch.
-   - `CHANGES_REQUESTED` und `FINAL=true` (zweite Runde) -> Abbruchregel.
+2. Finde den PR: `gh pr list --head claude/issue-__ISSUE__`. Existiert keiner -> Abbruchregel.
+   Das Review wird formal am PR abgegeben:
+   - `APPROVED` -> `gh pr review <PR> --approve --body "<Begründung>"`, dann Issue-Kommentar
+     `<!-- sfa-stage:reviewer status:ok -->` mit Begründung. Schlägt `--approve` fehl (Repo-Einstellung),
+     kommentiere stattdessen mit `gh pr review <PR> --comment` und vermerke das im Issue-Kommentar.
+   - `CHANGES_REQUESTED` und `FINAL=false` -> `gh pr review <PR> --request-changes --body "<Findings>"`
+     (Datei:Zeile, Fix-Vorschlag), dann Issue-Kommentar `<!-- sfa-stage:reviewer status:changes -->` mit denselben
+     Findings. Das ist kein Abbruch: der developer behebt sie anschliessend am selben PR.
+   - `CHANGES_REQUESTED` und `FINAL=true` (zweite Runde) -> `gh pr review <PR> --request-changes` mit dem Rest
+     und Abbruchregel (der PR bleibt für einen Menschen offen).
    - `UNSURE` -> Abbruchregel.

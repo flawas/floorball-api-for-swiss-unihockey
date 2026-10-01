@@ -1,0 +1,58 @@
+name: Claude PR Review Feedback
+
+# Ein Mensch gibt am Claude-PR (Branch claude/issue-<nr>) "Changes requested" ab
+# -> die Stufe developer behebt die Findings und pusht auf denselben PR.
+# Die Reviews des Reviewer-Agents (Bot) lösen das nicht aus; die laufen im Gesamtablauf.
+on:
+  pull_request_review:
+    types: [submitted]
+
+# gleiche Gruppe wie die anderen Claude-Workflows: pro Issue läuft nur ein Lauf gleichzeitig
+concurrency:
+  group: claude-auto-fix-${{ github.event.pull_request.head.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  id-token: write
+
+jobs:
+  meta:
+    # nur Claude-Branches aus diesem Repo, nur menschliche Reviewer mit Schreibrechten
+    if: >-
+      github.event.review.state == 'changes_requested' &&
+      startsWith(github.event.pull_request.head.ref, 'claude/issue-') &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.review.user.type != 'Bot' &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.review.author_association)
+    runs-on: ubuntu-24.04
+    outputs:
+      issue: ${{ steps.m.outputs.issue }}
+      kind: ${{ steps.m.outputs.kind }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REF: ${{ github.event.pull_request.head.ref }}
+    steps:
+      - id: m
+        run: |
+          ISSUE="${REF#claude/issue-}"
+          case "$ISSUE" in ''|*[!0-9]*) echo "::error::ungültiger Branch $REF"; exit 1;; esac
+          KIND=fix
+          gh issue view "$ISSUE" --repo "$GITHUB_REPOSITORY" --json labels --jq '.labels[].name' | grep -qx 'claude-feature' && KIND=feature
+          echo "issue=$ISSUE" >> "$GITHUB_OUTPUT"
+          echo "kind=$KIND" >> "$GITHUB_OUTPUT"
+
+  developer_fix:
+    needs: [meta]
+    uses: ./.github/workflows/claude-stage.yml
+    secrets: inherit
+    with:
+      stage: developer
+      kind: ${{ needs.meta.outputs.kind }}
+      issue: ${{ needs.meta.outputs.issue }}
+      fix: true
+      hint: >-
+        Menschliches Review von ${{ github.event.review.user.login }} an PR #${{ github.event.pull_request.number }}
+        (Changes requested): ${{ github.event.review.body }}

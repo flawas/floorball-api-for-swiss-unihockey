@@ -79,3 +79,17 @@ jobs:
         with:
           build-dir: dist/swiss-floorball-api
           wp-version: latest
+
+  live-api:
+    name: Live-API-Smoke-Test (informativ)
+    runs-on: ubuntu-24.04
+    continue-on-error: true   # externe API: blockiert weder PRs noch Releases
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref }}
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: none
+      - run: php verify_api.php

@@ -25,7 +25,10 @@ This auto-installs WordPress at `http://localhost:8000`, activates the plugin, a
 Automated checks live in `.github/workflows/ci.yml` (PHP lint on 7.4–8.4, `scripts/check_release.php`
 for version/ABSPATH/text-domain consistency, WordPress Plugin Check). Run the consistency check locally with
 `php scripts/check_release.php`. Beyond that, verification is manual (through the Docker site). Note:
-`verify_api.php` is stale (it requires a non-existent `includes/functions.php`) and does not run:
+`verify_api.php` is the live smoke test: it loads the real client and display classes with stubbed
+WordPress functions, discovers season/league/group/club/game/team IDs from the API itself, and fails on API
+errors, changed response shapes, PHP warnings or "data could not be loaded" output. It runs in CI as an
+informational job (`continue-on-error`, external API) and needs network access:
 
 ```bash
 php verify_api.php
