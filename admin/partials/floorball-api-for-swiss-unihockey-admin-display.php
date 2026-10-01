@@ -31,10 +31,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<td>API Key</td>
 					<td>
 					<?php
-						$api_key = get_option( 'swissfloorball_api_key' );
-					if ( $api_key ) {
-						$masked_key = str_repeat( '*', max( 0, strlen( $api_key ) - 3 ) ) . substr( $api_key, -3 );
-						echo esc_html( $masked_key );
+						$swfl_api_key = get_option( 'swissfloorball_api_key' );
+					if ( $swfl_api_key ) {
+						$swfl_masked_key = str_repeat( '*', max( 0, strlen( $swfl_api_key ) - 3 ) ) . substr( $swfl_api_key, -3 );
+						echo esc_html( $swfl_masked_key );
 					} else {
 						echo '—';
 					}
@@ -78,16 +78,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 	</div>
 
 	<?php
-	$club_number = get_option( 'swissfloorball_club_number' );
-	$season      = get_option( 'swissfloorball_actual_season' );
+	$swfl_club_number = get_option( 'swissfloorball_club_number' );
+	$swfl_season      = get_option( 'swissfloorball_actual_season' );
 
-	if ( $club_number && $season ) {
+	if ( $swfl_club_number && $swfl_season ) {
 		echo '<div class="sfa-table-container">';
-		Swiss_Floorball_API_Display::render_club_teams( $club_number );
+		Swiss_Floorball_API_Display::render_club_teams( $swfl_club_number );
 		echo '</div>';
 
 		echo '<div class="sfa-table-container">';
-		Swiss_Floorball_API_Display::render_club_games( $club_number, $season );
+		Swiss_Floorball_API_Display::render_club_games( $swfl_club_number, $swfl_season );
 		echo '</div>';
 	} else {
 		echo '<div class="sfa-card">';

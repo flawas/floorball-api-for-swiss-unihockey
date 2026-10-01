@@ -609,7 +609,7 @@ class Swiss_Floorball_API_Display {
 
 								// Fallback if details fail or no ID (though unlikely for valid games).
 								if ( empty( $team_home ) ) {
-									if ( $mode === 'club' ) {
+									if ( 'club' === $mode ) {
 										$team_home = $game['cells'][3]['text'][0];
 										$team_away = $game['cells'][4]['text'][0];
 									} else {

@@ -26,9 +26,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	// Display cache cleared success message.
 	// Read-only status notice after the nonce-protected cache clear redirect.
 	if ( isset( $_GET['cache_cleared'] ) && '1' === $_GET['cache_cleared'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$deleted_count = isset( $_GET['deleted_count'] ) ? intval( $_GET['deleted_count'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$swfl_deleted_count = isset( $_GET['deleted_count'] ) ? intval( $_GET['deleted_count'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		echo '<div class="notice notice-success is-dismissible">';
-		echo '<p><strong>' . Swiss_Floorball_Api_Icons::get( 'check' ) . ' Cache erfolgreich geleert!</strong> ' . esc_html( $deleted_count ) . ' zwischengespeicherte Einträge wurden gelöscht.</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Icon markup sanitized via wp_kses() in Swiss_Floorball_Api_Icons::get().
+		echo '<p><strong>' . Swiss_Floorball_Api_Icons::get( 'check' ) . ' Cache erfolgreich geleert!</strong> ' . esc_html( $swfl_deleted_count ) . ' zwischengespeicherte Einträge wurden gelöscht.</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Icon markup sanitized via wp_kses() in Swiss_Floorball_Api_Icons::get().
 		echo '</div>';
 	}
 	?>
