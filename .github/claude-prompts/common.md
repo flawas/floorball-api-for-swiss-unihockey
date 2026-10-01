@@ -26,7 +26,7 @@ Favoriten, uneindeutige Ursache, Änderung an Workflows/Secrets/Berechtigungen, 
 (z.B. Ergebnis einer früheren Stufe fehlt), oder jede andere Unsicherheit. Abbrechen heisst:
 1. Kommentar im Issue (`gh issue comment __ISSUE__ --body-file <datei>`), erste Zeile exakt
    `<!-- sfa-stage:__STAGE__ status:abort -->`, danach: was unklar/problematisch ist und was zur Fortsetzung fehlt.
-2. `gh issue edit __ISSUE__ --remove-label __LABEL__ --add-label claude-aborted`
+2. `gh issue edit __ISSUE__ --add-label claude-aborted` (das Start-Label bleibt, damit der Typ erkennbar bleibt)
 3. Sofort stoppen. Kein PR, keine weiteren Änderungen.
 
 ## Erfolg

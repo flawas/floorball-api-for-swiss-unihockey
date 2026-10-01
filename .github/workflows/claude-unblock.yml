@@ -1,0 +1,119 @@
+name: Claude Unblocker
+
+# Reagiert auf abgebrochene Läufe: der Agent wp-unblocker liest den Abbruchkommentar und entscheidet
+#   resume   -> Frage beantwortet, abgebrochene Stufe + folgende laufen mit der Entscheidung weiter
+#   split    -> Auftrag in kleine Sub-Issues aufgeteilt, diese werden gestartet (Freigabe-Pflichtiges: needs-human)
+#   escalate -> ein Mensch muss entscheiden (Label needs-human)
+# Gestartet automatisch von den Claude-Workflows (Job "unblock") bei einem Abbruch oder manuell (Run workflow).
+# Schutz: max. 2 Versuche je Issue, danach needs-human; Sub-Issue-Tiefe begrenzt (siehe Prompt).
+on:
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Issue-Nummer des abgebrochenen Laufs
+        required: true
+
+# gleiche Gruppe wie die anderen Claude-Workflows: wartet, bis der abgebrochene Lauf fertig ist
+concurrency:
+  group: claude-auto-fix-${{ inputs.issue_number }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  actions: write
+  id-token: write
+
+jobs:
+  meta:
+    runs-on: ubuntu-24.04
+    outputs:
+      go: ${{ steps.m.outputs.go }}
+      issue: ${{ steps.m.outputs.issue }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      ISSUE: ${{ inputs.issue_number }}
+    steps:
+      - id: m
+        run: |
+          set -euo pipefail
+          case "$ISSUE" in ''|*[!0-9]*) echo "::error::ungültige Issue-Nummer"; exit 1;; esac
+          echo "issue=$ISSUE" >> "$GITHUB_OUTPUT"
+          echo "go=false" >> "$GITHUB_OUTPUT"
+          gh label create needs-human --color d93f0b --description "Braucht eine Entscheidung/Freigabe eines Menschen" 2>/dev/null || true
+          gh label create claude-split --color 5319e7 --description "Von Claude in Sub-Issues aufgeteilt" 2>/dev/null || true
+
+          LABELS=$(gh issue view "$ISSUE" --json labels --jq '.labels[].name')
+          if printf '%s\n' "$LABELS" | grep -qE '^(needs-human|claude-split|claude-release)$'; then echo "übersprungen (Label)"; exit 0; fi
+          COMMENTS=$(gh api "repos/$GITHUB_REPOSITORY/issues/$ISSUE/comments" --paginate --jq '.[].body')
+          LAST=$(printf '%s\n' "$COMMENTS" | grep -oE 'sfa-stage:[a-z]+ status:[a-z]+' | grep -v '^sfa-stage:unblocker ' | tail -1 || true)
+          if [ "${LAST##*status:}" != abort ]; then echo "kein offener Abbruch"; exit 0; fi
+
+          ATTEMPTS=$(printf '%s\n' "$COMMENTS" | grep -cE '^<!-- sfa-stage:unblocker ' || true)
+          if [ "${ATTEMPTS:-0}" -ge 2 ]; then
+            gh issue comment "$ISSUE" --body "Der Unblocker hat dieses Issue bereits 2x bearbeitet. Bitte entscheide selbst (Kommentar schreiben, dann läuft es weiter)." >/dev/null
+            gh issue edit "$ISSUE" --add-label needs-human >/dev/null
+            exit 0
+          fi
+          echo "go=true" >> "$GITHUB_OUTPUT"
+
+  unblocker:
+    needs: [meta]
+    if: needs.meta.outputs.go == 'true'
+    uses: ./.github/workflows/claude-stage.yml
+    secrets: inherit
+    with:
+      stage: unblocker
+      kind: unblock
+      issue: ${{ needs.meta.outputs.issue }}
+
+  act:
+    needs: [meta, unblocker]
+    if: always() && needs.unblocker.outputs.status == 'ok'
+    runs-on: ubuntu-24.04
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      ISSUE: ${{ needs.meta.outputs.issue }}
+      DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+    steps:
+      - name: Carry out the decision
+        run: |
+          set -euo pipefail
+          BODY=$(gh api "repos/$GITHUB_REPOSITORY/issues/$ISSUE/comments" --paginate \
+            --jq '[.[] | select(.body | startswith("<!-- sfa-stage:unblocker "))] | last | .body')
+          MARKER=$(printf '%s' "$BODY" | head -1)
+          ACTION=$(printf '%s' "$MARKER" | sed -n 's/.*action:\([a-z]*\).*/\1/p')
+
+          start_issue() {  # $1 = fix|feature, $2 = Issue-Nummer
+            if [ "$1" = feature ]; then LBL=claude-feature; WF=claude-feature.yml; else LBL=claude-fix; WF=claude-auto-fix.yml; fi
+            gh issue edit "$2" --add-label "$LBL" >/dev/null
+            gh workflow run "$WF" --ref "$DEFAULT_BRANCH" -f issue_number="$2" -f stage=all
+            echo "gestartet: #$2 ($1)"
+          }
+
+          case "$ACTION" in
+            resume)
+              STAGE=$(printf '%s' "$MARKER" | sed -n 's/.*stage:\([a-z]*\).*/\1/p')
+              case "$STAGE" in debugger|architect|developer|reviewer|writer) ;; *) echo "::error::ungültige Stufe '$STAGE'"; gh issue edit "$ISSUE" --add-label needs-human >/dev/null; exit 0;; esac
+              LABELS=$(gh issue view "$ISSUE" --json labels --jq '.labels[].name')
+              if printf '%s\n' "$LABELS" | grep -qx 'claude-feature'; then WF=claude-feature.yml; [ "$STAGE" = debugger ] && STAGE=architect; else WF=claude-auto-fix.yml; fi
+              HINT=$(printf '%s' "$BODY" | tail -n +2 | head -c 3500)
+              gh issue edit "$ISSUE" --remove-label claude-aborted >/dev/null 2>&1 || true
+              gh workflow run "$WF" --ref "$DEFAULT_BRANCH" -f issue_number="$ISSUE" -f stage="from-$STAGE" \
+                -f hint="Entscheidung des Unblockers: $HINT" ;;
+            split)
+              LIST=$(printf '%s' "$MARKER" | sed -n 's/.*issues:\([a-z0-9=,]*\).*/\1/p')
+              COUNT=0
+              for ITEM in $(printf '%s' "$LIST" | tr ',' ' '); do
+                KIND=${ITEM%%=*}; NUM=${ITEM##*=}
+                case "$KIND:$NUM" in fix:[0-9]*|feature:[0-9]*) ;; *) continue ;; esac
+                COUNT=$((COUNT+1)); [ "$COUNT" -le 6 ] || break     # harte Obergrenze
+                start_issue "$KIND" "$NUM"
+              done
+              gh issue edit "$ISSUE" --add-label claude-split --remove-label claude-aborted >/dev/null 2>&1 || true ;;
+            escalate|*)
+              gh issue edit "$ISSUE" --add-label needs-human >/dev/null ;;
+          esac
