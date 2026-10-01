@@ -92,6 +92,11 @@ class Swiss_Floorball_Api_Public {
 		return false;
 	}
 
+	/**
+	 * Register the stylesheets for the public-facing side of the site.
+	 *
+	 * @since    1.0.0
+	 */
 	public function enqueue_styles() {
 		if ( ! $this->page_has_shortcode() ) {
 			return;
@@ -99,6 +104,11 @@ class Swiss_Floorball_Api_Public {
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/floorball-api-for-swiss-unihockey-public.css', array(), $this->version, 'all' );
 	}
 
+	/**
+	 * Register the JavaScript for the public-facing side of the site.
+	 *
+	 * @since    1.0.0
+	 */
 	public function enqueue_scripts() {
 		if ( ! $this->page_has_shortcode() ) {
 			return;
@@ -106,6 +116,11 @@ class Swiss_Floorball_Api_Public {
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/floorball-api-for-swiss-unihockey-public.js', array( 'jquery' ), $this->version, false );
 	}
 
+	/**
+	 * Placeholder kept for backwards compatibility, dependencies are loaded by the core class.
+	 *
+	 * @since    1.0.0
+	 */
 	public function load_dependencies() {
 		// Functions are now loaded via the main plugin class and Swiss_Floorball_API_Display
 	}
@@ -132,6 +147,12 @@ class Swiss_Floorball_Api_Public {
 		add_shortcode( 'swfl-game-events', array( $this, 'get_game_events_func' ) );
 	} // register_shortcodes()
 
+	/**
+	 * Render the club teams shortcode.
+	 *
+	 * @since    1.0.0
+	 * @return   string HTML output of the shortcode.
+	 */
 	public function get_club_teams_func() {
 		ob_start();
 		echo '<div class="swiss-floorball-plugin">';
@@ -142,6 +163,12 @@ class Swiss_Floorball_Api_Public {
 		return $output;
 	}
 
+	/**
+	 * Render the club games shortcode.
+	 *
+	 * @since    1.0.0
+	 * @return   string HTML output of the shortcode.
+	 */
 	public function get_club_games_func() {
 		ob_start();
 		echo '<div class="swiss-floorball-plugin">';
@@ -152,6 +179,13 @@ class Swiss_Floorball_Api_Public {
 		return $output;
 	}
 
+	/**
+	 * Render the team games shortcode.
+	 *
+	 * @since    1.0.0
+	 * @param    array $atts Shortcode attributes.
+	 * @return   string HTML output of the shortcode.
+	 */
 	public function get_team_games_func( $atts ) {
 		$a = shortcode_atts(
 			array(
@@ -169,6 +203,12 @@ class Swiss_Floorball_Api_Public {
 		return $output;
 	}
 
+	/**
+	 * Render the clubs shortcode.
+	 *
+	 * @since    1.0.0
+	 * @return   string HTML output of the shortcode.
+	 */
 	public function get_clubs_func() {
 		ob_start();
 		echo '<div class="swiss-floorball-plugin">';
@@ -179,6 +219,13 @@ class Swiss_Floorball_Api_Public {
 		return $output;
 	}
 
+	/**
+	 * Render the calendars shortcode.
+	 *
+	 * @since    1.0.0
+	 * @param    array $atts Shortcode attributes.
+	 * @return   string HTML output of the shortcode.
+	 */
 	public function get_calendars_func( $atts ) {
 		$a = shortcode_atts(
 			array(
@@ -208,6 +255,12 @@ class Swiss_Floorball_Api_Public {
 		return $output;
 	}
 
+	/**
+	 * Render the cups shortcode.
+	 *
+	 * @since    1.0.0
+	 * @return   string HTML output of the shortcode.
+	 */
 	public function get_cups_func() {
 		ob_start();
 		echo '<div class="swiss-floorball-plugin">';
@@ -218,6 +271,13 @@ class Swiss_Floorball_Api_Public {
 		return $output;
 	}
 
+	/**
+	 * Render the groups shortcode.
+	 *
+	 * @since    1.0.0
+	 * @param    array $atts Shortcode attributes.
+	 * @return   string HTML output of the shortcode.
+	 */
 	public function get_groups_func( $atts ) {
 		$a = shortcode_atts(
 			array(
@@ -237,6 +297,12 @@ class Swiss_Floorball_Api_Public {
 		return $output;
 	}
 
+	/**
+	 * Render the teams shortcode.
+	 *
+	 * @since    1.0.0
+	 * @return   string HTML output of the shortcode.
+	 */
 	public function get_teams_func() {
 		ob_start();
 		echo '<div class="swiss-floorball-plugin">';
@@ -247,6 +313,13 @@ class Swiss_Floorball_Api_Public {
 		return $output;
 	}
 
+	/**
+	 * Render the rankings shortcode.
+	 *
+	 * @since    1.0.0
+	 * @param    array $atts Shortcode attributes.
+	 * @return   string HTML output of the shortcode.
+	 */
 	public function get_rankings_func( $atts ) {
 		$a = shortcode_atts(
 			array(
@@ -267,6 +340,13 @@ class Swiss_Floorball_Api_Public {
 		return $output;
 	}
 
+	/**
+	 * Render the player profile shortcode.
+	 *
+	 * @since    1.0.0
+	 * @param    array $atts Shortcode attributes.
+	 * @return   string HTML output of the shortcode.
+	 */
 	public function get_player_func( $atts ) {
 		$a = shortcode_atts(
 			array(
@@ -284,6 +364,12 @@ class Swiss_Floorball_Api_Public {
 		return $output;
 	}
 
+	/**
+	 * Render the national players shortcode.
+	 *
+	 * @since    1.0.0
+	 * @return   string HTML output of the shortcode.
+	 */
 	public function get_national_players_func() {
 		ob_start();
 		echo '<div class="swiss-floorball-plugin">';
@@ -294,6 +380,13 @@ class Swiss_Floorball_Api_Public {
 		return $output;
 	}
 
+	/**
+	 * Render the topscorers shortcode.
+	 *
+	 * @since    1.0.0
+	 * @param    array $atts Shortcode attributes.
+	 * @return   string HTML output of the shortcode.
+	 */
 	public function get_topscorers_func( $atts ) {
 		$a = shortcode_atts(
 			array(
@@ -314,6 +407,13 @@ class Swiss_Floorball_Api_Public {
 		return $output;
 	}
 
+	/**
+	 * Render the game events shortcode.
+	 *
+	 * @since    1.0.0
+	 * @param    array $atts Shortcode attributes.
+	 * @return   string HTML output of the shortcode.
+	 */
 	public function get_game_events_func( $atts ) {
 		$a = shortcode_atts(
 			array(
