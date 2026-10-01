@@ -20,11 +20,11 @@ if ( ! current_user_can( 'manage_options' ) ) {
 	wp_die( esc_html__( 'You do not have permission to access this page.', 'swiss-floorball-api' ) );
 }
 
-// Get the configured club ID
+// Get the configured club ID.
 $club_id        = get_option( 'swissfloorball_club_number' );
 $current_season = get_option( 'swissfloorball_actual_season', date( 'Y' ) );
 
-// Instantiate the API client
+// Instantiate the API client.
 require_once plugin_dir_path( dirname( __DIR__ ) ) . 'includes/class-floorball-api-for-swiss-unihockey-client.php';
 require_once plugin_dir_path( dirname( __DIR__ ) ) . 'includes/class-floorball-api-for-swiss-unihockey-display.php';
 $client = new Swiss_Floorball_API_Client();
@@ -49,14 +49,14 @@ $match_id = isset( $_GET['match_id'] ) ? absint( $_GET['match_id'] ) : null; // 
 		<?php
 		// --- Single Match View ---
 
-		// Back button
+		// Back button.
 		$back_url = remove_query_arg( 'match_id' );
 		echo '<p><a href="' . esc_url( $back_url ) . '" class="button button-primary">' . Swiss_Floorball_Api_Icons::get( 'back' ) . ' ' . esc_html__( 'Zurück zur Übersicht', 'swiss-floorball-api' ) . '</a></p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Icon markup sanitized via wp_kses() in Swiss_Floorball_Api_Icons::get().
 
-		// Render Match Details
+		// Render Match Details.
 		Swiss_Floorball_API_Display::render_game_details_table( $match_id );
 
-		// Show Game Events (Match Telegramm)
+		// Show Game Events (Match Telegramm).
 		echo '<div class="sfa-card sfa-card--spaced-top">';
 		Swiss_Floorball_API_Display::render_game_events( $match_id, true );
 		echo '</div>';
@@ -66,7 +66,7 @@ $match_id = isset( $_GET['match_id'] ) ? absint( $_GET['match_id'] ) : null; // 
 		<?php
 		// --- List View ---
 
-		// Render Club Games List
+		// Render Club Games List.
 		Swiss_Floorball_API_Display::render_club_games( $club_id, $current_season, true );
 		?>
 
@@ -78,7 +78,7 @@ $match_id = isset( $_GET['match_id'] ) ? absint( $_GET['match_id'] ) : null; // 
 		</div>
 		
 		<?php
-		// Fetch teams for the club
+		// Fetch teams for the club.
 		$teams_response = $client->fetch_data( 'clubs/' . $club_id . '/statistics' );
 
 		if ( is_wp_error( $teams_response ) || ! isset( $teams_response['data']['regions'][0]['rows'] ) ) {
@@ -94,7 +94,7 @@ $match_id = isset( $_GET['match_id'] ) ? absint( $_GET['match_id'] ) : null; // 
 				echo '<h3>' . esc_html( $team_name ) . '</h3>';
 				echo '<div class="sfa-table-container sfa-table-container-flat">';
 
-				// Use the display class to render games for this team
+				// Use the display class to render games for this team.
 				Swiss_Floorball_API_Display::render_team_games( $team_id, $current_season, true );
 
 				echo '</div>';
