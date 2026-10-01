@@ -56,11 +56,7 @@ class Swiss_Floorball_Api_Icons {
 	 * @return string Sanitized inline SVG markup, or an empty string if icons are disabled or $name is unknown.
 	 */
 	public static function get( $name, $args = '' ) {
-		if ( '1' !== (string) get_option( 'swissfloorball_show_icons', '1' ) ) {
-			return '';
-		}
-
-		if ( ! is_string( $name ) || ! preg_match( '/^[a-z0-9_]+$/', $name ) ) {
+		if ( '1' !== (string) get_option( 'swissfloorball_show_icons', '1' ) || ! is_string( $name ) || ! preg_match( '/^[a-z0-9_]+$/', $name ) ) {
 			return '';
 		}
 
@@ -135,11 +131,7 @@ class Swiss_Floorball_Api_Icons {
 		}
 
 		$file = plugin_dir_path( dirname( __FILE__ ) ) . 'public/icons/' . $name . '.svg';
-		if ( ! is_readable( $file ) ) {
-			return null;
-		}
-
-		$contents = file_get_contents( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local plugin file.
+		$contents = is_readable( $file ) ? file_get_contents( $file ) : false; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local plugin file.
 		if ( ! is_string( $contents ) || ! preg_match( '/<path[^>]*\sd="([^"]+)"/', $contents, $path ) ) {
 			return null;
 		}
