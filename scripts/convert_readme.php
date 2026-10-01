@@ -71,8 +71,9 @@ $body = implode( "\n", $new_lines );
 // Convert Headings
 // ## Heading -> == Heading ==
 // ### Heading -> = Heading =
-$body = preg_replace( '/^##\s+(.+)$/m', '== $1 ==', $body );
-$body = preg_replace( '/^###\s+(.+)$/m', '= $1 =', $body );
+// Emojis in headings are dropped: WordPress.org only recognises plain section names (e.g. "== Changelog ==").
+$body = preg_replace( '/^##\s+(?:[^\p{L}\p{N}\s]+\s*)?(.+)$/mu', '== $1 ==', $body );
+$body = preg_replace( '/^###\s+(?:[^\p{L}\p{N}\s]+\s*)?(.+)$/mu', '= $1 =', $body );
 
 // Convert Screenshots section
 // In readme.txt, screenshots are a list:
