@@ -38,10 +38,18 @@ jobs:
           graphify update .
           test -f graphify-out/graph.json
 
+      # Claude-Token aus 1Password (Service Account); in GitHub liegt nur OP_SERVICE_ACCOUNT_TOKEN.
+      - name: Load Claude token from 1Password
+        uses: 1password/load-secrets-action@v2
+        with:
+          export-env: true
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          CLAUDE_CODE_OAUTH_TOKEN: op://Github Actions/Claude OAUTH Token
+
       - uses: anthropics/claude-code-action@v1
         with:
-          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          # alternativ: anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_code_oauth_token: ${{ env.CLAUDE_CODE_OAUTH_TOKEN }}
           prompt: |
             Bearbeite Issue #${{ github.event.issue.number }} im Repository ${{ github.repository }}.
             Lies Titel, Beschreibung und Kommentare selbst mit `gh issue view ${{ github.event.issue.number }} --comments`.
