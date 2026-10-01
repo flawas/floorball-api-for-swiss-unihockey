@@ -30,27 +30,29 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<table class="sfa-settings-table">
 				<tr>
 					<td>API Key</td>
-					<td><?php 
-						$api_key = get_option('swissfloorball_api_key');
-						if ( $api_key ) {
-							$masked_key = str_repeat('*', max(0, strlen($api_key) - 3)) . substr($api_key, -3);
-							echo esc_html( $masked_key );
-						} else {
-							echo '—';
-						}
-					?></td>
+					<td>
+					<?php
+						$api_key = get_option( 'swissfloorball_api_key' );
+					if ( $api_key ) {
+						$masked_key = str_repeat( '*', max( 0, strlen( $api_key ) - 3 ) ) . substr( $api_key, -3 );
+						echo esc_html( $masked_key );
+					} else {
+						echo '—';
+					}
+					?>
+					</td>
 				</tr>
 				<tr>
 					<td>Club ID</td>
-					<td><?php echo esc_html( get_option('swissfloorball_club_number') ) ?: '—'; ?></td>
+					<td><?php echo esc_html( get_option( 'swissfloorball_club_number' ) ) ?: '—'; ?></td>
 				</tr>
 				<tr>
 					<td>Club Name</td>
-					<td><?php echo esc_html( get_option('swissfloorball_club_name') ) ?: '—'; ?></td>
+					<td><?php echo esc_html( get_option( 'swissfloorball_club_name' ) ) ?: '—'; ?></td>
 				</tr>
 				<tr>
 					<td>Aktuelle Saison</td>
-					<td><?php echo esc_html( get_option('swissfloorball_actual_season') ) ?: '—'; ?></td>
+					<td><?php echo esc_html( get_option( 'swissfloorball_actual_season' ) ) ?: '—'; ?></td>
 				</tr>
 			</table>
 		</div>
@@ -59,34 +61,34 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<h3><?php Swiss_Floorball_Api_Icons::render( 'chart' ); ?> Schnellzugriff</h3>
 			<p class="sfa-nav-description">Navigieren Sie zu den verschiedenen Bereichen:</p>
 			<p class="sfa-nav-item">
-				<a href="<?php echo esc_url( admin_url('admin.php?page=floorball-api-for-swiss-unihockey-settings') ); ?>" class="button">Einstellungen</a>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=floorball-api-for-swiss-unihockey-settings' ) ); ?>" class="button">Einstellungen</a>
 			</p>
 			<p class="sfa-nav-item">
-				<a href="<?php echo esc_url( admin_url('admin.php?page=floorball-api-for-swiss-unihockey-league') ); ?>" class="button">Ligen</a>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=floorball-api-for-swiss-unihockey-league' ) ); ?>" class="button">Ligen</a>
 			</p>
 			<p class="sfa-nav-item">
-				<a href="<?php echo esc_url( admin_url('admin.php?page=floorball-api-for-swiss-unihockey-teams') ); ?>" class="button">Clubs</a>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=floorball-api-for-swiss-unihockey-teams' ) ); ?>" class="button">Clubs</a>
 			</p>
 			<p class="sfa-nav-item">
-				<a href="<?php echo esc_url( admin_url('admin.php?page=floorball-api-for-swiss-unihockey-seasons') ); ?>" class="button">Saisons</a>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=floorball-api-for-swiss-unihockey-seasons' ) ); ?>" class="button">Saisons</a>
 			</p>
 			<p class="sfa-nav-item">
-				<a href="<?php echo esc_url( admin_url('admin.php?page=floorball-api-for-swiss-unihockey-shortcodes') ); ?>" class="button">Shortcodes</a>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=floorball-api-for-swiss-unihockey-shortcodes' ) ); ?>" class="button">Shortcodes</a>
 			</p>
 		</div>
 	</div>
 
 	<?php
-	$club_number = get_option('swissfloorball_club_number');
-	$season = get_option('swissfloorball_actual_season');
-	
-	if ($club_number && $season) {
+	$club_number = get_option( 'swissfloorball_club_number' );
+	$season      = get_option( 'swissfloorball_actual_season' );
+
+	if ( $club_number && $season ) {
 		echo '<div class="sfa-table-container">';
-		Swiss_Floorball_API_Display::render_club_teams($club_number);
+		Swiss_Floorball_API_Display::render_club_teams( $club_number );
 		echo '</div>';
-		
+
 		echo '<div class="sfa-table-container">';
-		Swiss_Floorball_API_Display::render_club_games($club_number, $season);
+		Swiss_Floorball_API_Display::render_club_games( $club_number, $season );
 		echo '</div>';
 	} else {
 		echo '<div class="sfa-card">';

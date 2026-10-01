@@ -39,18 +39,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<p class="sfa-helper-text">Geben Sie hier die erforderlichen Informationen für die Verbindung zur Swiss Floorball API ein.</p>
 		
 		<form method="POST" action="options.php">  
-			<?php 
+			<?php
 				settings_fields( 'swfl_general_settings' );
-				do_settings_sections( 'swfl_general_settings' ); 
-			?>             
-			<?php submit_button('Einstellungen speichern'); ?>  
+				do_settings_sections( 'swfl_general_settings' );
+			?>
+						<?php submit_button( 'Einstellungen speichern' ); ?>  
 		</form>
 	</div>
 
 	<div class="sfa-form-section">
 		<h2><?php Swiss_Floorball_Api_Icons::render( 'delete' ); ?> Cache Verwaltung</h2>
 		<p class="sfa-helper-text">Löschen Sie alle zwischengespeicherten API-Daten, um frische Daten vom Server zu laden.</p>
-		<form method="POST" action="<?php echo esc_url( admin_url('admin-post.php') ); ?>" class="sfa-form--spaced-top">
+		<form method="POST" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="sfa-form--spaced-top">
 			<input type="hidden" name="action" value="swfl_clear_cache">
 			<?php wp_nonce_field( 'swfl_clear_cache_action', 'swfl_clear_cache_nonce' ); ?>
 			<button type="submit" class="button button-secondary" onclick="return confirm('Möchten Sie wirklich den gesamten Cache leeren?');">
