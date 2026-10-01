@@ -124,6 +124,10 @@ This plugin connects to the **Swiss Unihockey API** (api-v2.swissunihockey.ch) t
 
 ## 📜 Changelog
 
+### Unreleased
+
+* Fix: Rename global functions to snake_case (WPCS)
+
 ### 1.0.5 (2026-08-09)
 
 * Fix: Remove FAQ answer restricting the plugin to "personal and non-commercial use" — this contradicted the GPLv2-or-later license, which grants unrestricted use including commercial. Not allowed under WordPress.org plugin guidelines.
