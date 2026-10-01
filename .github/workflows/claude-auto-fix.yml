@@ -1,6 +1,6 @@
 name: Claude Auto-Fix Issues
 
-# Automatisch: Label "claude" am Issue -> alle Stufen nacheinander.
+# Automatisch: Label "claude-fix" am Issue -> alle Stufen nacheinander.
 # Manuell (Actions -> Run workflow): eine einzelne Stufe für ein Issue erneut ausführen.
 on:
   issues:
@@ -33,8 +33,8 @@ jobs:
   meta:
     if: >-
       github.event_name == 'workflow_dispatch' ||
-      (github.event.action == 'labeled' && github.event.label.name == 'claude') ||
-      (github.event.action == 'opened' && contains(github.event.issue.labels.*.name, 'claude'))
+      (github.event.action == 'labeled' && github.event.label.name == 'claude-fix') ||
+      (github.event.action == 'opened' && contains(github.event.issue.labels.*.name, 'claude-fix'))
     runs-on: ubuntu-24.04
     outputs:
       issue: ${{ steps.m.outputs.issue }}

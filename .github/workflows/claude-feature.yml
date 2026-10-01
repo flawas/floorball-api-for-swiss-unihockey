@@ -2,7 +2,7 @@ name: Claude Feature Requests
 
 # Automatisch: Label "claude-feature" am Issue -> architect, developer, reviewer (+1 Fix-Runde), writer.
 # Manuell (Actions -> Run workflow): eine einzelne Stufe für ein Feature-Issue erneut ausführen.
-# Nicht zusammen mit dem Label "claude" verwenden (Bugfix-Workflow).
+# Nicht zusammen mit dem Label "claude-fix" verwenden (Bugfix-Workflow).
 on:
   issues:
     types: [opened, labeled]

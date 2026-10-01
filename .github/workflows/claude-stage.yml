@@ -68,7 +68,7 @@ jobs:
         run: |
           D="EOF_$(uuidgen | tr -d -)"
           # Label, das beim Abbruch entfernt wird
-          case "$KIND" in feature) LABEL=claude-feature ;; release) LABEL=claude-release ;; *) LABEL=claude ;; esac
+          case "$KIND" in feature) LABEL=claude-feature ;; release) LABEL=claude-release ;; *) LABEL=claude-fix ;; esac
           SUBST="s/__STAGE__/$STAGE/g; s/__ISSUE__/$ISSUE/g; s/__LABEL__/$LABEL/g"
           {
             echo "text<<$D"
@@ -146,7 +146,7 @@ jobs:
           if [ -z "$S" ]; then
             # Stufe hat keinen Marker-Kommentar geschrieben -> sichtbar abbrechen
             S=abort
-            case "${{ inputs.kind }}" in feature) LABEL=claude-feature ;; release) LABEL=claude-release ;; *) LABEL=claude ;; esac
+            case "${{ inputs.kind }}" in feature) LABEL=claude-feature ;; release) LABEL=claude-release ;; *) LABEL=claude-fix ;; esac
             printf '<!-- sfa-stage:%s status:abort -->\nDie Stufe `%s` hat kein Ergebnis geliefert (kein Marker-Kommentar) und wurde deshalb abgebrochen. Details im [Actions-Log](%s/%s/actions/runs/%s). Stufe kann über "Run workflow" erneut gestartet werden.\n' \
               "$STAGE" "$STAGE" "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID" > "$RUNNER_TEMP/fallback.md"
             gh issue comment "$ISSUE" --body-file "$RUNNER_TEMP/fallback.md" || true
