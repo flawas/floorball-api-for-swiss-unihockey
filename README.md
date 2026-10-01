@@ -148,6 +148,7 @@ This plugin connects to the **Swiss Unihockey API** (api-v2.swissunihockey.ch) t
 
 ### Unreleased
 
+* Fix: End inline comments with full stops (WPCS 3c2)
 * Fix: Rename global functions to snake_case (WPCS)
 
 ### 1.0.5 (2026-08-09)
