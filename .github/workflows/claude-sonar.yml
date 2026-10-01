@@ -4,7 +4,7 @@ name: Claude SonarQube Fixer
 # (Label claude-fix + sonarqube) und startet damit den normalen Fix-Ablauf
 # (architect -> developer -> PR -> reviewer -> writer, Abbruch im Zweifel).
 #
-# Einrichtung: Secret SONAR_TOKEN, Repository-Variablen SONAR_PROJECT_KEY und
+# Einrichtung: Secret SONAR_TOKEN, Variable oder Secret SONAR_PROJECT_KEY und
 # (nur bei eigenem Server) SONAR_HOST_URL. Standard-Host: https://sonarcloud.io
 on:
   workflow_dispatch:
@@ -30,9 +30,10 @@ jobs:
     timeout-minutes: 10
     env:
       GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}   # gh braucht ohne Checkout den Repo-Kontext
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL || 'https://sonarcloud.io' }}
-      SONAR_PROJECT_KEY: ${{ vars.SONAR_PROJECT_KEY }}
+      SONAR_PROJECT_KEY: ${{ vars.SONAR_PROJECT_KEY || secrets.SONAR_PROJECT_KEY }}
       SEVERITIES: ${{ inputs.severities }}
       TYPES: ${{ inputs.types }}
       MAX_ISSUES: ${{ inputs.max_issues }}

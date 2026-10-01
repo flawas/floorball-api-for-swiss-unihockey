@@ -27,6 +27,7 @@ jobs:
     runs-on: ubuntu-24.04
     env:
       GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}   # gh braucht ohne Checkout den Repo-Kontext
       BODY: ${{ github.event.comment.body }}
       NUMBER: ${{ github.event.issue.number }}
       IS_PR: ${{ github.event.issue.pull_request != null }}
