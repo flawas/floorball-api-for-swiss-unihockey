@@ -36,9 +36,11 @@ function swiss_floorball_api_uninstall_site() {
 	// Delete all cached API data (transients with 'swfl_' prefix)
 	// This includes both the transient values and their timeout entries.
 	$wpdb->query(
-		"DELETE FROM {$wpdb->options}
-		WHERE option_name LIKE '_transient_swfl_%'
-		OR option_name LIKE '_transient_timeout_swfl_%'"
+		$wpdb->prepare(
+			"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
+			$wpdb->esc_like( '_transient_swfl_' ) . '%',
+			$wpdb->esc_like( '_transient_timeout_swfl_' ) . '%'
+		)
 	);
 }
 
