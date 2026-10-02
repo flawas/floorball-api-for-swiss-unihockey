@@ -31,6 +31,18 @@ class Swiss_Floorball_API_Display {
 	private static $client;
 
 	/**
+	 * Render an error banner for failed or empty API responses.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $message Already translated message (escaped here, late).
+	 * @return void
+	 */
+	private static function render_error_notice( $message ) {
+		echo '<div class="sfa-info-box sfa-info-box--danger" role="alert"><p>' . esc_html( $message ) . '</p></div>';
+	}
+
+	/**
 	 * Get the API client instance.
 	 *
 	 * @return Swiss_Floorball_API_Client
@@ -75,7 +87,7 @@ class Swiss_Floorball_API_Display {
 		$api_response = $client->fetch_data( 'clubs/' . $swissfloorball_club_number . '/statistics' );
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['data']['regions'][0]['rows'] ) ) {
-			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) . '</p>';
+			self::render_error_notice( __( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) );
 			return;
 		}
 
@@ -158,7 +170,7 @@ class Swiss_Floorball_API_Display {
 		$api_response = $client->fetch_data( 'clubs/' . $swissfloorball_club_number . '/statistics' );
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['data']['regions'][0]['rows'] ) ) {
-			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) . '</p>';
+			self::render_error_notice( __( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) );
 			return;
 		}
 
@@ -206,7 +218,7 @@ class Swiss_Floorball_API_Display {
 		);
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['data']['regions'][0]['rows'] ) ) {
-			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) . '</p>';
+			self::render_error_notice( __( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) );
 			return;
 		}
 
@@ -290,7 +302,7 @@ class Swiss_Floorball_API_Display {
 		);
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['data']['regions'][0]['rows'] ) ) {
-			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) . '</p>';
+			self::render_error_notice( __( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) );
 			return;
 		}
 
@@ -375,7 +387,7 @@ class Swiss_Floorball_API_Display {
 		$api_response = $client->fetch_data( 'leagues' );
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['entries'] ) ) {
-			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) . '</p>';
+			self::render_error_notice( __( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) );
 			return;
 		}
 
@@ -423,7 +435,7 @@ class Swiss_Floorball_API_Display {
 		$api_response = $client->fetch_data( 'seasons' );
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['entries'] ) ) {
-			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) . '</p>';
+			self::render_error_notice( __( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) );
 			return;
 		}
 
@@ -468,7 +480,7 @@ class Swiss_Floorball_API_Display {
 		$api_response = $client->fetch_data( 'clubs' );
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['entries'] ) ) {
-			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) . '</p>';
+			self::render_error_notice( __( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) );
 			return;
 		}
 
@@ -640,7 +652,7 @@ class Swiss_Floorball_API_Display {
 
 		?>
 		<div class="sfa-calendar-link">
-			<a href="<?php echo esc_url( str_replace( 'https://', 'webcal://', $url ) ); ?>" target="_blank" class="sfa-calendar-subscribe">
+			<a href="<?php echo esc_url( str_replace( 'https://', 'webcal://', $url ) ); ?>" target="_blank" rel="noopener noreferrer" class="sfa-calendar-subscribe">
 				<?php esc_html_e( 'Kalender abonnieren', 'swiss-floorball-api' ); ?>
 			</a>
 		</div>
@@ -657,7 +669,7 @@ class Swiss_Floorball_API_Display {
 		$api_response = $client->fetch_data( 'cups' );
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['data']['regions'][0]['rows'] ) ) {
-			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) . '</p>';
+			self::render_error_notice( __( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) );
 			return;
 		}
 
@@ -704,7 +716,7 @@ class Swiss_Floorball_API_Display {
 		);
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['entries'] ) ) {
-			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) . '</p>';
+			self::render_error_notice( __( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) );
 			return;
 		}
 
@@ -740,7 +752,7 @@ class Swiss_Floorball_API_Display {
 		$api_response = $client->fetch_data( 'teams' );
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['data']['regions'][0]['rows'] ) ) {
-			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) . '</p>';
+			self::render_error_notice( __( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) );
 			return;
 		}
 
@@ -859,7 +871,7 @@ class Swiss_Floorball_API_Display {
 		);
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['data']['regions'][0]['rows'] ) ) {
-			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) . '</p>';
+			self::render_error_notice( __( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) );
 			return;
 		}
 
@@ -983,7 +995,7 @@ class Swiss_Floorball_API_Display {
 		$api_response = $client->fetch_data( 'games/' . $game_id );
 
 		if ( is_wp_error( $api_response ) ) {
-			echo '<div class="notice notice-error"><p>' . esc_html__( 'Fehler beim Laden der Match-Details.', 'swiss-floorball-api' ) . '</p></div>';
+			self::render_error_notice( __( 'Fehler beim Laden der Match-Details.', 'swiss-floorball-api' ) );
 			return;
 		}
 
@@ -1074,7 +1086,7 @@ class Swiss_Floorball_API_Display {
 		);
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['data']['regions'][0]['rows'] ) ) {
-			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) . '</p>';
+			self::render_error_notice( __( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) );
 			return;
 		}
 
@@ -1142,7 +1154,7 @@ class Swiss_Floorball_API_Display {
 		$api_response = $client->fetch_data( 'players/' . $player_id );
 
 		if ( is_wp_error( $api_response ) ) {
-			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) . '</p>';
+			self::render_error_notice( __( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) );
 			return;
 		}
 
@@ -1209,7 +1221,7 @@ class Swiss_Floorball_API_Display {
 		$api_response = $client->fetch_data( 'national_players' );
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['data']['regions'][0]['rows'] ) ) {
-			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) . '</p>';
+			self::render_error_notice( __( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) );
 			return;
 		}
 
@@ -1268,7 +1280,7 @@ class Swiss_Floorball_API_Display {
 		);
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['data']['regions'][0]['rows'] ) ) {
-			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) . '</p>';
+			self::render_error_notice( __( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) );
 			return;
 		}
 
@@ -1326,7 +1338,7 @@ class Swiss_Floorball_API_Display {
 		$api_response = $client->fetch_data( 'game_events/' . $game_id );
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['data']['regions'][0]['rows'] ) ) {
-			echo '<p>' . esc_html__( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) . '</p>';
+			self::render_error_notice( __( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) );
 			return;
 		}
 
