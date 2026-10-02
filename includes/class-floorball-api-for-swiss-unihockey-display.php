@@ -404,6 +404,25 @@ class Swiss_Floorball_API_Display {
 	}
 
 	/**
+	 * Safely read a text entry from a games grid row.
+	 *
+	 * Cancelled games come without a time, so cells may hold fewer text entries than usual.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $row   Grid row from the API.
+	 * @param int   $cell  Cell index.
+	 * @param int   $index Text index within the cell.
+	 * @return string Raw text, or an empty string if missing.
+	 */
+	private static function get_cell_text( $row, $cell, $index ) {
+		if ( isset( $row['cells'][ $cell ]['text'][ $index ] ) && is_scalar( $row['cells'][ $cell ]['text'][ $index ] ) ) {
+			return (string) $row['cells'][ $cell ]['text'][ $index ];
+		}
+		return '';
+	}
+
+	/**
 	 * Get the configured season, falling back to the current year.
 	 *
 	 * An unset or empty option is stored as 0, which get_option() defaults would not
@@ -786,12 +805,18 @@ class Swiss_Floorball_API_Display {
 				$now            = time();
 
 				foreach ( $rows as $row ) {
-					$date_str = $row['cells'][0]['text'][0]; // e.g. "26.11.2025".
-					$time_str = $row['cells'][0]['text'][1]; // e.g. "20:00".
+					$date_str = self::get_cell_text( $row, 0, 0 ); // e.g. "26.11.2025" or "Abgesagt".
+					$time_str = self::get_cell_text( $row, 0, 1 ); // e.g. "20:00"; missing for cancelled games.
 
-					// Parse date.
-					$dt = DateTime::createFromFormat( 'd.m.Y H:i', $date_str . ' ' . $time_str );
-					if ( $dt && $dt->getTimestamp() >= $now ) {
+					if ( '' !== $time_str ) {
+						$dt = DateTime::createFromFormat( 'd.m.Y H:i', $date_str . ' ' . $time_str );
+					} else {
+						// Without a time, compare against the end of the day.
+						$dt = DateTime::createFromFormat( 'd.m.Y H:i:s', $date_str . ' 23:59:59' );
+					}
+
+					// Unparseable dates (e.g. cancelled games) are shown instead of silently dropped.
+					if ( ! $dt || $dt->getTimestamp() >= $now ) {
 						$upcoming_games[] = $row;
 					}
 				}
@@ -813,23 +838,23 @@ class Swiss_Floorball_API_Display {
 						<tbody>
 							<?php
 							foreach ( $upcoming_games as $game ) :
-								$date           = $game['cells'][0]['text'][0];
-								$time           = $game['cells'][0]['text'][1];
-								$place_location = $game['cells'][1]['text'][0];
-								$place_name     = $game['cells'][1]['text'][1]; // Sometimes location is split.
+								$date           = self::get_cell_text( $game, 0, 0 );
+								$time           = self::get_cell_text( $game, 0, 1 );
+								$place_location = self::get_cell_text( $game, 1, 0 );
+								$place_name     = self::get_cell_text( $game, 1, 1 ); // Sometimes location is split.
 
 								// Read team names from the games list to avoid one detail request per game.
 								if ( 'club' === $mode ) {
-									$team_home = $game['cells'][3]['text'][0];
-									$team_away = $game['cells'][4]['text'][0];
+									$team_home = self::get_cell_text( $game, 3, 0 );
+									$team_away = self::get_cell_text( $game, 4, 0 );
 								} else {
-									$team_home = $game['cells'][2]['text'][0];
-									$team_away = $game['cells'][3]['text'][0];
+									$team_home = self::get_cell_text( $game, 2, 0 );
+									$team_away = self::get_cell_text( $game, 3, 0 );
 								}
 
 								?>
 								<tr>
-									<td data-label="<?php esc_attr_e( 'Datum', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $date . ' ' . $time ); ?></td>
+									<td data-label="<?php esc_attr_e( 'Datum', 'swiss-floorball-api' ); ?>"><?php echo esc_html( trim( $date . ' ' . $time ) ); ?></td>
 									<td data-label="<?php esc_attr_e( 'Heim', 'swiss-floorball-api' ); ?>">
 										<?php echo esc_html( $team_home ); ?>
 									</td>
@@ -1471,18 +1496,17 @@ class Swiss_Floorball_API_Display {
 	 * @param int|string $season Season ID.
 	 * @param int|string $league League ID.
 	 * @param int|string $game_class Game Class ID.
-	 * @param int|string $group Group ID.
+	 * @param int|string $group Deprecated. Ignored, the topscorers/su endpoint has no group parameter.
 	 * @return void
 	 */
-	public static function render_topscorers( $season, $league, $game_class, $group ) {
+	public static function render_topscorers( $season, $league, $game_class, $group = null ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Kept for backwards compatibility.
 		$client       = self::get_client();
 		$api_response = $client->fetch_data(
-			'topscorers',
+			'topscorers/su',
 			array(
 				'season'     => $season,
 				'league'     => $league,
 				'game_class' => $game_class,
-				'group'      => $group,
 			)
 		);
 

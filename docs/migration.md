@@ -57,6 +57,7 @@ Bereits abonnierte alte Kalender-URLs funktionieren nicht mehr und müssen neu a
 | `[swfl-club-games]` | Zeigt die Spiele wochenweise mit Vor-/Zurück-Buttons. Neues Attribut `season`. |
 | `[swfl-team-games]` | Blättert um das nächste Spiel herum. Neue Attribute `season` und `page_size` (Standard 4). |
 | `[swfl-rankings]` | `group` ist jetzt der **Gruppenname** (z. B. `Gruppe 1`), nicht mehr eine Gruppen-ID. Neues optionales Attribut `view`. |
+| `[swfl-topscorers]` | Nutzt den Endpunkt `topscorers/su`; `group` wird ignoriert. |
 | `[swfl-mobiliar-topscorer]` | Neu. Ohne `club_id` die Topscorer der ganzen Liga, mit `club_id` nur die eines Clubs. Es gibt keinen Standard-Club mehr. |
 | `[swfl-league-games]`, `[swfl-club-team-games]` | Neu, angelehnt an die offiziellen Swiss-Unihockey-Webcomponents (`uniho-*`). |
 

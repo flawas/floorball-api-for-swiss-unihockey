@@ -22,7 +22,7 @@ Attribute mit Bindestrich (`game-class`, `club-id`, `page-size`) funktionieren w
 | `[swfl-rankings]` | `season`, `league`, `game_class`, `group`, `view` | beide |
 | `[swfl-player]` | `player_id` | Partner-API |
 | `[swfl-national-players]` | – | Partner-API |
-| `[swfl-topscorers]` | `season`, `league`, `game_class`, `group` | Partner-API |
+| `[swfl-topscorers]` | `season`, `league`, `game_class` (`group` wird ignoriert) | Partner-API |
 | `[swfl-game-events]` | `game_id` | Partner-API |
 
 Alle Attribute sind Ganzzahlen (ID bzw. Jahreszahl), ausser `group` (Gruppenname, z. B. `Gruppe 1`) und `view`. Der Code erzwingt keine Pflichtattribute: Fehlt ein Wert, wird `0` bzw. leer an die API übergeben und die Ausgabe ist leer oder eine Fehlermeldung. «Pflicht (fachlich)» heisst unten: ohne den Wert ist die Ausgabe nicht sinnvoll.
@@ -250,17 +250,17 @@ Liste der Nationalspieler (`national_players`). Keine Attribute. Nur Partner-API
 
 ## `swfl-topscorers`
 
-Topscorer einer Gruppe (`topscorers`). Nur Partner-API.
+Topscorer einer Liga (`topscorers/su`). Nur Partner-API. `group` wird weiterhin akzeptiert, aber ignoriert; bei Ligen mit mehreren Gruppen kann die Liste länger sein.
 
 | Attribut | Typ | Default | Pflicht |
 |---|---|---|---|
 | `season` | int | Option `swissfloorball_actual_season` | nein |
 | `league` | int | leer | ja (fachlich) |
 | `game_class` | int | leer | ja (fachlich) |
-| `group` | Text | leer | ja (fachlich), Gruppenname wie `Gruppe 1` |
+| `group` | Text | leer | nein, wird ignoriert |
 
 ```text
-[swfl-topscorers league="1" game_class="11" group="Gruppe 1"]
+[swfl-topscorers league="1" game_class="11"]
 ```
 
 ## `swfl-game-events`

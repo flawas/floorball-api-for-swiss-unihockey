@@ -224,7 +224,7 @@ It is used to retrieve floorball data such as club games, team rosters, league r
 Version 2.0.0 contains breaking changes (API source, calendar feed, shortcode attributes, markup). Read the [upgrade guide](docs/migration.md) before updating. In short:
 
 1. Leagues, groups, topscorers, player profiles, national players and game events need the **Partner API** (API key and secret from Swiss Unihockey). Select it under *API source*; the key and secret fields appear only then.
-2. Use group names (`Gruppe 1`) in `[swfl-rankings]` and `[swfl-topscorers]`.
+2. Use group names (`Gruppe 1`) in `[swfl-rankings]`. `[swfl-topscorers]` ignores `group`.
 3. Subscribe to calendars again (new URL `/wp-json/swfl/v1/calendar`).
 4. Check custom CSS, or set *Table style* to `classic`.
 
@@ -232,10 +232,12 @@ Version 2.0.0 contains breaking changes (API source, calendar feed, shortcode at
 ### 2.0.0 (2026-10-02)
 * **Breaking:** API source switch. `api-v2.swissunihockey.ch` is no longer used; the default is the free API (`wc.swissunihockey.ch`), optionally the Partner API (`office.swissunihockey.ch`, API key + secret). Leagues, groups, topscorers, player profiles, national players and game events need the Partner API. See [docs/migration.md](docs/migration.md)
 * **Breaking:** Calendar subscriptions: the old calendar export is gone. The plugin serves its own iCalendar feed at `/wp-json/swfl/v1/calendar`; previously subscribed URLs must be subscribed again
-* **Breaking:** `[swfl-rankings]` and `[swfl-topscorers]` take the group name (`Gruppe 1`) instead of a group ID; `[swfl-club-games]` and `[swfl-team-games]` now page by week / around the next game and need JavaScript and the public REST routes `swfl/v1/*` for navigation
+* **Breaking:** `[swfl-rankings]` takes the group name (`Gruppe 1`) instead of a group ID, `[swfl-topscorers]` ignores `group` (endpoint `topscorers/su`); `[swfl-club-games]` and `[swfl-team-games]` now page by week / around the next game and need JavaScript and the public REST routes `swfl/v1/*` for navigation
 * **Breaking:** New table markup and styling (flat style, `.sfa-table-wrap`, `--sfa-sys-*` tokens). Custom CSS targeting the old markup needs a check; set *Table style* to `classic` for the previous look
 * Change: Major release. The default API source is now the free Swiss Unihockey API, shortcodes follow the official web components, and the frontend and admin were redesigned (see below). Review the *Remove* entry before updating if you used the former API source
 * Change: Settings page: the Partner API key and secret fields have clear labels and descriptions and are only shown while *Partner API* is selected as API source. All settings inputs and dropdowns share one compact size
+* Fix: `[swfl-topscorers]` now uses the `topscorers/su` API endpoint (the old `topscorers` endpoint returned 404). The `group` attribute is still accepted but ignored; lists for leagues with several groups may be longer (Issue #27)
+* Fix: Game lists no longer fail on cancelled games without a time (Issue #28)
 * Fix: The admin script is versioned by its modification time, so browsers no longer serve a stale cached copy after an update
 * Change: `[swfl-mobiliar-topscorer]` no longer defaults to the configured club. Without `club_id` it shows the Mobiliar topscorers of the whole league; with `club_id` it filters to that club
 * Change: Responsive widgets without a horizontal scrollbar. Layout now follows the width of the widget (container queries) instead of the screen width, because theme content columns are often much narrower than the viewport: compact cells and wrapping text first, then minor columns (ranking details, league column, venue, logos) are hidden on narrow widths; the paging buttons wrap below the label; the dark wrapper uses less padding on phones. The calendar table headers now read Heim/Gast (they showed Goal/Resultat)

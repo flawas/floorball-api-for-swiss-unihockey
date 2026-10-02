@@ -452,7 +452,7 @@ class Swiss_Floorball_Api_Public {
 
 		ob_start();
 		$this->open_wrapper();
-		Swiss_Floorball_API_Display::render_topscorers( absint( $a['season'] ), absint( $a['league'] ), absint( $a['game_class'] ), absint( $a['group'] ) );
+		Swiss_Floorball_API_Display::render_topscorers( absint( $a['season'] ), absint( $a['league'] ), absint( $a['game_class'] ) );
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();

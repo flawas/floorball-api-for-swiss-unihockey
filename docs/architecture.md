@@ -51,7 +51,7 @@ Cache leeren: Button auf der Einstellungsseite, Änderung der Club-Nummer oder D
 
 Mit beiden Quellen: `topscorers/mobiliar-highlight` (ohne `club_id` Liga-weit), `clubs`, `clubs/<id>/statistics`, `seasons`, `games` (Parameter `mode` = `club`/`team`/`list`, `club_id`/`team_id`, `season`), `games/<id>`, `cups`, `teams`, `teams/<id>`, `rankings`.
 
-Nur Partner-API: `leagues`, `groups`, `topscorers`, `players/<id>`, `national_players`, `game_events/<id>`.
+Nur Partner-API: `leagues`, `groups`, `topscorers/su`, `players/<id>`, `national_players`, `game_events/<id>`.
 
 Die alte Kalender-URL `calendars` wird nicht mehr verwendet.
 
