@@ -6899,6 +6899,22 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           ctx.restore();
         }
 
+        function stopStreamTracks(stream) {
+          stream.getTracks().forEach(function (track) { track.stop(); });
+        }
+
+        function flushAndStopRecorder(recorder) {
+          if (recorder.state === 'inactive') return;
+          // Chromium normally emits the final chunk during stop(), but
+          // some embedded browser shells need an explicit encoder flush
+          // first. Keep the short grace window bounded and harmless for
+          // browsers that already delivered timeslice chunks.
+          try { recorder.requestData(); } catch (_) {}
+          setTimeout(function () {
+            if (recorder.state !== 'inactive') recorder.stop();
+          }, 120);
+        }
+
         var motionScene = createMotionScene(svg);
 
         return new Promise(function (resolve, reject) {
@@ -6915,7 +6931,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
               recorder = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 6000000 });
             } catch (err) {
               URL.revokeObjectURL(sourceUrl);
-              stream.getTracks().forEach(function (track) { track.stop(); });
+              stopStreamTracks(stream);
               reject(err);
               return;
             }
@@ -6928,7 +6944,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
               stopped = true;
               cancelAnimationFrame(raf);
               URL.revokeObjectURL(sourceUrl);
-              stream.getTracks().forEach(function (track) { track.stop(); });
+              stopStreamTracks(stream);
             }
             function draw(now) {
               var elapsed = Math.max(0, ((Number(now) || performance.now()) - startedAt) / 1000);
@@ -6952,17 +6968,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
             recorder.start(250);
             startedAt = performance.now();
             raf = requestAnimationFrame(draw);
-            setTimeout(function () {
-              if (recorder.state === 'inactive') return;
-              // Chromium normally emits the final chunk during stop(), but
-              // some embedded browser shells need an explicit encoder flush
-              // first. Keep the short grace window bounded and harmless for
-              // browsers that already delivered timeslice chunks.
-              try { recorder.requestData(); } catch (_) {}
-              setTimeout(function () {
-                if (recorder.state !== 'inactive') recorder.stop();
-              }, 120);
-            }, duration);
+            setTimeout(function () { flushAndStopRecorder(recorder); }, duration);
           };
           backgroundImage.onerror = function () {
             URL.revokeObjectURL(sourceUrl);
