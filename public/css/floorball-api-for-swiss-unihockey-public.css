@@ -206,58 +206,102 @@
     line-height: 1.6;
 }
 
-/* Responsive Tables - Mobile First */
+/* Visually hidden text (table captions) — own class because .screen-reader-text depends on the theme */
+.swiss-floorball-plugin .sfa-visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Data tables (Material 3 look, tokens only).
+   The table itself is the scroll container: narrow viewports scroll horizontally instead of
+   restructuring the rows, and max-height lets the header stick while scrolling vertically. */
 .swiss-floorball-plugin .table,
 .swiss-floorball-plugin .sfa-data-table {
+    display: block;
     width: 100%;
+    max-width: 100%;
+    max-height: 70vh;
+    overflow: auto;
     border-collapse: separate;
     border-spacing: 0;
-    background: white;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-    border: 1px solid var(--sfa-border);
+    background: var(--sfa-sys-color-surface-container);
+    color: var(--sfa-sys-color-on-surface);
+    font-family: var(--sfa-sys-font-family);
+    line-height: var(--sfa-sys-line-height-body);
+    border-radius: var(--sfa-sys-shape-corner-md);
+    border: 1px solid var(--sfa-sys-color-outline);
     margin-bottom: 20px;
 }
 
 .swiss-floorball-plugin .table thead,
 .swiss-floorball-plugin .sfa-data-table thead {
-    background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+    background: var(--sfa-sys-color-surface-container);
 }
 
 .swiss-floorball-plugin .table th,
 .swiss-floorball-plugin .sfa-data-table th {
-    padding: clamp(10px, 2vw, 16px);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding: 12px 16px;
     text-align: left;
-    font-weight: 600;
-    color: var(--sfa-text);
-    font-size: clamp(11px, 2vw, 13px);
+    white-space: nowrap;
+    background: var(--sfa-sys-color-surface-container);
+    color: var(--sfa-sys-color-on-surface);
+    font-size: var(--sfa-sys-font-size-label);
+    font-weight: var(--sfa-sys-font-weight-medium);
+    line-height: var(--sfa-sys-line-height-tight);
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    border-bottom: 2px solid var(--sfa-primary);
+    border-bottom: 1px solid var(--sfa-sys-color-outline);
+}
+
+/* Row headers (key/value tables) are not part of the sticky header row. */
+.swiss-floorball-plugin .table tbody th,
+.swiss-floorball-plugin .sfa-data-table tbody th {
+    position: static;
 }
 
 .swiss-floorball-plugin .table td,
 .swiss-floorball-plugin .sfa-data-table td {
-    padding: clamp(10px, 2vw, 16px);
-    border-bottom: 1px solid var(--sfa-light-bg);
-    color: var(--sfa-text);
-    font-size: clamp(12px, 2.2vw, 14px);
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--sfa-sys-color-outline);
+    color: var(--sfa-sys-color-on-surface);
+    font-size: var(--sfa-sys-font-size-body);
+    line-height: var(--sfa-sys-line-height-body);
 }
 
 .swiss-floorball-plugin .table tbody tr,
 .swiss-floorball-plugin .sfa-data-table tbody tr {
-    transition: all 0.2s ease;
+    transition: background-color 150ms ease;
 }
 
+/* State layer: on-surface at 8 % (hover) / 12 % (focus). The solid fallback is for browsers without color-mix(). */
 .swiss-floorball-plugin .table tbody tr:hover,
-.swiss-floorball-plugin .sfa-data-table tbody tr:hover {
-    background: linear-gradient(90deg, rgba(0, 102, 204, 0.03) 0%, transparent 100%);
+.swiss-floorball-plugin .sfa-data-table tbody tr:hover,
+.swiss-floorball-plugin .table tbody tr:focus-within,
+.swiss-floorball-plugin .sfa-data-table tbody tr:focus-within {
+    background-color: var(--sfa-sys-color-outline);
 }
 
-.swiss-floorball-plugin .table tbody tr:nth-child(even),
-.swiss-floorball-plugin .sfa-data-table tbody tr:nth-child(even) {
-    background: rgba(248, 249, 250, 0.5);
+@supports (background-color: color-mix(in srgb, red 8%, transparent)) {
+
+    .swiss-floorball-plugin .table tbody tr:hover,
+    .swiss-floorball-plugin .sfa-data-table tbody tr:hover {
+        background-color: color-mix(in srgb, var(--sfa-sys-color-on-surface) 8%, transparent);
+    }
+
+    .swiss-floorball-plugin .table tbody tr:focus-within,
+    .swiss-floorball-plugin .sfa-data-table tbody tr:focus-within {
+        background-color: color-mix(in srgb, var(--sfa-sys-color-on-surface) 12%, transparent);
+    }
 }
 
 .swiss-floorball-plugin .table tbody tr:last-child td,
@@ -265,148 +309,73 @@
     border-bottom: none;
 }
 
-/* Mobile Table - Stack on Small Screens */
-@media screen and (max-width: 768px) {
+.swiss-floorball-plugin .table img,
+.swiss-floorball-plugin .sfa-data-table img {
+    max-width: 28px;
+    height: auto;
+    vertical-align: middle;
+}
 
-    .swiss-floorball-plugin .table,
-    .swiss-floorball-plugin .sfa-data-table {
-        border: 0;
-        border-radius: 0;
-        box-shadow: none;
-        background: transparent;
-        margin-bottom: 16px;
-    }
+/* Links in tables and cards: 48 px touch target and a visible focus ring. */
+.swiss-floorball-plugin .table a,
+.swiss-floorball-plugin .sfa-data-table a,
+.swiss-floorball-plugin .sfa-card a {
+    display: inline-flex;
+    align-items: center;
+    min-width: 48px;
+    min-height: 48px;
+    color: var(--sfa-sys-color-primary);
+    font-weight: var(--sfa-sys-font-weight-medium);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    transition: border-color 150ms ease;
+}
 
-    .swiss-floorball-plugin .table thead,
-    .swiss-floorball-plugin .sfa-data-table thead {
-        display: none;
-    }
+.swiss-floorball-plugin .table a:hover,
+.swiss-floorball-plugin .sfa-data-table a:hover,
+.swiss-floorball-plugin .sfa-card a:hover {
+    border-bottom-color: var(--sfa-sys-color-primary);
+}
 
-    .swiss-floorball-plugin .table tbody tr,
-    .swiss-floorball-plugin .sfa-data-table tbody tr {
-        display: block;
-        margin-bottom: 16px;
-        border: 1px solid var(--sfa-border);
-        border-radius: 16px;
-        overflow: hidden;
-        background: white;
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-        padding-left: 4px;
-    }
+.swiss-floorball-plugin .table a:focus-visible,
+.swiss-floorball-plugin .sfa-data-table a:focus-visible,
+.swiss-floorball-plugin .sfa-card a:focus-visible,
+.swiss-floorball-plugin .sfa-card button:focus-visible {
+    outline: 2px solid var(--sfa-sys-color-primary);
+    outline-offset: 2px;
+}
 
-    .swiss-floorball-plugin .table tbody tr:hover,
-    .swiss-floorball-plugin .sfa-data-table tbody tr:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0, 102, 204, 0.15);
-    }
+.swiss-floorball-plugin .sfa-card button {
+    min-width: 48px;
+    min-height: 48px;
+}
 
-    .swiss-floorball-plugin .table tbody tr:nth-child(even),
-    .swiss-floorball-plugin .sfa-data-table tbody tr:nth-child(even) {
-        background: white;
-    }
+/* Cards: elevated (default), filled and outlined variants. */
+.swiss-floorball-plugin .sfa-card {
+    box-sizing: border-box;
+    padding: 16px;
+    margin-bottom: 20px;
+    background: var(--sfa-sys-color-surface-container);
+    color: var(--sfa-sys-color-on-surface);
+    border: 1px solid transparent;
+    border-radius: var(--sfa-sys-shape-corner-md);
+    box-shadow: var(--sfa-sys-elevation-1);
+}
 
-    /* Colored left border accent */
-    .swiss-floorball-plugin .table tbody tr::before,
-    .swiss-floorball-plugin .sfa-data-table tbody tr::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 4px;
-        height: 100%;
-        background: linear-gradient(180deg, var(--sfa-primary) 0%, var(--sfa-secondary) 100%);
-        border-top-left-radius: 16px;
-        border-bottom-left-radius: 16px;
-    }
+.swiss-floorball-plugin .sfa-card--elevated {
+    background: var(--sfa-sys-color-surface-container);
+    box-shadow: var(--sfa-sys-elevation-1);
+}
 
-    .swiss-floorball-plugin .table td,
-    .swiss-floorball-plugin .sfa-data-table td {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        text-align: right;
-        padding: 16px 18px;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.04);
-        position: relative;
-        min-height: 48px;
-        font-size: 15px;
-        line-height: 1.5;
-    }
+.swiss-floorball-plugin .sfa-card--filled {
+    background: var(--sfa-sys-color-surface-container);
+    box-shadow: var(--sfa-sys-elevation-0);
+}
 
-    .swiss-floorball-plugin .table td:first-child,
-    .swiss-floorball-plugin .sfa-data-table td:first-child {
-        background: linear-gradient(90deg, rgba(0, 102, 204, 0.04) 0%, transparent 100%);
-        border-top-left-radius: 16px;
-        border-top-right-radius: 16px;
-        font-weight: 600;
-        padding-top: 18px;
-        color: var(--sfa-primary);
-        font-size: 16px;
-    }
-
-    .swiss-floorball-plugin .table td:last-child,
-    .swiss-floorball-plugin .sfa-data-table td:last-child {
-        border-bottom: none;
-        border-bottom-left-radius: 16px;
-        border-bottom-right-radius: 16px;
-        padding-bottom: 18px;
-    }
-
-    .swiss-floorball-plugin .table td::before,
-    .swiss-floorball-plugin .sfa-data-table td::before {
-        content: attr(data-label);
-        flex: 0 0 auto;
-        font-weight: 700;
-        color: var(--sfa-text);
-        text-transform: uppercase;
-        font-size: 11px;
-        letter-spacing: 0.6px;
-        margin-right: 16px;
-        text-align: left;
-        max-width: 45%;
-    }
-
-    /* Better handling of long content */
-    .swiss-floorball-plugin .table td>*,
-    .swiss-floorball-plugin .sfa-data-table td>* {
-        word-break: break-word;
-        max-width: 50%;
-        text-align: right;
-    }
-
-    /* Add subtle gradient to alternating cells */
-    .swiss-floorball-plugin .table td:nth-child(even),
-    .swiss-floorball-plugin .sfa-data-table td:nth-child(even) {
-        background: rgba(248, 249, 250, 0.4);
-    }
-
-    /* Improve images in mobile tables */
-    .swiss-floorball-plugin .table td img,
-    .swiss-floorball-plugin .sfa-data-table td img {
-        max-width: 28px;
-        max-height: 28px;
-        height: auto;
-        vertical-align: middle;
-        margin-left: 8px;
-    }
-
-    /* Better link styling */
-    .swiss-floorball-plugin .table td a,
-    .swiss-floorball-plugin .sfa-data-table td a {
-        color: var(--sfa-primary);
-        text-decoration: none;
-        font-weight: 600;
-        border-bottom: 1px solid transparent;
-        transition: border-color 0.2s ease;
-        word-break: break-all;
-    }
-
-    .swiss-floorball-plugin .table td a:hover,
-    .swiss-floorball-plugin .sfa-data-table td a:hover {
-        border-bottom-color: var(--sfa-primary);
-    }
+.swiss-floorball-plugin .sfa-card--outlined {
+    background: var(--sfa-sys-color-surface);
+    border-color: var(--sfa-sys-color-outline);
+    box-shadow: var(--sfa-sys-elevation-0);
 }
 
 /* Responsive Grid for Cards */
@@ -675,6 +644,12 @@
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
     }
+
+    .swiss-floorball-plugin .sfa-data-table tbody tr,
+    .swiss-floorball-plugin .sfa-data-table a,
+    .swiss-floorball-plugin .sfa-card a {
+        transition: none;
+    }
 }
 
 /* High Contrast Mode Support */
@@ -741,53 +716,20 @@
         border-color: #333333;
     }
 
-    /* Ensure striped rows remain visible in dark mode */
-    .swiss-floorball-plugin .table tbody tr:nth-child(even),
-    .swiss-floorball-plugin .sfa-data-table tbody tr:nth-child(even) {
-        background: rgba(255, 255, 255, 0.03);
+    /* Dark surface for the sticky header cells (th carries its own background) and cards. */
+    .swiss-floorball-plugin .table th,
+    .swiss-floorball-plugin .sfa-data-table th,
+    .swiss-floorball-plugin .sfa-card {
+        background: #1a1a1a;
     }
 
-    /* Mobile table card backgrounds */
-    @media screen and (max-width: 768px) {
-
-        .swiss-floorball-plugin .table tbody tr,
-        .swiss-floorball-plugin .sfa-data-table tbody tr {
-            background: #000000;
-            border-color: #333333;
-        }
-
-        .swiss-floorball-plugin .table tbody tr:nth-child(even),
-        .swiss-floorball-plugin .sfa-data-table tbody tr:nth-child(even) {
-            background: #000000;
-        }
-
-        .swiss-floorball-plugin .table td:first-child,
-        .swiss-floorball-plugin .sfa-data-table td:first-child {
-            background: linear-gradient(90deg, rgba(0, 102, 204, 0.15) 0%, transparent 100%);
-        }
-
-        .swiss-floorball-plugin .table td:nth-child(even),
-        .swiss-floorball-plugin .sfa-data-table td:nth-child(even) {
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        .swiss-floorball-plugin .table td::before,
-        .swiss-floorball-plugin .sfa-data-table td::before {
-            color: #ffffff;
-        }
+    .swiss-floorball-plugin .sfa-card {
+        color: #ffffff;
     }
 }
 
 /* Additional Mobile Enhancements */
 @media screen and (max-width: 768px) {
-
-    /* Improve touch targets */
-    .swiss-floorball-plugin .table td,
-    .swiss-floorball-plugin .sfa-data-table td,
-    .swiss-floorball-plugin .button,
-    .swiss-floorball-plugin .btn {
-        min-height: 44px;
-    }
 
     /* Add breathing room */
     .swiss-floorball-plugin .swiss-floorball-container {
@@ -808,59 +750,6 @@
         margin-bottom: 12px;
     }
 
-    /* Improve table card appearance with premium styling */
-    .swiss-floorball-plugin .table tbody tr,
-    .swiss-floorball-plugin .sfa-data-table tbody tr {
-        position: relative;
-        padding-left: 8px;
-    }
-
-    .swiss-floorball-plugin .table tbody tr::after,
-    .swiss-floorball-plugin .sfa-data-table tbody tr::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 4px;
-        height: 100%;
-        background: linear-gradient(180deg, var(--sfa-primary) 0%, var(--sfa-secondary) 100%);
-        border-top-left-radius: 12px;
-        border-bottom-left-radius: 12px;
-        opacity: 0.6;
-    }
-
-    /* Enhanced data value styling */
-    .swiss-floorball-plugin .table td,
-    .swiss-floorball-plugin .sfa-data-table td {
-        font-size: 15px;
-        line-height: 1.5;
-    }
-
-    /* Make first cell (usually rank/ID) stand out more */
-    .swiss-floorball-plugin .table td:first-child,
-    .swiss-floorball-plugin .sfa-data-table td:first-child {
-        font-size: 16px;
-        color: var(--sfa-primary);
-    }
-
-    /* Add subtle animation on scroll */
-    .swiss-floorball-plugin .table tbody tr,
-    .swiss-floorball-plugin .sfa-data-table tbody tr {
-        animation: fadeInUp 0.3s ease-out;
-    }
-
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
     /* Better spacing for table sections */
     .swiss-floorball-plugin .sfa-table-container {
         margin-bottom: 24px;
@@ -870,22 +759,8 @@
     .swiss-floorball-plugin .sfa-table-container h2,
     .swiss-floorball-plugin .sfa-table-container h3 {
         padding-bottom: 8px;
-        border-bottom: 2px solid var(--sfa-primary);
+        border-bottom: 2px solid var(--sfa-sys-color-primary);
         margin-bottom: 16px;
-    }
-
-    /* Make labels more prominent */
-    .swiss-floorball-plugin .table td::before,
-    .swiss-floorball-plugin .sfa-data-table td::before {
-        color: var(--sfa-primary-dark);
-        font-weight: 700;
-    }
-
-    /* Add subtle pulse on active/focused elements */
-    .swiss-floorball-plugin .table tbody tr:active,
-    .swiss-floorball-plugin .sfa-data-table tbody tr:active {
-        transform: scale(0.98);
-        transition: transform 0.1s ease;
     }
 
     /* Improve calendar link styling */
@@ -913,29 +788,6 @@
         padding: 32px 16px;
     }
 
-    /* Optimize images in tables */
-    .swiss-floorball-plugin .table img,
-    .swiss-floorball-plugin .sfa-data-table img {
-        max-width: 24px;
-        height: auto;
-        vertical-align: middle;
-    }
-
-    /* Add visual feedback for interactive elements */
-    .swiss-floorball-plugin .table a,
-    .swiss-floorball-plugin .sfa-data-table a {
-        color: var(--sfa-primary);
-        text-decoration: none;
-        font-weight: 600;
-        border-bottom: 2px solid transparent;
-        transition: border-color 0.2s ease;
-    }
-
-    .swiss-floorball-plugin .table a:hover,
-    .swiss-floorball-plugin .sfa-data-table a:hover {
-        border-bottom-color: var(--sfa-primary);
-    }
-
     /* Improve card layout for game scores */
     .swiss-floorball-plugin .card .row {
         gap: 12px;
@@ -946,6 +798,7 @@
     .swiss-floorball-plugin .btn {
         width: 100%;
         max-width: 100%;
+        min-height: 44px;
         justify-content: center;
     }
 

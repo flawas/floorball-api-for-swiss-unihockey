@@ -168,6 +168,8 @@ This plugin connects to the **Swiss Unihockey API** (api-v2.swissunihockey.ch) t
 
 ## 📜 Changelog
 ### Unreleased
+* Change: Frontend tables and cards in Material 3 look using only `--sfa-sys-*` tokens: surface-container tables with dividers, hover/focus state layer, sticky header, `.sfa-card` variants (`--elevated`, `--filled`, `--outlined`), 48 px touch targets and reduced-motion support. On narrow screens tables now scroll horizontally instead of switching to a card layout
+* New: Visually hidden `<caption>` and `scope` attributes on all plugin tables for accessibility
 * New: Design-token layer (`--sfa-sys-*` colors, typography, shape, elevation 0-5) for the frontend and admin styles, scoped to `.swiss-floorball-plugin` / `.sfa-admin-wrap`. Existing `--sfa-*` variables, Roboto and dark mode are unchanged; no visual change
 * Fix: Add explicit request timeout (5 seconds, minimum 1 second) to API client calls, filterable via `swfl_request_timeout` hook
 * Fix: Add `apply_filters()` stub to verify_api.php for test compatibility

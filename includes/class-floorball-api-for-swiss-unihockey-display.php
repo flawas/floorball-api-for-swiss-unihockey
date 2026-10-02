@@ -89,15 +89,16 @@ class Swiss_Floorball_API_Display {
 		<p><?php printf( esc_html__( 'Teams bei Swiss Floorball angemeldet: %d', 'swiss-floorball-api' ), intval( $team_count ) ); ?></p>
 
 		<table class="sfa-data-table">
+			<caption class="sfa-visually-hidden"><?php esc_html_e( 'Teams des Clubs', 'swiss-floorball-api' ); ?></caption>
 			<thead>
 				<tr>
-					<th><?php esc_html_e( 'Team ID', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Team Name', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Meisterschaft', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'League ID', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Game Class ID', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Group ID', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Cup', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Team ID', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Team Name', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Meisterschaft', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'League ID', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Game Class ID', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Group ID', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Cup', 'swiss-floorball-api' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -168,10 +169,11 @@ class Swiss_Floorball_API_Display {
 		?>
 		<h5><?php echo esc_html( $title ); ?></h5>
 		<table class="sfa-data-table">
+			<caption class="sfa-visually-hidden"><?php esc_html_e( 'Teams des Clubs', 'swiss-floorball-api' ); ?></caption>
 			<thead>
 				<tr>
-					<th><?php esc_html_e( 'Team Name', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Meisterschaft Platzierung', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Team Name', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Meisterschaft Platzierung', 'swiss-floorball-api' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -216,16 +218,17 @@ class Swiss_Floorball_API_Display {
 		?>
 		<h2 class="sfa-section-title"><?php echo esc_html( $title ); ?></h2>
 		<table class="sfa-data-table">
+			<caption class="sfa-visually-hidden"><?php esc_html_e( 'Spiele des Clubs', 'swiss-floorball-api' ); ?></caption>
 			<thead>
 				<tr>
-					<th><?php esc_html_e( 'Datum / Zeit', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Liga / Gruppe', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Heimteam', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Gastteam', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Ort', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Resultat', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Datum / Zeit', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Liga / Gruppe', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Heimteam', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Gastteam', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Ort', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Resultat', 'swiss-floorball-api' ); ?></th>
 					<?php if ( $is_backend ) : ?>
-						<th><?php esc_html_e( 'Aktionen', 'swiss-floorball-api' ); ?></th>
+						<th scope="col"><?php esc_html_e( 'Aktionen', 'swiss-floorball-api' ); ?></th>
 					<?php endif; ?>
 				</tr>
 			</thead>
@@ -301,18 +304,19 @@ class Swiss_Floorball_API_Display {
 		<h2 class="sfa-section-title"><?php echo esc_html( $title ); ?></h2>
 
 		<table class="sfa-data-table">
+			<caption class="sfa-visually-hidden"><?php esc_html_e( 'Spiele des Teams', 'swiss-floorball-api' ); ?></caption>
 			<thead>
 				<tr>
 					<?php if ( $is_backend ) : ?>
-						<th><?php esc_html_e( 'Game ID', 'swiss-floorball-api' ); ?></th>
+						<th scope="col"><?php esc_html_e( 'Game ID', 'swiss-floorball-api' ); ?></th>
 					<?php endif; ?>
-					<th><?php esc_html_e( 'Datum / Zeit', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Heimteam', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Gastteam', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Ort', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Resultat', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Datum / Zeit', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Heimteam', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Gastteam', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Ort', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Resultat', 'swiss-floorball-api' ); ?></th>
 					<?php if ( $is_backend ) : ?>
-						<th><?php esc_html_e( 'Aktionen', 'swiss-floorball-api' ); ?></th>
+						<th scope="col"><?php esc_html_e( 'Aktionen', 'swiss-floorball-api' ); ?></th>
 					<?php endif; ?>
 				</tr>
 			</thead>
@@ -386,11 +390,12 @@ class Swiss_Floorball_API_Display {
 		<h2 class="sfa-section-title"><?php echo esc_html( $title ); ?></h2>
 
 		<table class="sfa-data-table">
+			<caption class="sfa-visually-hidden"><?php esc_html_e( 'Ligen', 'swiss-floorball-api' ); ?></caption>
 			<thead>
 				<tr>
-					<th><?php esc_html_e( 'Name', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'League Nummer', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Game_class', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Name', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'League Nummer', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Game_class', 'swiss-floorball-api' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -434,10 +439,11 @@ class Swiss_Floorball_API_Display {
 		<h2 class="sfa-section-title"><?php echo esc_html( $title ); ?></h2>
 
 		<table class="sfa-data-table">
+			<caption class="sfa-visually-hidden"><?php esc_html_e( 'Saisons', 'swiss-floorball-api' ); ?></caption>
 			<thead>
 				<tr>
-					<th><?php esc_html_e( 'Club Name', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Season_id', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Club Name', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Season_id', 'swiss-floorball-api' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -479,10 +485,11 @@ class Swiss_Floorball_API_Display {
 		<h2 class="sfa-section-title"><?php echo esc_html( $title ); ?></h2>
 
 		<table class="sfa-data-table">
+			<caption class="sfa-visually-hidden"><?php esc_html_e( 'Clubs', 'swiss-floorball-api' ); ?></caption>
 			<thead>
 				<tr>
-					<th><?php esc_html_e( 'Club Name', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Club_id', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Club Name', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Club_id', 'swiss-floorball-api' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -589,15 +596,16 @@ class Swiss_Floorball_API_Display {
 					?>
 					<h3 class="sfa-calendar-title"><?php esc_html_e( 'Nächste Spiele', 'swiss-floorball-api' ); ?></h3>
 					<table class="sfa-data-table sfa-calendar-table">
+						<caption class="sfa-visually-hidden"><?php esc_html_e( 'Spielkalender', 'swiss-floorball-api' ); ?></caption>
 						<thead>
 							<tr>
-								<th><?php esc_html_e( 'Datum', 'swiss-floorball-api' ); ?></th>
-								<th><?php esc_html_e( 'Goal', 'swiss-floorball-api' ); ?></th>
-								<th><?php esc_html_e( 'Resultat', 'swiss-floorball-api' ); ?></th>
+								<th scope="col"><?php esc_html_e( 'Datum', 'swiss-floorball-api' ); ?></th>
+								<th scope="col"><?php esc_html_e( 'Goal', 'swiss-floorball-api' ); ?></th>
+								<th scope="col"><?php esc_html_e( 'Resultat', 'swiss-floorball-api' ); ?></th>
 						<?php if ( $is_backend ) : ?>
-							<th><?php esc_html_e( 'Aktionen', 'swiss-floorball-api' ); ?></th>
+							<th scope="col"><?php esc_html_e( 'Aktionen', 'swiss-floorball-api' ); ?></th>
 						<?php endif; ?>
-								<th><?php esc_html_e( 'Ort', 'swiss-floorball-api' ); ?></th>
+								<th scope="col"><?php esc_html_e( 'Ort', 'swiss-floorball-api' ); ?></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -667,9 +675,10 @@ class Swiss_Floorball_API_Display {
 		?>
 		<h2 class="sfa-section-title"><?php echo esc_html( $title ); ?></h2>
 		<table class="sfa-data-table">
+			<caption class="sfa-visually-hidden"><?php esc_html_e( 'Cups', 'swiss-floorball-api' ); ?></caption>
 			<thead>
 				<tr>
-					<th><?php esc_html_e( 'Runde', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Runde', 'swiss-floorball-api' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -714,9 +723,10 @@ class Swiss_Floorball_API_Display {
 		?>
 		<h2 class="sfa-section-title"><?php echo esc_html( $title ); ?></h2>
 		<table class="sfa-data-table">
+			<caption class="sfa-visually-hidden"><?php esc_html_e( 'Gruppen', 'swiss-floorball-api' ); ?></caption>
 			<thead>
 				<tr>
-					<th><?php esc_html_e( 'Gruppe', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Gruppe', 'swiss-floorball-api' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -750,10 +760,11 @@ class Swiss_Floorball_API_Display {
 		?>
 		<h2 class="sfa-section-title"><?php echo esc_html( $title ); ?></h2>
 		<table class="sfa-data-table">
+			<caption class="sfa-visually-hidden"><?php esc_html_e( 'Teams', 'swiss-floorball-api' ); ?></caption>
 			<thead>
 				<tr>
-					<th><?php esc_html_e( 'Name', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Website', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Name', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Website', 'swiss-floorball-api' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -890,8 +901,9 @@ class Swiss_Floorball_API_Display {
 								<div class="text-center">
 									<h5><?php echo esc_html( $game_details[0] ); ?></h5>
 									<table class="sfa-data-table">
+										<caption class="sfa-visually-hidden"><?php esc_html_e( 'Spielpaarung', 'swiss-floorball-api' ); ?></caption>
 										<tr>
-											<th><h5></th>
+											<th scope="row"></th>
 											<td><img src="<?php echo esc_url( $game_details[3] ); ?>" alt="Vereinslogo" class="img-fluid rounded-start sfa-card-logo"></td>
 											<td>
 												<?php echo esc_html( $game_details[6] ); ?><br>
@@ -1001,7 +1013,7 @@ class Swiss_Floorball_API_Display {
 					}
 					if ( isset( $region['rows'] ) ) {
 						echo '<div class="sfa-table-container sfa-table-container-flat">';
-						echo '<table class="sfa-data-table">';
+						echo '<table class="sfa-data-table"><caption class="sfa-visually-hidden">' . esc_html__( 'Spieldetails', 'swiss-floorball-api' ) . '</caption>';
 
 						// Check for headers.
 						$headers = isset( $api_response['data']['headers'] ) ? $api_response['data']['headers'] : null;
@@ -1009,7 +1021,7 @@ class Swiss_Floorball_API_Display {
 							echo '<thead><tr>';
 							foreach ( $headers as $header ) {
 								$header_text = isset( $header['text'] ) ? $header['text'] : ( is_string( $header ) ? $header : '' );
-								echo '<th>' . esc_html( $header_text ) . '</th>';
+								echo '<th scope="col">' . esc_html( $header_text ) . '</th>';
 							}
 							echo '</tr></thead>';
 						}
@@ -1084,13 +1096,14 @@ class Swiss_Floorball_API_Display {
 		?>
 		<h3><?php echo esc_html( $title ); ?></h3>
 		<table class="sfa-data-table">
+			<caption class="sfa-visually-hidden"><?php esc_html_e( 'Rangliste', 'swiss-floorball-api' ); ?></caption>
 			<thead>
 				<tr>
-					<th><?php esc_html_e( 'Rang', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Team', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Spiele', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Tordifferenz', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Punkte', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Rang', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Team', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Spiele', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Tordifferenz', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Punkte', 'swiss-floorball-api' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -1156,7 +1169,7 @@ class Swiss_Floorball_API_Display {
 					continue;
 				}
 				if ( ! $rendered ) {
-					echo '<table class="sfa-data-table"><tbody>';
+					echo '<table class="sfa-data-table"><caption class="sfa-visually-hidden">' . esc_html__( 'Spielerprofil', 'swiss-floorball-api' ) . '</caption><tbody>';
 					$rendered = true;
 				}
 				foreach ( $region['rows'] as $row ) {
@@ -1187,9 +1200,9 @@ class Swiss_Floorball_API_Display {
 				$lines[ $key ] = $value;
 			}
 			if ( ! empty( $lines ) ) {
-				echo '<table class="sfa-data-table"><tbody>';
+				echo '<table class="sfa-data-table"><caption class="sfa-visually-hidden">' . esc_html__( 'Spielerprofil', 'swiss-floorball-api' ) . '</caption><tbody>';
 				foreach ( $lines as $key => $value ) {
-					echo '<tr><th>' . esc_html( str_replace( '_', ' ', (string) $key ) ) . '</th><td>' . esc_html( (string) $value ) . '</td></tr>';
+					echo '<tr><th scope="row">' . esc_html( str_replace( '_', ' ', (string) $key ) ) . '</th><td>' . esc_html( (string) $value ) . '</td></tr>';
 				}
 				echo '</tbody></table>';
 				return;
@@ -1219,11 +1232,12 @@ class Swiss_Floorball_API_Display {
 		?>
 		<h2 class="sfa-section-title"><?php echo esc_html( $title ); ?></h2>
 		<table class="sfa-data-table">
+			<caption class="sfa-visually-hidden"><?php esc_html_e( 'Nationalspieler', 'swiss-floorball-api' ); ?></caption>
 			<thead>
 				<tr>
-					<th><?php esc_html_e( 'Nr', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Position', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Name', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Nr', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Position', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Name', 'swiss-floorball-api' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -1278,14 +1292,15 @@ class Swiss_Floorball_API_Display {
 		?>
 		<h3><?php echo esc_html( $title ); ?></h3>
 		<table class="sfa-data-table">
+			<caption class="sfa-visually-hidden"><?php esc_html_e( 'Topscorer', 'swiss-floorball-api' ); ?></caption>
 			<thead>
 				<tr>
-					<th><?php esc_html_e( 'Rang', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Spieler', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Team', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Tore', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Assists', 'swiss-floorball-api' ); ?></th>
-					<th><?php esc_html_e( 'Punkte', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Rang', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Spieler', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Team', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Tore', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Assists', 'swiss-floorball-api' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Punkte', 'swiss-floorball-api' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -1335,12 +1350,13 @@ class Swiss_Floorball_API_Display {
 		?>
 		<h3><?php esc_html_e( 'Match-Telegramm', 'swiss-floorball-api' ); ?></h3>
 		<table class="sfa-data-table">
+			<caption class="sfa-visually-hidden"><?php esc_html_e( 'Spielereignisse', 'swiss-floorball-api' ); ?></caption>
 					<thead>
 			<tr>
-				<th><?php esc_html_e( 'Zeit', 'swiss-floorball-api' ); ?></th>
-				<th><?php esc_html_e( 'Ereignis', 'swiss-floorball-api' ); ?></th>
-				<th><?php esc_html_e( 'Goal', 'swiss-floorball-api' ); ?></th>
-				<th><?php esc_html_e( 'Team', 'swiss-floorball-api' ); ?></th>
+				<th scope="col"><?php esc_html_e( 'Zeit', 'swiss-floorball-api' ); ?></th>
+				<th scope="col"><?php esc_html_e( 'Ereignis', 'swiss-floorball-api' ); ?></th>
+				<th scope="col"><?php esc_html_e( 'Goal', 'swiss-floorball-api' ); ?></th>
+				<th scope="col"><?php esc_html_e( 'Team', 'swiss-floorball-api' ); ?></th>
 			</tr>
 		</thead>
 		<tbody>
