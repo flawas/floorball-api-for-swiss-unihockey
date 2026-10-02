@@ -497,6 +497,57 @@ class Swiss_Floorball_Api_Admin {
 			'swissfloorball_show_icons',
 			array( $this, 'sanitize_show_icons' )
 		);
+
+		unset( $args );
+		$args = array(
+			'type'             => 'input',
+			'subtype'          => 'number',
+			'id'               => 'swissfloorball_request_timeout',
+			'name'             => 'swissfloorball_request_timeout',
+			'required'         => '',
+			'get_options_list' => '',
+			'value_type'       => 'normal',
+			'wp_data'          => 'option',
+			'min'              => '1',
+			'max'              => '30',
+			'step'             => '1',
+			'default'          => '3',
+			'description'      => __( 'Maximum wait time for the Swiss Unihockey API in seconds (1-30, default 3). Can be overridden with the swfl_request_timeout filter.', 'swiss-floorball-api' ),
+		);
+		add_settings_field(
+			'swissfloorball_request_timeout',
+			__( 'API request timeout (seconds)', 'swiss-floorball-api' ),
+			array( $this, 'settings_page_render_settings_field' ),
+			'swfl_general_settings',
+			'swfl_general_section',
+			$args
+		);
+
+		register_setting(
+			'swfl_general_settings',
+			'swissfloorball_request_timeout',
+			array(
+				'type'              => 'integer',
+				'sanitize_callback' => array( $this, 'sanitize_request_timeout' ),
+				'default'           => 3,
+			)
+		);
+	}
+
+	/**
+	 * Sanitize the API request timeout: integer seconds limited to 1-30, invalid values fall back to 3.
+	 *
+	 * @since 1.0.7
+	 *
+	 * @param mixed $value Raw submitted value.
+	 * @return int Timeout in seconds.
+	 */
+	public function sanitize_request_timeout( $value ) {
+		$value = absint( $value );
+		if ( 0 === $value ) {
+			return 3;
+		}
+		return min( 30, $value );
 	}
 
 	/**
@@ -561,6 +612,9 @@ class Swiss_Floorball_Api_Admin {
 				} else {
 						$checked = ( $value ) ? 'checked' : '';
 						echo '<input type="' . esc_attr( $args['subtype'] ) . '" id="' . esc_attr( $args['id'] ) . '" ' . esc_attr( $args['required'] ) . ' name="' . esc_attr( $args['name'] ) . '" size="40" value="1" ' . esc_attr( $checked ) . ' />';
+				}
+				if ( ! empty( $args['description'] ) ) {
+					echo '<p class="description">' . esc_html( $args['description'] ) . '</p>';
 				}
 				break;
 			default:

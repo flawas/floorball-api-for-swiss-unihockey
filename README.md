@@ -147,6 +147,8 @@ This plugin connects to the **Swiss Unihockey API** (api-v2.swissunihockey.ch) t
 * New: Setting `swissfloorball_show_icons` and filter `swfl_icon_svg`
 
 ### Unreleased
+* New: Setting `swissfloorball_request_timeout` (API request timeout, 1-30 seconds) on the settings page; it provides the default of the `swfl_request_timeout` filter, which still overrides it
+* Change: Default API request timeout lowered from 5 to 3 seconds
 
 * Fix: Admin class methods to snake_case; prefix template variables with `swfl_`; apply Yoda conditions (PR #50, WPCS step 4/5)
 * Fix: End inline comments with full stops (WPCS 3c2)

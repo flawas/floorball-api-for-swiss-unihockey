@@ -8,7 +8,7 @@
 
 ## API nicht erreichbar
 
-Der Server muss `api-v2.swissunihockey.ch` per HTTPS erreichen (Firewall, `WP_HTTP_BLOCK_EXTERNAL`). Der Standard-Timeout beträgt 5 Sekunden; bei langsamen Servern per Filter `swfl_request_timeout` erhöhen ([Entwicklung](developer.md#filter)). Fehlerantworten werden nicht gecacht. Mit `php verify_api.php` lässt sich die API unabhängig von WordPress testen.
+Der Server muss `api-v2.swissunihockey.ch` per HTTPS erreichen (Firewall, `WP_HTTP_BLOCK_EXTERNAL`). Der Standard-Timeout beträgt 3 Sekunden; bei langsamen Servern die Einstellung «API request timeout» erhöhen oder den Filter `swfl_request_timeout` nutzen ([Entwicklung](developer.md#filter)). Fehlerantworten werden nicht gecacht. Mit `php verify_api.php` lässt sich die API unabhängig von WordPress testen.
 
 ## Alte Daten werden angezeigt
 
