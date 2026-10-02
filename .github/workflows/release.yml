@@ -85,7 +85,13 @@ jobs:
             --exclude README.md \
             --exclude graphify-out \
             --exclude assets \
-            --exclude docs
+            --exclude docs \
+            --exclude THIRD-PARTY.md \
+            --exclude CLAUDE.md \
+            --exclude swiss-floorball-api-architecture.html \
+            --exclude swiss-floorball-api-architecture.visual-check.json \
+            --exclude swiss-floorball-arch.json \
+            --exclude .phpcs.xml.dist
           zip -r swiss-floorball-api.zip swiss-floorball-api
           rm -rf swiss-floorball-api
 

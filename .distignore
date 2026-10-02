@@ -15,3 +15,8 @@ graphify-out
 assets
 .phpcs.xml.dist
 docs
+THIRD-PARTY.md
+CLAUDE.md
+swiss-floorball-api-architecture.html
+swiss-floorball-api-architecture.visual-check.json
+swiss-floorball-arch.json
