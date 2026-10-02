@@ -44,7 +44,7 @@ $swfl_tiles = array(
 	array( 'settings', __( 'Einstellungen', 'swiss-floorball-api' ), __( 'API, Club, Design und Cache', 'swiss-floorball-api' ), 'settings' ),
 );
 ?>
-<div class="wrap sfa-admin-wrap" data-sfa-theme="<?php echo esc_attr( Swiss_Floorball_API_Display::get_theme() ); ?>">
+<div class="wrap sfa-admin-wrap" data-sfa-theme="<?php echo esc_attr( Swiss_Floorball_API_Theme::get_theme() ); ?>">
 	<div class="sfa-admin-header">
 		<h1><?php Swiss_Floorball_Api_Icons::render( 'hockey' ); ?> Swiss Floorball</h1>
 		<p><?php esc_html_e( 'Übersicht und Verwaltung Ihrer Swiss Floorball Daten', 'swiss-floorball-api' ); ?></p>

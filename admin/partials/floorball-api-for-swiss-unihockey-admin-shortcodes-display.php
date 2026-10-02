@@ -20,7 +20,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 }
 ?>
 
-<div class="wrap sfa-admin-wrap" data-sfa-theme="<?php echo esc_attr( Swiss_Floorball_API_Display::get_theme() ); ?>">
+<div class="wrap sfa-admin-wrap" data-sfa-theme="<?php echo esc_attr( Swiss_Floorball_API_Theme::get_theme() ); ?>">
 	<div class="sfa-admin-header">
 		<h1><?php Swiss_Floorball_Api_Icons::render( 'description' ); ?> Shortcodes Übersicht</h1>
 		<p>Hier finden Sie eine Übersicht über alle verfügbaren Shortcodes, deren Parameter und Anwendungsbeispiele.</p>

@@ -170,6 +170,7 @@ function _e( $t, $d = '' ) {
 
 require_once __DIR__ . '/includes/class-floorball-api-for-swiss-unihockey-client.php';
 require_once __DIR__ . '/includes/class-floorball-api-for-swiss-unihockey-display.php';
+require_once __DIR__ . '/includes/class-floorball-api-for-swiss-unihockey-theme.php';
 require_once __DIR__ . '/includes/class-floorball-api-for-swiss-unihockey-widgets.php';
 require_once __DIR__ . '/includes/class-floorball-api-for-swiss-unihockey-icons.php';
 

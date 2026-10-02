@@ -65,11 +65,11 @@ class Swiss_Floorball_Api_Public {
 	 * @return void
 	 */
 	private function open_wrapper() {
-		$classes = 'swiss-floorball-plugin sfa-table--' . Swiss_Floorball_API_Display::get_table_style();
-		if ( Swiss_Floorball_API_Display::is_table_striped() ) {
+		$classes = 'swiss-floorball-plugin sfa-table--' . Swiss_Floorball_API_Theme::get_table_style();
+		if ( Swiss_Floorball_API_Theme::is_table_striped() ) {
 			$classes .= ' sfa-table--striped';
 		}
-		echo '<div class="' . esc_attr( $classes ) . '" data-sfa-theme="' . esc_attr( Swiss_Floorball_API_Display::get_theme() ) . '">';
+		echo '<div class="' . esc_attr( $classes ) . '" data-sfa-theme="' . esc_attr( Swiss_Floorball_API_Theme::get_theme() ) . '">';
 	}
 
 	/**
@@ -118,11 +118,11 @@ class Swiss_Floorball_Api_Public {
 			return;
 		}
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/floorball-api-for-swiss-unihockey-public.css', array(), $this->version, 'all' );
-		$seed_css = Swiss_Floorball_API_Display::get_seed_css();
+		$seed_css = Swiss_Floorball_API_Theme::get_seed_css();
 		if ( '' !== $seed_css ) {
 			wp_add_inline_style( $this->plugin_name, $seed_css );
 		}
-		$table_css = Swiss_Floorball_API_Display::get_table_css();
+		$table_css = Swiss_Floorball_API_Theme::get_table_css();
 		if ( '' !== $table_css ) {
 			wp_add_inline_style( $this->plugin_name, $table_css );
 		}

@@ -24,7 +24,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 $swfl_club_number = get_option( 'swissfloorball_club_number' );
 $swfl_season      = Swiss_Floorball_API_Display::get_current_season();
 ?>
-<div class="wrap sfa-admin-wrap" data-sfa-theme="<?php echo esc_attr( Swiss_Floorball_API_Display::get_theme() ); ?>">
+<div class="wrap sfa-admin-wrap" data-sfa-theme="<?php echo esc_attr( Swiss_Floorball_API_Theme::get_theme() ); ?>">
 	<div class="sfa-admin-header">
 		<h1><?php Swiss_Floorball_Api_Icons::render( 'chart' ); ?> <?php esc_html_e( 'Club-Übersicht', 'swiss-floorball-api' ); ?></h1>
 		<p><?php esc_html_e( 'Teams und Spiele des konfigurierten Clubs', 'swiss-floorball-api' ); ?></p>
