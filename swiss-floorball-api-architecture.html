@@ -6968,7 +6968,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
             recorder.start(250);
             startedAt = performance.now();
             raf = requestAnimationFrame(draw);
-            setTimeout(function () { flushAndStopRecorder(recorder); }, duration);
+            setTimeout(flushAndStopRecorder, duration, recorder);
           };
           backgroundImage.onerror = function () {
             URL.revokeObjectURL(sourceUrl);
