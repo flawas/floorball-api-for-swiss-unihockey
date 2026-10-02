@@ -179,11 +179,6 @@ if ( ! current_user_can( 'manage_options' ) ) {
 					<td>Nur Backend - Keine öffentliche Shortcode-Implementierung vorhanden.</td>
 				</tr>
 				<tr>
-					<td><code>render_sessions()</code></td>
-					<td>Zeigt API-Session-Informationen an.</td>
-					<td>Nur Backend - Technische Funktion für API-Verwaltung.</td>
-				</tr>
-				<tr>
 					<td><code>render_club_games_callout()</code></td>
 					<td>Zeigt eine Callout-Box mit Vereinsspielen im Backend-Stil.</td>
 					<td>Nur Backend - Spezielle Darstellung für Admin-Dashboard.</td>

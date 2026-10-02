@@ -1391,15 +1391,4 @@ class Swiss_Floorball_API_Display {
 		</table>
 		<?php
 	}
-
-	/**
-	 * Get sessions.
-	 *
-	 * @return void
-	 */
-	public static function render_sessions() {
-		$client       = self::get_client();
-		$api_response = $client->fetch_data( 'sessions' );
-		// Implementation depends on what this returns and if it's public.
-	}
 }

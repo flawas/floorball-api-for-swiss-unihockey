@@ -36,7 +36,7 @@ Cache leeren: Button auf der Einstellungsseite, Änderung der Club-Nummer oder D
 
 ## Verwendete Endpunkte
 
-`clubs`, `clubs/<id>/statistics`, `leagues`, `seasons`, `games` (Parameter `mode` = `club`/`team`, `club_id`/`team_id`, `season`), `games/<id>`, `game_events/<id>`, `cups`, `groups`, `teams`, `teams/<id>`, `rankings`, `topscorers`, `players/<id>`, `national_players`, `sessions` (`render_sessions()`, von keinem Shortcode genutzt) sowie die Kalender-URL `calendars` (nur als Link aufgebaut).
+`clubs`, `clubs/<id>/statistics`, `leagues`, `seasons`, `games` (Parameter `mode` = `club`/`team`, `club_id`/`team_id`, `season`), `games/<id>`, `game_events/<id>`, `cups`, `groups`, `teams`, `teams/<id>`, `rankings`, `topscorers`, `players/<id>`, `national_players`, sowie die Kalender-URL `calendars` (nur als Link aufgebaut).
 
 ## API-Antwortformen
 
