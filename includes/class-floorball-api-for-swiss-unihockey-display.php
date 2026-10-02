@@ -608,47 +608,22 @@ class Swiss_Floorball_API_Display {
 								$place_location = $game['cells'][1]['text'][0];
 								$place_name     = $game['cells'][1]['text'][1]; // Sometimes location is split.
 
-								// Fetch game details for logos.
-								$game_id   = isset( $game['link']['ids'][0] ) ? $game['link']['ids'][0] : '';
-								$logo_home = '';
-								$logo_away = '';
-								$team_home = '';
-								$team_away = '';
-
-								if ( $game_id ) {
-									$details = self::get_gamedetails( $game_id );
-									if ( $details ) {
-										$team_home = $details[2];
-										$logo_home = $details[3];
-										$team_away = $details[4];
-										$logo_away = $details[5];
-									}
-								}
-
-								// Fallback if details fail or no ID (though unlikely for valid games).
-								if ( empty( $team_home ) ) {
-									if ( 'club' === $mode ) {
-										$team_home = $game['cells'][3]['text'][0];
-										$team_away = $game['cells'][4]['text'][0];
-									} else {
-										$team_home = $game['cells'][2]['text'][0];
-										$team_away = $game['cells'][3]['text'][0];
-									}
+								// Read team names from the games list to avoid one detail request per game.
+								if ( 'club' === $mode ) {
+									$team_home = $game['cells'][3]['text'][0];
+									$team_away = $game['cells'][4]['text'][0];
+								} else {
+									$team_home = $game['cells'][2]['text'][0];
+									$team_away = $game['cells'][3]['text'][0];
 								}
 
 								?>
 								<tr>
 									<td data-label="<?php esc_attr_e( 'Datum', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $date . ' ' . $time ); ?></td>
 									<td data-label="<?php esc_attr_e( 'Heim', 'swiss-floorball-api' ); ?>">
-										<?php if ( $logo_home ) : ?>
-											<img src="<?php echo esc_url( $logo_home ); ?>" alt="<?php echo esc_attr( $team_home ); ?>" class="sfa-logo-inline">
-										<?php endif; ?>
 										<?php echo esc_html( $team_home ); ?>
 									</td>
 									<td data-label="<?php esc_attr_e( 'Gast', 'swiss-floorball-api' ); ?>">
-										<?php if ( $logo_away ) : ?>
-											<img src="<?php echo esc_url( $logo_away ); ?>" alt="<?php echo esc_attr( $team_away ); ?>" class="sfa-logo-inline">
-										<?php endif; ?>
 										<?php echo esc_html( $team_away ); ?>
 									</td>
 									<td data-label="<?php esc_attr_e( 'Ort', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $place_location ); ?></td>
