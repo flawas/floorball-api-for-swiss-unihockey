@@ -194,9 +194,17 @@ It is used to retrieve floorball data such as club games, team rosters, league r
 **What data is sent and when:**
 - Your configured Club ID and Season are sent to the API every time a shortcode is rendered or an admin page is loaded.
 - No personal data of website visitors is transmitted. All requests are read-only.
+- With the *Partner API* selected, your API key and secret are sent to `office.swissunihockey.ch` to request a short-lived auth token.
 
 **Service provider:** Swiss Unihockey (Floorball Schweiz)  
 [Terms of Service](https://www.swissunihockey.ch/index.php?cID=1186) | [Privacy Policy](https://swissunihockey.tlex.ch/app/de/texts_of_law/2-7)
+
+**Images from Cloudinary:** Team logos and player portraits come from the API as image URLs on `res.cloudinary.com` (Swiss Unihockey's image host). The visitor's browser loads these images directly from Cloudinary when a page with such a shortcode is shown, so the visitor's IP address and browser data are transmitted to Cloudinary. The plugin does not store or process this data.  
+Service provider: Cloudinary Ltd. | [Terms of Service](https://cloudinary.com/tou) | [Privacy Policy](https://cloudinary.com/privacy)
+
+**Links to other services:** Venue cells link to [OpenStreetMap](https://www.openstreetmap.org/) (built from the venue coordinates) and game links point to `myapp.swissunihockey.ch`. No data is sent to these sites unless a visitor clicks the link.
+
+**Disclaimer:** This is an independent plugin. It is not affiliated with, endorsed by or sponsored by Swiss Unihockey or Floorball Schweiz. "Swiss Unihockey" and "Swiss Floorball" are names of their respective owners and are used only to describe the data source.
 
 ## 📸 Screenshots
 
@@ -238,6 +246,7 @@ Version 2.0.0 contains breaking changes (API source, calendar feed, shortcode at
 * Change: Settings page: the Partner API key and secret fields have clear labels and descriptions and are only shown while *Partner API* is selected as API source. All settings inputs and dropdowns share one compact size
 * Fix: `[swfl-topscorers]` now uses the `topscorers/su` API endpoint (the old `topscorers` endpoint returned 404). The `group` attribute is still accepted but ignored; lists for leagues with several groups may be longer (Issue #27)
 * Fix: Game lists no longer fail on cancelled games without a time (Issue #28)
+* Fix: Plugin guidelines: the bundled Roboto font is documented in `THIRD-PARTY.md` and ships with its licence (`fonts/OFL.txt`); the external services section now discloses the Cloudinary image host (team logos, player portraits) and links to OpenStreetMap and the Swiss Unihockey app; added a disclaimer that the plugin is not affiliated with Swiss Unihockey or Floorball Schweiz
 * Fix: The admin script is versioned by its modification time, so browsers no longer serve a stale cached copy after an update
 * Change: `[swfl-mobiliar-topscorer]` no longer defaults to the configured club. Without `club_id` it shows the Mobiliar topscorers of the whole league; with `club_id` it filters to that club
 * Change: Responsive widgets without a horizontal scrollbar. Layout now follows the width of the widget (container queries) instead of the screen width, because theme content columns are often much narrower than the viewport: compact cells and wrapping text first, then minor columns (ranking details, league column, venue, logos) are hidden on narrow widths; the paging buttons wrap below the label; the dark wrapper uses less padding on phones. The calendar table headers now read Heim/Gast (they showed Goal/Resultat)

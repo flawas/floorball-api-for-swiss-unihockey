@@ -19,3 +19,11 @@ Icons in `public/icons/`:
 
 The icon path data embedded in `includes/class-floorball-api-for-swiss-unihockey-icons.php`
 originates from the same Material icon set (also Apache 2.0).
+
+## Roboto (Google Fonts)
+
+* Source: https://github.com/google/fonts/tree/main/ofl/roboto
+* Copyright: 2011 The Roboto Project Authors (https://github.com/googlefonts/roboto-classic)
+* License: SIL Open Font License 1.1 (https://openfontlicense.org), full text in `fonts/OFL.txt`
+* Files: `fonts/roboto-v51-latin.woff2`, `fonts/roboto-v51-latin-ext.woff2` (variable font, Latin and Latin Extended, unchanged)
+* The fonts are served from the plugin itself; no request to Google is made.
