@@ -98,6 +98,7 @@ class Swiss_Floorball_API_Display {
 
 		?>
 		<h2 class="sfa-section-title"><?php echo esc_html( $title ); ?></h2>
+		<?php /* translators: %d: number of teams registered with Swiss Floorball. */ ?>
 		<p><?php printf( esc_html__( 'Teams bei Swiss Floorball angemeldet: %d', 'swiss-floorball-api' ), intval( $team_count ) ); ?></p>
 
 		<table class="sfa-data-table">
