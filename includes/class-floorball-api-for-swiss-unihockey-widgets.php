@@ -1071,23 +1071,7 @@ class Swiss_Floorball_API_Widgets {
 			return;
 		}
 
-		$rows    = Swiss_Floorball_API_Table_Data::get_rows( $response['data'] );
-		$players = array();
-		$count   = 0;
-		foreach ( array_slice( $rows, 0, 4 ) as $row ) {
-			$count = max( $count, isset( $row['cells'] ) ? count( $row['cells'] ) : 0 );
-		}
-		for ( $i = 0; $i < $count; $i++ ) {
-			$player = array(
-				'image'  => isset( $rows[0]['cells'][ $i ]['image']['url'] ) ? $rows[0]['cells'][ $i ]['image']['url'] : '',
-				'name'   => isset( $rows[1]['cells'][ $i ] ) ? Swiss_Floorball_API_Table_Data::get_cell_text( $rows[1]['cells'][ $i ] ) : '',
-				'club'   => isset( $rows[2]['cells'][ $i ] ) ? Swiss_Floorball_API_Table_Data::get_cell_text( $rows[2]['cells'][ $i ] ) : '',
-				'points' => isset( $rows[3]['cells'][ $i ] ) ? Swiss_Floorball_API_Table_Data::get_cell_text( $rows[3]['cells'][ $i ] ) : '',
-			);
-			if ( '' !== $player['image'] || '' !== $player['name'] || '' !== $player['club'] || '' !== $player['points'] ) {
-				$players[] = $player;
-			}
-		}
+		$players = self::collect_topscorers( Swiss_Floorball_API_Table_Data::get_rows( $response['data'] ) );
 
 		?>
 		<div class="sfa-widget sfa-topscorers" data-sfa-widget="topscorers">
@@ -1096,28 +1080,85 @@ class Swiss_Floorball_API_Widgets {
 			<?php else : ?>
 				<div class="sfa-topscorers__headline"><?php esc_html_e( 'die Mobiliar Topscorer', 'swiss-floorball-api' ); ?></div>
 				<div class="sfa-topscorers__list">
-					<?php foreach ( $players as $player ) : ?>
-						<article class="sfa-topscorers__item">
-							<div class="sfa-topscorers__image">
-								<?php if ( '' !== $player['image'] ) : ?>
-									<img src="<?php echo esc_url( $player['image'] ); ?>" alt="<?php echo esc_attr( $player['name'] ); ?>" loading="lazy" />
-								<?php endif; ?>
-							</div>
-							<div class="sfa-topscorers__info">
-								<h3><?php echo esc_html( $player['name'] ); ?></h3>
-								<?php if ( '' !== $player['club'] ) : ?>
-									<p><?php echo esc_html( $player['club'] ); ?></p>
-								<?php endif; ?>
-							</div>
-							<div class="sfa-topscorers__points">
-								<strong><?php echo esc_html( '' !== $player['points'] ? $player['points'] : '-' ); ?></strong>
-								<span><?php esc_html_e( 'Punkte', 'swiss-floorball-api' ); ?></span>
-							</div>
-						</article>
-					<?php endforeach; ?>
+					<?php
+					foreach ( $players as $player ) {
+						self::render_topscorer_item( $player );
+					}
+					?>
 				</div>
 			<?php endif; ?>
 		</div>
+		<?php
+	}
+
+	/**
+	 * Text of one cell of the topscorer grid, empty when the cell is missing.
+	 *
+	 * @since 2.0.1
+	 * @param array $rows   Grid rows (portraits, names, clubs, points).
+	 * @param int   $row    Row index.
+	 * @param int   $column Column index, one column per player.
+	 * @return string Cell text.
+	 */
+	private static function topscorer_text( $rows, $row, $column ) {
+		return isset( $rows[ $row ]['cells'][ $column ] ) ? Swiss_Floorball_API_Table_Data::get_cell_text( $rows[ $row ]['cells'][ $column ] ) : '';
+	}
+
+	/**
+	 * Read the players from the four-row topscorer grid.
+	 *
+	 * @since 2.0.1
+	 * @param array $rows Grid rows (portraits, names, clubs, points).
+	 * @return array[] Players with image, name, club and points; players without any data are skipped.
+	 */
+	private static function collect_topscorers( $rows ) {
+		$count = 0;
+		foreach ( array_slice( $rows, 0, 4 ) as $row ) {
+			$count = max( $count, isset( $row['cells'] ) ? count( $row['cells'] ) : 0 );
+		}
+
+		$players = array();
+		for ( $i = 0; $i < $count; $i++ ) {
+			$player = array(
+				'image'  => isset( $rows[0]['cells'][ $i ]['image']['url'] ) ? $rows[0]['cells'][ $i ]['image']['url'] : '',
+				'name'   => self::topscorer_text( $rows, 1, $i ),
+				'club'   => self::topscorer_text( $rows, 2, $i ),
+				'points' => self::topscorer_text( $rows, 3, $i ),
+			);
+			if ( '' !== implode( '', $player ) ) {
+				$players[] = $player;
+			}
+		}
+
+		return $players;
+	}
+
+	/**
+	 * Render one topscorer card.
+	 *
+	 * @since 2.0.1
+	 * @param array $player Player with image, name, club and points.
+	 * @return void
+	 */
+	private static function render_topscorer_item( $player ) {
+		?>
+		<article class="sfa-topscorers__item">
+			<div class="sfa-topscorers__image">
+				<?php if ( '' !== $player['image'] ) : ?>
+					<img src="<?php echo esc_url( $player['image'] ); ?>" alt="<?php echo esc_attr( $player['name'] ); ?>" loading="lazy" />
+				<?php endif; ?>
+			</div>
+			<div class="sfa-topscorers__info">
+				<h3><?php echo esc_html( $player['name'] ); ?></h3>
+				<?php if ( '' !== $player['club'] ) : ?>
+					<p><?php echo esc_html( $player['club'] ); ?></p>
+				<?php endif; ?>
+			</div>
+			<div class="sfa-topscorers__points">
+				<strong><?php echo esc_html( '' !== $player['points'] ? $player['points'] : '-' ); ?></strong>
+				<span><?php esc_html_e( 'Punkte', 'swiss-floorball-api' ); ?></span>
+			</div>
+		</article>
 		<?php
 	}
 
