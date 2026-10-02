@@ -21,7 +21,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 
 // Get the configured club ID.
 $swfl_club_id        = get_option( 'swissfloorball_club_number' );
-$swfl_current_season = get_option( 'swissfloorball_actual_season', date( 'Y' ) );
+$swfl_current_season = Swiss_Floorball_API_Display::get_current_season();
 
 // Instantiate the API client.
 require_once plugin_dir_path( dirname( __DIR__ ) ) . 'includes/class-floorball-api-for-swiss-unihockey-client.php';

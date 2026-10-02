@@ -171,7 +171,7 @@ class Swiss_Floorball_Api_Public {
 	public function get_club_games_func() {
 		ob_start();
 		echo '<div class="swiss-floorball-plugin">';
-		Swiss_Floorball_API_Display::render_club_games( get_option( 'swissfloorball_club_number' ), get_option( 'swissfloorball_actual_season' ) );
+		Swiss_Floorball_API_Display::render_club_games( get_option( 'swissfloorball_club_number' ), Swiss_Floorball_API_Display::get_current_season() );
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();
@@ -195,7 +195,7 @@ class Swiss_Floorball_Api_Public {
 
 		ob_start();
 		echo '<div class="swiss-floorball-plugin">';
-		Swiss_Floorball_API_Display::render_team_games( absint( $a['team_id'] ), get_option( 'swissfloorball_actual_season' ) );
+		Swiss_Floorball_API_Display::render_team_games( absint( $a['team_id'] ), Swiss_Floorball_API_Display::get_current_season() );
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();
@@ -280,7 +280,7 @@ class Swiss_Floorball_Api_Public {
 	public function get_groups_func( $atts ) {
 		$a = shortcode_atts(
 			array(
-				'season'     => get_option( 'swissfloorball_actual_season' ),
+				'season'     => Swiss_Floorball_API_Display::get_current_season(),
 				'league'     => '',
 				'game_class' => '',
 			),
@@ -322,7 +322,7 @@ class Swiss_Floorball_Api_Public {
 	public function get_rankings_func( $atts ) {
 		$a = shortcode_atts(
 			array(
-				'season'     => get_option( 'swissfloorball_actual_season' ),
+				'season'     => Swiss_Floorball_API_Display::get_current_season(),
 				'league'     => '',
 				'game_class' => '',
 				'group'      => '',
@@ -389,7 +389,7 @@ class Swiss_Floorball_Api_Public {
 	public function get_topscorers_func( $atts ) {
 		$a = shortcode_atts(
 			array(
-				'season'     => get_option( 'swissfloorball_actual_season' ),
+				'season'     => Swiss_Floorball_API_Display::get_current_season(),
 				'league'     => '',
 				'game_class' => '',
 				'group'      => '',

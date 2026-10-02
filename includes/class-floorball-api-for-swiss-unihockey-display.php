@@ -43,6 +43,24 @@ class Swiss_Floorball_API_Display {
 	}
 
 	/**
+	 * Get the configured season, falling back to the current year.
+	 *
+	 * An unset or empty option is stored as 0, which get_option() defaults would not
+	 * catch, so the fallback is applied here. The year uses the site timezone.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return int Season year.
+	 */
+	public static function get_current_season() {
+		$season = absint( get_option( 'swissfloorball_actual_season', 0 ) );
+		if ( 0 === $season ) {
+			$season = absint( current_time( 'Y' ) );
+		}
+		return $season;
+	}
+
+	/**
 	 * Retrieve all teams of the club (Admin)
 	 *
 	 * @param int|string $swissfloorball_club_number Club ID.
@@ -64,7 +82,7 @@ class Swiss_Floorball_API_Display {
 		$rows           = $api_response['data']['regions'][0]['rows'];
 		$team_count     = count( $rows );
 		$title          = isset( $api_response['data']['title'] ) ? $api_response['data']['title'] : '';
-		$current_season = get_option( 'swissfloorball_actual_season', date( 'Y' ) );
+		$current_season = self::get_current_season();
 
 		?>
 		<h2 class="sfa-section-title"><?php echo esc_html( $title ); ?></h2>
@@ -537,7 +555,7 @@ class Swiss_Floorball_API_Display {
 			// If season is not set in params but needed for games, we might need to default it.
 			// The shortcode might not pass season. If not, we should probably use the current season option.
 			if ( empty( $season ) ) {
-				$season = get_option( 'swissfloorball_actual_season' );
+				$season = self::get_current_season();
 			}
 			$games_params['season'] = $season;
 
