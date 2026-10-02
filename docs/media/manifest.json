@@ -1,0 +1,171 @@
+{
+  "generated": "2026-10-02T00:12:26.431Z",
+  "context": {
+    "season": 2025,
+    "league": 2,
+    "game_class": 11,
+    "club_id": "637",
+    "club_name": "HC Weggis-Küssnacht",
+    "group": "Gruppe 1",
+    "game_id": 1077076,
+    "team_id": 429561
+  },
+  "screenshots": [
+    {
+      "id": "admin-dashboard",
+      "title": "Dashboard",
+      "type": "admin",
+      "viewport": "desktop",
+      "file": "admin-dashboard.png"
+    },
+    {
+      "id": "admin-settings",
+      "title": "Settings",
+      "type": "admin",
+      "viewport": "desktop",
+      "file": "admin-settings.png"
+    },
+    {
+      "id": "admin-league",
+      "title": "Leagues",
+      "type": "admin",
+      "viewport": "desktop",
+      "file": "admin-league.png"
+    },
+    {
+      "id": "admin-clubs",
+      "title": "Clubs",
+      "type": "admin",
+      "viewport": "desktop",
+      "file": "admin-clubs.png"
+    },
+    {
+      "id": "admin-matches",
+      "title": "Matches",
+      "type": "admin",
+      "viewport": "desktop",
+      "file": "admin-matches.png"
+    },
+    {
+      "id": "admin-seasons",
+      "title": "Seasons",
+      "type": "admin",
+      "viewport": "desktop",
+      "file": "admin-seasons.png"
+    },
+    {
+      "id": "admin-shortcodes",
+      "title": "Shortcodes",
+      "type": "admin",
+      "viewport": "desktop",
+      "file": "admin-shortcodes.png"
+    }
+  ],
+  "videos": [],
+  "skipped": [
+    {
+      "id": "player",
+      "reason": "no player_id discovered"
+    },
+    {
+      "id": "club-teams-desktop",
+      "reason": "no plugin output"
+    },
+    {
+      "id": "club-teams-mobile",
+      "reason": "no plugin output"
+    },
+    {
+      "id": "club-games-desktop",
+      "reason": "no plugin output"
+    },
+    {
+      "id": "club-games-mobile",
+      "reason": "no plugin output"
+    },
+    {
+      "id": "team-games-desktop",
+      "reason": "no plugin output"
+    },
+    {
+      "id": "team-games-mobile",
+      "reason": "no plugin output"
+    },
+    {
+      "id": "clubs-desktop",
+      "reason": "no plugin output"
+    },
+    {
+      "id": "clubs-mobile",
+      "reason": "no plugin output"
+    },
+    {
+      "id": "calendars-desktop",
+      "reason": "no plugin output"
+    },
+    {
+      "id": "calendars-mobile",
+      "reason": "no plugin output"
+    },
+    {
+      "id": "cups-desktop",
+      "reason": "no plugin output"
+    },
+    {
+      "id": "cups-mobile",
+      "reason": "no plugin output"
+    },
+    {
+      "id": "groups-desktop",
+      "reason": "no plugin output"
+    },
+    {
+      "id": "groups-mobile",
+      "reason": "no plugin output"
+    },
+    {
+      "id": "teams-desktop",
+      "reason": "no plugin output"
+    },
+    {
+      "id": "teams-mobile",
+      "reason": "no plugin output"
+    },
+    {
+      "id": "rankings-desktop",
+      "reason": "no plugin output"
+    },
+    {
+      "id": "rankings-mobile",
+      "reason": "no plugin output"
+    },
+    {
+      "id": "topscorers-desktop",
+      "reason": "no plugin output"
+    },
+    {
+      "id": "topscorers-mobile",
+      "reason": "no plugin output"
+    },
+    {
+      "id": "national-players-desktop",
+      "reason": "no plugin output"
+    },
+    {
+      "id": "national-players-mobile",
+      "reason": "no plugin output"
+    },
+    {
+      "id": "game-events-desktop",
+      "reason": "no plugin output"
+    },
+    {
+      "id": "game-events-mobile",
+      "reason": "no plugin output"
+    },
+    {
+      "id": "walkthrough",
+      "reason": "ffmpeg: spawnSync ffmpeg ENOENT"
+    }
+  ]
+}
