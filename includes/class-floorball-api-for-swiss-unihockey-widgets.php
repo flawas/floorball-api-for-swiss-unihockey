@@ -858,55 +858,96 @@ class Swiss_Floorball_API_Widgets {
 			</div>
 			<?php
 			self::render_title( $data, true, '', 'hockey' );
-
-			$groups  = self::group_playoff_series( $headers, $rows );
-			$grouped = array();
-			foreach ( $groups as $series ) {
-				foreach ( $series['indexes'] as $index ) {
-					$grouped[ $index ] = true;
-				}
-			}
-			$single = array();
-			foreach ( $rows as $index => $row ) {
-				if ( ! isset( $grouped[ $index ] ) ) {
-					$single[] = $row;
-				}
-			}
-
-			foreach ( $groups as $position => $series ) {
-				$series_rows = array();
-				foreach ( $series['indexes'] as $index ) {
-					$series_rows[] = $rows[ $index ];
-				}
-				?>
-				<details class="sfa-playoff-group"<?php echo 0 === $position ? ' open' : ''; ?>>
-					<summary>
-						<span><?php echo esc_html( $series['title'] ); ?></span>
-						<small>
-							<?php
-							echo esc_html(
-								sprintf(
-									/* translators: %d: number of games in the series. */
-									_n( '%d Spiel', '%d Spiele', count( $series_rows ), 'swiss-floorball-api' ),
-									count( $series_rows )
-								)
-							);
-							?>
-						</small>
-					</summary>
-					<?php self::render_table( $headers, $series_rows, array( 'drop_last' => $drop ) ); ?>
-				</details>
-				<?php
-			}
-
-			if ( $single ) {
-				self::render_table( $headers, $single, array( 'drop_last' => $drop ) );
-			} elseif ( empty( $groups ) ) {
-				echo '<p class="sfa-empty">' . esc_html__( 'Keine Spiele gefunden.', 'swiss-floorball-api' ) . '</p>';
-			}
+			self::render_league_tables( $headers, $rows, $drop );
 			?>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Render the playoff series as collapsible groups, followed by the games that belong to no series.
+	 *
+	 * @since 2.0.1
+	 * @param array $headers Table headers.
+	 * @param array $rows    Prepared rows.
+	 * @param bool  $drop    Whether to drop the last (streaming) column.
+	 * @return void
+	 */
+	private static function render_league_tables( $headers, $rows, $drop ) {
+		$groups  = self::group_playoff_series( $headers, $rows );
+		$grouped = array();
+		foreach ( $groups as $series ) {
+			foreach ( $series['indexes'] as $index ) {
+				$grouped[ $index ] = true;
+			}
+		}
+
+		foreach ( $groups as $position => $series ) {
+			self::render_playoff_group( $series, 0 === $position, $headers, $rows, $drop );
+		}
+
+		$single = array_values( array_diff_key( $rows, $grouped ) );
+		if ( $single ) {
+			self::render_table( $headers, $single, array( 'drop_last' => $drop ) );
+		} elseif ( empty( $groups ) ) {
+			echo '<p class="sfa-empty">' . esc_html__( 'Keine Spiele gefunden.', 'swiss-floorball-api' ) . '</p>';
+		}
+	}
+
+	/**
+	 * Render one playoff series as a collapsible group.
+	 *
+	 * @since 2.0.1
+	 * @param array $series  Series with `title` and the row `indexes`.
+	 * @param bool  $is_open Whether the group starts expanded.
+	 * @param array $headers Table headers.
+	 * @param array $rows    Prepared rows.
+	 * @param bool  $drop    Whether to drop the last (streaming) column.
+	 * @return void
+	 */
+	private static function render_playoff_group( $series, $is_open, $headers, $rows, $drop ) {
+		$series_rows = array();
+		foreach ( $series['indexes'] as $index ) {
+			$series_rows[] = $rows[ $index ];
+		}
+		?>
+		<details class="sfa-playoff-group"<?php echo $is_open ? ' open' : ''; ?>>
+			<summary>
+				<span><?php echo esc_html( $series['title'] ); ?></span>
+				<small>
+					<?php
+					echo esc_html(
+						sprintf(
+							/* translators: %d: number of games in the series. */
+							_n( '%d Spiel', '%d Spiele', count( $series_rows ), 'swiss-floorball-api' ),
+							count( $series_rows )
+						)
+					);
+					?>
+				</small>
+			</summary>
+			<?php self::render_table( $headers, $series_rows, array( 'drop_last' => $drop ) ); ?>
+		</details>
+		<?php
+	}
+
+	/**
+	 * Index of the first header whose label contains a text, -1 when there is none.
+	 *
+	 * @since 2.0.1
+	 * @param array  $headers Table headers.
+	 * @param string $needle  Lower-case text to look for.
+	 * @return int Header index, or -1.
+	 */
+	private static function find_header_index( $headers, $needle ) {
+		foreach ( $headers as $index => $header ) {
+			$label = isset( $header['text'] ) ? strtolower( (string) $header['text'] ) : '';
+			if ( false !== strpos( $label, $needle ) ) {
+				return $index;
+			}
+		}
+
+		return -1;
 	}
 
 	/**
@@ -918,17 +959,8 @@ class Swiss_Floorball_API_Widgets {
 	 * @return array List of series with `title` and the row `indexes`.
 	 */
 	private static function group_playoff_series( $headers, $rows ) {
-		$home_index = -1;
-		$away_index = -1;
-		foreach ( $headers as $index => $header ) {
-			$label = isset( $header['text'] ) ? strtolower( (string) $header['text'] ) : '';
-			if ( -1 === $home_index && false !== strpos( $label, 'heim' ) ) {
-				$home_index = $index;
-			}
-			if ( -1 === $away_index && false !== strpos( $label, 'gast' ) ) {
-				$away_index = $index;
-			}
-		}
+		$home_index = self::find_header_index( $headers, 'heim' );
+		$away_index = self::find_header_index( $headers, 'gast' );
 		if ( $home_index < 0 || $away_index < 0 ) {
 			return array();
 		}
