@@ -54,7 +54,6 @@ class Swiss_Floorball_Api_Public {
 
 		$this->plugin_name = $plugin_name;
 		$this->version     = $version;
-		$this->register_shortcodes();
 	}
 
 	/**
