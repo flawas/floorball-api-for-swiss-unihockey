@@ -61,6 +61,7 @@ Display Swiss Floorball games, rankings, topscorers, team rosters and player sta
 | Swiss Floorball Club Name | Filled in automatically from the API when you save a new Club ID (`swissfloorball_club_name`). |
 | Swiss Floorball Aktuelle Saison | Season as a year, e.g. `2025` (`swissfloorball_actual_season`). Used when a shortcode has no `season` attribute. |
 | Show icons | Show or hide all icons (on by default). |
+| Theme | Controls whether the plugin uses light, dark, or auto (follows system preference) colors (`swissfloorball_theme`). Option values are `auto` (default), `light`, or `dark`. |
 | API request timeout (seconds) | Seconds to wait for the API, 1-30 (default 3). |
 
 The admin interface is currently in German. Under **Cache Verwaltung** the button **Cache leeren** removes all cached API responses. Changing the Club Number clears the cache automatically.
@@ -183,6 +184,7 @@ This plugin connects to the **Swiss Unihockey API** (api-v2.swissunihockey.ch) t
 
 ## 📜 Changelog
 ### Unreleased
+* New: Theme setting (Auto / Light / Dark, default Auto) under Settings. Dark colours are `--sfa-sys-*` tokens scoped to the plugin containers (`data-sfa-theme` on `.swiss-floorball-plugin` and `.sfa-admin-wrap`); Auto follows `prefers-color-scheme`. The old hard-coded dark block was replaced by these tokens
 * Fix: Plugin Check readme issues: "Tested up to" raised to 7.1 and short description shortened to 150 characters or less
 * Fix: Resolve phpcs findings in admin and display classes: add translator comments, escape wp_die, use wp_safe_redirect, annotate DB queries (Issue #75)
 * New: Admin dashboard restyled in Material 3 (header, tonal navigation buttons, outlined form fields, filled/outlined buttons, cards and tables) using the `--sfa-sys-*` tokens; 48 px touch targets and visible keyboard focus. Markup, shortcodes and options are unchanged

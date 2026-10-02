@@ -31,6 +31,18 @@ class Swiss_Floorball_API_Display {
 	private static $client;
 
 	/**
+	 * Get the configured colour theme.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string One of 'auto', 'light' or 'dark'; falls back to 'auto'.
+	 */
+	public static function get_theme() {
+		$theme = get_option( 'swissfloorball_theme', 'auto' );
+		return in_array( $theme, array( 'auto', 'light', 'dark' ), true ) ? $theme : 'auto';
+	}
+
+	/**
 	 * Render an error banner for failed or empty API responses.
 	 *
 	 * @since 1.0.0

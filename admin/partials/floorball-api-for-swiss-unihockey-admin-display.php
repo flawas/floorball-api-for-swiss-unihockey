@@ -21,7 +21,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 ?>
 
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
-<div class="wrap sfa-admin-wrap">
+<div class="wrap sfa-admin-wrap" data-sfa-theme="<?php echo esc_attr( Swiss_Floorball_API_Display::get_theme() ); ?>">
 	<div class="sfa-admin-header">
 		<h1><?php Swiss_Floorball_Api_Icons::render( 'hockey' ); ?> Swiss Floorball Plugin</h1>
 		<p>Übersicht und Verwaltung Ihrer Swiss Floorball Daten</p>

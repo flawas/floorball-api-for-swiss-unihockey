@@ -503,6 +503,35 @@ class Swiss_Floorball_Api_Admin {
 
 		unset( $args );
 		$args = array(
+			'type'        => 'select',
+			'id'          => 'swissfloorball_theme',
+			'name'        => 'swissfloorball_theme',
+			'wp_data'     => 'option',
+			'default'     => 'auto',
+			'options'     => array(
+				'auto'  => __( 'Auto (follow system)', 'swiss-floorball-api' ),
+				'light' => __( 'Light', 'swiss-floorball-api' ),
+				'dark'  => __( 'Dark', 'swiss-floorball-api' ),
+			),
+			'description' => __( 'Controls the colour scheme of shortcodes and admin pages. Auto follows the visitor\'s system setting.', 'swiss-floorball-api' ),
+		);
+		add_settings_field(
+			'swissfloorball_theme',
+			__( 'Theme', 'swiss-floorball-api' ),
+			array( $this, 'settings_page_render_settings_field' ),
+			'swfl_general_settings',
+			'swfl_general_section',
+			$args
+		);
+
+		register_setting(
+			'swfl_general_settings',
+			'swissfloorball_theme',
+			array( $this, 'sanitize_theme' )
+		);
+
+		unset( $args );
+		$args = array(
 			'type'             => 'input',
 			'subtype'          => 'number',
 			'id'               => 'swissfloorball_request_timeout',
@@ -564,6 +593,18 @@ class Swiss_Floorball_Api_Admin {
 	}
 
 	/**
+	 * Sanitize the theme setting against its whitelist.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param mixed $value Raw submitted value.
+	 * @return string 'auto', 'light' or 'dark'.
+	 */
+	public function sanitize_theme( $value ) {
+		return in_array( $value, array( 'auto', 'light', 'dark' ), true ) ? $value : 'auto';
+	}
+
+	/**
 	 * Return admin display header slug
 	 *
 	 * @since    1.0.0
@@ -616,6 +657,16 @@ class Swiss_Floorball_Api_Admin {
 						$checked = ( $value ) ? 'checked' : '';
 						echo '<input type="' . esc_attr( $args['subtype'] ) . '" id="' . esc_attr( $args['id'] ) . '" ' . esc_attr( $args['required'] ) . ' name="' . esc_attr( $args['name'] ) . '" size="40" value="1" ' . esc_attr( $checked ) . ' />';
 				}
+				if ( ! empty( $args['description'] ) ) {
+					echo '<p class="description">' . esc_html( $args['description'] ) . '</p>';
+				}
+				break;
+			case 'select':
+				echo '<select id="' . esc_attr( $args['id'] ) . '" name="' . esc_attr( $args['name'] ) . '">';
+				foreach ( $args['options'] as $option_value => $option_label ) {
+					echo '<option value="' . esc_attr( $option_value ) . '"' . selected( $wp_data_value, $option_value, false ) . '>' . esc_html( $option_label ) . '</option>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				}
+				echo '</select>';
 				if ( ! empty( $args['description'] ) ) {
 					echo '<p class="description">' . esc_html( $args['description'] ) . '</p>';
 				}
