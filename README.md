@@ -194,9 +194,17 @@ It is used to retrieve floorball data such as club games, team rosters, league r
 **What data is sent and when:**
 - Your configured Club ID and Season are sent to the API every time a shortcode is rendered or an admin page is loaded.
 - No personal data of website visitors is transmitted. All requests are read-only.
+- With the *Partner API* selected, your API key and secret are sent to `office.swissunihockey.ch` to request a short-lived auth token.
 
 **Service provider:** Swiss Unihockey (Floorball Schweiz)  
 [Terms of Service](https://www.swissunihockey.ch/index.php?cID=1186) | [Privacy Policy](https://swissunihockey.tlex.ch/app/de/texts_of_law/2-7)
+
+**Images from Cloudinary:** Team logos and player portraits come from the API as image URLs on `res.cloudinary.com` (Swiss Unihockey's image host). The visitor's browser loads these images directly from Cloudinary when a page with such a shortcode is shown, so the visitor's IP address and browser data are transmitted to Cloudinary. The plugin does not store or process this data.  
+Service provider: Cloudinary Ltd. | [Terms of Service](https://cloudinary.com/tou) | [Privacy Policy](https://cloudinary.com/privacy)
+
+**Links to other services:** Venue cells link to [OpenStreetMap](https://www.openstreetmap.org/) (built from the venue coordinates) and game links point to `myapp.swissunihockey.ch`. No data is sent to these sites unless a visitor clicks the link.
+
+**Disclaimer:** This is an independent plugin. It is not affiliated with, endorsed by or sponsored by Swiss Unihockey or Floorball Schweiz. "Swiss Unihockey" and "Swiss Floorball" are names of their respective owners and are used only to describe the data source.
 
 ## 📸 Screenshots
 
@@ -229,6 +237,10 @@ Version 2.0.0 contains breaking changes (API source, calendar feed, shortcode at
 4. Check custom CSS, or set *Table style* to `classic`.
 
 ## 📜 Changelog
+### Unreleased
+* Fix: Plugin Check error: `wp_unique_id()` needs WordPress 5.0.3 but the plugin supports 5.0, replaced by a local counter
+* Fix: phpcs warnings for the unused `$is_backend` parameters, kept for backwards compatibility
+* Fix: Plugin guidelines: the bundled Roboto font is documented in `THIRD-PARTY.md` and ships with its licence (`fonts/OFL.txt`); the external services section now discloses the Cloudinary image host (team logos, player portraits) and links to OpenStreetMap and the Swiss Unihockey app; added a disclaimer that the plugin is not affiliated with Swiss Unihockey or Floorball Schweiz
 ### 2.0.0 (2026-10-02)
 * **Breaking:** API source switch. `api-v2.swissunihockey.ch` is no longer used; the default is the free API (`wc.swissunihockey.ch`), optionally the Partner API (`office.swissunihockey.ch`, API key + secret). Leagues, groups, topscorers, player profiles, national players and game events need the Partner API. See [docs/migration.md](docs/migration.md)
 * **Breaking:** Calendar subscriptions: the old calendar export is gone. The plugin serves its own iCalendar feed at `/wp-json/swfl/v1/calendar`; previously subscribed URLs must be subscribed again
