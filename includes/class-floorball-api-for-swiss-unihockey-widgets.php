@@ -541,6 +541,52 @@ class Swiss_Floorball_API_Widgets {
 	}
 
 	/**
+	 * Monday and Sunday (Y-m-d) of the week that contains a timestamp.
+	 *
+	 * @since 2.0.1
+	 * @param int $timestamp UTC timestamp.
+	 * @return string[] Week start and week end.
+	 */
+	private static function get_week_bounds( $timestamp ) {
+		$start = gmdate( 'Y-m-d', $timestamp - ( (int) gmdate( 'N', $timestamp ) - 1 ) * DAY_IN_SECONDS );
+		$end   = gmdate( 'Y-m-d', strtotime( $start . ' UTC' ) + 6 * DAY_IN_SECONDS );
+
+		return array( $start, $end );
+	}
+
+	/**
+	 * Keep the given week when it has games, otherwise use the week of the next game, or of the last one.
+	 *
+	 * @since 2.0.1
+	 * @param array  $rows       Game rows with an `sfa_date`.
+	 * @param string $week_start Start of the current week (Y-m-d).
+	 * @param string $week_end   End of the current week (Y-m-d).
+	 * @return string[] Week start and week end to show.
+	 */
+	private static function find_visible_week( $rows, $week_start, $week_end ) {
+		$next = '';
+		$last = '';
+		foreach ( $rows as $row ) {
+			$date = $row['sfa_date'];
+			if ( '' === $date ) {
+				continue;
+			}
+			if ( $date >= $week_start && $date <= $week_end ) {
+				return array( $week_start, $week_end );
+			}
+			if ( $date > $week_end && ( '' === $next || $date < $next ) ) {
+				$next = $date;
+			}
+			if ( $date < $week_start && $date > $last ) {
+				$last = $date;
+			}
+		}
+		$anchor = '' !== $next ? $next : $last;
+
+		return '' !== $anchor ? self::get_week_bounds( strtotime( $anchor . ' UTC' ) ) : array( $week_start, $week_end );
+	}
+
+	/**
 	 * Club games, shown week by week (uniho-club-games).
 	 *
 	 * @since 1.1.0
@@ -567,37 +613,11 @@ class Swiss_Floorball_API_Widgets {
 			return;
 		}
 
-		$rows       = Swiss_Floorball_API_Table_Data::prepare_game_rows( $result['rows'] );
-		$today_ts   = strtotime( current_time( 'Y-m-d' ) . ' UTC' );
-		$week_start = gmdate( 'Y-m-d', $today_ts - ( (int) gmdate( 'N', $today_ts ) - 1 ) * DAY_IN_SECONDS );
-		$week_end   = gmdate( 'Y-m-d', strtotime( $week_start . ' UTC' ) + 6 * DAY_IN_SECONDS );
+		$rows                          = Swiss_Floorball_API_Table_Data::prepare_game_rows( $result['rows'] );
+		list( $week_start, $week_end ) = self::get_week_bounds( strtotime( current_time( 'Y-m-d' ) . ' UTC' ) );
 
 		// Outside the playing weeks the current week is empty; jump to the next game, or the last one.
-		$in_week = false;
-		$next    = '';
-		$last    = '';
-		foreach ( $rows as $row ) {
-			$date = $row['sfa_date'];
-			if ( '' === $date ) {
-				continue;
-			}
-			if ( $date >= $week_start && $date <= $week_end ) {
-				$in_week = true;
-				break;
-			}
-			if ( $date > $week_end && ( '' === $next || $date < $next ) ) {
-				$next = $date;
-			}
-			if ( $date < $week_start && $date > $last ) {
-				$last = $date;
-			}
-		}
-		$anchor = '' !== $next ? $next : $last;
-		if ( ! $in_week && '' !== $anchor ) {
-			$anchor_ts  = strtotime( $anchor . ' UTC' );
-			$week_start = gmdate( 'Y-m-d', $anchor_ts - ( (int) gmdate( 'N', $anchor_ts ) - 1 ) * DAY_IN_SECONDS );
-			$week_end   = gmdate( 'Y-m-d', strtotime( $week_start . ' UTC' ) + 6 * DAY_IN_SECONDS );
-		}
+		list( $week_start, $week_end ) = self::find_visible_week( $rows, $week_start, $week_end );
 
 		$row_attrs = array();
 		$hidden    = array();
