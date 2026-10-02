@@ -359,7 +359,7 @@
 }
 
 /* Quick Access Buttons */
-.sfa-card .button {
+.sfa-admin-wrap .sfa-card .button {
     display: inline-block;
     width: 100%;
     text-align: center;
@@ -377,14 +377,14 @@
     border: 1px solid transparent;
 }
 
-.sfa-card .button:hover,
-.sfa-card .button:focus-visible {
+.sfa-admin-wrap .sfa-card .button:hover,
+.sfa-admin-wrap .sfa-card .button:focus-visible {
     background: var(--sfa-sys-color-primary-container);
     color: var(--sfa-sys-color-on-primary-container);
     border-color: var(--sfa-sys-color-primary);
 }
 
-.sfa-card .button:focus-visible {
+.sfa-admin-wrap .sfa-card .button:focus-visible {
     outline: 2px solid var(--sfa-sys-color-primary);
     outline-offset: 2px;
 }
@@ -514,36 +514,36 @@
     padding-bottom: 12px;
 }
 
-.form-table th {
+.sfa-admin-wrap .form-table th {
     padding: 16px 12px 16px 0;
     font-weight: 600;
     color: var(--sfa-text);
 }
 
-.form-table td {
+.sfa-admin-wrap .form-table td {
     padding: 16px 12px;
 }
 
-.form-table input[type="text"],
-.form-table input[type="number"] {
+.sfa-admin-wrap .form-table input[type="text"],
+.sfa-admin-wrap .form-table input[type="number"] {
     width: 100%;
     max-width: 450px;
     min-height: 48px;
     padding: 10px 16px;
-    border: 1px solid var(--sfa-sys-color-outline);
+    border: 1px solid var(--sfa-sys-color-on-surface-variant);
     border-radius: var(--sfa-sys-shape-corner-xs);
     font-size: var(--sfa-sys-font-size-title);
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.form-table input[type="text"]:focus,
-.form-table input[type="number"]:focus {
+.sfa-admin-wrap .form-table input[type="text"]:focus,
+.sfa-admin-wrap .form-table input[type="number"]:focus {
     border-color: var(--sfa-sys-color-primary);
     outline: none;
     box-shadow: 0 0 0 1px var(--sfa-sys-color-primary);
 }
 
-.form-table input[aria-invalid="true"] {
+.sfa-admin-wrap .form-table input[aria-invalid="true"] {
     border-color: var(--sfa-sys-color-error);
     box-shadow: 0 0 0 1px var(--sfa-sys-color-error);
 }
@@ -843,31 +843,31 @@
     }
 
     /* Form elements */
-    .form-table th {
+    .sfa-admin-wrap .form-table th {
         color: #ffffff;
     }
 
-    .form-table input[type="text"],
-    .form-table input[type="number"] {
+    .sfa-admin-wrap .form-table input[type="text"],
+    .sfa-admin-wrap .form-table input[type="number"] {
         background: #1a1a1a;
         border-color: #333333;
         color: #ffffff;
     }
 
-    .form-table input[type="text"]:focus,
-    .form-table input[type="number"]:focus {
+    .sfa-admin-wrap .form-table input[type="text"]:focus,
+    .sfa-admin-wrap .form-table input[type="number"]:focus {
         background: #000000;
         border-color: var(--sfa-primary);
     }
 
     /* Card buttons */
-    .sfa-card .button {
+    .sfa-admin-wrap .sfa-card .button {
         background: #1a1a1a;
         color: #ffffff;
         border-color: #333333;
     }
 
-    .sfa-card .button:hover {
+    .sfa-admin-wrap .sfa-card .button:hover {
         background: var(--sfa-primary);
         color: white;
     }
