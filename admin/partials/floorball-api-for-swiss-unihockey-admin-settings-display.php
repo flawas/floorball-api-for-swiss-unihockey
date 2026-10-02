@@ -48,7 +48,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 				settings_fields( 'swfl_general_settings' );
 				do_settings_sections( 'swfl_general_settings' );
 			?>
-			<p class="sfa-autosave-status" id="sfa-autosave-status" role="status" aria-live="polite"><?php esc_html_e( 'Changes are saved automatically.', 'swiss-floorball-api' ); ?></p>
+			<output class="sfa-autosave-status" id="sfa-autosave-status" aria-live="polite"><?php esc_html_e( 'Changes are saved automatically.', 'swiss-floorball-api' ); ?></output>
 			<noscript><?php submit_button( __( 'Save settings', 'swiss-floorball-api' ) ); ?></noscript>
 		</form>
 	</div>

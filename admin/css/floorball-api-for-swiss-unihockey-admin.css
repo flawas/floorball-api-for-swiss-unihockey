@@ -1462,3 +1462,8 @@
     font-size: var(--sfa-sys-font-size-body);
     line-height: 28px;
 }
+
+.sfa-admin-wrap .sfa-autosave-status {
+    display: block;
+    margin: 1em 0;
+}

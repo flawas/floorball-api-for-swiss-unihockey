@@ -574,10 +574,9 @@ class Swiss_Floorball_API_Display {
 	 *
 	 * @param int|string $swissfloorball_club_number Club ID.
 	 * @param int|string $season Season ID.
-	 * @param bool       $is_backend Optional. Whether to render for backend. Default false.
 	 * @return void
 	 */
-	public static function render_club_games( $swissfloorball_club_number, $season, $is_backend = false ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Kept for backwards compatibility.
+	public static function render_club_games( $swissfloorball_club_number, $season ) {
 		Swiss_Floorball_API_Widgets::render_admin_games( 'club', absint( $swissfloorball_club_number ), absint( $season ), __( 'Clubspiele', 'swiss-floorball-api' ), __( 'Spiele des Clubs', 'swiss-floorball-api' ) );
 	}
 
@@ -586,10 +585,9 @@ class Swiss_Floorball_API_Display {
 	 *
 	 * @param int|string $swissfloorball_team_number Team ID.
 	 * @param int|string $season Season ID.
-	 * @param bool       $is_backend Optional. Whether to render for backend (includes Game ID). Default false.
 	 * @return void
 	 */
-	public static function render_team_games( $swissfloorball_team_number, $season, $is_backend = false ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Kept for backwards compatibility.
+	public static function render_team_games( $swissfloorball_team_number, $season ) {
 		Swiss_Floorball_API_Widgets::render_admin_games( 'team', absint( $swissfloorball_team_number ), absint( $season ), __( 'Teamspiele', 'swiss-floorball-api' ), __( 'Spiele des Teams', 'swiss-floorball-api' ) );
 	}
 
@@ -1497,10 +1495,9 @@ class Swiss_Floorball_API_Display {
 	 * @param int|string $season Season ID.
 	 * @param int|string $league League ID.
 	 * @param int|string $game_class Game Class ID.
-	 * @param int|string $group Deprecated. Ignored, the topscorers/su endpoint has no group parameter.
 	 * @return void
 	 */
-	public static function render_topscorers( $season, $league, $game_class, $group = null ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Kept for backwards compatibility.
+	public static function render_topscorers( $season, $league, $game_class ) {
 		$client       = self::get_client();
 		$api_response = $client->fetch_data(
 			'topscorers/su',
@@ -1563,10 +1560,9 @@ class Swiss_Floorball_API_Display {
 	 * Get game events.
 	 *
 	 * @param int|string $game_id Game ID.
-	 * @param bool       $is_backend Optional. Whether to render for backend. Default false.
 	 * @return void
 	 */
-	public static function render_game_events( $game_id, $is_backend = false ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Kept for backwards compatibility.
+	public static function render_game_events( $game_id ) {
 		$client       = self::get_client();
 		$api_response = $client->fetch_data( 'game_events/' . $game_id );
 

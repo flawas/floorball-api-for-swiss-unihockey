@@ -57,7 +57,7 @@ $swfl_match_id = isset( $_GET['match_id'] ) ? absint( $_GET['match_id'] ) : null
 
 		// Show Game Events (Match Telegramm).
 		echo '<div class="sfa-card sfa-card--spaced-top">';
-		Swiss_Floorball_API_Display::render_game_events( $swfl_match_id, true );
+		Swiss_Floorball_API_Display::render_game_events( $swfl_match_id );
 		echo '</div>';
 		?>
 
@@ -66,7 +66,7 @@ $swfl_match_id = isset( $_GET['match_id'] ) ? absint( $_GET['match_id'] ) : null
 		// --- List View ---
 
 		// Render Club Games List.
-		Swiss_Floorball_API_Display::render_club_games( $swfl_club_id, $swfl_current_season, true );
+		Swiss_Floorball_API_Display::render_club_games( $swfl_club_id, $swfl_current_season );
 		?>
 
 		<hr class="sfa-divider">
@@ -94,7 +94,7 @@ $swfl_match_id = isset( $_GET['match_id'] ) ? absint( $_GET['match_id'] ) : null
 				echo '<div class="sfa-table-container sfa-table-container-flat">';
 
 				// Use the display class to render games for this team.
-				Swiss_Floorball_API_Display::render_team_games( $swfl_team_id, $swfl_current_season, true );
+				Swiss_Floorball_API_Display::render_team_games( $swfl_team_id, $swfl_current_season );
 
 				echo '</div>';
 				echo '</div>';

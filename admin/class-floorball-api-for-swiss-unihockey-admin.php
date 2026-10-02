@@ -26,6 +26,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Swiss_Floorball_Api_Admin {
 
 	/**
+	 * Page title of the plugin admin pages.
+	 *
+	 * @since 2.0.1
+	 * @var   string
+	 */
+	const MENU_TITLE = 'Swiss Floorball';
+
+	/**
+	 * Directory of the admin page templates, relative to this file.
+	 *
+	 * @since 2.0.1
+	 * @var   string
+	 */
+	const PARTIALS_DIR = 'partials/';
+
+	/**
 	 * The ID of this plugin.
 	 *
 	 * @since    1.0.0
@@ -120,16 +136,16 @@ class Swiss_Floorball_Api_Admin {
 		$menu_icon = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBmaWxsPSJibGFjayI+PHBhdGggZD0iTTIgMjBoMjB2LTRIMnY0em0yLTNoMnYySDR2LTJ6TTIgNHY0aDIwVjRIMnptNCAzSDRWNWgydjJ6bS00IDdoMjB2LTRIMnY0em0yLTNoMnYySDR2LTJ6Ii8+PC9zdmc+';
 
 		// Top-level menu entry, registered with the page title, menu title, capability, slug, callback, icon and position.
-		add_menu_page( $this->plugin_name, 'Swiss Floorball', 'manage_options', $this->plugin_name, array( $this, 'display_plugin_admin_dashboard' ), $menu_icon, 26 );
+		add_menu_page( $this->plugin_name, self::MENU_TITLE, 'manage_options', $this->plugin_name, array( $this, 'display_plugin_admin_dashboard' ), $menu_icon, 26 );
 
 		// Submenu entries share the parent slug and use the same capability.
-		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Club-Übersicht', 'manage_options', $this->plugin_name . '-overview', array( $this, 'display_plugin_admin_overview' ) );
-		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Einstellungen', 'manage_options', $this->plugin_name . '-settings', array( $this, 'display_plugin_admin_settings' ) );
-		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Liga', 'manage_options', $this->plugin_name . '-league', array( $this, 'display_plugin_admin_helper_league' ) );
-		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Clubs', 'manage_options', $this->plugin_name . '-teams', array( $this, 'display_plugin_admin_helper_teams' ) );
-		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Spiele', 'manage_options', $this->plugin_name . '-matches', array( $this, 'display_plugin_admin_matches' ) );
-		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Saison', 'manage_options', $this->plugin_name . '-seasons', array( $this, 'display_plugin_admin_helper_seasons' ) );
-		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Shortcodes', 'manage_options', $this->plugin_name . '-shortcodes', array( $this, 'display_plugin_admin_shortcodes' ) );
+		add_submenu_page( $this->plugin_name, self::MENU_TITLE, 'Club-Übersicht', 'manage_options', $this->plugin_name . '-overview', array( $this, 'display_plugin_admin_overview' ) );
+		add_submenu_page( $this->plugin_name, self::MENU_TITLE, 'Einstellungen', 'manage_options', $this->plugin_name . '-settings', array( $this, 'display_plugin_admin_settings' ) );
+		add_submenu_page( $this->plugin_name, self::MENU_TITLE, 'Liga', 'manage_options', $this->plugin_name . '-league', array( $this, 'display_plugin_admin_helper_league' ) );
+		add_submenu_page( $this->plugin_name, self::MENU_TITLE, 'Clubs', 'manage_options', $this->plugin_name . '-teams', array( $this, 'display_plugin_admin_helper_teams' ) );
+		add_submenu_page( $this->plugin_name, self::MENU_TITLE, 'Spiele', 'manage_options', $this->plugin_name . '-matches', array( $this, 'display_plugin_admin_matches' ) );
+		add_submenu_page( $this->plugin_name, self::MENU_TITLE, 'Saison', 'manage_options', $this->plugin_name . '-seasons', array( $this, 'display_plugin_admin_helper_seasons' ) );
+		add_submenu_page( $this->plugin_name, self::MENU_TITLE, 'Shortcodes', 'manage_options', $this->plugin_name . '-shortcodes', array( $this, 'display_plugin_admin_shortcodes' ) );
 	}
 
 	/**
@@ -138,7 +154,7 @@ class Swiss_Floorball_Api_Admin {
 	 * @since    1.0.0
 	 */
 	public function display_plugin_admin_dashboard() {
-		require_once 'partials/' . $this->plugin_name . '-admin-display.php';
+		require_once self::PARTIALS_DIR . $this->plugin_name . '-admin-display.php';
 	}
 
 	/**
@@ -147,7 +163,7 @@ class Swiss_Floorball_Api_Admin {
 	 * @since    1.0.6
 	 */
 	public function display_plugin_admin_overview() {
-		require_once 'partials/' . $this->plugin_name . '-admin-overview-display.php';
+		require_once self::PARTIALS_DIR . $this->plugin_name . '-admin-overview-display.php';
 	}
 
 	/**
@@ -167,7 +183,7 @@ class Swiss_Floorball_Api_Admin {
 			);
 		}
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
-		require_once 'partials/' . $this->plugin_name . '-admin-settings-display.php';
+		require_once self::PARTIALS_DIR . $this->plugin_name . '-admin-settings-display.php';
 	}
 
 	/**
@@ -187,7 +203,7 @@ class Swiss_Floorball_Api_Admin {
 			);
 		}
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
-		require_once 'partials/' . $this->plugin_name . '-admin-helper-league-display.php';
+		require_once self::PARTIALS_DIR . $this->plugin_name . '-admin-helper-league-display.php';
 	}
 
 	/**
@@ -207,7 +223,7 @@ class Swiss_Floorball_Api_Admin {
 			);
 		}
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
-		require_once 'partials/' . $this->plugin_name . '-admin-helper-seasons-display.php';
+		require_once self::PARTIALS_DIR . $this->plugin_name . '-admin-helper-seasons-display.php';
 	}
 
 	/**
@@ -227,7 +243,7 @@ class Swiss_Floorball_Api_Admin {
 			);
 		}
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
-		require_once 'partials/' . $this->plugin_name . '-admin-helper-teams-display.php';
+		require_once self::PARTIALS_DIR . $this->plugin_name . '-admin-helper-teams-display.php';
 	}
 
 	/**
@@ -236,7 +252,7 @@ class Swiss_Floorball_Api_Admin {
 	 * @since    1.0.0
 	 */
 	public function display_plugin_admin_shortcodes() {
-		require_once 'partials/' . $this->plugin_name . '-admin-shortcodes-display.php';
+		require_once self::PARTIALS_DIR . $this->plugin_name . '-admin-shortcodes-display.php';
 	}
 
 	/**
@@ -245,29 +261,20 @@ class Swiss_Floorball_Api_Admin {
 	 * @since    1.0.0
 	 */
 	public function display_plugin_admin_matches() {
-		require_once 'partials/' . $this->plugin_name . '-admin-matches-display.php';
+		require_once self::PARTIALS_DIR . $this->plugin_name . '-admin-matches-display.php';
 	}
 
 	/**
-	 * Return error while loading admin display page settings
+	 * Show the error notice of a failed settings redirect.
 	 *
 	 * @since    1.0.0
-	 * @param    string $error_message    Error code passed through from the settings redirect.
 	 */
-	public function settings_page_settings_messages( $error_message ) {
-		switch ( $error_message ) {
-			case '1':
-					$message   = __( 'There was an error adding this setting. Please try again.  If this persists, shoot us an email.', 'swiss-floorball-api' );
-				$err_code      = esc_attr( 'swissfloorball_api_key' );
-				$setting_field = 'swissfloorball_api_key';
-				break;
-		}
-		$type = 'error';
+	public function settings_page_settings_messages() {
 		add_settings_error(
-			$setting_field,
-			$err_code,
-			$message,
-			$type
+			'swissfloorball_api_key',
+			'swissfloorball_api_key',
+			__( 'There was an error adding this setting. Please try again.  If this persists, shoot us an email.', 'swiss-floorball-api' ),
+			'error'
 		);
 	}
 
@@ -913,51 +920,110 @@ class Swiss_Floorball_Api_Admin {
 	 */
 	public function settings_page_render_settings_field( $args ) {
 		// Expected $args keys: type, subtype, id, name, required, get_option_list, value_type (serialized or normal), wp_data (option or post_meta) and post_id.
+		$wp_data_value = null;
 		if ( 'option' === $args['wp_data'] ) {
 			$wp_data_value = get_option( $args['name'], isset( $args['default'] ) ? $args['default'] : false );
 		} elseif ( 'post_meta' === $args['wp_data'] ) {
 			$wp_data_value = get_post_meta( $args['post_id'], $args['name'], true );
 		}
 
-		switch ( $args['type'] ) {
+		if ( 'input' === $args['type'] ) {
+			$this->render_input_field( $args, $wp_data_value );
+		} elseif ( 'select' === $args['type'] ) {
+			$this->render_select_field( $args, $wp_data_value );
+		}
+	}
 
-			case 'input':
-					// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize -- Display only; never unserialized.
-					$value = ( 'serialized' === $args['value_type'] ) ? serialize( $wp_data_value ) : $wp_data_value;
-				if ( 'checkbox' !== $args['subtype'] ) {
-						$prepend_start = ( isset( $args['prepend_value'] ) ) ? '<div class="input-prepend"> <span class="add-on">' . esc_html( $args['prepend_value'] ) . '</span>' : '';
-						$prepend_end   = ( isset( $args['prepend_value'] ) ) ? '</div>' : '';
-						$step          = ( isset( $args['step'] ) ) ? 'step="' . esc_attr( $args['step'] ) . '"' : '';
-						$min           = ( isset( $args['min'] ) ) ? 'min="' . esc_attr( $args['min'] ) . '"' : '';
-						$max           = ( isset( $args['max'] ) ) ? 'max="' . esc_attr( $args['max'] ) . '"' : '';
-						$placeholder   = ( isset( $args['placeholder'] ) ) ? 'placeholder="' . esc_attr( $args['placeholder'] ) . '"' : '';
-					if ( isset( $args['disabled'] ) ) {
-						// hide the actual input bc if it was just a disabled input the info saved in the database would be wrong - bc it would pass empty values and wipe the actual information.
-						echo $prepend_start . '<input type="' . esc_attr( $args['subtype'] ) . '" id="' . esc_attr( $args['id'] ) . '_disabled" ' . $step . ' ' . $max . ' ' . $min . ' name="' . esc_attr( $args['name'] ) . '_disabled" size="40" disabled value="' . esc_attr( $value ) . '" /><input type="hidden" id="' . esc_attr( $args['id'] ) . '" ' . $step . ' ' . $max . ' ' . $min . ' name="' . esc_attr( $args['name'] ) . '" size="40" value="' . esc_attr( $value ) . '" />' . $prepend_end; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					} else {
-						echo $prepend_start . '<input type="' . esc_attr( $args['subtype'] ) . '" id="' . esc_attr( $args['id'] ) . '" ' . esc_attr( $args['required'] ) . ' ' . $step . ' ' . $max . ' ' . $min . ' ' . $placeholder . ' name="' . esc_attr( $args['name'] ) . '" size="40" value="' . esc_attr( $value ) . '" />' . $prepend_end; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					}
-				} else {
-						$checked = ( $value ) ? 'checked' : '';
-						echo '<input type="' . esc_attr( $args['subtype'] ) . '" id="' . esc_attr( $args['id'] ) . '" ' . esc_attr( $args['required'] ) . ' name="' . esc_attr( $args['name'] ) . '" size="40" value="1" ' . esc_attr( $checked ) . ' />';
-				}
-				if ( ! empty( $args['description'] ) ) {
-					echo '<p class="description">' . esc_html( $args['description'] ) . '</p>';
-				}
-				break;
-			case 'select':
-				echo '<select id="' . esc_attr( $args['id'] ) . '" name="' . esc_attr( $args['name'] ) . '">';
-				foreach ( $args['options'] as $option_value => $option_label ) {
-					echo '<option value="' . esc_attr( $option_value ) . '"' . selected( $wp_data_value, $option_value, false ) . '>' . esc_html( $option_label ) . '</option>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				}
-				echo '</select>';
-				if ( ! empty( $args['description'] ) ) {
-					echo '<p class="description">' . esc_html( $args['description'] ) . '</p>';
-				}
-				break;
-			default:
-					// code...
-				break;
+	/**
+	 * Render an input or checkbox settings field.
+	 *
+	 * @since 2.0.1
+	 * @param array $args  Field definition.
+	 * @param mixed $value Stored value.
+	 */
+	private function render_input_field( $args, $value ) {
+		if ( 'serialized' === $args['value_type'] ) {
+			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize -- Display only; never unserialized.
+			$value = serialize( $value );
+		}
+
+		if ( 'checkbox' === $args['subtype'] ) {
+			printf(
+				'<input type="%1$s" id="%2$s" %3$s name="%4$s" size="40" value="1" %5$s />',
+				esc_attr( $args['subtype'] ),
+				esc_attr( $args['id'] ),
+				esc_attr( $args['required'] ),
+				esc_attr( $args['name'] ),
+				esc_attr( $value ? 'checked' : '' )
+			);
+		} else {
+			$this->render_text_input( $args, $value );
+		}
+
+		if ( ! empty( $args['description'] ) ) {
+			echo '<p class="description">' . esc_html( $args['description'] ) . '</p>';
+		}
+	}
+
+	/**
+	 * Render a text-like input, optionally with a prepended label and a hidden twin for disabled fields.
+	 *
+	 * @since 2.0.1
+	 * @param array $args  Field definition.
+	 * @param mixed $value Stored value.
+	 */
+	private function render_text_input( $args, $value ) {
+		$extras = array();
+		foreach ( array( 'step', 'max', 'min', 'placeholder' ) as $attribute ) {
+			if ( isset( $args[ $attribute ] ) ) {
+				$extras[] = $attribute . '="' . esc_attr( $args[ $attribute ] ) . '"';
+			}
+		}
+		$extras = implode( ' ', $extras );
+
+		if ( isset( $args['disabled'] ) ) {
+			// Hide the actual input: a plain disabled input would submit nothing and wipe the stored value.
+			$input = sprintf(
+				'<input type="%1$s" id="%2$s_disabled" %3$s name="%4$s_disabled" size="40" disabled value="%5$s" /><input type="hidden" id="%2$s" %3$s name="%4$s" size="40" value="%5$s" />',
+				esc_attr( $args['subtype'] ),
+				esc_attr( $args['id'] ),
+				$extras,
+				esc_attr( $args['name'] ),
+				esc_attr( $value )
+			);
+		} else {
+			$input = sprintf(
+				'<input type="%1$s" id="%2$s" %3$s %4$s name="%5$s" size="40" value="%6$s" />',
+				esc_attr( $args['subtype'] ),
+				esc_attr( $args['id'] ),
+				esc_attr( $args['required'] ),
+				$extras,
+				esc_attr( $args['name'] ),
+				esc_attr( $value )
+			);
+		}
+
+		if ( isset( $args['prepend_value'] ) ) {
+			$input = '<div class="input-prepend"> <span class="add-on">' . esc_html( $args['prepend_value'] ) . '</span>' . $input . '</div>';
+		}
+		echo $input; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Every dynamic part is escaped above.
+	}
+
+	/**
+	 * Render a select settings field.
+	 *
+	 * @since 2.0.1
+	 * @param array $args  Field definition.
+	 * @param mixed $value Stored value.
+	 */
+	private function render_select_field( $args, $value ) {
+		echo '<select id="' . esc_attr( $args['id'] ) . '" name="' . esc_attr( $args['name'] ) . '">';
+		foreach ( $args['options'] as $option_value => $option_label ) {
+			echo '<option value="' . esc_attr( $option_value ) . '"' . selected( $value, $option_value, false ) . '>' . esc_html( $option_label ) . '</option>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
+		echo '</select>';
+		if ( ! empty( $args['description'] ) ) {
+			echo '<p class="description">' . esc_html( $args['description'] ) . '</p>';
 		}
 	}
 }
