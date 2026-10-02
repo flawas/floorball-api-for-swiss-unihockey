@@ -28,12 +28,21 @@ function swfl_uninstall_site() {
 
 	// Delete plugin options.
 	delete_option( 'swissfloorball_api_key' );
+	delete_option( 'swissfloorball_api_secret' );
+	delete_option( 'swissfloorball_api_source' );
+	delete_transient( 'swfl_partner_token' );
 	delete_option( 'swissfloorball_club_number' );
 	delete_option( 'swissfloorball_club_name' );
 	delete_option( 'swissfloorball_actual_season' );
 	delete_option( 'swissfloorball_request_timeout' );
 	delete_option( 'swissfloorball_theme' );
 	delete_option( 'swissfloorball_seed_color' );
+	delete_option( 'swissfloorball_table_style' );
+	delete_option( 'swissfloorball_table_striped' );
+	delete_option( 'swissfloorball_table_accent_color' );
+	delete_option( 'swissfloorball_table_header_color' );
+	delete_option( 'swissfloorball_table_divider_color' );
+	delete_option( 'swissfloorball_table_highlight_color' );
 
 	// Delete all cached API data (transients with 'swfl_' prefix).
 	// This includes both the transient values and their timeout entries.

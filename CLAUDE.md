@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project
 
 A WordPress plugin ("Swiss Floorball API") that fetches data from the Swiss Unihockey public API
-(`api-v2.swissunihockey.ch`) and renders it via shortcodes (games, rankings, topscorers, player
+(`wc.swissunihockey.ch`) and renders it via shortcodes (games, rankings, topscorers, player
 profiles, calendars) and an admin dashboard. PHP only, no build step, no Composer/npm dependencies.
 Plugin slug on WordPress.org is `swiss-floorball-api`; the main file and class names still use the
 older `floorball-api-for-swiss-unihockey` naming (see Naming below).

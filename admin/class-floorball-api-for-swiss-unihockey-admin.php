@@ -77,6 +77,10 @@ class Swiss_Floorball_Api_Admin {
 		if ( '' !== $seed_css ) {
 			wp_add_inline_style( $this->plugin_name, $seed_css );
 		}
+		$table_css = Swiss_Floorball_API_Display::get_table_css();
+		if ( '' !== $table_css ) {
+			wp_add_inline_style( $this->plugin_name, $table_css );
+		}
 	}
 
 	/**
@@ -90,7 +94,20 @@ class Swiss_Floorball_Api_Admin {
 		if ( false === strpos( $page, $this->plugin_name ) ) {
 			return;
 		}
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/floorball-api-for-swiss-unihockey-admin.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_style( 'wp-color-picker' );
+		// The file modification time is the version so browsers never serve a stale admin script after an update.
+		$script_path    = plugin_dir_path( __FILE__ ) . 'js/floorball-api-for-swiss-unihockey-admin.js';
+		$script_version = file_exists( $script_path ) ? (string) filemtime( $script_path ) : $this->version;
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/floorball-api-for-swiss-unihockey-admin.js', array( 'jquery', 'wp-color-picker' ), $script_version, false );
+		wp_localize_script(
+			$this->plugin_name,
+			'sfaAutosave',
+			array(
+				'saving' => __( 'Saving…', 'swiss-floorball-api' ),
+				'saved'  => __( 'Saved.', 'swiss-floorball-api' ),
+				'error'  => __( 'Saving failed. Please reload the page and try again.', 'swiss-floorball-api' ),
+			)
+		);
 	}
 
 	/**
@@ -106,6 +123,7 @@ class Swiss_Floorball_Api_Admin {
 		add_menu_page( $this->plugin_name, 'Swiss Floorball', 'manage_options', $this->plugin_name, array( $this, 'display_plugin_admin_dashboard' ), $menu_icon, 26 );
 
 		// Submenu entries share the parent slug and use the same capability.
+		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Club-Übersicht', 'manage_options', $this->plugin_name . '-overview', array( $this, 'display_plugin_admin_overview' ) );
 		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Einstellungen', 'manage_options', $this->plugin_name . '-settings', array( $this, 'display_plugin_admin_settings' ) );
 		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Liga', 'manage_options', $this->plugin_name . '-league', array( $this, 'display_plugin_admin_helper_league' ) );
 		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Clubs', 'manage_options', $this->plugin_name . '-teams', array( $this, 'display_plugin_admin_helper_teams' ) );
@@ -121,6 +139,15 @@ class Swiss_Floorball_Api_Admin {
 	 */
 	public function display_plugin_admin_dashboard() {
 		require_once 'partials/' . $this->plugin_name . '-admin-display.php';
+	}
+
+	/**
+	 * Return the club overview page (teams and games of the club).
+	 *
+	 * @since    1.0.6
+	 */
+	public function display_plugin_admin_overview() {
+		require_once 'partials/' . $this->plugin_name . '-admin-overview-display.php';
 	}
 
 	/**
@@ -261,9 +288,10 @@ class Swiss_Floorball_Api_Admin {
 
 		// Get the old club number to check if it changed.
 		$old_club_number = get_option( 'swissfloorball_club_number' );
+		$club_changed    = absint( $old_club_number ) !== $club_number;
 
 		// If club number changed, clear all cached API data.
-		if ( absint( $old_club_number ) !== $club_number && ! empty( $club_number ) ) {
+		if ( $club_changed && ! empty( $club_number ) ) {
 			global $wpdb;
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transient cleanup; query is already prepared.
 			$wpdb->query(
@@ -277,6 +305,11 @@ class Swiss_Floorball_Api_Admin {
 
 		// If club number is empty, return it as is.
 		if ( empty( $club_number ) ) {
+			return $club_number;
+		}
+
+		// The settings form saves itself on every change, so this runs for unrelated fields too. Only look the name up when the club changed or no name is stored yet.
+		if ( ! $club_changed && '' !== (string) get_option( 'swissfloorball_club_name', '' ) ) {
 			return $club_number;
 		}
 
@@ -312,7 +345,7 @@ class Swiss_Floorball_Api_Admin {
 				'success'
 			);
 		} else {
-			// If API call failed or no name found, clear the club name.
+			// If API call failed or no name found, clear the club name: it belongs to the previous club (or is already empty).
 			update_option( 'swissfloorball_club_name', '' );
 			// Add error notice.
 			add_settings_error(
@@ -394,18 +427,47 @@ class Swiss_Floorball_Api_Admin {
 
 		unset( $args );
 		$args = array(
+			'type'        => 'select',
+			'id'          => 'swissfloorball_api_source',
+			'name'        => 'swissfloorball_api_source',
+			'wp_data'     => 'option',
+			'default'     => Swiss_Floorball_API_Client::SOURCE_FREE,
+			'options'     => array(
+				Swiss_Floorball_API_Client::SOURCE_FREE    => __( 'Free API (wc.swissunihockey.ch)', 'swiss-floorball-api' ),
+				Swiss_Floorball_API_Client::SOURCE_PARTNER => __( 'Partner API (API key and secret required)', 'swiss-floorball-api' ),
+			),
+			'description' => __( 'The free API needs no credentials but does not provide leagues, groups, topscorers, player profiles, national players and game events. Those shortcodes need the Partner API; the API key and secret fields appear once you select it.', 'swiss-floorball-api' ),
+		);
+		add_settings_field(
+			'swissfloorball_api_source',
+			__( 'API source', 'swiss-floorball-api' ),
+			array( $this, 'settings_page_render_settings_field' ),
+			'swfl_general_settings',
+			'swfl_general_section',
+			$args
+		);
+
+		register_setting(
+			'swfl_general_settings',
+			'swissfloorball_api_source',
+			array( $this, 'sanitize_api_source' )
+		);
+
+		unset( $args );
+		$args = array(
 			'type'             => 'input',
 			'subtype'          => 'text',
 			'id'               => 'swissfloorball_api_key',
 			'name'             => 'swissfloorball_api_key',
-			'required'         => 'false',
+			'required'         => '',
 			'get_options_list' => '',
 			'value_type'       => 'normal',
 			'wp_data'          => 'option',
+			'description'      => __( 'The API key issued to you by Swiss Unihockey for the Partner API. Used together with the API secret to request a short-lived access token.', 'swiss-floorball-api' ),
 		);
 		add_settings_field(
 			'swissfloorball_api_key',
-			'Swiss Floorball API Key (Optional)',
+			__( 'Partner API: API key', 'swiss-floorball-api' ),
 			array( $this, 'settings_page_render_settings_field' ),
 			'swfl_general_settings',
 			'swfl_general_section',
@@ -415,7 +477,34 @@ class Swiss_Floorball_Api_Admin {
 		register_setting(
 			'swfl_general_settings',
 			'swissfloorball_api_key',
-			'sanitize_text_field'
+			array( $this, 'sanitize_partner_credential' )
+		);
+
+		unset( $args );
+		$args = array(
+			'type'             => 'input',
+			'subtype'          => 'password',
+			'id'               => 'swissfloorball_api_secret',
+			'name'             => 'swissfloorball_api_secret',
+			'required'         => '',
+			'get_options_list' => '',
+			'value_type'       => 'normal',
+			'wp_data'          => 'option',
+			'description'      => __( 'The API secret that belongs to the API key above. Both are required; it is stored in the database and never shown on the website.', 'swiss-floorball-api' ),
+		);
+		add_settings_field(
+			'swissfloorball_api_secret',
+			__( 'Partner API: API secret', 'swiss-floorball-api' ),
+			array( $this, 'settings_page_render_settings_field' ),
+			'swfl_general_settings',
+			'swfl_general_section',
+			$args
+		);
+
+		register_setting(
+			'swfl_general_settings',
+			'swissfloorball_api_secret',
+			array( $this, 'sanitize_partner_credential' )
 		);
 
 		unset( $args );
@@ -578,6 +667,110 @@ class Swiss_Floorball_Api_Admin {
 
 		unset( $args );
 		$args = array(
+			'type'        => 'select',
+			'id'          => 'swissfloorball_table_style',
+			'name'        => 'swissfloorball_table_style',
+			'wp_data'     => 'option',
+			'default'     => 'flat',
+			'options'     => array(
+				'flat'    => __( 'Flat', 'swiss-floorball-api' ),
+				'classic' => __( 'Classic (boxed, rounded)', 'swiss-floorball-api' ),
+			),
+			'description' => __( 'Flat tables have no border or shadow, thin row dividers and an accent line under the header.', 'swiss-floorball-api' ),
+		);
+		add_settings_field(
+			'swissfloorball_table_style',
+			__( 'Table style', 'swiss-floorball-api' ),
+			array( $this, 'settings_page_render_settings_field' ),
+			'swfl_general_settings',
+			'swfl_general_section',
+			$args
+		);
+
+		register_setting(
+			'swfl_general_settings',
+			'swissfloorball_table_style',
+			array( $this, 'sanitize_table_style' )
+		);
+
+		$table_colors = array(
+			'accent'    => array(
+				__( 'Table accent colour', 'swiss-floorball-api' ),
+				__( 'Line under the table header. Empty uses the seed or primary colour.', 'swiss-floorball-api' ),
+			),
+			'header'    => array(
+				__( 'Table header text colour', 'swiss-floorball-api' ),
+				__( 'Empty uses the normal text colour.', 'swiss-floorball-api' ),
+			),
+			'divider'   => array(
+				__( 'Table row divider colour', 'swiss-floorball-api' ),
+				__( 'Thin line between rows. Empty uses the default outline colour.', 'swiss-floorball-api' ),
+			),
+			'highlight' => array(
+				__( 'Table row highlight colour', 'swiss-floorball-api' ),
+				__( 'Background of the hovered row. Empty is derived from the accent colour.', 'swiss-floorball-api' ),
+			),
+		);
+		foreach ( $table_colors as $color_key => $color_labels ) {
+			$option_name = 'swissfloorball_table_' . $color_key . '_color';
+			unset( $args );
+			$args = array(
+				'type'             => 'input',
+				'subtype'          => 'text',
+				'id'               => $option_name,
+				'name'             => $option_name,
+				'required'         => '',
+				'get_options_list' => '',
+				'value_type'       => 'normal',
+				'wp_data'          => 'option',
+				'default'          => '',
+				'description'      => $color_labels[1],
+			);
+			add_settings_field(
+				$option_name,
+				$color_labels[0],
+				array( $this, 'settings_page_render_settings_field' ),
+				'swfl_general_settings',
+				'swfl_general_section',
+				$args
+			);
+
+			register_setting(
+				'swfl_general_settings',
+				$option_name,
+				array( $this, 'sanitize_seed_color' )
+			);
+		}
+
+		unset( $args );
+		$args = array(
+			'type'             => 'input',
+			'subtype'          => 'checkbox',
+			'id'               => 'swissfloorball_table_striped',
+			'name'             => 'swissfloorball_table_striped',
+			'required'         => '',
+			'get_options_list' => '',
+			'value_type'       => 'normal',
+			'wp_data'          => 'option',
+			'default'          => '0',
+		);
+		add_settings_field(
+			'swissfloorball_table_striped',
+			__( 'Striped table rows', 'swiss-floorball-api' ),
+			array( $this, 'settings_page_render_settings_field' ),
+			'swfl_general_settings',
+			'swfl_general_section',
+			$args
+		);
+
+		register_setting(
+			'swfl_general_settings',
+			'swissfloorball_table_striped',
+			array( $this, 'sanitize_show_icons' )
+		);
+
+		unset( $args );
+		$args = array(
 			'type'             => 'input',
 			'subtype'          => 'number',
 			'id'               => 'swissfloorball_request_timeout',
@@ -648,6 +841,50 @@ class Swiss_Floorball_Api_Admin {
 	 */
 	public function sanitize_theme( $value ) {
 		return in_array( $value, array( 'auto', 'light', 'dark' ), true ) ? $value : 'auto';
+	}
+
+	/**
+	 * Sanitize the API source: one of the known sources, otherwise the free API.
+	 *
+	 * A changed source invalidates the cached partner token.
+	 *
+	 * @since 1.1.0
+	 *
+	 * @param mixed $value Raw submitted value.
+	 * @return string Source slug.
+	 */
+	public function sanitize_api_source( $value ) {
+		delete_transient( Swiss_Floorball_API_Client::TOKEN_TRANSIENT );
+		$sources = array(
+			Swiss_Floorball_API_Client::SOURCE_FREE,
+			Swiss_Floorball_API_Client::SOURCE_PARTNER,
+		);
+		return in_array( $value, $sources, true ) ? $value : Swiss_Floorball_API_Client::SOURCE_FREE;
+	}
+
+	/**
+	 * Sanitize a Partner API credential and drop the cached token so new credentials are used.
+	 *
+	 * @since 1.1.0
+	 *
+	 * @param mixed $value Raw submitted value.
+	 * @return string Sanitized credential.
+	 */
+	public function sanitize_partner_credential( $value ) {
+		delete_transient( Swiss_Floorball_API_Client::TOKEN_TRANSIENT );
+		return sanitize_text_field( $value );
+	}
+
+	/**
+	 * Sanitize the table style against its whitelist.
+	 *
+	 * @since 1.0.6
+	 *
+	 * @param mixed $value Raw submitted value.
+	 * @return string 'flat' or 'classic'.
+	 */
+	public function sanitize_table_style( $value ) {
+		return in_array( $value, array( 'flat', 'classic' ), true ) ? $value : 'flat';
 	}
 
 	/**

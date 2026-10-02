@@ -1,9 +1,12 @@
 # Swiss Floorball API – Dokumentation
 
-Das WordPress-Plugin «Swiss Floorball API» (Version 1.0.5) holt Daten von der öffentlichen Swiss-Unihockey-API (`https://api-v2.swissunihockey.ch/api/`) und stellt sie per Shortcode (`swfl-*`) und im Admin-Bereich dar.
+Das WordPress-Plugin «Swiss Floorball API» (Version 2.0.0) holt Daten von der kostenlosen Swiss-Unihockey-API (`https://wc.swissunihockey.ch/`, optional von der Partner-API) und stellt sie per Shortcode (`swfl-*`) und im Admin-Bereich dar.
+
+![Rangliste mit swfl-rankings](media/rankings-desktop.png)
 
 ## Inhalt
 
+- [Umstieg auf 2.0.0](migration.md) – Breaking Changes, API-Wechsel, Checkliste
 - [Shortcodes](shortcodes.md) – alle Shortcodes mit Attributen und Beispielen
 - [Administration](admin.md) – Einstellungen und Helper-Seiten, IDs finden
 - [Architektur](architecture.md) – Klassen, Datenfluss, Caching, API-Antwortformen
@@ -25,4 +28,4 @@ Die Saison wird bei Shortcodes ohne eigenes `season`-Attribut aus der Einstellun
 
 ## Voraussetzung
 
-Der Webserver muss `api-v2.swissunihockey.ch` per HTTPS erreichen können. Ein API-Key wird vom Plugin nicht für Anfragen verwendet (siehe [Administration](admin.md#einstellungen)).
+Der Webserver muss `wc.swissunihockey.ch` per HTTPS erreichen können. Für Ligen, Gruppen, Topscorer, Spielerprofile, Nationalspieler und Spielereignisse ist die Partner-API (`office.swissunihockey.ch`) mit API-Key und Secret nötig, siehe [Umstieg auf 2.0.0](migration.md) und [Administration](admin.md#einstellungen).

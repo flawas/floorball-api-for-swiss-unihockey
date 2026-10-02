@@ -3,7 +3,7 @@
   "diagram_type": "architecture",
   "meta": {
     "title": "Swiss Floorball API — Runtime Architecture",
-    "subtitle": "WordPress Plugin v1.0.5 · api-v2.swissunihockey.ch",
+    "subtitle": "WordPress Plugin v1.0.5 · wc.swissunihockey.ch",
     "output": "swiss-floorball-api-architecture.html",
     "quality_profile": "showcase",
     "viewBox": [1600, 740]
@@ -90,7 +90,7 @@
       "id": "swiss_api",
       "type": "cloud",
       "label": "Swiss Unihockey API",
-      "tag": "No auth required",
+      "tag": "No auth (free API)",
       "pos": [1400, 382],
       "size": [158, 55]
     }
@@ -272,9 +272,9 @@
       "dot": "orange",
       "title": "Swiss Unihockey API — External Data Source",
       "items": [
-        "Base URL: https://api-v2.swissunihockey.ch/api/ — public REST API, no auth",
-        "Key endpoints: /games?mode=club|team · /rankings · /clubs/{id}/statistics",
-        "/calendars · /topscorers · /game_events/{id} · /seasons · /leagues · /cups",
+        "Base URL: https://wc.swissunihockey.ch/ — free read-only API, no auth (optional Partner API with token)",
+        "Free endpoints: /games?mode=club|team · /games/{id} · /rankings · /clubs/{id}/statistics",
+        "/seasons · /clubs · /cups · Partner API only: /leagues · /groups · /topscorers · /game_events/{id}",
         "All API output sanitised with esc_html() / esc_url() / esc_attr() before rendering"
       ]
     }

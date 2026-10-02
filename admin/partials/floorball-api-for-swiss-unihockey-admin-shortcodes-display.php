@@ -46,18 +46,53 @@ if ( ! current_user_can( 'manage_options' ) ) {
 				</tr>
 				<tr>
 					<td><code>[swfl-club-games]</code></td>
-					<td>Zeigt alle Spiele des konfigurierten Vereins für die aktuelle Saison.</td>
-					<td>Keine (nutzt die Plugin-Einstellungen)</td>
-					<td><code>[swfl-club-games]</code></td>
+					<td>Zeigt die Spiele eines Vereins wochenweise, mit Wechsel zwischen den Wochen.</td>
+					<td>
+						Der Verein stammt immer aus den Plugin-Einstellungen.<br>
+						<strong>season</strong>: Startjahr der Saison (Standard: aktuelle Saison).
+					</td>
+					<td><code>[swfl-club-games season="2025"]</code></td>
 				</tr>
 				<tr>
 					<td><code>[swfl-team-games]</code></td>
-					<td>Zeigt die Spiele eines spezifischen Teams.</td>
+					<td>Zeigt die Spiele eines Teams seitenweise, beginnend rund um das nächste Spiel.</td>
 					<td>
 						<strong>team_id</strong> (erforderlich): Die ID des Teams.<br>
+						<strong>season</strong>: Startjahr der Saison (Standard: aktuelle Saison).<br>
+						<strong>page_size</strong>: Spiele pro Seite (Standard: 4).<br>
 						<em>Zu finden auf der <a href="<?php echo esc_url( admin_url( 'admin.php?page=floorball-api-for-swiss-unihockey-teams' ) ); ?>">Teams Übersicht</a> oder im <a href="<?php echo esc_url( admin_url( 'admin.php?page=floorball-api-for-swiss-unihockey' ) ); ?>">Dashboard</a>.</em>
 					</td>
-					<td><code>[swfl-team-games team_id="427892"]</code></td>
+					<td><code>[swfl-team-games team_id="429626" season="2025" page_size="5"]</code></td>
+				</tr>
+				<tr>
+					<td><code>[swfl-club-team-games]</code></td>
+					<td>Zeigt alle Teams eines Vereins mit Auswahlliste und den Spielen des gewählten Teams.</td>
+					<td>
+						Der Verein stammt immer aus den Plugin-Einstellungen.<br>
+						<strong>season</strong>: Startjahr der Saison (Standard: aktuelle Saison).<br>
+						<strong>page_size</strong>: Spiele pro Seite (Standard: 4).
+					</td>
+					<td><code>[swfl-club-team-games season="2025" page_size="6"]</code></td>
+				</tr>
+				<tr>
+					<td><code>[swfl-league-games]</code></td>
+					<td>Zeigt die Spiele einer Liga und Gruppe, rundenweise blätterbar. Playoff-Serien werden gruppiert.</td>
+					<td>
+						<strong>game_class</strong> (erforderlich): Spielklasse ID.<br>
+						<strong>league</strong> (erforderlich): Liga ID.<br>
+						<strong>season</strong>: Startjahr der Saison (Standard: aktuelle Saison).<br>
+						<strong>group</strong>: Gruppenname, z. B. «Gruppe 1».
+					</td>
+					<td><code>[swfl-league-games game_class="21" league="3" season="2025" group="Gruppe 1"]</code></td>
+				</tr>
+				<tr>
+					<td><code>[swfl-mobiliar-topscorer]</code></td>
+					<td>Zeigt die Mobiliar Topscorer eines Vereins als Karten.</td>
+					<td>
+						<strong>club_id</strong>: Vereins-ID (Standard: Plugin-Einstellung).<br>
+						<strong>season</strong>: Startjahr der Saison (Standard: aktuelle Saison).
+					</td>
+					<td><code>[swfl-mobiliar-topscorer club_id="463845" season="2025"]</code></td>
 				</tr>
 				<tr>
 					<td><code>[swfl-clubs]</code></td>
@@ -114,9 +149,9 @@ if ( ! current_user_can( 'manage_options' ) ) {
 						<strong>season</strong>: Saison (Standard: aktuelle Saison).<br>
 						<strong>league</strong>: Liga ID.<br>
 						<strong>game_class</strong>: Spielklasse ID.<br>
-						<strong>group</strong>: Gruppen ID.
+						<strong>group</strong>: Gruppenname, z. B. «Gruppe 1».
 					</td>
-					<td><code>[swfl-rankings group="416947"]</code></td>
+					<td><code>[swfl-rankings season="2025" league="3" game_class="21" group="Gruppe 1"]</code></td>
 				</tr>
 				<tr>
 					<td><code>[swfl-player]</code></td>

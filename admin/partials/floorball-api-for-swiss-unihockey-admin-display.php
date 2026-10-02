@@ -20,86 +20,60 @@ if ( ! current_user_can( 'manage_options' ) ) {
 }
 ?>
 
-<!-- This file should primarily consist of HTML with a little bit of PHP. -->
+<?php
+$swfl_club_number = get_option( 'swissfloorball_club_number' );
+$swfl_club_name   = get_option( 'swissfloorball_club_name' );
+$swfl_season      = Swiss_Floorball_API_Display::get_current_season();
+$swfl_api_source  = Swiss_Floorball_API_Client::get_source();
+$swfl_configured  = $swfl_club_number && $swfl_season;
+
+$swfl_stats = array(
+	array( __( 'Club', 'swiss-floorball-api' ), $swfl_club_name ? $swfl_club_name : '—' ),
+	array( __( 'Club ID', 'swiss-floorball-api' ), $swfl_club_number ? $swfl_club_number : '—' ),
+	array( __( 'Saison', 'swiss-floorball-api' ), $swfl_season ? $swfl_season : '—' ),
+	array( __( 'API-Quelle', 'swiss-floorball-api' ), $swfl_api_source ),
+);
+
+$swfl_tiles = array(
+	array( 'chart', __( 'Club-Übersicht', 'swiss-floorball-api' ), __( 'Teams und alle Spiele des Clubs', 'swiss-floorball-api' ), 'overview' ),
+	array( 'hockey', __( 'Spiele', 'swiss-floorball-api' ), __( 'Spiele pro Team mit Details und Telegramm', 'swiss-floorball-api' ), 'matches' ),
+	array( 'trophy', __( 'Ligen', 'swiss-floorball-api' ), __( 'Liga-, Game-Class- und Gruppen-IDs nachschlagen', 'swiss-floorball-api' ), 'league' ),
+	array( 'group', __( 'Clubs', 'swiss-floorball-api' ), __( 'Club-IDs aller Vereine', 'swiss-floorball-api' ), 'teams' ),
+	array( 'calendar', __( 'Saisons', 'swiss-floorball-api' ), __( 'Verfügbare Saisons', 'swiss-floorball-api' ), 'seasons' ),
+	array( 'description', __( 'Shortcodes', 'swiss-floorball-api' ), __( 'Alle Shortcodes mit Attributen', 'swiss-floorball-api' ), 'shortcodes' ),
+	array( 'settings', __( 'Einstellungen', 'swiss-floorball-api' ), __( 'API, Club, Design und Cache', 'swiss-floorball-api' ), 'settings' ),
+);
+?>
 <div class="wrap sfa-admin-wrap" data-sfa-theme="<?php echo esc_attr( Swiss_Floorball_API_Display::get_theme() ); ?>">
 	<div class="sfa-admin-header">
-		<h1><?php Swiss_Floorball_Api_Icons::render( 'hockey' ); ?> Swiss Floorball Plugin</h1>
-		<p>Übersicht und Verwaltung Ihrer Swiss Floorball Daten</p>
+		<h1><?php Swiss_Floorball_Api_Icons::render( 'hockey' ); ?> Swiss Floorball</h1>
+		<p><?php esc_html_e( 'Übersicht und Verwaltung Ihrer Swiss Floorball Daten', 'swiss-floorball-api' ); ?></p>
 	</div>
 
-	<div class="sfa-cards-container">
-		<div class="sfa-card">
-			<h3><?php Swiss_Floorball_Api_Icons::render( 'settings' ); ?> Aktuelle Einstellungen</h3>
-			<table class="sfa-settings-table">
-				<tr>
-					<td>API Key</td>
-					<td>
-					<?php
-						$swfl_api_key = get_option( 'swissfloorball_api_key' );
-					if ( $swfl_api_key ) {
-						$swfl_masked_key = str_repeat( '*', max( 0, strlen( $swfl_api_key ) - 3 ) ) . substr( $swfl_api_key, -3 );
-						echo esc_html( $swfl_masked_key );
-					} else {
-						echo '—';
-					}
-					?>
-					</td>
-				</tr>
-				<tr>
-					<td>Club ID</td>
-					<td><?php echo esc_html( empty( get_option( 'swissfloorball_club_number' ) ) ? '—' : get_option( 'swissfloorball_club_number' ) ); ?></td>
-				</tr>
-				<tr>
-					<td>Club Name</td>
-					<td><?php echo esc_html( empty( get_option( 'swissfloorball_club_name' ) ) ? '—' : get_option( 'swissfloorball_club_name' ) ); ?></td>
-				</tr>
-				<tr>
-					<td>Aktuelle Saison</td>
-					<td><?php echo esc_html( Swiss_Floorball_API_Display::get_current_season() ); ?></td>
-				</tr>
-			</table>
+	<?php if ( ! $swfl_configured ) : ?>
+		<div class="sfa-callout">
+			<?php Swiss_Floorball_Api_Icons::render( 'warning' ); ?>
+			<span><?php esc_html_e( 'Bitte konfigurieren Sie zuerst die Einstellungen (Club ID und Saison).', 'swiss-floorball-api' ); ?></span>
+			<a href="<?php echo esc_url( admin_url( 'admin.php?page=floorball-api-for-swiss-unihockey-settings' ) ); ?>" class="button button-primary"><?php esc_html_e( 'Einstellungen', 'swiss-floorball-api' ); ?></a>
 		</div>
+	<?php endif; ?>
 
-		<div class="sfa-card">
-			<h3><?php Swiss_Floorball_Api_Icons::render( 'chart' ); ?> Schnellzugriff</h3>
-			<p class="sfa-nav-description">Navigieren Sie zu den verschiedenen Bereichen:</p>
-			<p class="sfa-nav-item">
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=floorball-api-for-swiss-unihockey-settings' ) ); ?>" class="button">Einstellungen</a>
-			</p>
-			<p class="sfa-nav-item">
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=floorball-api-for-swiss-unihockey-league' ) ); ?>" class="button">Ligen</a>
-			</p>
-			<p class="sfa-nav-item">
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=floorball-api-for-swiss-unihockey-teams' ) ); ?>" class="button">Clubs</a>
-			</p>
-			<p class="sfa-nav-item">
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=floorball-api-for-swiss-unihockey-seasons' ) ); ?>" class="button">Saisons</a>
-			</p>
-			<p class="sfa-nav-item">
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=floorball-api-for-swiss-unihockey-shortcodes' ) ); ?>" class="button">Shortcodes</a>
-			</p>
-		</div>
+	<div class="sfa-stat-grid">
+		<?php foreach ( $swfl_stats as $swfl_stat ) : ?>
+			<div class="sfa-stat-tile">
+				<span class="sfa-stat-tile__label"><?php echo esc_html( $swfl_stat[0] ); ?></span>
+				<span class="sfa-stat-tile__value"><?php echo esc_html( $swfl_stat[1] ); ?></span>
+			</div>
+		<?php endforeach; ?>
 	</div>
 
-	<?php
-	$swfl_club_number = get_option( 'swissfloorball_club_number' );
-	$swfl_season      = Swiss_Floorball_API_Display::get_current_season();
-
-	if ( $swfl_club_number && $swfl_season ) {
-		echo '<div class="sfa-table-container">';
-		Swiss_Floorball_API_Display::render_club_teams( $swfl_club_number );
-		echo '</div>';
-
-		echo '<div class="sfa-table-container">';
-		Swiss_Floorball_API_Display::render_club_games( $swfl_club_number, $swfl_season );
-		echo '</div>';
-	} else {
-		echo '<div class="sfa-card">';
-		echo '<div class="sfa-empty-state">';
-		echo '<div class="sfa-empty-state-icon">' . Swiss_Floorball_Api_Icons::get( 'warning' ) . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Sanitized via wp_kses() in Swiss_Floorball_Api_Icons::get().
-		echo '<div class="sfa-empty-state-text">Bitte konfigurieren Sie zuerst die Einstellungen (Club ID und Saison).</div>';
-		echo '</div>';
-		echo '</div>';
-	}
-	?>
+	<div class="sfa-tile-grid">
+		<?php foreach ( $swfl_tiles as $swfl_tile ) : ?>
+			<a class="sfa-tile" href="<?php echo esc_url( admin_url( 'admin.php?page=floorball-api-for-swiss-unihockey-' . $swfl_tile[3] ) ); ?>">
+				<span class="sfa-tile__icon"><?php Swiss_Floorball_Api_Icons::render( $swfl_tile[0] ); ?></span>
+				<span class="sfa-tile__title"><?php echo esc_html( $swfl_tile[1] ); ?></span>
+				<span class="sfa-tile__text"><?php echo esc_html( $swfl_tile[2] ); ?></span>
+			</a>
+		<?php endforeach; ?>
+	</div>
 </div>

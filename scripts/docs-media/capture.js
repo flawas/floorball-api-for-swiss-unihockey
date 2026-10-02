@@ -4,7 +4,9 @@
  * running against the local Docker WordPress (docker-compose.yml). Free: Playwright + public Swiss Unihockey API.
  *
  * Env: WP_URL (default http://localhost:8000), OUT_DIR (default docs/media), CLUB_ID (optional, default 637 = HC Weggis Küssnacht),
- *      SEASON (optional; default = previous, complete season like verify_api.php).
+ *      SEASON (optional; default = previous, complete season like verify_api.php),
+ *      SWFL_API_BASE (optional; default = free API). The free API has no leagues, groups or topscorers: league 2 / class 11 / "Gruppe 1"
+ *      are used as in verify_api.php, and scenes that need a player id are skipped.
  * Run from the repo root with Playwright resolvable (NODE_PATH) and ffmpeg installed.
  */
 const { execFileSync } = require('node:child_process');
@@ -14,8 +16,9 @@ const { chromium } = require('playwright');
 
 const WP = process.env.WP_URL || 'http://localhost:8000';
 const OUT = path.resolve(process.env.OUT_DIR || 'docs/media');
-const API = 'https://api-v2.swissunihockey.ch/api/';
+const API = process.env.SWFL_API_BASE || 'https://wc.swissunihockey.ch/'; // free API; leagues, groups and topscorers need the Partner API
 const DEFAULT_CLUB_ID = '637'; // HC Weggis Küssnacht
+// Desktop frontend and admin shots are always exactly the desktop viewport size (see scenes.json).
 const cfg = JSON.parse(fs.readFileSync(path.join(__dirname, 'scenes.json'), 'utf8'));
 const manifest = { generated: new Date().toISOString(), context: {}, screenshots: [], videos: [], skipped: [] };
 
@@ -42,11 +45,15 @@ function findLinkIds(node, page, out = []) {
 /** Same discovery as verify_api.php: IDs come from the API itself, so nothing rots when a season ends. */
 async function discover() {
   const ctx = {};
-  const [seasons, leagues, clubs] = await Promise.all(['seasons', 'leagues', 'clubs'].map((e) => api(e)));
-  const se = seasons.entries, le = leagues.entries, cl = clubs.entries;
+  const [seasons, clubs] = await Promise.all(['seasons', 'clubs'].map((e) => api(e)));
+  const se = seasons.entries, cl = clubs.entries;
   ctx.season = process.env.SEASON || (se[1] || se[0]).set_in_context.season;
-  ctx.league = le[0].set_in_context.league;
-  ctx.game_class = le[0].set_in_context.game_class;
+  // No leagues endpoint in the free API: fall back to a known league, like verify_api.php.
+  let le = null;
+  try { le = (await api('leagues')).entries; } catch (e) { log(`  discovery leagues: ${e.message}, using league 2 / class 11`); }
+  ctx.league = le ? le[0].set_in_context.league : 2;
+  ctx.game_class = le ? le[0].set_in_context.game_class : 11;
+  ctx.group = 'Gruppe 1';
   const wanted = process.env.CLUB_ID || DEFAULT_CLUB_ID;
   const club = cl.find((c) => String(c.set_in_context.club_id) === wanted) || cl[0];
   ctx.club_id = String(club.set_in_context.club_id);
@@ -115,7 +122,12 @@ async function shootFrontend(browser, s, vpName, vp) {
     const text = ((await el.innerText()) || '').trim();
     if (text.length < 20) { skip(`${s.id}-${vpName}`, 'empty output'); return; }
     const file = `${s.id}-${vpName}.png`;
-    await el.screenshot({ path: path.join(OUT, file) });
+    if ('desktop' === vpName) {
+      // Fixed viewport size (like the admin shots), from the top of the page so the menu and title are visible; what does not fit is cropped.
+      await page.screenshot({ path: path.join(OUT, file) });
+    } else {
+      await el.screenshot({ path: path.join(OUT, file) });
+    }
     manifest.screenshots.push({ id: s.id, title: s.title, type: 'frontend', viewport: vpName, file, shortcode: s.shortcode });
     log(`  ok ${file}`);
   } catch (e) {
@@ -133,7 +145,8 @@ async function shootAdmin(browser, state) {
     try {
       await page.goto(`${WP}/wp-admin/admin.php?page=${s.page}`, { waitUntil: 'networkidle' });
       const file = `${s.id}.png`;
-      await page.screenshot({ path: path.join(OUT, file), fullPage: true });
+      // Viewport only, so every admin shot has the same size as the desktop viewport; the rest of long pages is cropped.
+      await page.screenshot({ path: path.join(OUT, file) });
       manifest.screenshots.push({ id: s.id, title: s.title, type: 'admin', viewport: 'desktop', file });
       log(`  ok ${file}`);
     } catch (e) {

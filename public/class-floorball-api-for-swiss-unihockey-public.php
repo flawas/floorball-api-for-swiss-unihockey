@@ -65,7 +65,11 @@ class Swiss_Floorball_Api_Public {
 	 * @return void
 	 */
 	private function open_wrapper() {
-		echo '<div class="swiss-floorball-plugin" data-sfa-theme="' . esc_attr( Swiss_Floorball_API_Display::get_theme() ) . '">';
+		$classes = 'swiss-floorball-plugin sfa-table--' . Swiss_Floorball_API_Display::get_table_style();
+		if ( Swiss_Floorball_API_Display::is_table_striped() ) {
+			$classes .= ' sfa-table--striped';
+		}
+		echo '<div class="' . esc_attr( $classes ) . '" data-sfa-theme="' . esc_attr( Swiss_Floorball_API_Display::get_theme() ) . '">';
 	}
 
 	/**
@@ -92,6 +96,9 @@ class Swiss_Floorball_Api_Public {
 			'swfl-national-players',
 			'swfl-topscorers',
 			'swfl-game-events',
+			'swfl-league-games',
+			'swfl-club-team-games',
+			'swfl-mobiliar-topscorer',
 		);
 		foreach ( $shortcodes as $shortcode ) {
 			if ( has_shortcode( $post->post_content, $shortcode ) ) {
@@ -115,6 +122,10 @@ class Swiss_Floorball_Api_Public {
 		if ( '' !== $seed_css ) {
 			wp_add_inline_style( $this->plugin_name, $seed_css );
 		}
+		$table_css = Swiss_Floorball_API_Display::get_table_css();
+		if ( '' !== $table_css ) {
+			wp_add_inline_style( $this->plugin_name, $table_css );
+		}
 	}
 
 	/**
@@ -127,6 +138,14 @@ class Swiss_Floorball_Api_Public {
 			return;
 		}
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/floorball-api-for-swiss-unihockey-public.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( $this->plugin_name . '-widgets', plugin_dir_url( __FILE__ ) . 'js/swfl-widgets.js', array(), $this->version, true );
+		wp_localize_script(
+			$this->plugin_name . '-widgets',
+			'swflWidgets',
+			array(
+				'restUrl' => esc_url_raw( rest_url( 'swfl/v1/' ) ),
+			)
+		);
 	}
 
 	/**
@@ -158,6 +177,9 @@ class Swiss_Floorball_Api_Public {
 		add_shortcode( 'swfl-national-players', array( $this, 'get_national_players_func' ) );
 		add_shortcode( 'swfl-topscorers', array( $this, 'get_topscorers_func' ) );
 		add_shortcode( 'swfl-game-events', array( $this, 'get_game_events_func' ) );
+		add_shortcode( 'swfl-league-games', array( $this, 'get_league_games_func' ) );
+		add_shortcode( 'swfl-club-team-games', array( $this, 'get_club_team_games_func' ) );
+		add_shortcode( 'swfl-mobiliar-topscorer', array( $this, 'get_mobiliar_topscorer_func' ) );
 	}
 
 	/**
@@ -177,15 +199,25 @@ class Swiss_Floorball_Api_Public {
 	}
 
 	/**
-	 * Render the club games shortcode.
+	 * Render the club games shortcode (week by week).
+	 *
+	 * Attributes: season (default: current season).
 	 *
 	 * @since    1.0.0
+	 * @param    array $atts Shortcode attributes.
 	 * @return   string HTML output of the shortcode.
 	 */
-	public function get_club_games_func() {
+	public function get_club_games_func( $atts ) {
+		$a = shortcode_atts(
+			array(
+				'season' => Swiss_Floorball_API_Display::get_current_season(),
+			),
+			$this->normalize_atts( $atts )
+		);
+
 		ob_start();
 		$this->open_wrapper();
-		Swiss_Floorball_API_Display::render_club_games( get_option( 'swissfloorball_club_number' ), Swiss_Floorball_API_Display::get_current_season() );
+		Swiss_Floorball_API_Widgets::render_club_games( absint( get_option( 'swissfloorball_club_number' ) ), absint( $a['season'] ) );
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();
@@ -193,7 +225,9 @@ class Swiss_Floorball_Api_Public {
 	}
 
 	/**
-	 * Render the team games shortcode.
+	 * Render the team games shortcode (paged around the next game).
+	 *
+	 * Attributes: team_id, season (default: current season), page_size (default 4).
 	 *
 	 * @since    1.0.0
 	 * @param    array $atts Shortcode attributes.
@@ -202,14 +236,16 @@ class Swiss_Floorball_Api_Public {
 	public function get_team_games_func( $atts ) {
 		$a = shortcode_atts(
 			array(
-				'team_id' => '',
+				'team_id'   => '',
+				'season'    => Swiss_Floorball_API_Display::get_current_season(),
+				'page_size' => 4,
 			),
-			$atts
+			$this->normalize_atts( $atts )
 		);
 
 		ob_start();
 		$this->open_wrapper();
-		Swiss_Floorball_API_Display::render_team_games( absint( $a['team_id'] ), Swiss_Floorball_API_Display::get_current_season() );
+		Swiss_Floorball_API_Widgets::render_team_games( absint( $a['team_id'] ), absint( $a['season'] ), absint( $a['page_size'] ) );
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();
@@ -329,6 +365,8 @@ class Swiss_Floorball_Api_Public {
 	/**
 	 * Render the rankings shortcode.
 	 *
+	 * Attributes: season (default: current season), league, game_class, group (name, e.g. "Gruppe 1"), view.
+	 *
 	 * @since    1.0.0
 	 * @param    array $atts Shortcode attributes.
 	 * @return   string HTML output of the shortcode.
@@ -340,13 +378,14 @@ class Swiss_Floorball_Api_Public {
 				'league'     => '',
 				'game_class' => '',
 				'group'      => '',
+				'view'       => '',
 			),
-			$atts
+			$this->normalize_atts( $atts )
 		);
 
 		ob_start();
 		$this->open_wrapper();
-		Swiss_Floorball_API_Display::render_rankings( absint( $a['season'] ), absint( $a['league'] ), absint( $a['game_class'] ), absint( $a['group'] ) );
+		Swiss_Floorball_API_Widgets::render_ranking( absint( $a['season'] ), absint( $a['league'] ), absint( $a['game_class'] ), sanitize_text_field( $a['group'] ), sanitize_key( $a['view'] ) );
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();
@@ -438,6 +477,104 @@ class Swiss_Floorball_Api_Public {
 		ob_start();
 		$this->open_wrapper();
 		Swiss_Floorball_API_Display::render_game_events( absint( $a['game_id'] ) );
+		echo '</div>';
+		$output = ob_get_contents();
+		ob_end_clean();
+		return $output;
+	}
+
+	/**
+	 * Allow hyphenated attribute names as used by the official web components (game-class, club-id).
+	 *
+	 * @since 1.1.0
+	 * @param array|string $atts Raw shortcode attributes.
+	 * @return array Attributes with hyphens in the names replaced by underscores.
+	 */
+	private function normalize_atts( $atts ) {
+		$normalized = array();
+		foreach ( (array) $atts as $name => $value ) {
+			$normalized[ str_replace( '-', '_', (string) $name ) ] = $value;
+		}
+		return $normalized;
+	}
+
+	/**
+	 * Render the league games shortcode.
+	 *
+	 * Attributes: game_class, league, season (default: current season), group (name, e.g. "Gruppe 1").
+	 *
+	 * @since 1.1.0
+	 * @param array $atts Shortcode attributes.
+	 * @return string HTML output of the shortcode.
+	 */
+	public function get_league_games_func( $atts ) {
+		$a = shortcode_atts(
+			array(
+				'game_class' => '',
+				'league'     => '',
+				'season'     => Swiss_Floorball_API_Display::get_current_season(),
+				'group'      => '',
+			),
+			$this->normalize_atts( $atts )
+		);
+
+		ob_start();
+		$this->open_wrapper();
+		Swiss_Floorball_API_Widgets::render_league_games( absint( $a['game_class'] ), absint( $a['league'] ), absint( $a['season'] ), sanitize_text_field( $a['group'] ) );
+		echo '</div>';
+		$output = ob_get_contents();
+		ob_end_clean();
+		return $output;
+	}
+
+	/**
+	 * Render the club team games shortcode (team selector plus paged games).
+	 *
+	 * Attributes: season (default: current season), page_size (default 4).
+	 *
+	 * @since 1.1.0
+	 * @param array $atts Shortcode attributes.
+	 * @return string HTML output of the shortcode.
+	 */
+	public function get_club_team_games_func( $atts ) {
+		$a = shortcode_atts(
+			array(
+				'season'    => Swiss_Floorball_API_Display::get_current_season(),
+				'page_size' => 4,
+			),
+			$this->normalize_atts( $atts )
+		);
+
+		ob_start();
+		$this->open_wrapper();
+		Swiss_Floorball_API_Widgets::render_club_team_games( absint( get_option( 'swissfloorball_club_number' ) ), absint( $a['season'] ), absint( $a['page_size'] ) );
+		echo '</div>';
+		$output = ob_get_contents();
+		ob_end_clean();
+		return $output;
+	}
+
+	/**
+	 * Render the Mobiliar topscorer shortcode.
+	 *
+	 * Attributes: club_id (optional; without it the topscorers of the whole league are shown), season (default: current season).
+	 *
+	 * @since 1.1.0
+	 * @param array $atts Shortcode attributes.
+	 * @return string HTML output of the shortcode.
+	 */
+	public function get_mobiliar_topscorer_func( $atts ) {
+		$a = shortcode_atts(
+			array(
+				'club_id' => '',
+				'season'  => Swiss_Floorball_API_Display::get_current_season(),
+			),
+			$this->normalize_atts( $atts )
+		);
+
+		ob_start();
+		$this->open_wrapper();
+		Swiss_Floorball_API_Widgets::render_mobiliar_topscorers( absint( $a['club_id'] ), absint( $a['season'] ) );
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();

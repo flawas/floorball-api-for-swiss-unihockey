@@ -521,23 +521,28 @@
 }
 
 .sfa-admin-wrap .form-table td {
-    padding: 16px 12px;
+    padding: 12px 12px;
 }
 
 .sfa-admin-wrap .form-table input[type="text"],
-.sfa-admin-wrap .form-table input[type="number"] {
+.sfa-admin-wrap .form-table input[type="number"],
+.sfa-admin-wrap .form-table input[type="password"],
+.sfa-admin-wrap .form-table select {
+    box-sizing: border-box;
     width: 100%;
-    max-width: 450px;
-    min-height: 48px;
-    padding: 10px 16px;
+    max-width: 350px;
+    min-height: 32px;
+    padding: 4px 10px;
     border: 1px solid var(--sfa-sys-color-on-surface-variant);
     border-radius: var(--sfa-sys-shape-corner-xs);
-    font-size: var(--sfa-sys-font-size-title);
+    font-size: 14px;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .sfa-admin-wrap .form-table input[type="text"]:focus,
-.sfa-admin-wrap .form-table input[type="number"]:focus {
+.sfa-admin-wrap .form-table input[type="number"]:focus,
+.sfa-admin-wrap .form-table input[type="password"]:focus,
+.sfa-admin-wrap .form-table select:focus {
     border-color: var(--sfa-sys-color-primary);
     outline: none;
     box-shadow: 0 0 0 1px var(--sfa-sys-color-primary);
@@ -1032,4 +1037,428 @@
 .sfa-admin-wrap[data-sfa-theme="dark"] .settings-error p,
 .sfa-admin-wrap[data-sfa-theme="dark"] .notice-dismiss {
     color: var(--sfa-sys-color-on-surface) !important;
+}
+/* Tables in the shortcode (widget) look: flat, accent line under the header, thin row dividers.
+   The [data-sfa-theme] selector raises the specificity above the dark-mode table rules. */
+.sfa-admin-wrap[data-sfa-theme] .sfa-table-wrap {
+    overflow-x: auto;
+    margin-bottom: 20px;
+}
+
+.sfa-admin-wrap[data-sfa-theme] .sfa-data-table {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    overflow: visible;
+}
+
+.sfa-admin-wrap[data-sfa-theme] .sfa-data-table thead,
+.sfa-admin-wrap[data-sfa-theme] .sfa-data-table th {
+    background: transparent;
+}
+
+.sfa-admin-wrap[data-sfa-theme] .sfa-data-table th {
+    padding: 12px 16px;
+    color: var(--sfa-table-header-color, var(--sfa-sys-color-on-surface));
+    font-size: var(--sfa-sys-font-size-body);
+    font-weight: var(--sfa-sys-font-weight-bold);
+    text-transform: none;
+    letter-spacing: 0;
+    border-bottom: 2px solid var(--sfa-table-accent, var(--sfa-sys-color-primary));
+}
+
+.sfa-admin-wrap[data-sfa-theme] .sfa-data-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--sfa-table-divider, var(--sfa-sys-color-outline));
+}
+
+.sfa-admin-wrap[data-sfa-theme] .sfa-data-table tbody tr {
+    background: transparent;
+    transform: none;
+    transition: background-color 150ms ease;
+}
+
+.sfa-admin-wrap[data-sfa-theme] .sfa-data-table tbody tr:hover {
+    background: var(--sfa-table-highlight, var(--sfa-sys-color-outline));
+}
+
+@supports (background-color: color-mix(in srgb, red 8%, transparent)) {
+
+    .sfa-admin-wrap[data-sfa-theme] .sfa-data-table tbody tr:hover {
+        background: var(--sfa-table-highlight, color-mix(in srgb, var(--sfa-table-accent, var(--sfa-sys-color-primary)) 12%, transparent));
+    }
+}
+
+.sfa-admin-wrap[data-sfa-theme] .sfa-data-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.sfa-admin-wrap .sfa-data-table td.is-highlight,
+.sfa-admin-wrap .sfa-data-table tr.is-highlight td {
+    font-weight: var(--sfa-sys-font-weight-bold);
+}
+
+.sfa-admin-wrap .sfa-align-right {
+    text-align: right;
+}
+
+.sfa-admin-wrap .sfa-club-logo {
+    display: block;
+    max-width: 28px;
+    height: auto;
+}
+
+.sfa-admin-wrap .sfa-widget__subtitle {
+    margin: 0 0 12px;
+    color: var(--sfa-sys-color-on-surface-variant);
+}
+
+.sfa-admin-wrap .sfa-empty {
+    padding: 16px 0;
+    color: var(--sfa-sys-color-on-surface-variant);
+}
+
+/* Flat Material layout: no big boxes. Sections sit directly on the page, separated by whitespace and thin
+   dividers; the header becomes a slim top app bar. The [data-sfa-theme] selector (always set on the wrap)
+   raises the specificity above the dark-mode rules, and this block comes last. */
+.sfa-admin-wrap[data-sfa-theme] .sfa-admin-header {
+    padding: 8px 0 16px;
+    margin-bottom: 24px;
+    background: transparent;
+    color: var(--sfa-sys-color-on-surface);
+    border-bottom: 1px solid var(--sfa-sys-color-outline);
+    border-radius: 0;
+    box-shadow: none;
+    overflow: visible;
+}
+
+.sfa-admin-wrap[data-sfa-theme] .sfa-admin-header::before {
+    display: none;
+}
+
+.sfa-admin-wrap[data-sfa-theme] .sfa-admin-header h1 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: var(--sfa-sys-font-size-headline);
+    font-weight: var(--sfa-sys-font-weight-medium);
+    color: var(--sfa-sys-color-on-surface);
+}
+
+.sfa-admin-wrap[data-sfa-theme] .sfa-admin-header .sfa-icon {
+    color: var(--sfa-sys-color-primary);
+}
+
+.sfa-admin-wrap[data-sfa-theme] .sfa-admin-header p {
+    margin: 4px 0 0;
+    opacity: 1;
+    font-size: var(--sfa-sys-font-size-body);
+    color: var(--sfa-sys-color-on-surface-variant);
+}
+
+.sfa-admin-wrap[data-sfa-theme] .sfa-cards-container {
+    gap: 32px;
+    margin-bottom: 32px;
+}
+
+.sfa-admin-wrap[data-sfa-theme] .sfa-card,
+.sfa-admin-wrap[data-sfa-theme] .sfa-table-container,
+.sfa-admin-wrap[data-sfa-theme] .sfa-form-section {
+    padding: 0;
+    margin-bottom: 32px;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    transform: none;
+    overflow: visible;
+}
+
+.sfa-admin-wrap[data-sfa-theme] .sfa-cards-container .sfa-card {
+    margin-bottom: 0;
+}
+
+.sfa-admin-wrap[data-sfa-theme] .sfa-card:hover {
+    box-shadow: none;
+    transform: none;
+    border-color: transparent;
+}
+
+.sfa-admin-wrap[data-sfa-theme] .sfa-card::before {
+    display: none;
+}
+
+.sfa-admin-wrap[data-sfa-theme] .sfa-card h3,
+.sfa-admin-wrap[data-sfa-theme] .sfa-table-container h2,
+.sfa-admin-wrap[data-sfa-theme] .sfa-form-section h2,
+.sfa-admin-wrap[data-sfa-theme] .sfa-section-title {
+    margin: 0 0 12px;
+    padding: 0;
+    border-bottom: 0;
+    font-size: var(--sfa-sys-font-size-title);
+    font-weight: var(--sfa-sys-font-weight-medium);
+    color: var(--sfa-sys-color-on-surface);
+}
+
+.sfa-admin-wrap[data-sfa-theme] .sfa-card h3 .sfa-icon {
+    font-size: 20px;
+    color: var(--sfa-sys-color-primary);
+}
+
+/* Quick access: compact tonal buttons in a row instead of full-width bars. */
+.sfa-admin-wrap[data-sfa-theme] .sfa-nav-item {
+    display: inline-block;
+    margin: 0 8px 8px 0;
+}
+
+.sfa-admin-wrap[data-sfa-theme] .sfa-card .button {
+    width: auto;
+    min-height: 40px;
+    line-height: 20px;
+    margin: 0;
+    padding: 10px 20px;
+    background: var(--sfa-sys-color-primary-container);
+    color: var(--sfa-sys-color-on-primary-container);
+}
+
+.sfa-admin-wrap[data-sfa-theme] .sfa-card .button:hover,
+.sfa-admin-wrap[data-sfa-theme] .sfa-card .button:focus-visible {
+    border-color: transparent;
+    filter: brightness(0.96);
+}
+
+/* Key/value list of the current settings. */
+.sfa-admin-wrap[data-sfa-theme] .sfa-settings-table {
+    border-bottom: 0;
+}
+
+.sfa-admin-wrap[data-sfa-theme] .sfa-settings-table tr {
+    border-bottom: 1px solid var(--sfa-sys-color-outline);
+}
+
+.sfa-admin-wrap[data-sfa-theme] .sfa-settings-table tr:last-child {
+    border-bottom: 0;
+}
+
+.sfa-admin-wrap[data-sfa-theme] .sfa-settings-table td {
+    padding: 10px 0;
+    font-size: var(--sfa-sys-font-size-body);
+}
+
+.sfa-admin-wrap[data-sfa-theme] .sfa-settings-table td:first-child {
+    color: var(--sfa-sys-color-on-surface-variant);
+}
+
+.sfa-admin-wrap[data-sfa-theme] .sfa-stat-card {
+    background: transparent;
+    border: 1px solid var(--sfa-sys-color-outline);
+    border-radius: var(--sfa-sys-shape-corner-sm);
+    transform: none;
+    box-shadow: none;
+}
+
+.sfa-admin-wrap[data-sfa-theme] .sfa-empty-state {
+    background: transparent;
+    border: 1px dashed var(--sfa-sys-color-outline);
+    border-radius: var(--sfa-sys-shape-corner-sm);
+}
+
+.sfa-admin-wrap[data-sfa-theme] .sfa-divider {
+    border: 0;
+    border-top: 1px solid var(--sfa-sys-color-outline);
+    margin: 32px 0;
+}
+
+/* One button style for all admin pages: the tonal pill of the dashboard quick access. Primary actions
+   (save, back) use the same shape, filled. !important is needed to beat the .button-primary rules above. */
+.sfa-admin-wrap[data-sfa-theme] .button:not(.wp-color-result),
+.sfa-admin-wrap[data-sfa-theme] .button-secondary:not(.wp-color-result),
+.sfa-admin-wrap[data-sfa-theme] .button-small:not(.wp-color-result) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-sizing: border-box;
+    width: auto;
+    min-height: 40px;
+    margin: 0;
+    padding: 10px 20px;
+    border: 1px solid transparent;
+    border-radius: var(--sfa-sys-shape-corner-xl);
+    background: var(--sfa-sys-color-primary-container);
+    color: var(--sfa-sys-color-on-primary-container);
+    font-size: var(--sfa-sys-font-size-body);
+    font-weight: var(--sfa-sys-font-weight-medium);
+    line-height: 20px;
+    text-decoration: none;
+    box-shadow: none;
+    cursor: pointer;
+    transition: filter 0.2s ease;
+}
+
+.sfa-admin-wrap[data-sfa-theme] .button:not(.wp-color-result):hover,
+.sfa-admin-wrap[data-sfa-theme] .button:not(.wp-color-result):focus-visible,
+.sfa-admin-wrap[data-sfa-theme] .button-secondary:not(.wp-color-result):hover,
+.sfa-admin-wrap[data-sfa-theme] .button-secondary:not(.wp-color-result):focus-visible {
+    border-color: transparent;
+    background: var(--sfa-sys-color-primary-container);
+    color: var(--sfa-sys-color-on-primary-container);
+    filter: brightness(0.96);
+}
+
+.sfa-admin-wrap[data-sfa-theme] .button:not(.wp-color-result):focus-visible {
+    outline: 2px solid var(--sfa-sys-color-primary);
+    outline-offset: 2px;
+}
+
+.sfa-admin-wrap[data-sfa-theme] .button.button-primary,
+.sfa-admin-wrap[data-sfa-theme] .button-primary {
+    min-height: 40px !important;
+    padding: 10px 20px !important;
+    border-radius: var(--sfa-sys-shape-corner-xl) !important;
+    background: var(--sfa-sys-color-primary) !important;
+    color: var(--sfa-sys-color-on-primary) !important;
+    font-size: var(--sfa-sys-font-size-body) !important;
+    line-height: 20px !important;
+}
+
+.sfa-admin-wrap[data-sfa-theme] .button-primary:hover,
+.sfa-admin-wrap[data-sfa-theme] .button-primary:focus-visible {
+    filter: brightness(1.1);
+    box-shadow: none !important;
+}
+
+.sfa-admin-wrap[data-sfa-theme] .button .sfa-icon {
+    vertical-align: middle;
+}
+
+/* Dashboard: stat tiles and navigation tiles. */
+.sfa-admin-wrap .sfa-callout {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding: 12px 16px;
+    border-radius: var(--sfa-sys-shape-corner-sm);
+    background: var(--sfa-sys-color-warning-container, #fdebc8);
+    color: var(--sfa-sys-color-on-warning-container, #3d2700);
+}
+
+.sfa-admin-wrap .sfa-callout span {
+    flex: 1;
+}
+
+.sfa-admin-wrap .sfa-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.sfa-admin-wrap .sfa-stat-tile {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    padding: 16px;
+    border-radius: var(--sfa-sys-shape-corner-md);
+    background: var(--sfa-sys-color-surface-container);
+}
+
+.sfa-admin-wrap .sfa-stat-tile__label {
+    font-size: var(--sfa-sys-font-size-label);
+    font-weight: var(--sfa-sys-font-weight-medium);
+    color: var(--sfa-sys-color-on-surface-variant);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.sfa-admin-wrap .sfa-stat-tile__value {
+    font-size: var(--sfa-sys-font-size-headline);
+    font-weight: var(--sfa-sys-font-weight-medium);
+    line-height: var(--sfa-sys-line-height-tight);
+    color: var(--sfa-sys-color-on-surface);
+    overflow-wrap: anywhere;
+}
+
+.sfa-admin-wrap .sfa-tile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+}
+
+.sfa-admin-wrap .sfa-tile {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    grid-template-areas: "icon title" "icon text";
+    column-gap: 16px;
+    align-items: center;
+    padding: 16px;
+    border: 1px solid var(--sfa-sys-color-outline);
+    border-radius: var(--sfa-sys-shape-corner-md);
+    color: var(--sfa-sys-color-on-surface);
+    text-decoration: none;
+    transition: background-color 150ms ease;
+}
+
+.sfa-admin-wrap .sfa-tile:hover,
+.sfa-admin-wrap .sfa-tile:focus-visible {
+    background: var(--sfa-sys-color-surface-container);
+    color: var(--sfa-sys-color-on-surface);
+}
+
+.sfa-admin-wrap .sfa-tile:focus-visible {
+    outline: 2px solid var(--sfa-sys-color-primary);
+    outline-offset: 2px;
+}
+
+.sfa-admin-wrap .sfa-tile__icon {
+    grid-area: icon;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--sfa-sys-shape-corner-full);
+    background: var(--sfa-sys-color-primary-container);
+    color: var(--sfa-sys-color-on-primary-container);
+}
+
+.sfa-admin-wrap .sfa-tile__icon .sfa-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.sfa-admin-wrap .sfa-tile__title {
+    grid-area: title;
+    font-size: var(--sfa-sys-font-size-title);
+    font-weight: var(--sfa-sys-font-weight-medium);
+}
+
+.sfa-admin-wrap .sfa-tile__text {
+    grid-area: text;
+    font-size: var(--sfa-sys-font-size-body);
+    color: var(--sfa-sys-color-on-surface-variant);
+}
+
+/* The WordPress colour picker brings its own swatch button (.wp-color-result); keep it out of the pill style
+   above and only align it with the text field. */
+.sfa-admin-wrap .wp-picker-container .wp-color-result.button {
+    margin: 0 6px 0 0;
+}
+
+.sfa-admin-wrap .wp-picker-container .wp-picker-clear.button {
+    min-height: 30px;
+    padding: 0 10px;
+    line-height: 28px;
+}
+
+.sfa-admin-wrap .wp-picker-container input[type="text"].wp-color-picker {
+    width: 80px;
+    min-height: 30px;
+    padding: 0 8px;
+    font-size: var(--sfa-sys-font-size-body);
+    line-height: 28px;
 }

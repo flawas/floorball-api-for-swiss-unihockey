@@ -1,4 +1,3 @@
 FROM wordpress:latest
 
-# Copy the current directory (plugin files) to the WordPress plugins directory
-COPY . /var/www/html/wp-content/plugins/swiss-floorball-api
+# The plugin is mounted from the repository by docker-compose.yml, so changes show up without a rebuild.
