@@ -55,7 +55,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 				</tr>
 				<tr>
 					<td>Aktuelle Saison</td>
-					<td><?php echo esc_html( get_option( 'swissfloorball_actual_season' ) ) ?: '—'; ?></td>
+					<td><?php echo esc_html( Swiss_Floorball_API_Display::get_current_season() ); ?></td>
 				</tr>
 			</table>
 		</div>
@@ -83,7 +83,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 
 	<?php
 	$swfl_club_number = get_option( 'swissfloorball_club_number' );
-	$swfl_season      = get_option( 'swissfloorball_actual_season' );
+	$swfl_season      = Swiss_Floorball_API_Display::get_current_season();
 
 	if ( $swfl_club_number && $swfl_season ) {
 		echo '<div class="sfa-table-container">';
