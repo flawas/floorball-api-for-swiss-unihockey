@@ -183,6 +183,8 @@ This plugin connects to the **Swiss Unihockey API** (api-v2.swissunihockey.ch) t
 
 ## 📜 Changelog
 ### Unreleased
+* Change: Frontend tables and cards in Material 3 look using only `--sfa-sys-*` tokens: surface-container tables with dividers, hover/focus state layer, sticky header, `.sfa-card` variants (`--elevated`, `--filled`, `--outlined`), 48 px touch targets and reduced-motion support. On narrow screens tables now scroll horizontally instead of switching to a card layout
+* New: Visually hidden `<caption>` and `scope` attributes on all plugin tables for accessibility
 * Change: Frontend buttons (`.button`, `.btn`), calendar subscribe link, info boxes and empty states restyled with the `--sfa-sys-*` tokens (state layers, focus ring, 48px touch targets, motion tokens). Themes that style `.button` inside the plugin will see the new look
 * Change: Failed API requests render a `.sfa-info-box--danger` banner with `role="alert"` instead of a bare paragraph; the calendar link gets `rel="noopener noreferrer"`; `.sfa-empty-state*` now styled (legacy `.empty-state*` kept)
 * New: Design-token layer (`--sfa-sys-*` colors, typography, shape, elevation 0-5) for the frontend and admin styles, scoped to `.swiss-floorball-plugin` / `.sfa-admin-wrap`. Existing `--sfa-*` variables, Roboto and dark mode are unchanged; no visual change
