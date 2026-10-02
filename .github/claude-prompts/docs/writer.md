@@ -16,6 +16,12 @@ Sprache: siehe Zusatzhinweis ("Sprache der Dokumentation"); fehlt sie, Englisch.
    - `docs/developer.md` – Hooks/Filter, Erweiterung, lokale Entwicklung (Docker, `verify_api.php`), Konventionen
    - `docs/troubleshooting.md` – häufige Probleme (leere Ausgabe, Cache leeren, API nicht erreichbar, falsche IDs)
    Verwende Markdown mit Codeblöcken, relative Links zwischen den Seiten, keine Screenshots.
+   **Medien:** Existiert `docs/media/manifest.json` (erzeugt vom Workflow "Docs Media"), bette die dort gelisteten
+   Screenshots/Videos an passender Stelle ein: Frontend-Screenshots (`<id>-desktop.png`, `<id>-mobile.png`) bei dem
+   jeweiligen Shortcode in `docs/shortcodes.md`, Admin-Screenshots (`admin-*.png`) in `docs/admin.md`, das GIF
+   `walkthrough.gif` in `docs/README.md` (mit Link auf `walkthrough.mp4`). Nur Dateien einbetten, die in `manifest.json`
+   unter `screenshots`/`videos` stehen und wirklich existieren; übersprungene (`skipped`) nicht erwähnen. Relative
+   Pfade (`media/<datei>`), sinnvoller Alt-Text. Existiert das Manifest nicht, keine Bilder erfinden oder verlinken.
 3. **Konsistenzprüfung vor dem Commit:** Jeder `swfl-*`-Shortcode aus dem Code steht in `docs/shortcodes.md` und
    umgekehrt; jedes dokumentierte Attribut/Filter existiert im Code (mit `grep` prüfen); Versionsnummer stimmt mit
    dem `Version:`-Header überein; alle relativen Links zeigen auf existierende Dateien.

@@ -1,0 +1,88 @@
+name: Docs Media (Screenshots & Video)
+
+# Manuell gestartet: startet WordPress mit dem Plugin per Docker (docker-compose.yml), holt echte Daten aus der
+# öffentlichen Swiss-Unihockey-API und erzeugt mit Playwright Screenshots (Frontend-Shortcodes, Admin-Seiten,
+# Desktop + Mobile) sowie ein kurzes Walkthrough-Video (GIF + MP4) nach docs/media/. Ergebnis: ein PR.
+# Komplett kostenlos (Playwright, Docker, ffmpeg auf dem GitHub-Runner); braucht weder Claude noch ein externes Konto.
+# Reihenfolge: zuerst diesen Workflow, PR mergen, danach "Claude Documentation" starten - der Doku-Agent bettet
+# die Medien aus docs/media/ (manifest.json) ein.
+on:
+  workflow_dispatch:
+    inputs:
+      club_id:
+        description: Club-ID für die Beispieldaten (Standard 637 = HC Weggis Küssnacht)
+        required: false
+        default: '637'
+      season:
+        description: Saison (leer = vorherige, abgeschlossene Saison)
+        required: false
+
+concurrency:
+  group: claude-docs-media
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  capture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+      CLUB_ID: ${{ inputs.club_id }}
+      SEASON: ${{ inputs.season }}
+      OUT_DIR: docs/media
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Start WordPress (Docker)
+        run: |
+          docker compose up -d --build db wordpress
+          for i in $(seq 1 60); do
+            curl -fsS -o /dev/null http://localhost:8000/ && break
+            sleep 5
+          done
+          curl -fsS -o /dev/null http://localhost:8000/ || { docker compose logs --tail 50; exit 1; }
+          # Installation + Plugin-Aktivierung (Standard-Command des wp-cli-Service)
+          docker compose run --rm -T wp-cli
+
+      - name: Install Playwright
+        run: |
+          mkdir -p "$RUNNER_TEMP/pw" && cd "$RUNNER_TEMP/pw"
+          npm init -y >/dev/null
+          npm install --silent playwright
+          npx playwright install --with-deps chromium
+          echo "NODE_PATH=$RUNNER_TEMP/pw/node_modules" >> "$GITHUB_ENV"
+
+      - name: Capture screenshots and video
+        run: |
+          rm -rf docs/media
+          node scripts/docs-media/capture.js
+
+      - name: Stop WordPress
+        if: always()
+        run: docker compose down -v
+
+      - uses: actions/upload-artifact@v6
+        with:
+          name: docs-media
+          path: docs/media
+          if-no-files-found: error
+
+      - name: Open pull request
+        run: |
+          set -euo pipefail
+          BR="docs/media-${GITHUB_RUN_ID}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BR"
+          git add docs/media
+          git diff --cached --quiet && { echo "keine Änderungen"; exit 0; }
+          git commit -m "docs: update screenshots and walkthrough video"
+          git push origin "$BR"
+          gh label create documentation --color 0075ca 2>/dev/null || true
+          gh pr create --base "${{ github.event.repository.default_branch }}" --head "$BR" --label documentation \
+            --title "docs: update screenshots and walkthrough video" \
+            --body "Automatisch erzeugt von [Docs Media]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID). Enthält Screenshots (Frontend-Shortcodes und Admin-Seiten, Desktop/Mobile) und ein Walkthrough-Video unter \`docs/media/\`; \`manifest.json\` listet, was erzeugt wurde und was übersprungen wurde. Nach dem Merge den Workflow *Claude Documentation* starten, damit die Medien in die Doku eingebettet werden."

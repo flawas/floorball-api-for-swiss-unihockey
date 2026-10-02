@@ -60,6 +60,8 @@ Maximal 2 Versuche je Issue, danach `needs-human`. Manuell starten: Actions → 
 
 [claude-docs.yml](workflows/claude-docs.yml) wird nur von Hand gestartet (Actions → "Claude Documentation" → Run workflow, Sprache `en`/`de`). Der Agent `wp-technical-writer` gleicht die Doku jedes Mal für das **gesamte Plugin** unter `docs/` ab und öffnet einen PR (Label `documentation`, Tracking-Issue wird mit dem PR geschlossen). Gemergt wird nicht automatisch. `docs/` ist vom Release-ZIP ausgeschlossen.
 
+Screenshots und Video: zuerst [claude-docs-media.yml](workflows/claude-docs-media.yml) ("Docs Media", ebenfalls manuell) starten – es erzeugt mit Playwright gegen eine lokale WordPress-Instanz Bilder und ein Walkthrough-Video unter `docs/media/` und öffnet einen PR. Nach dem Merge den Doku-Agenten starten; er bettet die Medien ein.
+
 ## Steuerung ohne Label: Kommentare
 
 Kommentare von Menschen mit Schreibrechten ([claude-comment.yml](workflows/claude-comment.yml)):
