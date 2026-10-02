@@ -221,3 +221,25 @@ jobs:
             fi
           fi
           echo "status=$S" >> "$GITHUB_OUTPUT"
+
+      # Formales GitHub-Review: Claude (App-Identität) ist Autor des PR und darf ihn nicht selbst freigeben.
+      # Der Workflow reicht Approve/Request-changes als github-actions[bot] nach (Repo-Einstellung
+      # "Allow GitHub Actions to create and approve pull requests" muss aktiv sein).
+      - name: Submit formal PR review
+        if: always() && inputs.stage == 'reviewer' && (inputs.kind == 'fix' || inputs.kind == 'feature' || inputs.kind == 'pr') && (steps.status.outputs.status == 'ok' || steps.status.outputs.status == 'changes')
+        env:
+          START: ${{ steps.start.outputs.ts }}
+          KIND: ${{ inputs.kind }}
+          VERDICT: ${{ steps.status.outputs.status }}
+        run: |
+          set -uo pipefail
+          if [ "$KIND" = pr ]; then PR="$ISSUE"; else PR=$(gh pr list --head "claude/issue-$ISSUE" --state open --json number --jq '.[0].number // empty'); fi
+          [ -n "$PR" ] || { echo "::warning::kein offener PR gefunden - kein formales Review"; exit 0; }
+          BODY=$(gh api "repos/$GITHUB_REPOSITORY/issues/$ISSUE/comments" --paginate \
+            --jq "[.[] | select(.created_at >= \"$START\") | select(.body | startswith(\"<!-- sfa-stage:reviewer \"))] | last | .body // \"\"" \
+            | tail -n +2 | head -c 4000)
+          [ -n "$BODY" ] || BODY="(siehe Kommentar im Issue)"
+          if [ "$VERDICT" = ok ]; then FLAG=--approve; else FLAG=--request-changes; fi
+          printf '%s\n' "$BODY" > "$RUNNER_TEMP/review.md"
+          gh pr review "$PR" "$FLAG" --body-file "$RUNNER_TEMP/review.md" \
+            || echo "::warning::formales Review konnte nicht abgegeben werden (Repo-Einstellung zum Freigeben von PRs durch Actions prüfen)"
