@@ -20,4 +20,4 @@ CLAUDE.md
 swiss-floorball-api-architecture.html
 swiss-floorball-api-architecture.visual-check.json
 swiss-floorball-arch.json
-sonar-project.properties
+.sonarcloud.properties

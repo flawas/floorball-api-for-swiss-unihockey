@@ -94,7 +94,7 @@ jobs:
             --exclude swiss-floorball-api-architecture.visual-check.json \
             --exclude swiss-floorball-arch.json \
             --exclude .phpcs.xml.dist \
-            --exclude sonar-project.properties
+            --exclude .sonarcloud.properties
           zip -r swiss-floorball-api.zip swiss-floorball-api
           rm -rf swiss-floorball-api
 
