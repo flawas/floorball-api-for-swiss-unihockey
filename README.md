@@ -147,8 +147,8 @@ This plugin connects to the **Swiss Unihockey API** (api-v2.swissunihockey.ch) t
 * New: Setting `swissfloorball_show_icons` and filter `swfl_icon_svg`
 
 ### Unreleased
-
 * Fix: Render player details via shortcode `[swfl-player]` without dumping raw API response — now displays structured data as a table with all values escaped (PR #61)
+* Fix: Escape LIKE patterns in transient cleanup queries to prevent wildcard interpretation
 * Fix: Admin class methods to snake_case; prefix template variables with `swfl_`; apply Yoda conditions (PR #50, WPCS step 4/5)
 * Fix: End inline comments with full stops (WPCS 3c2)
 * Fix: Rename global functions to snake_case (WPCS)
