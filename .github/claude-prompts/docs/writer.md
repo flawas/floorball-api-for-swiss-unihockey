@@ -27,7 +27,7 @@ Sprache: siehe Zusatzhinweis ("Sprache der Dokumentation"); fehlt sie, Englisch.
    dem `Version:`-Header überein; alle relativen Links zeigen auf existierende Dateien.
 4. **Nicht anfassen:** `README.md` im Repo-Root (Quelle für `readme.txt`/WordPress.org), `readme.txt`, Changelog,
    Versionsnummern, Quellcode. Nur Dateien unter `docs/` ändern. Keine Zugangsdaten oder interne URLs aufnehmen.
-5. Committe (Nachricht `docs: update plugin documentation`, "Refs #__ISSUE__") und pushe `claude/issue-__ISSUE__`.
+5. Committe alles unter `docs/` (inkl. `docs/media/`, falls neu erzeugt; `git add docs`) (Nachricht `docs: update plugin documentation`, "Refs #__ISSUE__") und pushe `claude/issue-__ISSUE__`.
    Erstelle einen PR gegen den Default-Branch (Titel `docs: update plugin documentation`, Beschreibung "Closes #__ISSUE__",
    Liste der aktualisierten Seiten und was sich gegenüber vorher geändert hat). Label `documentation`. NICHT mergen.
 6. Kommentar `<!-- sfa-stage:writer status:ok -->` im Issue mit Link zum PR und einer Kurzfassung (neue/geänderte/

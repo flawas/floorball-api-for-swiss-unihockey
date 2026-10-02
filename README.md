@@ -6,7 +6,7 @@
 **Donate link:** https://www.paypal.me/flaviowaser  
 **Tags:** floorball, api, swiss floorball, unihockey, sports  
 **Requires at least:** 5.0  
-**Tested up to:** 6.8  
+**Tested up to:** 7.0  
 **Requires PHP:** 7.4  
 **Stable tag:** 1.0.5  
 **License:** GPLv2 or later  
@@ -17,16 +17,17 @@ The **Swiss Floorball API** plugin brings the power of the Swiss Floorball API v
 ## 🚀 Features
 
 * **🔌 Plug & Play:** Configure your Club ID once and get instant access to your club's data.
-* **📅 Calendars:** Display upcoming games for teams or entire clubs. Includes **ICS subscription links** for users to add games to their personal calendars.
+* **📅 Calendars:** Display upcoming games for teams or entire clubs. Includes **ICS subscription links** so visitors can add games to their personal calendars.
 * **🏆 Rankings:** Always up-to-date league tables for any group or league.
-
 * **📊 Statistics:** Show topscorer lists and detailed game events.
-* **📱 Responsive:** Built-in responsive tables that look great on mobile devices.
 * **👤 Player Profiles:** Showcase individual player stats and national team members.
+* **📱 Responsive:** Built-in responsive tables that look great on mobile devices, with dark mode support.
+* **⚡ Cached:** API responses are cached for one hour, so your pages stay fast and the API is not hammered.
+* **🧭 ID finder:** Admin helper pages let you browse leagues, clubs, games and seasons and copy the IDs you need for shortcodes.
 
 ## 🛠 Installation
 
-1. Download the plugin from the [releases page on GitHub](https://github.com/flawas/floorball-api-for-swiss-unihockey/releases) and upload the `swiss-floorball-api.zip` file to your WordPress plugins.
+1. Download the plugin from the [releases page on GitHub](https://github.com/flawas/floorball-api-for-swiss-unihockey/releases) and upload the `swiss-floorball-api.zip` file to your WordPress plugins (or install it from the WordPress.org plugin directory).
 2. Activate the plugin through the **Plugins** menu in WordPress.
 3. Navigate to **Settings > Swiss Floorball API**.
 4. Enter your **Club ID** (e.g., `427892`) and the **Current Season** (e.g., `2025`).
@@ -36,9 +37,22 @@ The **Swiss Floorball API** plugin brings the power of the Swiss Floorball API v
 ![Settings Page](assets/screenshot-admin-club-backend.png)
 *Configure your Club ID and Season in the settings.*
 
+### Settings
+
+| Setting | Description |
+|---------|-------------|
+| Swiss Floorball API Key (Optional) | Optional API key (`swissfloorball_api_key`). The public Swiss Unihockey API works without one, so you can leave it empty. The key is only stored and shown masked (last 3 characters) in the plugin overview; it is currently not sent with API requests. |
+| Swiss Floorball Club Number | Your club's ID (`swissfloorball_club_number`), used by the club shortcodes. |
+| Swiss Floorball Club Name | Filled in automatically from the API when you save a new Club ID (`swissfloorball_club_name`). |
+| Swiss Floorball Aktuelle Saison | Season as a year, e.g. `2025` (`swissfloorball_actual_season`). Used when a shortcode has no `season` attribute. |
+| Show icons | Show or hide all icons (on by default). |
+| API request timeout (seconds) | Seconds to wait for the API, 1-30 (default 3). |
+
+The admin interface is currently in German. Under **Cache Verwaltung** the button **Cache leeren** removes all cached API responses. Changing the Club Number clears the cache automatically.
+
 ## 📝 Shortcodes
 
-Use these shortcodes in any Page or Post to display data.
+Use these shortcodes in any Page or Post to display data. Attributes that are left out fall back to the values from the settings page where applicable.
 
 ### Club & Team Data
 
@@ -47,7 +61,9 @@ Use these shortcodes in any Page or Post to display data.
 | `[swfl-club-teams]` | List all teams in your club. | None |
 | `[swfl-club-games]` | List all games for your club this season. | None |
 | `[swfl-team-games]` | List games for a specific team. | `team_id` |
-| `[swfl-calendars]` | Show upcoming games + ICS link. | `team_id`, `club_id` |
+| `[swfl-teams]` | List teams. | None |
+| `[swfl-clubs]` | List all clubs. | None |
+| `[swfl-calendars]` | Show upcoming games + ICS link. | `team_id`, `club_id`, `season`, `league`, `game_class`, `group` |
 
 **Example:**
 
@@ -62,6 +78,7 @@ Use these shortcodes in any Page or Post to display data.
 | `[swfl-rankings]` | Show the ranking table. | `season`, `league`, `game_class`, `group` |
 | `[swfl-topscorers]` | Show the topscorer list. | `season`, `league`, `game_class`, `group` |
 | `[swfl-groups]` | List available groups. | `season`, `league`, `game_class` |
+| `[swfl-cups]` | List available cups. | None |
 
 **Example:**
 
@@ -79,7 +96,7 @@ Use these shortcodes in any Page or Post to display data.
 
 ## 🎨 Customization
 
-The plugin uses standard CSS classes prefixed with `.sfa-`. You can easily override these in your theme's `style.css` or the Customizer to match your site's branding.
+The plugin uses standard CSS classes prefixed with `.sfa-`, scoped to `.swiss-floorball-plugin`. You can override them in your theme's `style.css` or the Customizer to match your site's branding.
 
 ## 🖼 Icons
 
@@ -98,16 +115,26 @@ add_filter( 'swfl_icon_svg', function ( $svg, $name, $args ) {
 }, 10, 3 );
 ```
 
+## 🧩 Developer Hooks
+
+| Hook | Type | Description |
+|------|------|-------------|
+| `swfl_icon_svg` | Filter | Replace the SVG markup of an icon. |
+| `swfl_request_timeout` | Filter | Override the API request timeout (seconds). Takes precedence over the setting. |
+
 ## ❓ FAQ
 
 **Q: Where do I find the IDs?**  
 A: You can find Team, Club, and League IDs in the URL on the [Swiss Floorball website](https://www.swissunihockey.ch) or by using the plugin backend to explore and copy the IDs.
 
+**Q: Why does my data not update right away?**  
+A: API responses are cached for one hour. Use the **Cache leeren** button on the settings page to refresh immediately.
+
 **Q: Is this plugin free?**  
-A: Yep! It’s open-source and completely free to use.
+A: Yep! It's open-source and completely free to use.
 
 **Q: Is this an official Swiss Floorball plugin?**  
-A: Nope. This plugin isn’t official and has no connection to Swiss Floorball.
+A: Nope. This plugin isn't official and has no connection to Swiss Floorball.
 
 **Q: Can I use this plugin for commercial purposes?**  
 A: Yes. As GPLv2-or-later licensed software, it can be used on any site, including commercial ones. It was built for Swiss Floorball clubs and teams to show their data on their websites, but nothing stops other use.
@@ -140,13 +167,11 @@ This plugin connects to the **Swiss Unihockey API** (api-v2.swissunihockey.ch) t
 ![Rankings](assets/screenshot-ranking-frontend.png)
 
 ## 📜 Changelog
-### 1.0.6 (2026-10-01)
+### Unreleased
 * Fix: Add explicit request timeout (5 seconds, minimum 1 second) to API client calls, filterable via `swfl_request_timeout` hook
 * Fix: Add `apply_filters()` stub to verify_api.php for test compatibility
 * New: Icon infrastructure. `Swiss_Floorball_Api_Icons::get()` accepts an argument array (`class`, `label`) and loads Material Symbols SVGs from `public/icons/` (`calendar_month`, `location_on`, `error`, `info`, `refresh`)
 * New: Setting `swissfloorball_show_icons` and filter `swfl_icon_svg`
-
-### Unreleased
 * Removed: Unused `render_sessions()` stub that issued a discarded API request
 * New: Setting `swissfloorball_request_timeout` (API request timeout, 1-30 seconds) on the settings page; it provides the default of the `swfl_request_timeout` filter, which still overrides it
 * Security: Replace cache-cleared notice GET parameters with transient-based notification

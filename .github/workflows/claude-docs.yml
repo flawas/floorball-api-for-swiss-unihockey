@@ -11,6 +11,10 @@ on:
         type: choice
         default: en
         options: [en, de]
+      refresh_media:
+        description: Screenshots und Video vorher neu erzeugen (Docs Media) und im selben PR mitliefern
+        type: boolean
+        default: false
       hint:
         description: Optionaler Hinweis (z.B. Schwerpunkt oder Zielgruppe; die Doku bleibt trotzdem vollständig)
         required: false
@@ -26,6 +30,12 @@ permissions:
   id-token: write
 
 jobs:
+  media:
+    if: inputs.refresh_media
+    uses: ./.github/workflows/claude-docs-media.yml
+    with:
+      open_pr: false
+
   tracking:
     runs-on: ubuntu-24.04
     outputs:
@@ -44,11 +54,14 @@ jobs:
           echo "issue=${URL##*/}" >> "$GITHUB_OUTPUT"
 
   docs:
-    needs: [tracking]
+    needs: [tracking, media]
+    if: >-
+      !cancelled() && needs.tracking.result == 'success' && needs.media.result != 'failure'
     uses: ./.github/workflows/claude-stage.yml
     secrets: inherit
     with:
       stage: writer
       kind: docs
+      media_artifact: ${{ needs.media.result == 'success' && 'docs-media' || '' }}
       issue: ${{ needs.tracking.outputs.issue }}
       hint: "Sprache der Dokumentation: ${{ inputs.language }}. ${{ inputs.hint }}"

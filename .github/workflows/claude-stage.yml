@@ -31,6 +31,10 @@ on:
         description: 'runs-on als JSON, z.B. "ubuntu-24.04" oder ["self-hosted","linux"]'
         type: string
         default: '"ubuntu-24.04"'
+      media_artifact:
+        description: Name eines Artifacts mit Screenshots/Video, das nach docs/media/ entpackt wird (kind docs)
+        type: string
+        default: ''
       ref:
         description: Branch, der ausgecheckt wird (kind pr; leer = Default-Branch)
         type: string
@@ -106,6 +110,13 @@ jobs:
             echo "::error::Branch $BR existiert nicht - zuerst die Stufe developer ausführen."
             exit 1
           fi
+
+      - name: Download docs media
+        if: inputs.media_artifact != ''
+        uses: actions/download-artifact@v7
+        with:
+          name: ${{ inputs.media_artifact }}
+          path: docs/media
 
       - name: Pick model and turn limit
         id: model
