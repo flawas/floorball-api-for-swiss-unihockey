@@ -104,25 +104,9 @@ class Swiss_Floorball_API_Calendar {
 	 * @return string iCalendar text with CRLF line breaks.
 	 */
 	public static function build_calendar( $title, $headers, $rows ) {
-		$columns = array();
-		foreach ( $headers as $index => $header ) {
-			$text = isset( $header['text'] ) ? (string) $header['text'] : '';
-			foreach ( array(
-				'date'   => '/datum|zeit/iu',
-				'place'  => '/^ort/iu',
-				'home'   => '/heim/iu',
-				'away'   => '/gast/iu',
-				'league' => '/liga|gruppe/iu',
-			) as $key => $pattern ) {
-				if ( preg_match( $pattern, $text ) ) {
-					$columns[ $key ][] = $index;
-				}
-			}
-		}
-		$zone  = new DateTimeZone( 'Europe/Zurich' );
-		$utc   = new DateTimeZone( 'UTC' );
-		$host  = (string) wp_parse_url( home_url(), PHP_URL_HOST );
-		$stamp = gmdate( self::ICAL_UTC_FORMAT );
+		$columns = self::map_columns( $headers );
+		$host    = (string) wp_parse_url( home_url(), PHP_URL_HOST );
+		$stamp   = gmdate( self::ICAL_UTC_FORMAT );
 
 		$lines = array(
 			'BEGIN:VCALENDAR',
@@ -134,54 +118,128 @@ class Swiss_Floorball_API_Calendar {
 		);
 
 		foreach ( $rows as $row ) {
-			$cells = isset( $row['cells'] ) && is_array( $row['cells'] ) ? $row['cells'] : array();
-			$text  = static function ( $key ) use ( $columns, $cells ) {
-				$parts = array();
-				foreach ( isset( $columns[ $key ] ) ? $columns[ $key ] : array() as $index ) {
-					if ( isset( $cells[ $index ] ) ) {
-						$parts[] = Swiss_Floorball_API_Table_Data::get_cell_text( $cells[ $index ] );
-					}
-				}
-				return trim( implode( ' ', $parts ) );
-			};
-
-			$date = $row['sfa_date'];
-			if ( '' === $date ) {
-				continue;
-			}
-			$home    = $text( 'home' );
-			$away    = $text( 'away' );
-			$game_id = Swiss_Floorball_API_Table_Data::get_game_id( $row );
-
-			$lines[] = 'BEGIN:VEVENT';
-			$lines[] = 'UID:' . ( $game_id ? 'game-' . $game_id : substr( hash( 'sha256', $date . $home . $away ), 0, 32 ) ) . '@' . $host;
-			$lines[] = 'DTSTAMP:' . $stamp;
-
-			if ( preg_match( '/(\d{1,2}):(\d{2})/', $text( 'date' ), $time ) ) {
-				$start   = new DateTime( $date . ' ' . sprintf( '%02d:%02d', $time[1], $time[2] ), $zone );
-				$end     = clone $start;
-				$lines[] = 'DTSTART:' . $start->setTimezone( $utc )->format( self::ICAL_UTC_FORMAT );
-				$lines[] = 'DTEND:' . $end->modify( '+2 hours' )->setTimezone( $utc )->format( self::ICAL_UTC_FORMAT );
-			} else {
-				$lines[] = 'DTSTART;VALUE=DATE:' . str_replace( '-', '', $date );
-			}
-
-			$lines[] = 'SUMMARY:' . self::escape_ics_text( implode( ' – ', array_filter( array( $home, $away ) ) ) );
-			if ( '' !== $text( 'place' ) ) {
-				$lines[] = 'LOCATION:' . self::escape_ics_text( $text( 'place' ) );
-			}
-			if ( '' !== $text( 'league' ) ) {
-				$lines[] = 'DESCRIPTION:' . self::escape_ics_text( $text( 'league' ) );
-			}
-			if ( $game_id ) {
-				$lines[] = 'URL:' . Swiss_Floorball_API_Widgets::GAME_LINK_BASE . $game_id;
-			}
-			$lines[] = 'END:VEVENT';
+			$lines = array_merge( $lines, self::build_event( $row, $columns, $host, $stamp ) );
 		}
 
 		$lines[] = 'END:VCALENDAR';
 
 		return implode( "\r\n", array_map( array( __CLASS__, 'fold_ics_line' ), $lines ) ) . "\r\n";
+	}
+
+	/**
+	 * Find which columns hold the date, place, teams and league by their header text.
+	 *
+	 * @since 2.0.1
+	 * @param array $headers Table headers.
+	 * @return array Column indexes per key (date, place, home, away, league).
+	 */
+	private static function map_columns( $headers ) {
+		$patterns = array(
+			'date'   => '/datum|zeit/iu',
+			'place'  => '/^ort/iu',
+			'home'   => '/heim/iu',
+			'away'   => '/gast/iu',
+			'league' => '/liga|gruppe/iu',
+		);
+		$columns  = array();
+		foreach ( $headers as $index => $header ) {
+			$text = isset( $header['text'] ) ? (string) $header['text'] : '';
+			foreach ( $patterns as $key => $pattern ) {
+				if ( preg_match( $pattern, $text ) ) {
+					$columns[ $key ][] = $index;
+				}
+			}
+		}
+
+		return $columns;
+	}
+
+	/**
+	 * Joined text of the cells in the columns of a key.
+	 *
+	 * @since 2.0.1
+	 * @param array  $columns Column indexes per key, see map_columns().
+	 * @param array  $cells   Cells of one row.
+	 * @param string $key     Column key.
+	 * @return string Trimmed text.
+	 */
+	private static function column_text( $columns, $cells, $key ) {
+		$parts   = array();
+		$indexes = isset( $columns[ $key ] ) ? $columns[ $key ] : array();
+		foreach ( $indexes as $index ) {
+			if ( isset( $cells[ $index ] ) ) {
+				$parts[] = Swiss_Floorball_API_Table_Data::get_cell_text( $cells[ $index ] );
+			}
+		}
+
+		return trim( implode( ' ', $parts ) );
+	}
+
+	/**
+	 * Build the VEVENT lines of one game.
+	 *
+	 * @since 2.0.1
+	 * @param array  $row     Prepared game row.
+	 * @param array  $columns Column indexes per key, see map_columns().
+	 * @param string $host    Site host used in the UID.
+	 * @param string $stamp   DTSTAMP value.
+	 * @return string[] Event lines, empty when the row has no date.
+	 */
+	private static function build_event( $row, $columns, $host, $stamp ) {
+		$date = $row['sfa_date'];
+		if ( '' === $date ) {
+			return array();
+		}
+
+		$cells   = isset( $row['cells'] ) && is_array( $row['cells'] ) ? $row['cells'] : array();
+		$home    = self::column_text( $columns, $cells, 'home' );
+		$away    = self::column_text( $columns, $cells, 'away' );
+		$place   = self::column_text( $columns, $cells, 'place' );
+		$league  = self::column_text( $columns, $cells, 'league' );
+		$game_id = Swiss_Floorball_API_Table_Data::get_game_id( $row );
+
+		$lines   = array(
+			'BEGIN:VEVENT',
+			'UID:' . ( $game_id ? 'game-' . $game_id : substr( hash( 'sha256', $date . $home . $away ), 0, 32 ) ) . '@' . $host,
+			'DTSTAMP:' . $stamp,
+		);
+		$lines   = array_merge( $lines, self::build_event_times( $date, self::column_text( $columns, $cells, 'date' ) ) );
+		$lines[] = 'SUMMARY:' . self::escape_ics_text( implode( ' – ', array_filter( array( $home, $away ) ) ) );
+		if ( '' !== $place ) {
+			$lines[] = 'LOCATION:' . self::escape_ics_text( $place );
+		}
+		if ( '' !== $league ) {
+			$lines[] = 'DESCRIPTION:' . self::escape_ics_text( $league );
+		}
+		if ( $game_id ) {
+			$lines[] = 'URL:' . Swiss_Floorball_API_Widgets::GAME_LINK_BASE . $game_id;
+		}
+		$lines[] = 'END:VEVENT';
+
+		return $lines;
+	}
+
+	/**
+	 * Start and end lines of an event: a two-hour slot when the time is known, an all-day event otherwise.
+	 *
+	 * @since 2.0.1
+	 * @param string $date      Game date as Y-m-d.
+	 * @param string $time_text Text that may contain the kick-off time (HH:MM).
+	 * @return string[] DTSTART and, with a time, DTEND lines.
+	 */
+	private static function build_event_times( $date, $time_text ) {
+		if ( ! preg_match( '/(\d{1,2}):(\d{2})/', $time_text, $time ) ) {
+			return array( 'DTSTART;VALUE=DATE:' . str_replace( '-', '', $date ) );
+		}
+
+		$start = new DateTime( $date . ' ' . sprintf( '%02d:%02d', $time[1], $time[2] ), new DateTimeZone( 'Europe/Zurich' ) );
+		$end   = clone $start;
+		$utc   = new DateTimeZone( 'UTC' );
+
+		return array(
+			'DTSTART:' . $start->setTimezone( $utc )->format( self::ICAL_UTC_FORMAT ),
+			'DTEND:' . $end->modify( '+2 hours' )->setTimezone( $utc )->format( self::ICAL_UTC_FORMAT ),
+		);
 	}
 
 	/**
