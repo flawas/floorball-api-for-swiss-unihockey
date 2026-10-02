@@ -1,4 +1,10 @@
 <?php
+/**
+ * Inline SVG icon set.
+ *
+ * @package Swiss_Floorball_Api
+ * @since   1.0.5
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

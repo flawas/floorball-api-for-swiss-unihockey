@@ -156,5 +156,5 @@ don't reformat untouched code as a drive-by.
   and prefixes configured; legacy class/file naming is excluded on purpose). Run
   `phpcs` (and `phpcbf` for auto-fixable issues) on touched files; install via
   `composer global require wp-coding-standards/wpcs dealerdirect/phpcodesniffer-composer-installer`.
-  CI runs it as the informational `phpcs` job in `ci.yml` (existing code still has violations), so new
-  code must not add to them.
+  CI runs it as the blocking `phpcs` job in `ci.yml`, so new
+  code must keep it green.

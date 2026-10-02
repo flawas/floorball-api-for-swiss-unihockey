@@ -102,10 +102,10 @@ class Swiss_Floorball_Api_Admin {
 		// Material Symbols "storage" icon (inline, base64 SVG) instead of a Dashicon, for a consistent icon set across admin UI and menu.
 		$menu_icon = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBmaWxsPSJibGFjayI+PHBhdGggZD0iTTIgMjBoMjB2LTRIMnY0em0yLTNoMnYySDR2LTJ6TTIgNHY0aDIwVjRIMnptNCAzSDRWNWgydjJ6bS00IDdoMjB2LTRIMnY0em0yLTNoMnYySDR2LTJ6Ii8+PC9zdmc+';
 
-		// add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $function, $icon_url, $position );
+		// Top-level menu entry, registered with the page title, menu title, capability, slug, callback, icon and position.
 		add_menu_page( $this->plugin_name, 'Swiss Floorball', 'manage_options', $this->plugin_name, array( $this, 'display_plugin_admin_dashboard' ), $menu_icon, 26 );
 
-		// add_submenu_page( '$parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function );
+		// Submenu entries share the parent slug and use the same capability.
 		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Einstellungen', 'manage_options', $this->plugin_name . '-settings', array( $this, 'display_plugin_admin_settings' ) );
 		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Liga', 'manage_options', $this->plugin_name . '-league', array( $this, 'display_plugin_admin_helper_league' ) );
 		add_submenu_page( $this->plugin_name, 'Swiss Floorball', 'Clubs', 'manage_options', $this->plugin_name . '-teams', array( $this, 'display_plugin_admin_helper_teams' ) );
@@ -135,7 +135,10 @@ class Swiss_Floorball_Api_Admin {
 		$active_tab = isset( $_GET['tab'] ) ? sanitize_key( $_GET['tab'] ) : 'general';
 		if ( isset( $_GET['error_message'] ) ) {
 			add_action( 'admin_notices', array( $this, 'settings_page_settings_messages' ) );
-			do_action( 'admin_notices', absint( $_GET['error_message'] ) );
+			do_action(
+				'admin_notices', // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core hook, invoked on purpose to render the notice.
+				absint( $_GET['error_message'] )
+			);
 		}
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 		require_once 'partials/' . $this->plugin_name . '-admin-settings-display.php';
@@ -153,7 +156,10 @@ class Swiss_Floorball_Api_Admin {
 		$active_tab = isset( $_GET['tab'] ) ? sanitize_key( $_GET['tab'] ) : 'general';
 		if ( isset( $_GET['error_message'] ) ) {
 			add_action( 'admin_notices', array( $this, 'settings_page_settings_messages' ) );
-			do_action( 'admin_notices', absint( $_GET['error_message'] ) );
+			do_action(
+				'admin_notices', // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core hook, invoked on purpose to render the notice.
+				absint( $_GET['error_message'] )
+			);
 		}
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 		require_once 'partials/' . $this->plugin_name . '-admin-helper-league-display.php';
@@ -171,7 +177,10 @@ class Swiss_Floorball_Api_Admin {
 		$active_tab = isset( $_GET['tab'] ) ? sanitize_key( $_GET['tab'] ) : 'general';
 		if ( isset( $_GET['error_message'] ) ) {
 			add_action( 'admin_notices', array( $this, 'settings_page_settings_messages' ) );
-			do_action( 'admin_notices', absint( $_GET['error_message'] ) );
+			do_action(
+				'admin_notices', // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core hook, invoked on purpose to render the notice.
+				absint( $_GET['error_message'] )
+			);
 		}
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 		require_once 'partials/' . $this->plugin_name . '-admin-helper-seasons-display.php';
@@ -189,7 +198,10 @@ class Swiss_Floorball_Api_Admin {
 		$active_tab = isset( $_GET['tab'] ) ? sanitize_key( $_GET['tab'] ) : 'general';
 		if ( isset( $_GET['error_message'] ) ) {
 			add_action( 'admin_notices', array( $this, 'settings_page_settings_messages' ) );
-			do_action( 'admin_notices', absint( $_GET['error_message'] ) );
+			do_action(
+				'admin_notices', // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core hook, invoked on purpose to render the notice.
+				absint( $_GET['error_message'] )
+			);
 		}
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 		require_once 'partials/' . $this->plugin_name . '-admin-helper-teams-display.php';
@@ -217,6 +229,7 @@ class Swiss_Floorball_Api_Admin {
 	 * Return error while loading admin display page settings
 	 *
 	 * @since    1.0.0
+	 * @param    string $error_message    Error code passed through from the settings redirect.
 	 */
 	public function settings_page_settings_messages( $error_message ) {
 		switch ( $error_message ) {
@@ -239,7 +252,7 @@ class Swiss_Floorball_Api_Admin {
 	 * Sanitize club number and auto-fetch club name
 	 *
 	 * @since    1.0.0
-	 * @param    int $club_number    The club number to sanitize
+	 * @param    int $club_number    The club number to sanitize.
 	 * @return   int                    The sanitized club number
 	 */
 	public function sanitize_club_number( $club_number ) {
@@ -250,7 +263,7 @@ class Swiss_Floorball_Api_Admin {
 		$old_club_number = get_option( 'swissfloorball_club_number' );
 
 		// If club number changed, clear all cached API data.
-		if ( $old_club_number != $club_number && ! empty( $club_number ) ) {
+		if ( absint( $old_club_number ) !== $club_number && ! empty( $club_number ) ) {
 			global $wpdb;
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transient cleanup; query is already prepared.
 			$wpdb->query(
@@ -280,7 +293,7 @@ class Swiss_Floorball_Api_Admin {
 		if ( ! is_wp_error( $api_response ) && isset( $api_response['entries'] ) ) {
 			// Search through all clubs to find the one with matching club_id.
 			foreach ( $api_response['entries'] as $entry ) {
-				if ( isset( $entry['set_in_context']['club_id'] ) && $entry['set_in_context']['club_id'] == $club_number ) {
+				if ( isset( $entry['set_in_context']['club_id'] ) && absint( $entry['set_in_context']['club_id'] ) === $club_number ) {
 					$club_name = $entry['text'];
 					break;
 				}
@@ -663,20 +676,10 @@ class Swiss_Floorball_Api_Admin {
 	 * Render page and settings fields
 	 *
 	 * @since    1.0.0
+	 * @param    array $args    Field definition (type, subtype, id, name, wp_data, value_type and optional extras).
 	 */
 	public function settings_page_render_settings_field( $args ) {
-			/*
-			EXAMPLE INPUT
-								'type'      => 'input',
-								'subtype'   => '',
-								'id'    => $this->plugin_name.'_example_setting',
-								'name'      => $this->plugin_name.'_example_setting',
-								'required' => 'required="required"',
-								'get_option_list' => "",
-									'value_type' = serialized OR normal,
-			'wp_data'=>(option or post_meta),
-			'post_id' =>
-			*/
+		// Expected $args keys: type, subtype, id, name, required, get_option_list, value_type (serialized or normal), wp_data (option or post_meta) and post_id.
 		if ( 'option' === $args['wp_data'] ) {
 			$wp_data_value = get_option( $args['name'], isset( $args['default'] ) ? $args['default'] : false );
 		} elseif ( 'post_meta' === $args['wp_data'] ) {
@@ -686,14 +689,15 @@ class Swiss_Floorball_Api_Admin {
 		switch ( $args['type'] ) {
 
 			case 'input':
+					// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize -- Display only; never unserialized.
 					$value = ( 'serialized' === $args['value_type'] ) ? serialize( $wp_data_value ) : $wp_data_value;
 				if ( 'checkbox' !== $args['subtype'] ) {
 						$prepend_start = ( isset( $args['prepend_value'] ) ) ? '<div class="input-prepend"> <span class="add-on">' . esc_html( $args['prepend_value'] ) . '</span>' : '';
-						$prepend_end  = ( isset( $args['prepend_value'] ) ) ? '</div>' : '';
-						$step         = ( isset( $args['step'] ) ) ? 'step="' . esc_attr( $args['step'] ) . '"' : '';
-						$min          = ( isset( $args['min'] ) ) ? 'min="' . esc_attr( $args['min'] ) . '"' : '';
-						$max          = ( isset( $args['max'] ) ) ? 'max="' . esc_attr( $args['max'] ) . '"' : '';
-						$placeholder  = ( isset( $args['placeholder'] ) ) ? 'placeholder="' . esc_attr( $args['placeholder'] ) . '"' : '';
+						$prepend_end   = ( isset( $args['prepend_value'] ) ) ? '</div>' : '';
+						$step          = ( isset( $args['step'] ) ) ? 'step="' . esc_attr( $args['step'] ) . '"' : '';
+						$min           = ( isset( $args['min'] ) ) ? 'min="' . esc_attr( $args['min'] ) . '"' : '';
+						$max           = ( isset( $args['max'] ) ) ? 'max="' . esc_attr( $args['max'] ) . '"' : '';
+						$placeholder   = ( isset( $args['placeholder'] ) ) ? 'placeholder="' . esc_attr( $args['placeholder'] ) . '"' : '';
 					if ( isset( $args['disabled'] ) ) {
 						// hide the actual input bc if it was just a disabled input the info saved in the database would be wrong - bc it would pass empty values and wipe the actual information.
 						echo $prepend_start . '<input type="' . esc_attr( $args['subtype'] ) . '" id="' . esc_attr( $args['id'] ) . '_disabled" ' . $step . ' ' . $max . ' ' . $min . ' name="' . esc_attr( $args['name'] ) . '_disabled" size="40" disabled value="' . esc_attr( $value ) . '" /><input type="hidden" id="' . esc_attr( $args['id'] ) . '" ' . $step . ' ' . $max . ' ' . $min . ' name="' . esc_attr( $args['name'] ) . '" size="40" value="' . esc_attr( $value ) . '" />' . $prepend_end; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

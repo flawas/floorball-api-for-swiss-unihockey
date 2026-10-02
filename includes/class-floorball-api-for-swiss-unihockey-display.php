@@ -1281,7 +1281,7 @@ class Swiss_Floorball_API_Display {
 					}
 				}
 			} else {
-				echo '<pre>' . esc_html( print_r( $api_response, true ) ) . '</pre>';
+				echo '<pre>' . esc_html( print_r( $api_response, true ) ) . '</pre>'; // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- Fallback dump of an unknown response shape.
 			}
 
 			echo '</div>';
@@ -1366,7 +1366,7 @@ class Swiss_Floorball_API_Display {
 	 * @return void
 	 */
 	public static function render_rankings( $season, $league, $game_class, $group ) {
-		return self::render_team_ranking( $season, $league, $game_class, $group );
+		self::render_team_ranking( $season, $league, $game_class, $group );
 	}
 
 	/**

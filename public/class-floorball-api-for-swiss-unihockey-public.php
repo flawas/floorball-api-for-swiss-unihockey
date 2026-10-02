@@ -141,7 +141,7 @@ class Swiss_Floorball_Api_Public {
 	/**
 	 * Registers all shortcodes at once
 	 *
-	 * @return [type] [description]
+	 * @return void
 	 */
 	public function register_shortcodes() {
 
@@ -158,7 +158,7 @@ class Swiss_Floorball_Api_Public {
 		add_shortcode( 'swfl-national-players', array( $this, 'get_national_players_func' ) );
 		add_shortcode( 'swfl-topscorers', array( $this, 'get_topscorers_func' ) );
 		add_shortcode( 'swfl-game-events', array( $this, 'get_game_events_func' ) );
-	} // register_shortcodes()
+	}
 
 	/**
 	 * Render the club teams shortcode.

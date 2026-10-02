@@ -63,9 +63,8 @@ jobs:
           grep -q '^== Changelog ==' readme.txt
 
   phpcs:
-    name: WordPress Coding Standards (informativ)
+    name: WordPress Coding Standards
     runs-on: ubuntu-24.04
-    continue-on-error: true   # Bestandscode hat noch Altlasten; nach dem Aufräumen entfernen, damit der Job blockiert
     steps:
       - uses: actions/checkout@v6
         with:

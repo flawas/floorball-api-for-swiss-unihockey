@@ -47,11 +47,11 @@ if ( ! current_user_can( 'manage_options' ) ) {
 				</tr>
 				<tr>
 					<td>Club ID</td>
-					<td><?php echo esc_html( get_option( 'swissfloorball_club_number' ) ) ?: '—'; ?></td>
+					<td><?php echo esc_html( empty( get_option( 'swissfloorball_club_number' ) ) ? '—' : get_option( 'swissfloorball_club_number' ) ); ?></td>
 				</tr>
 				<tr>
 					<td>Club Name</td>
-					<td><?php echo esc_html( get_option( 'swissfloorball_club_name' ) ) ?: '—'; ?></td>
+					<td><?php echo esc_html( empty( get_option( 'swissfloorball_club_name' ) ) ? '—' : get_option( 'swissfloorball_club_name' ) ); ?></td>
 				</tr>
 				<tr>
 					<td>Aktuelle Saison</td>

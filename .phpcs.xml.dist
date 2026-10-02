@@ -47,6 +47,11 @@
 		<exclude-pattern>*</exclude-pattern>
 	</rule>
 
+	<!-- Legacy class name Swiss_Floorball_Api_i18n is kept on purpose (see CLAUDE.md naming). -->
+	<rule ref="PEAR.NamingConventions.ValidClassName.Invalid">
+		<exclude-pattern>*/class-floorball-api-for-swiss-unihockey-i18n.php</exclude-pattern>
+	</rule>
+
 	<!-- Dev-only tooling, not shipped in the release ZIP. -->
 	<exclude-pattern>*/scripts/*</exclude-pattern>
 	<exclude-pattern>*/verify_api.php</exclude-pattern>
