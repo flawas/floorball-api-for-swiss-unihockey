@@ -577,7 +577,7 @@ class Swiss_Floorball_API_Display {
 	 * @param bool       $is_backend Optional. Whether to render for backend. Default false.
 	 * @return void
 	 */
-	public static function render_club_games( $swissfloorball_club_number, $season, $is_backend = false ) {
+	public static function render_club_games( $swissfloorball_club_number, $season, $is_backend = false ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Kept for backwards compatibility.
 		Swiss_Floorball_API_Widgets::render_admin_games( 'club', absint( $swissfloorball_club_number ), absint( $season ), __( 'Clubspiele', 'swiss-floorball-api' ), __( 'Spiele des Clubs', 'swiss-floorball-api' ) );
 	}
 
@@ -589,7 +589,7 @@ class Swiss_Floorball_API_Display {
 	 * @param bool       $is_backend Optional. Whether to render for backend (includes Game ID). Default false.
 	 * @return void
 	 */
-	public static function render_team_games( $swissfloorball_team_number, $season, $is_backend = false ) {
+	public static function render_team_games( $swissfloorball_team_number, $season, $is_backend = false ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Kept for backwards compatibility.
 		Swiss_Floorball_API_Widgets::render_admin_games( 'team', absint( $swissfloorball_team_number ), absint( $season ), __( 'Teamspiele', 'swiss-floorball-api' ), __( 'Spiele des Teams', 'swiss-floorball-api' ) );
 	}
 
@@ -1565,7 +1565,7 @@ class Swiss_Floorball_API_Display {
 	 * @param bool       $is_backend Optional. Whether to render for backend. Default false.
 	 * @return void
 	 */
-	public static function render_game_events( $game_id, $is_backend = false ) {
+	public static function render_game_events( $game_id, $is_backend = false ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Kept for backwards compatibility.
 		$client       = self::get_client();
 		$api_response = $client->fetch_data( 'game_events/' . $game_id );
 
