@@ -53,11 +53,11 @@ $swfl_match_id = isset( $_GET['match_id'] ) ? absint( $_GET['match_id'] ) : null
 		echo '<p><a href="' . esc_url( $swfl_back_url ) . '" class="button button-primary">' . Swiss_Floorball_Api_Icons::get( 'back' ) . ' ' . esc_html__( 'Zurück zur Übersicht', 'swiss-floorball-api' ) . '</a></p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Icon markup sanitized via wp_kses() in Swiss_Floorball_Api_Icons::get().
 
 		// Render Match Details.
-		Swiss_Floorball_API_Display::render_game_details_table( $swfl_match_id );
+		Swiss_Floorball_API_Display_Stats::render_game_details_table( $swfl_match_id );
 
 		// Show Game Events (Match Telegramm).
 		echo '<div class="sfa-card sfa-card--spaced-top">';
-		Swiss_Floorball_API_Display::render_game_events( $swfl_match_id );
+		Swiss_Floorball_API_Display_Stats::render_game_events( $swfl_match_id );
 		echo '</div>';
 		?>
 

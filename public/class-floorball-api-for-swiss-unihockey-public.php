@@ -409,7 +409,7 @@ class Swiss_Floorball_Api_Public {
 
 		ob_start();
 		$this->open_wrapper();
-		Swiss_Floorball_API_Display::render_player( absint( $a['player_id'] ) );
+		Swiss_Floorball_API_Display_Stats::render_player( absint( $a['player_id'] ) );
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();
@@ -425,7 +425,7 @@ class Swiss_Floorball_Api_Public {
 	public function get_national_players_func() {
 		ob_start();
 		$this->open_wrapper();
-		Swiss_Floorball_API_Display::render_national_players();
+		Swiss_Floorball_API_Display_Stats::render_national_players();
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();
@@ -452,7 +452,7 @@ class Swiss_Floorball_Api_Public {
 
 		ob_start();
 		$this->open_wrapper();
-		Swiss_Floorball_API_Display::render_topscorers( absint( $a['season'] ), absint( $a['league'] ), absint( $a['game_class'] ) );
+		Swiss_Floorball_API_Display_Stats::render_topscorers( absint( $a['season'] ), absint( $a['league'] ), absint( $a['game_class'] ) );
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();
@@ -476,7 +476,7 @@ class Swiss_Floorball_Api_Public {
 
 		ob_start();
 		$this->open_wrapper();
-		Swiss_Floorball_API_Display::render_game_events( absint( $a['game_id'] ) );
+		Swiss_Floorball_API_Display_Stats::render_game_events( absint( $a['game_id'] ) );
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();
