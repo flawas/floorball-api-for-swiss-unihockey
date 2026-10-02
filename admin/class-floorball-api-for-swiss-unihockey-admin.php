@@ -336,12 +336,13 @@ class Swiss_Floorball_Api_Admin {
 			)
 		);
 
-		// Redirect back to settings page with success message.
+		// Pass the result via a short-lived per-user transient instead of URL parameters.
+		set_transient( 'swfl_cache_cleared_' . get_current_user_id(), (int) $deleted, 30 );
+
+		// Redirect back to settings page.
 		$redirect_url = add_query_arg(
 			array(
-				'page'          => 'floorball-api-for-swiss-unihockey-settings',
-				'cache_cleared' => '1',
-				'deleted_count' => $deleted,
+				'page' => 'floorball-api-for-swiss-unihockey-settings',
 			),
 			admin_url( 'admin.php' )
 		);
