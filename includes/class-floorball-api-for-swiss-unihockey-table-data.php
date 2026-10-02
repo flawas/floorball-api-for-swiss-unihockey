@@ -99,32 +99,51 @@ class Swiss_Floorball_API_Table_Data {
 		$seen = array();
 
 		foreach ( array( 'prev', 'next' ) as $direction ) {
-			$context = self::get_slider_context( $first['data'], $direction );
-			for ( $i = 0; $i < Swiss_Floorball_API_Widgets::MAX_PAGES && ! empty( $context ); $i++ ) {
-				$key = wp_json_encode( $context );
-				if ( isset( $seen[ $key ] ) ) {
-					break;
-				}
-				$seen[ $key ] = true;
-
-				$page = $client->fetch_data( $endpoint, array_merge( $params, $context ) );
-				if ( is_wp_error( $page ) || ! isset( $page['data'] ) ) {
-					break;
-				}
-				$page_rows = self::get_rows( $page['data'] );
-				if ( empty( $page_rows ) ) {
-					break;
-				}
-
-				$rows    = 'prev' === $direction ? array_merge( $page_rows, $rows ) : array_merge( $rows, $page_rows );
-				$context = self::get_slider_context( $page['data'], $direction );
-			}
+			$rows = self::follow_slider( $client, $endpoint, $params, $first['data'], $direction, $rows, $seen );
 		}
 
 		return array(
 			'data' => $first['data'],
 			'rows' => $rows,
 		);
+	}
+
+	/**
+	 * Follow the slider in one direction and merge the rows of every page into the collected rows.
+	 *
+	 * @since 2.0.1
+	 * @param Swiss_Floorball_API_Client $client    API client.
+	 * @param string                     $endpoint  API endpoint.
+	 * @param array                      $params    Query parameters of the first request.
+	 * @param array                      $data      Data of the first page.
+	 * @param string                     $direction `prev` or `next`.
+	 * @param array                      $rows      Rows collected so far.
+	 * @param array                      $seen      Contexts already requested, shared between both directions.
+	 * @return array Rows including the pages of this direction.
+	 */
+	private static function follow_slider( $client, $endpoint, $params, $data, $direction, $rows, &$seen ) {
+		$context = self::get_slider_context( $data, $direction );
+		for ( $i = 0; $i < Swiss_Floorball_API_Widgets::MAX_PAGES && ! empty( $context ); $i++ ) {
+			$key = wp_json_encode( $context );
+			if ( isset( $seen[ $key ] ) ) {
+				break;
+			}
+			$seen[ $key ] = true;
+
+			$page = $client->fetch_data( $endpoint, array_merge( $params, $context ) );
+			if ( is_wp_error( $page ) || ! isset( $page['data'] ) ) {
+				break;
+			}
+			$page_rows = self::get_rows( $page['data'] );
+			if ( empty( $page_rows ) ) {
+				break;
+			}
+
+			$rows    = 'prev' === $direction ? array_merge( $page_rows, $rows ) : array_merge( $rows, $page_rows );
+			$context = self::get_slider_context( $page['data'], $direction );
+		}
+
+		return $rows;
 	}
 
 	/**
