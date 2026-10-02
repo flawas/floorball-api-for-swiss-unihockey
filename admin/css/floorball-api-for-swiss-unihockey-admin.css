@@ -261,12 +261,12 @@
 
 /* Header with Gradient */
 .sfa-admin-header {
-    background: linear-gradient(135deg, var(--sfa-primary) 0%, var(--sfa-primary-dark) 100%);
-    color: white;
+    background: var(--sfa-sys-color-primary);
+    color: var(--sfa-sys-color-on-primary);
     padding: 40px;
-    border-radius: 12px;
+    border-radius: var(--sfa-sys-shape-corner-lg);
     margin-bottom: 30px;
-    box-shadow: 0 4px 20px rgba(0, 102, 204, 0.15);
+    box-shadow: var(--sfa-sys-elevation-2);
     position: relative;
     overflow: hidden;
 }
@@ -285,9 +285,10 @@
 
 .sfa-admin-header h1 {
     margin: 0;
-    font-size: 32px;
-    font-weight: 700;
-    color: white;
+    font-size: var(--sfa-sys-font-size-display);
+    font-weight: var(--sfa-sys-font-weight-bold);
+    line-height: var(--sfa-sys-line-height-tight);
+    color: var(--sfa-sys-color-on-primary);
     position: relative;
     z-index: 1;
 }
@@ -310,11 +311,11 @@
 
 .sfa-card {
     background: white;
-    border: 1px solid var(--sfa-border);
-    border-radius: 12px;
+    border: 1px solid var(--sfa-sys-color-outline);
+    border-radius: var(--sfa-sys-shape-corner-md);
     padding: 28px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--sfa-sys-elevation-1);
+    transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
 }
@@ -362,22 +363,30 @@
     display: inline-block;
     width: 100%;
     text-align: center;
+    box-sizing: border-box;
+    min-height: 48px;
+    line-height: 28px;
     padding: 10px 16px;
     margin: 6px 0;
-    border-radius: 6px;
-    background: var(--sfa-light-bg);
-    color: var(--sfa-text);
+    border-radius: var(--sfa-sys-shape-corner-xl);
+    background: var(--sfa-sys-color-surface);
+    color: var(--sfa-sys-color-on-surface);
     text-decoration: none;
-    transition: all 0.2s ease;
-    font-weight: 500;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    font-weight: var(--sfa-sys-font-weight-medium);
     border: 1px solid transparent;
 }
 
-.sfa-card .button:hover {
-    background: var(--sfa-primary);
-    color: white;
-    border-color: var(--sfa-primary-dark);
-    transform: translateX(4px);
+.sfa-card .button:hover,
+.sfa-card .button:focus-visible {
+    background: var(--sfa-sys-color-primary-container);
+    color: var(--sfa-sys-color-on-primary-container);
+    border-color: var(--sfa-sys-color-primary);
+}
+
+.sfa-card .button:focus-visible {
+    outline: 2px solid var(--sfa-sys-color-primary);
+    outline-offset: 2px;
 }
 
 /* Settings Table */
@@ -421,14 +430,14 @@
     border-collapse: separate;
     border-spacing: 0;
     background: white;
-    border-radius: 10px;
+    border-radius: var(--sfa-sys-shape-corner-md);
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-    border: 1px solid var(--sfa-border);
+    box-shadow: var(--sfa-sys-elevation-1);
+    border: 1px solid var(--sfa-sys-color-outline);
 }
 
 .sfa-data-table thead {
-    background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+    background: var(--sfa-sys-color-surface-container);
 }
 
 .sfa-data-table th {
@@ -519,37 +528,65 @@
 .form-table input[type="number"] {
     width: 100%;
     max-width: 450px;
-    padding: 10px 14px;
-    border: 2px solid var(--sfa-border);
-    border-radius: 6px;
-    font-size: 14px;
-    transition: all 0.2s ease;
+    min-height: 48px;
+    padding: 10px 16px;
+    border: 1px solid var(--sfa-sys-color-outline);
+    border-radius: var(--sfa-sys-shape-corner-xs);
+    font-size: var(--sfa-sys-font-size-title);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .form-table input[type="text"]:focus,
 .form-table input[type="number"]:focus {
-    border-color: var(--sfa-primary);
+    border-color: var(--sfa-sys-color-primary);
     outline: none;
-    box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.1);
+    box-shadow: 0 0 0 1px var(--sfa-sys-color-primary);
+}
+
+.form-table input[aria-invalid="true"] {
+    border-color: var(--sfa-sys-color-error);
+    box-shadow: 0 0 0 1px var(--sfa-sys-color-error);
 }
 
 /* Enhanced Submit Button */
 .sfa-admin-wrap .button-primary {
-    background: linear-gradient(135deg, var(--sfa-primary) 0%, var(--sfa-primary-dark) 100%) !important;
+    background: var(--sfa-sys-color-primary) !important;
+    color: var(--sfa-sys-color-on-primary) !important;
     border: none !important;
     text-shadow: none !important;
-    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3) !important;
-    padding: 12px 28px !important;
-    font-size: 15px !important;
-    font-weight: 600 !important;
-    border-radius: 6px !important;
-    transition: all 0.3s ease !important;
+    box-shadow: var(--sfa-sys-elevation-0) !important;
+    min-height: 48px !important;
+    padding: 0 28px !important;
+    font-size: var(--sfa-sys-font-size-body) !important;
+    font-weight: var(--sfa-sys-font-weight-medium) !important;
+    border-radius: var(--sfa-sys-shape-corner-full) !important;
+    transition: box-shadow 0.2s ease, filter 0.2s ease !important;
 }
 
-.sfa-admin-wrap .button-primary:hover {
-    background: linear-gradient(135deg, var(--sfa-primary-dark) 0%, var(--sfa-primary) 100%) !important;
-    box-shadow: 0 6px 20px rgba(0, 102, 204, 0.4) !important;
-    transform: translateY(-2px) !important;
+.sfa-admin-wrap .button-primary:hover,
+.sfa-admin-wrap .button-primary:focus-visible {
+    background: var(--sfa-sys-color-primary) !important;
+    filter: brightness(1.1);
+    box-shadow: var(--sfa-sys-elevation-1) !important;
+}
+
+.sfa-admin-wrap .button-primary:focus-visible {
+    outline: 2px solid var(--sfa-sys-color-primary);
+    outline-offset: 2px;
+}
+
+.sfa-admin-wrap .button-secondary {
+    min-height: 48px;
+    padding: 0 24px;
+    border-radius: var(--sfa-sys-shape-corner-full);
+    border-color: var(--sfa-sys-color-outline);
+    color: var(--sfa-sys-color-primary);
+}
+
+.sfa-admin-wrap .button-secondary:hover,
+.sfa-admin-wrap .button-secondary:focus-visible {
+    background: var(--sfa-sys-color-primary-container);
+    color: var(--sfa-sys-color-on-primary-container);
 }
 
 /* Badge/Pill Styling */
@@ -584,8 +621,9 @@
 
 /* Helper Text */
 .sfa-helper-text {
-    color: var(--sfa-text-light);
-    font-size: 13px;
+    color: var(--sfa-sys-color-on-surface);
+    opacity: 0.8;
+    font-size: var(--sfa-sys-font-size-label);
     margin-top: 6px;
     font-style: italic;
     line-height: 1.5;
@@ -716,10 +754,11 @@
 .sfa-search-input {
     width: 100%;
     max-width: 500px;
+    min-height: 48px;
     padding: 12px 18px 12px 42px;
-    font-size: 15px;
-    border: 2px solid var(--sfa-border);
-    border-radius: 8px;
+    font-size: var(--sfa-sys-font-size-title);
+    border: 1px solid var(--sfa-sys-color-outline);
+    border-radius: var(--sfa-sys-shape-corner-xl);
     transition: all 0.3s ease;
     background: white;
     color: var(--sfa-text);
@@ -727,8 +766,8 @@
 
 .sfa-search-input:focus {
     outline: none;
-    border-color: var(--sfa-primary);
-    box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.1);
+    border-color: var(--sfa-sys-color-primary);
+    box-shadow: 0 0 0 1px var(--sfa-sys-color-primary);
 }
 
 .sfa-search-input::placeholder {

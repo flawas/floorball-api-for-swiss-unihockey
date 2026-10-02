@@ -168,6 +168,7 @@ This plugin connects to the **Swiss Unihockey API** (api-v2.swissunihockey.ch) t
 
 ## 📜 Changelog
 ### Unreleased
+* New: Admin dashboard restyled in Material 3 (header, tonal navigation buttons, outlined form fields, filled/outlined buttons, cards and tables) using the `--sfa-sys-*` tokens; 48 px touch targets and visible keyboard focus. Markup, shortcodes and options are unchanged
 * New: Design-token layer (`--sfa-sys-*` colors, typography, shape, elevation 0-5) for the frontend and admin styles, scoped to `.swiss-floorball-plugin` / `.sfa-admin-wrap`. Existing `--sfa-*` variables, Roboto and dark mode are unchanged; no visual change
 * Fix: Add explicit request timeout (5 seconds, minimum 1 second) to API client calls, filterable via `swfl_request_timeout` hook
 * Fix: Add `apply_filters()` stub to verify_api.php for test compatibility
