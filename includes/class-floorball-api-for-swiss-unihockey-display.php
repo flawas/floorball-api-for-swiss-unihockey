@@ -458,22 +458,21 @@ class Swiss_Floorball_API_Display {
 	 * @return array|null Array with `params` (feed URL arguments), `games_params` and `mode`, or null without usable identifiers.
 	 */
 	private static function get_calendar_request( $team_id, $club_id, $season, $league, $game_class, $group ) {
+		$request = null;
 		if ( $team_id ) {
-			return array(
+			$request = array(
 				'params'       => array( 'team_id' => $team_id ),
 				'games_params' => array( 'team_id' => $team_id ),
 				'mode'         => 'team',
 			);
-		}
-		if ( $club_id ) {
-			return array(
+		} elseif ( $club_id ) {
+			$request = array(
 				'params'       => array( 'club_id' => $club_id ),
 				'games_params' => array( 'club_id' => $club_id ),
 				'mode'         => 'club',
 			);
-		}
-		if ( $season && $league && $game_class && $group ) {
-			return array(
+		} elseif ( $season && $league && $game_class && $group ) {
+			$request = array(
 				'params'       => array(
 					'season'     => $season,
 					'league'     => $league,
@@ -485,7 +484,7 @@ class Swiss_Floorball_API_Display {
 			);
 		}
 
-		return null;
+		return $request;
 	}
 
 	/**

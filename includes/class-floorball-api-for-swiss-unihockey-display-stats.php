@@ -153,15 +153,7 @@ class Swiss_Floorball_API_Display_Stats {
 		echo '<div class="sfa-table-wrap"><table class="sfa-data-table"><caption class="sfa-visually-hidden">' . esc_html__( 'Spieldetails', 'swiss-floorball-api' ) . '</caption>';
 
 		if ( ! empty( $headers ) ) {
-			echo '<thead><tr>';
-			foreach ( $headers as $header ) {
-				$header_text = is_string( $header ) ? $header : '';
-				if ( isset( $header['text'] ) ) {
-					$header_text = $header['text'];
-				}
-				echo '<th scope="col">' . esc_html( $header_text ) . '</th>';
-			}
-			echo '</tr></thead>';
+			self::render_details_headers( $headers );
 		}
 
 		foreach ( $region['rows'] as $row ) {
@@ -175,6 +167,25 @@ class Swiss_Floorball_API_Display_Stats {
 		}
 		echo '</table></div>';
 		echo '</div>';
+	}
+
+	/**
+	 * Render the header row of a game details table.
+	 *
+	 * @since 2.0.1
+	 * @param array $headers Table headers, each a string or an array with `text`.
+	 * @return void
+	 */
+	private static function render_details_headers( $headers ) {
+		echo '<thead><tr>';
+		foreach ( $headers as $header ) {
+			$header_text = is_string( $header ) ? $header : '';
+			if ( isset( $header['text'] ) ) {
+				$header_text = $header['text'];
+			}
+			echo '<th scope="col">' . esc_html( $header_text ) . '</th>';
+		}
+		echo '</tr></thead>';
 	}
 
 	/**

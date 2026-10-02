@@ -213,22 +213,36 @@ class Swiss_Floorball_API_Table_Data {
 		$lower = function_exists( 'mb_strtolower' ) ? mb_strtolower( $text ) : strtolower( $text );
 
 		if ( false !== strpos( $lower, 'heute' ) ) {
-			return current_time( 'Y-m-d' );
+			$date = current_time( 'Y-m-d' );
+		} elseif ( false !== strpos( $lower, 'gestern' ) ) {
+			$date = gmdate( 'Y-m-d', strtotime( current_time( 'Y-m-d' ) . ' UTC' ) - DAY_IN_SECONDS );
+		} else {
+			$date = self::parse_date_text( $text );
 		}
-		if ( false !== strpos( $lower, 'gestern' ) ) {
-			return gmdate( 'Y-m-d', strtotime( current_time( 'Y-m-d' ) . ' UTC' ) - DAY_IN_SECONDS );
-		}
+
+		return $date;
+	}
+
+	/**
+	 * Find a date in a text: dd.mm.yy(yy) or yyyy-mm-dd.
+	 *
+	 * @since 2.0.1
+	 * @param string $text Text that may contain a date.
+	 * @return string Date as Y-m-d, empty when none is found.
+	 */
+	private static function parse_date_text( $text ) {
+		$date = '';
 		if ( preg_match( '/(\d{1,2})\.(\d{1,2})\.(\d{2,4})/', $text, $m ) ) {
 			$year = (int) $m[3];
 			if ( $year < 100 ) {
 				$year += 2000;
 			}
-			return sprintf( '%04d-%02d-%02d', $year, (int) $m[2], (int) $m[1] );
+			$date = sprintf( '%04d-%02d-%02d', $year, (int) $m[2], (int) $m[1] );
+		} elseif ( preg_match( '/(\d{4})-(\d{2})-(\d{2})/', $text, $m ) ) {
+			$date = $m[0];
 		}
-		if ( preg_match( '/(\d{4})-(\d{2})-(\d{2})/', $text, $m ) ) {
-			return $m[0];
-		}
-		return '';
+
+		return $date;
 	}
 
 	/**
