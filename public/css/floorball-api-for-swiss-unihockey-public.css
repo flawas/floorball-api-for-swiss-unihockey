@@ -20,6 +20,61 @@
     --sfa-danger: #e74c3c;
 }
 
+/* Design tokens (--sfa-sys-*). Defined in the plugin scope only; :root and dark mode stay untouched.
+   Tokens with a legacy counterpart reference the --sfa-* variable so :root overrides keep working. */
+.swiss-floorball-plugin {
+    /* Color */
+    --sfa-sys-color-primary: var(--sfa-primary, #0066cc);
+    --sfa-sys-color-on-primary: #ffffff;
+    --sfa-sys-color-primary-container: #d6e6f7;
+    --sfa-sys-color-on-primary-container: #00294d;
+    --sfa-sys-color-secondary: var(--sfa-secondary, #ff6600);
+    --sfa-sys-color-on-secondary: #ffffff;
+    --sfa-sys-color-secondary-container: #ffe0cc;
+    --sfa-sys-color-on-secondary-container: #4d1f00;
+    --sfa-sys-color-tertiary: #7a5900;
+    --sfa-sys-color-on-tertiary: #ffffff;
+    --sfa-sys-color-tertiary-container: #ffe4a8;
+    --sfa-sys-color-on-tertiary-container: #261a00;
+    --sfa-sys-color-error: var(--sfa-danger, #e74c3c);
+    --sfa-sys-color-on-error: #ffffff;
+    --sfa-sys-color-surface: var(--sfa-light-bg, #f8f9fa);
+    --sfa-sys-color-on-surface: var(--sfa-text, #2c3e50);
+    --sfa-sys-color-on-surface-variant: var(--sfa-text-light, #7f8c8d);
+    --sfa-sys-color-surface-container: #eef1f4;
+    --sfa-sys-color-outline: var(--sfa-border, #e0e0e0);
+
+    /* Typography */
+    --sfa-sys-font-family: 'SFA Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --sfa-sys-font-weight-regular: 400;
+    --sfa-sys-font-weight-medium: 500;
+    --sfa-sys-font-weight-bold: 700;
+    --sfa-sys-font-size-label: 0.75rem;
+    --sfa-sys-font-size-body: 0.875rem;
+    --sfa-sys-font-size-title: 1rem;
+    --sfa-sys-font-size-headline: 1.5rem;
+    --sfa-sys-font-size-display: 2rem;
+    --sfa-sys-line-height-tight: 1.25;
+    --sfa-sys-line-height-body: 1.5;
+
+    /* Shape */
+    --sfa-sys-shape-corner-none: 0;
+    --sfa-sys-shape-corner-xs: 4px;
+    --sfa-sys-shape-corner-sm: 8px;
+    --sfa-sys-shape-corner-md: 12px;
+    --sfa-sys-shape-corner-lg: 16px;
+    --sfa-sys-shape-corner-xl: 28px;
+    --sfa-sys-shape-corner-full: 9999px;
+
+    /* Elevation */
+    --sfa-sys-elevation-0: none;
+    --sfa-sys-elevation-1: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.15);
+    --sfa-sys-elevation-2: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 6px 2px rgba(0, 0, 0, 0.15);
+    --sfa-sys-elevation-3: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 8px 3px rgba(0, 0, 0, 0.15);
+    --sfa-sys-elevation-4: 0 2px 3px rgba(0, 0, 0, 0.3), 0 6px 10px 4px rgba(0, 0, 0, 0.15);
+    --sfa-sys-elevation-5: 0 4px 4px rgba(0, 0, 0, 0.3), 0 8px 12px 6px rgba(0, 0, 0, 0.15);
+}
+
 /* Self-hosted Roboto (variable font, Latin + Latin Extended) — no request to Google at runtime */
 @font-face {
     font-family: 'SFA Roboto';
