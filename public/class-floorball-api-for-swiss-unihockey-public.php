@@ -54,8 +54,6 @@ class Swiss_Floorball_Api_Public {
 
 		$this->plugin_name = $plugin_name;
 		$this->version     = $version;
-		$this->register_shortcodes();
-		$this->load_dependencies();
 	}
 
 	/**
@@ -65,96 +63,11 @@ class Swiss_Floorball_Api_Public {
 	 * @return void
 	 */
 	private function open_wrapper() {
-		$classes = 'swiss-floorball-plugin sfa-table--' . Swiss_Floorball_API_Display::get_table_style();
-		if ( Swiss_Floorball_API_Display::is_table_striped() ) {
+		$classes = 'swiss-floorball-plugin sfa-table--' . Swiss_Floorball_API_Theme::get_table_style();
+		if ( Swiss_Floorball_API_Theme::is_table_striped() ) {
 			$classes .= ' sfa-table--striped';
 		}
-		echo '<div class="' . esc_attr( $classes ) . '" data-sfa-theme="' . esc_attr( Swiss_Floorball_API_Display::get_theme() ) . '">';
-	}
-
-	/**
-	 * Register the stylesheets for the public-facing side of the site.
-	 *
-	 * @since    1.0.0
-	 */
-	private function page_has_shortcode() {
-		$post = get_post();
-		if ( ! is_a( $post, 'WP_Post' ) ) {
-			return false;
-		}
-		$shortcodes = array(
-			'swfl-club-teams',
-			'swfl-club-games',
-			'swfl-team-games',
-			'swfl-clubs',
-			'swfl-calendars',
-			'swfl-cups',
-			'swfl-groups',
-			'swfl-teams',
-			'swfl-rankings',
-			'swfl-player',
-			'swfl-national-players',
-			'swfl-topscorers',
-			'swfl-game-events',
-			'swfl-league-games',
-			'swfl-club-team-games',
-			'swfl-mobiliar-topscorer',
-		);
-		foreach ( $shortcodes as $shortcode ) {
-			if ( has_shortcode( $post->post_content, $shortcode ) ) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Register the stylesheets for the public-facing side of the site.
-	 *
-	 * @since    1.0.0
-	 */
-	public function enqueue_styles() {
-		if ( ! $this->page_has_shortcode() ) {
-			return;
-		}
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/floorball-api-for-swiss-unihockey-public.css', array(), $this->version, 'all' );
-		$seed_css = Swiss_Floorball_API_Display::get_seed_css();
-		if ( '' !== $seed_css ) {
-			wp_add_inline_style( $this->plugin_name, $seed_css );
-		}
-		$table_css = Swiss_Floorball_API_Display::get_table_css();
-		if ( '' !== $table_css ) {
-			wp_add_inline_style( $this->plugin_name, $table_css );
-		}
-	}
-
-	/**
-	 * Register the JavaScript for the public-facing side of the site.
-	 *
-	 * @since    1.0.0
-	 */
-	public function enqueue_scripts() {
-		if ( ! $this->page_has_shortcode() ) {
-			return;
-		}
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/floorball-api-for-swiss-unihockey-public.js', array( 'jquery' ), $this->version, false );
-		wp_enqueue_script( $this->plugin_name . '-widgets', plugin_dir_url( __FILE__ ) . 'js/swfl-widgets.js', array(), $this->version, true );
-		wp_localize_script(
-			$this->plugin_name . '-widgets',
-			'swflWidgets',
-			array(
-				'restUrl' => esc_url_raw( rest_url( 'swfl/v1/' ) ),
-			)
-		);
-	}
-
-	/**
-	 * Placeholder kept for backwards compatibility, dependencies are loaded by the core class.
-	 *
-	 * @since    1.0.0
-	 */
-	public function load_dependencies() {
-		// Functions are now loaded via the main plugin class and Swiss_Floorball_API_Display.
+		echo '<div class="' . esc_attr( $classes ) . '" data-sfa-theme="' . esc_attr( Swiss_Floorball_API_Theme::get_theme() ) . '">';
 	}
 
 	/**
@@ -409,7 +322,7 @@ class Swiss_Floorball_Api_Public {
 
 		ob_start();
 		$this->open_wrapper();
-		Swiss_Floorball_API_Display::render_player( absint( $a['player_id'] ) );
+		Swiss_Floorball_API_Display_Stats::render_player( absint( $a['player_id'] ) );
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();
@@ -425,7 +338,7 @@ class Swiss_Floorball_Api_Public {
 	public function get_national_players_func() {
 		ob_start();
 		$this->open_wrapper();
-		Swiss_Floorball_API_Display::render_national_players();
+		Swiss_Floorball_API_Display_Stats::render_national_players();
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();
@@ -452,7 +365,7 @@ class Swiss_Floorball_Api_Public {
 
 		ob_start();
 		$this->open_wrapper();
-		Swiss_Floorball_API_Display::render_topscorers( absint( $a['season'] ), absint( $a['league'] ), absint( $a['game_class'] ) );
+		Swiss_Floorball_API_Display_Stats::render_topscorers( absint( $a['season'] ), absint( $a['league'] ), absint( $a['game_class'] ) );
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();
@@ -476,7 +389,7 @@ class Swiss_Floorball_Api_Public {
 
 		ob_start();
 		$this->open_wrapper();
-		Swiss_Floorball_API_Display::render_game_events( absint( $a['game_id'] ) );
+		Swiss_Floorball_API_Display_Stats::render_game_events( absint( $a['game_id'] ) );
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();

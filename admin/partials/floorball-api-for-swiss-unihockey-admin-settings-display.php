@@ -20,7 +20,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 }
 ?>
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
-<div class="wrap sfa-admin-wrap" data-sfa-theme="<?php echo esc_attr( Swiss_Floorball_API_Display::get_theme() ); ?>">
+<div class="wrap sfa-admin-wrap" data-sfa-theme="<?php echo esc_attr( Swiss_Floorball_API_Theme::get_theme() ); ?>">
 	<div class="sfa-admin-header">
 		<h1><?php Swiss_Floorball_Api_Icons::render( 'settings' ); ?> Einstellungen</h1>
 		<p>Konfigurieren Sie Ihre Swiss Floorball API Verbindung</p>
@@ -48,7 +48,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 				settings_fields( 'swfl_general_settings' );
 				do_settings_sections( 'swfl_general_settings' );
 			?>
-			<p class="sfa-autosave-status" id="sfa-autosave-status" role="status" aria-live="polite"><?php esc_html_e( 'Changes are saved automatically.', 'swiss-floorball-api' ); ?></p>
+			<output class="sfa-autosave-status" id="sfa-autosave-status" aria-live="polite"><?php esc_html_e( 'Changes are saved automatically.', 'swiss-floorball-api' ); ?></output>
 			<noscript><?php submit_button( __( 'Save settings', 'swiss-floorball-api' ) ); ?></noscript>
 		</form>
 	</div>

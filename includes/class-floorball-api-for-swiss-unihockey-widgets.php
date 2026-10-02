@@ -53,13 +53,6 @@ class Swiss_Floorball_API_Widgets {
 	 */
 	const REST_NAMESPACE = 'swfl/v1';
 
-	/**
-	 * Date format of iCalendar UTC timestamps.
-	 *
-	 * @since 2.0.0
-	 * @var   string
-	 */
-	const ICAL_UTC_FORMAT = 'Ymd\THis\Z';
 
 	/**
 	 * Shared API client.
@@ -75,7 +68,7 @@ class Swiss_Floorball_API_Widgets {
 	 * @since 1.1.0
 	 * @return Swiss_Floorball_API_Client
 	 */
-	private static function get_client() {
+	public static function get_client() {
 		if ( null === self::$client ) {
 			self::$client = new Swiss_Floorball_API_Client();
 		}
@@ -94,7 +87,7 @@ class Swiss_Floorball_API_Widgets {
 			'/team-games',
 			array(
 				'methods'             => 'GET',
-				'callback'            => array( __CLASS__, 'rest_team_games' ),
+				'callback'            => array( 'Swiss_Floorball_API_Widgets', 'rest_team_games' ),
 				'permission_callback' => '__return_true',
 				'args'                => array(
 					'team_id'   => array(
@@ -119,7 +112,7 @@ class Swiss_Floorball_API_Widgets {
 			'/league-games',
 			array(
 				'methods'             => 'GET',
-				'callback'            => array( __CLASS__, 'rest_league_games' ),
+				'callback'            => array( 'Swiss_Floorball_API_Widgets', 'rest_league_games' ),
 				'permission_callback' => '__return_true',
 				'args'                => array(
 					'game_class' => array(
@@ -153,7 +146,7 @@ class Swiss_Floorball_API_Widgets {
 			'/calendar',
 			array(
 				'methods'             => 'GET',
-				'callback'            => array( __CLASS__, 'rest_calendar' ),
+				'callback'            => array( 'Swiss_Floorball_API_Calendar', 'rest_calendar' ),
 				'permission_callback' => '__return_true',
 				'args'                => array(
 					'team_id'    => array(
@@ -185,193 +178,7 @@ class Swiss_Floorball_API_Widgets {
 		);
 
 		// The calendar route returns text/calendar instead of JSON.
-		add_filter( 'rest_pre_serve_request', array( __CLASS__, 'serve_calendar' ), 10, 3 );
-	}
-
-	/**
-	 * Send the calendar route response as an iCalendar file instead of JSON.
-	 *
-	 * @since 1.1.0
-	 * @param bool             $served  Whether the request has already been served.
-	 * @param WP_HTTP_Response $result  Result to send.
-	 * @param WP_REST_Request  $request Request.
-	 * @return bool Whether the request has been served.
-	 */
-	public static function serve_calendar( $served, $result, $request ) {
-		if ( '/swfl/v1/calendar' !== $request->get_route() || ! is_string( $result->get_data() ) ) {
-			return $served;
-		}
-		header( 'Content-Type: text/calendar; charset=utf-8' );
-		header( 'Content-Disposition: inline; filename="swiss-floorball.ics"' );
-		echo $result->get_data(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- iCalendar text, every value is escaped by escape_ics_text().
-		return true;
-	}
-
-	/**
-	 * REST callback: iCalendar feed of the games of a team, a club or a group.
-	 *
-	 * Replaces the calendar export of the previous API, which is no longer available.
-	 *
-	 * @since 1.1.0
-	 * @param WP_REST_Request $request Request.
-	 * @return string|WP_Error iCalendar text, or an error.
-	 */
-	public static function rest_calendar( $request ) {
-		$params = array( 'season' => absint( $request->get_param( 'season' ) ) );
-		if ( ! $params['season'] ) {
-			$params['season'] = Swiss_Floorball_API_Display::get_current_season();
-		}
-
-		if ( absint( $request->get_param( 'team_id' ) ) ) {
-			$params['mode']    = 'team';
-			$params['team_id'] = absint( $request->get_param( 'team_id' ) );
-		} elseif ( absint( $request->get_param( 'club_id' ) ) ) {
-			$params['mode']    = 'club';
-			$params['club_id'] = absint( $request->get_param( 'club_id' ) );
-		} elseif ( absint( $request->get_param( 'league' ) ) && absint( $request->get_param( 'game_class' ) ) ) {
-			$params['mode']       = 'list';
-			$params['league']     = absint( $request->get_param( 'league' ) );
-			$params['game_class'] = absint( $request->get_param( 'game_class' ) );
-			$params['group']      = sanitize_text_field( (string) $request->get_param( 'group' ) );
-		} else {
-			return new WP_Error( 'swfl_missing_params', 'team_id, club_id or league and game_class are required', array( 'status' => 400 ) );
-		}
-
-		$result = self::fetch_all_pages( 'games', self::clean_params( $params ) );
-		if ( is_wp_error( $result ) ) {
-			$result->add_data( array( 'status' => 502 ) );
-			return $result;
-		}
-
-		$title = isset( $result['data']['title'] ) && is_string( $result['data']['title'] ) ? $result['data']['title'] : 'Swiss Floorball';
-		return self::build_calendar( $title, isset( $result['data']['headers'] ) ? $result['data']['headers'] : array(), self::prepare_game_rows( $result['rows'] ) );
-	}
-
-	/**
-	 * Build an iCalendar document from game rows.
-	 *
-	 * Columns are found by their header text because the games tables differ per mode.
-	 *
-	 * @since 1.1.0
-	 * @param string $title   Calendar name.
-	 * @param array  $headers Table headers.
-	 * @param array  $rows    Prepared game rows.
-	 * @return string iCalendar text with CRLF line breaks.
-	 */
-	private static function build_calendar( $title, $headers, $rows ) {
-		$columns = array();
-		foreach ( $headers as $index => $header ) {
-			$text = isset( $header['text'] ) ? (string) $header['text'] : '';
-			foreach ( array(
-				'date'   => '/datum|zeit/iu',
-				'place'  => '/^ort/iu',
-				'home'   => '/heim/iu',
-				'away'   => '/gast/iu',
-				'league' => '/liga|gruppe/iu',
-			) as $key => $pattern ) {
-				if ( preg_match( $pattern, $text ) ) {
-					$columns[ $key ][] = $index;
-				}
-			}
-		}
-		$zone  = new DateTimeZone( 'Europe/Zurich' );
-		$utc   = new DateTimeZone( 'UTC' );
-		$host  = (string) wp_parse_url( home_url(), PHP_URL_HOST );
-		$stamp = gmdate( self::ICAL_UTC_FORMAT );
-
-		$lines = array(
-			'BEGIN:VCALENDAR',
-			'VERSION:2.0',
-			'PRODID:-//Swiss Floorball API//WordPress//DE',
-			'CALSCALE:GREGORIAN',
-			'X-WR-CALNAME:' . self::escape_ics_text( $title ),
-			'X-PUBLISHED-TTL:PT1H',
-		);
-
-		foreach ( $rows as $row ) {
-			$cells = isset( $row['cells'] ) && is_array( $row['cells'] ) ? $row['cells'] : array();
-			$text  = static function ( $key ) use ( $columns, $cells ) {
-				$parts = array();
-				foreach ( isset( $columns[ $key ] ) ? $columns[ $key ] : array() as $index ) {
-					if ( isset( $cells[ $index ] ) ) {
-						$parts[] = self::get_cell_text( $cells[ $index ] );
-					}
-				}
-				return trim( implode( ' ', $parts ) );
-			};
-
-			$date = $row['sfa_date'];
-			if ( '' === $date ) {
-				continue;
-			}
-			$home    = $text( 'home' );
-			$away    = $text( 'away' );
-			$game_id = self::get_game_id( $row );
-
-			$lines[] = 'BEGIN:VEVENT';
-			$lines[] = 'UID:' . ( $game_id ? 'game-' . $game_id : substr( hash( 'sha256', $date . $home . $away ), 0, 32 ) ) . '@' . $host;
-			$lines[] = 'DTSTAMP:' . $stamp;
-
-			if ( preg_match( '/(\d{1,2}):(\d{2})/', $text( 'date' ), $time ) ) {
-				$start   = new DateTime( $date . ' ' . sprintf( '%02d:%02d', $time[1], $time[2] ), $zone );
-				$end     = clone $start;
-				$lines[] = 'DTSTART:' . $start->setTimezone( $utc )->format( self::ICAL_UTC_FORMAT );
-				$lines[] = 'DTEND:' . $end->modify( '+2 hours' )->setTimezone( $utc )->format( self::ICAL_UTC_FORMAT );
-			} else {
-				$lines[] = 'DTSTART;VALUE=DATE:' . str_replace( '-', '', $date );
-			}
-
-			$lines[] = 'SUMMARY:' . self::escape_ics_text( implode( ' – ', array_filter( array( $home, $away ) ) ) );
-			if ( '' !== $text( 'place' ) ) {
-				$lines[] = 'LOCATION:' . self::escape_ics_text( $text( 'place' ) );
-			}
-			if ( '' !== $text( 'league' ) ) {
-				$lines[] = 'DESCRIPTION:' . self::escape_ics_text( $text( 'league' ) );
-			}
-			if ( $game_id ) {
-				$lines[] = 'URL:' . self::GAME_LINK_BASE . $game_id;
-			}
-			$lines[] = 'END:VEVENT';
-		}
-
-		$lines[] = 'END:VCALENDAR';
-
-		return implode( "\r\n", array_map( array( __CLASS__, 'fold_ics_line' ), $lines ) ) . "\r\n";
-	}
-
-	/**
-	 * Escape a text value for an iCalendar property (RFC 5545).
-	 *
-	 * @since 1.1.0
-	 * @param string $value Raw text.
-	 * @return string Escaped text.
-	 */
-	private static function escape_ics_text( $value ) {
-		return str_replace(
-			array( '\\', ';', ',', "\r\n", "\n", "\r" ),
-			array( '\\\\', '\\;', '\\,', '\\n', '\\n', '\\n' ),
-			(string) $value
-		);
-	}
-
-	/**
-	 * Fold a content line to 75 octets (RFC 5545), without splitting multibyte characters.
-	 *
-	 * @since 1.1.0
-	 * @param string $line Content line.
-	 * @return string Folded line, continuation lines start with a space.
-	 */
-	private static function fold_ics_line( $line ) {
-		$out   = '';
-		$chunk = '';
-		foreach ( preg_split( '//u', $line, -1, PREG_SPLIT_NO_EMPTY ) as $char ) {
-			if ( strlen( $chunk ) + strlen( $char ) > 74 ) {
-				$out  .= $chunk . "\r\n ";
-				$chunk = '';
-			}
-			$chunk .= $char;
-		}
-		return $out . $chunk;
+		add_filter( 'rest_pre_serve_request', array( 'Swiss_Floorball_API_Calendar', 'serve_calendar' ), 10, 3 );
 	}
 
 	/**
@@ -447,260 +254,6 @@ class Swiss_Floorball_API_Widgets {
 	}
 
 	/**
-	 * Drop empty query parameters so they do not end up in the request URL or cache key.
-	 *
-	 * @since 1.1.0
-	 * @param array $params Query parameters.
-	 * @return array Parameters with a non-empty, non-zero value.
-	 */
-	private static function clean_params( $params ) {
-		return array_filter(
-			$params,
-			static function ( $value ) {
-				return '' !== $value && null !== $value && 0 !== $value;
-			}
-		);
-	}
-
-	/**
-	 * Flatten the rows of all regions of a table response.
-	 *
-	 * @since 1.1.0
-	 * @param array $data The `data` part of an API response.
-	 * @return array Rows.
-	 */
-	private static function get_rows( $data ) {
-		$rows = array();
-		if ( isset( $data['regions'] ) && is_array( $data['regions'] ) ) {
-			foreach ( $data['regions'] as $region ) {
-				if ( isset( $region['rows'] ) && is_array( $region['rows'] ) ) {
-					$rows = array_merge( $rows, $region['rows'] );
-				}
-			}
-		}
-		return $rows;
-	}
-
-	/**
-	 * Get the slider context of a page for one direction.
-	 *
-	 * @since 1.1.0
-	 * @param array  $data      The `data` part of an API response.
-	 * @param string $direction Either `prev` or `next`.
-	 * @return array Context parameters, empty when there is no further page.
-	 */
-	private static function get_slider_context( $data, $direction ) {
-		if ( isset( $data['slider'][ $direction ]['set_in_context'] ) && is_array( $data['slider'][ $direction ]['set_in_context'] ) ) {
-			return $data['slider'][ $direction ]['set_in_context'];
-		}
-		return array();
-	}
-
-	/**
-	 * Fetch a paginated table completely, following the slider in both directions.
-	 *
-	 * The API pages games (10 per page); the official components merge all pages client-side.
-	 *
-	 * @since 1.1.0
-	 * @param string $endpoint API endpoint.
-	 * @param array  $params   Query parameters of the first request.
-	 * @return array|WP_Error Array with `data` (first page) and `rows` (all pages), or WP_Error.
-	 */
-	private static function fetch_all_pages( $endpoint, $params ) {
-		$client = self::get_client();
-		$first  = $client->fetch_data( $endpoint, $params );
-		if ( is_wp_error( $first ) ) {
-			return $first;
-		}
-		if ( ! isset( $first['data']['regions'] ) ) {
-			return new WP_Error( 'swfl_invalid_response', 'Unexpected response shape' );
-		}
-
-		$rows = self::get_rows( $first['data'] );
-		$seen = array();
-
-		foreach ( array( 'prev', 'next' ) as $direction ) {
-			$context = self::get_slider_context( $first['data'], $direction );
-			for ( $i = 0; $i < self::MAX_PAGES && ! empty( $context ); $i++ ) {
-				$key = wp_json_encode( $context );
-				if ( isset( $seen[ $key ] ) ) {
-					break;
-				}
-				$seen[ $key ] = true;
-
-				$page = $client->fetch_data( $endpoint, array_merge( $params, $context ) );
-				if ( is_wp_error( $page ) || ! isset( $page['data'] ) ) {
-					break;
-				}
-				$page_rows = self::get_rows( $page['data'] );
-				if ( empty( $page_rows ) ) {
-					break;
-				}
-
-				$rows    = 'prev' === $direction ? array_merge( $page_rows, $rows ) : array_merge( $rows, $page_rows );
-				$context = self::get_slider_context( $page['data'], $direction );
-			}
-		}
-
-		return array(
-			'data' => $first['data'],
-			'rows' => $rows,
-		);
-	}
-
-	/**
-	 * Get the visible text of a cell.
-	 *
-	 * @since 1.1.0
-	 * @param array $cell Cell.
-	 * @return string Text, multiple lines joined with a space.
-	 */
-	private static function get_cell_text( $cell ) {
-		if ( isset( $cell['text'] ) ) {
-			return trim( implode( ' ', array_map( 'strval', (array) $cell['text'] ) ) );
-		}
-		if ( isset( $cell['value'] ) && is_scalar( $cell['value'] ) ) {
-			return trim( (string) $cell['value'] );
-		}
-		return '';
-	}
-
-	/**
-	 * Get the text of all cells of a row.
-	 *
-	 * @since 1.1.0
-	 * @param array $row Row.
-	 * @return string Text.
-	 */
-	private static function get_row_text( $row ) {
-		$parts = array();
-		if ( isset( $row['cells'] ) && is_array( $row['cells'] ) ) {
-			foreach ( $row['cells'] as $cell ) {
-				$parts[] = self::get_cell_text( $cell );
-			}
-		}
-		return trim( implode( ' ', $parts ) );
-	}
-
-	/**
-	 * Get the game id of a row, from the row link or any game_detail cell link.
-	 *
-	 * @since 1.1.0
-	 * @param array $row Row.
-	 * @return int Game id, 0 when none.
-	 */
-	private static function get_game_id( $row ) {
-		if ( isset( $row['link']['ids'][0] ) && isset( $row['link']['page'] ) && 'game_detail' === $row['link']['page'] ) {
-			return absint( $row['link']['ids'][0] );
-		}
-		if ( isset( $row['cells'] ) && is_array( $row['cells'] ) ) {
-			foreach ( $row['cells'] as $cell ) {
-				if ( isset( $cell['link']['ids'][0] ) && isset( $cell['link']['page'] ) && 'game_detail' === $cell['link']['page'] ) {
-					return absint( $cell['link']['ids'][0] );
-				}
-			}
-		}
-		return 0;
-	}
-
-	/**
-	 * Get the date of a game row as Y-m-d, resolving "heute" and "gestern".
-	 *
-	 * @since 1.1.0
-	 * @param array $row Row.
-	 * @return string Date, empty when the row has none.
-	 */
-	private static function get_row_date( $row ) {
-		$text  = self::get_row_text( $row );
-		$lower = function_exists( 'mb_strtolower' ) ? mb_strtolower( $text ) : strtolower( $text );
-
-		if ( false !== strpos( $lower, 'heute' ) ) {
-			return current_time( 'Y-m-d' );
-		}
-		if ( false !== strpos( $lower, 'gestern' ) ) {
-			return gmdate( 'Y-m-d', strtotime( current_time( 'Y-m-d' ) . ' UTC' ) - DAY_IN_SECONDS );
-		}
-		if ( preg_match( '/(\d{1,2})\.(\d{1,2})\.(\d{2,4})/', $text, $m ) ) {
-			$year = (int) $m[3];
-			if ( $year < 100 ) {
-				$year += 2000;
-			}
-			return sprintf( '%04d-%02d-%02d', $year, (int) $m[2], (int) $m[1] );
-		}
-		if ( preg_match( '/(\d{4})-(\d{2})-(\d{2})/', $text, $m ) ) {
-			return $m[0];
-		}
-		return '';
-	}
-
-	/**
-	 * Drop cancelled games and sort by date, keeping the API order for equal dates.
-	 *
-	 * @since 1.1.0
-	 * @param array $rows Rows.
-	 * @return array Rows, each with an added `sfa_date` key.
-	 */
-	private static function prepare_game_rows( $rows ) {
-		$prepared = array();
-		foreach ( $rows as $index => $row ) {
-			if ( false !== stripos( self::get_row_text( $row ), 'abgesagt' ) ) {
-				continue;
-			}
-			$row['sfa_date']  = self::get_row_date( $row );
-			$row['sfa_index'] = $index;
-			$prepared[]       = $row;
-		}
-		usort(
-			$prepared,
-			static function ( $a, $b ) {
-				$by_date = strcmp( $a['sfa_date'], $b['sfa_date'] );
-				return 0 !== $by_date ? $by_date : $a['sfa_index'] - $b['sfa_index'];
-			}
-		);
-		return $prepared;
-	}
-
-	/**
-	 * Whether a cell links to the game detail (date, time or result cells).
-	 *
-	 * @since 1.1.0
-	 * @param string $text Cell text.
-	 * @return bool
-	 */
-	private static function is_game_link_cell( $text ) {
-		// Separate patterns (a date, a time or a score) keep each expression simple.
-		foreach ( array( '/\d{1,2}\.\d{1,2}\.\d{2,4}/', '/\d{1,2}:\d{2}/', '/\d+\s*[:–-]\s*\d+/u' ) as $pattern ) {
-			if ( preg_match( $pattern, $text ) ) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Find the columns that are hidden when the table gets narrow, so wide tables fit without scrolling.
-	 *
-	 * Two levels: `sfa-col-minor` (hidden below 520px of table width) for the detail columns of the ranking
-	 * (SoW, SnV, NnV, PQ), the score separator, the league column and the venue in wide tables; `sfa-col-tiny`
-	 * (hidden below 380px) for logo columns and the venue of narrower tables.
-	 *
-	 * @since 1.1.0
-	 * @param string[] $labels Column labels by index.
-	 * @return array<int,string> CSS class by column index, only for columns that can be hidden.
-	 */
-	private static function get_minor_columns( $labels ) {
-		$minor = array();
-		foreach ( $labels as $index => $label ) {
-			if ( in_array( $label, array( 'SoW', 'SnV', 'NnV', 'PQ', '-', 'Liga / Gruppe' ), true ) || ( 'Ort' === $label && count( $labels ) >= 6 ) ) {
-				$minor[ $index ] = 'sfa-col-minor';
-			} elseif ( 'Ort' === $label || '' === $label ) {
-				$minor[ $index ] = 'sfa-col-tiny';
-			}
-		}
-		return $minor;
-	}
-
-	/**
 	 * Render the table of a games or ranking response.
 	 *
 	 * @since 1.1.0
@@ -728,85 +281,158 @@ class Swiss_Floorball_API_Widgets {
 				'admin_links' => false,
 			)
 		);
-		$labels    = array();
 		$col_count = is_array( $headers ) ? count( $headers ) : 0;
 		if ( $args['drop_last'] && $col_count > 0 ) {
 			--$col_count;
 		}
+		$labels = array();
 		for ( $i = 0; $i < $col_count; $i++ ) {
 			$labels[ $i ] = isset( $headers[ $i ]['text'] ) ? (string) $headers[ $i ]['text'] : '';
 		}
-		$minor = self::get_minor_columns( $labels );
+		$columns = array(
+			'headers' => $headers,
+			'labels'  => $labels,
+			'minor'   => Swiss_Floorball_API_Table_Data::get_minor_columns( $labels ),
+			'count'   => $col_count,
+		);
 		?>
 		<div class="sfa-table-wrap">
-			<table class="sfa-data-table">
-				<?php if ( '' !== $args['caption'] ) : ?>
-					<caption class="sfa-visually-hidden"><?php echo esc_html( $args['caption'] ); ?></caption>
-				<?php endif; ?>
-				<?php if ( $col_count > 0 ) : ?>
-					<thead>
-						<tr>
-							<?php foreach ( $labels as $i => $label ) : ?>
-								<?php
-								$th_class = array();
-								if ( isset( $headers[ $i ]['align'] ) && 'r' === $headers[ $i ]['align'] ) {
-									$th_class[] = 'sfa-align-right';
-								}
-								if ( isset( $minor[ $i ] ) ) {
-									$th_class[] = $minor[ $i ];
-								}
-								?>
-								<th scope="col"<?php echo $th_class ? ' class="' . esc_attr( implode( ' ', $th_class ) ) . '"' : ''; ?>><?php echo esc_html( $label ); ?></th>
-							<?php endforeach; ?>
-							<?php if ( $args['admin_links'] ) : ?>
-								<th scope="col"><?php esc_html_e( 'Aktionen', 'swiss-floorball-api' ); ?></th>
-							<?php endif; ?>
-						</tr>
-					</thead>
-				<?php endif; ?>
-				<tbody>
-					<?php foreach ( $rows as $index => $row ) : ?>
-						<?php
-						$game_id = self::get_game_id( $row );
-						$attrs   = '';
-						if ( isset( $args['row_attrs'][ $index ] ) ) {
-							foreach ( $args['row_attrs'][ $index ] as $name => $value ) {
-								$attrs .= ' ' . esc_attr( $name ) . '="' . esc_attr( $value ) . '"';
-							}
-						}
-						$classes = ! empty( $row['highlight'] ) ? ' class="is-highlight"' : '';
-						$hidden  = in_array( $index, $args['hidden'], true ) ? ' hidden' : '';
-						?>
-						<tr<?php echo $classes . $attrs . $hidden; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built from constants and escaped attributes. ?>>
-							<?php
-							$cells = isset( $row['cells'] ) && is_array( $row['cells'] ) ? $row['cells'] : array();
-							foreach ( $cells as $i => $cell ) {
-								if ( $i >= $col_count && $col_count > 0 ) {
-									break;
-								}
-								self::render_cell( $cell, isset( $labels[ $i ] ) ? $labels[ $i ] : '', $game_id, isset( $headers[ $i ]['align'] ) ? $headers[ $i ]['align'] : '', isset( $minor[ $i ] ) ? $minor[ $i ] : '' );
-							}
-							if ( $args['admin_links'] ) {
-								echo '<td>';
-								if ( $game_id > 0 ) {
-									$details_url = add_query_arg(
-										array(
-											'page'     => 'floorball-api-for-swiss-unihockey-matches',
-											'match_id' => $game_id,
-										),
-										admin_url( 'admin.php' )
-									);
-									echo '<a href="' . esc_url( $details_url ) . '">' . esc_html__( 'Details', 'swiss-floorball-api' ) . '</a>';
-								}
-								echo '</td>';
-							}
-							?>
-						</tr>
-					<?php endforeach; ?>
-				</tbody>
-			</table>
+			<?php self::render_table_element( $columns, $rows, $args ); ?>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Render the table element: caption, header row and one row per game.
+	 *
+	 * @since 2.0.1
+	 * @param array $columns Column data: headers, labels, minor (hidden-when-narrow classes) and count.
+	 * @param array $rows    Rows.
+	 * @param array $args    Table arguments of render_table().
+	 * @return void
+	 */
+	private static function render_table_element( $columns, $rows, $args ) {
+		?>
+		<table class="sfa-data-table">
+			<?php if ( '' !== $args['caption'] ) : ?>
+				<caption class="sfa-visually-hidden"><?php echo esc_html( $args['caption'] ); ?></caption>
+			<?php endif; ?>
+			<?php if ( $columns['count'] > 0 ) : ?>
+				<thead>
+					<tr>
+						<?php foreach ( $columns['labels'] as $i => $label ) : ?>
+							<th scope="col"<?php echo self::get_header_class_attr( $columns, $i ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built from constants and escaped classes. ?>><?php echo esc_html( $label ); ?></th>
+						<?php endforeach; ?>
+						<?php if ( $args['admin_links'] ) : ?>
+							<th scope="col"><?php esc_html_e( 'Aktionen', 'swiss-floorball-api' ); ?></th>
+						<?php endif; ?>
+					</tr>
+				</thead>
+			<?php endif; ?>
+			<tbody>
+				<?php
+				foreach ( $rows as $index => $row ) {
+					self::render_table_row( $row, $index, $columns, $args );
+				}
+				?>
+			</tbody>
+		</table>
+		<?php
+	}
+
+	/**
+	 * Class attribute of a header cell: right alignment and the hidden-when-narrow class.
+	 *
+	 * @since 2.0.1
+	 * @param array $columns Column data, see render_table_element().
+	 * @param int   $i       Column index.
+	 * @return string ` class="..."` or an empty string.
+	 */
+	private static function get_header_class_attr( $columns, $i ) {
+		$classes = array();
+		if ( isset( $columns['headers'][ $i ]['align'] ) && 'r' === $columns['headers'][ $i ]['align'] ) {
+			$classes[] = 'sfa-align-right';
+		}
+		if ( isset( $columns['minor'][ $i ] ) ) {
+			$classes[] = $columns['minor'][ $i ];
+		}
+
+		return $classes ? ' class="' . esc_attr( implode( ' ', $classes ) ) . '"' : '';
+	}
+
+	/**
+	 * Extra attributes of a table row: the configured attributes, the highlight class and the hidden state.
+	 *
+	 * @since 2.0.1
+	 * @param array      $row   Row.
+	 * @param int|string $index Row index.
+	 * @param array      $args  Table arguments of render_table().
+	 * @return string Attribute string with a leading space per attribute.
+	 */
+	private static function get_row_attributes( $row, $index, $args ) {
+		$attrs = ! empty( $row['highlight'] ) ? ' class="is-highlight"' : '';
+		if ( isset( $args['row_attrs'][ $index ] ) ) {
+			foreach ( $args['row_attrs'][ $index ] as $name => $value ) {
+				$attrs .= ' ' . esc_attr( $name ) . '="' . esc_attr( $value ) . '"';
+			}
+		}
+
+		return $attrs . ( in_array( $index, $args['hidden'], true ) ? ' hidden' : '' );
+	}
+
+	/**
+	 * Render one table row with its cells.
+	 *
+	 * @since 2.0.1
+	 * @param array      $row     Row.
+	 * @param int|string $index   Row index, used for extra attributes and the hidden state.
+	 * @param array      $columns Column data, see render_table_element().
+	 * @param array      $args    Table arguments of render_table().
+	 * @return void
+	 */
+	private static function render_table_row( $row, $index, $columns, $args ) {
+		$game_id = Swiss_Floorball_API_Table_Data::get_game_id( $row );
+		$cells   = isset( $row['cells'] ) && is_array( $row['cells'] ) ? $row['cells'] : array();
+		?>
+		<tr<?php echo self::get_row_attributes( $row, $index, $args ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built from constants and escaped attributes. ?>>
+			<?php
+			foreach ( $cells as $i => $cell ) {
+				if ( $i >= $columns['count'] && $columns['count'] > 0 ) {
+					break;
+				}
+				$align = isset( $columns['headers'][ $i ]['align'] ) ? $columns['headers'][ $i ]['align'] : '';
+				$label = isset( $columns['labels'][ $i ] ) ? $columns['labels'][ $i ] : '';
+				$minor = isset( $columns['minor'][ $i ] ) ? $columns['minor'][ $i ] : '';
+				self::render_cell( $cell, $label, $game_id, $align, $minor );
+			}
+			if ( $args['admin_links'] ) {
+				self::render_admin_link_cell( $game_id );
+			}
+			?>
+		</tr>
+		<?php
+	}
+
+	/**
+	 * Render the trailing cell that links a game to its admin detail page.
+	 *
+	 * @since 2.0.1
+	 * @param int $game_id Game id, 0 when the row has none.
+	 * @return void
+	 */
+	private static function render_admin_link_cell( $game_id ) {
+		echo '<td>';
+		if ( $game_id > 0 ) {
+			$details_url = add_query_arg(
+				array(
+					'page'     => 'floorball-api-for-swiss-unihockey-matches',
+					'match_id' => $game_id,
+				),
+				admin_url( 'admin.php' )
+			);
+			echo '<a href="' . esc_url( $details_url ) . '">' . esc_html__( 'Details', 'swiss-floorball-api' ) . '</a>';
+		}
+		echo '</td>';
 	}
 
 	/**
@@ -821,7 +447,7 @@ class Swiss_Floorball_API_Widgets {
 	 * @return void
 	 */
 	private static function render_cell( $cell, $label, $game_id, $align, $minor = '' ) {
-		$text  = self::get_cell_text( $cell );
+		$text  = Swiss_Floorball_API_Table_Data::get_cell_text( $cell );
 		$image = '';
 		if ( isset( $cell['image']['url'] ) ) {
 			$image = $cell['image']['url'];
@@ -860,7 +486,7 @@ class Swiss_Floorball_API_Widgets {
 			$content = esc_html( $text );
 		}
 
-		if ( $game_id > 0 && '' === $image && self::is_game_link_cell( $text ) ) {
+		if ( $game_id > 0 && '' === $image && Swiss_Floorball_API_Table_Data::is_game_link_cell( $text ) ) {
 			echo '<a href="' . esc_url( self::GAME_LINK_BASE . $game_id ) . '" target="_blank" rel="noopener noreferrer">' . $content . '</a>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $content is escaped above.
 		} else {
 			echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $content is escaped above.
@@ -907,7 +533,7 @@ class Swiss_Floorball_API_Widgets {
 	 * @return void
 	 */
 	public static function render_admin_games( $mode, $id, $season, $fallback, $caption ) {
-		$result = self::fetch_all_pages(
+		$result = Swiss_Floorball_API_Table_Data::fetch_all_pages(
 			'games',
 			array(
 				'mode'        => $mode,
@@ -920,7 +546,7 @@ class Swiss_Floorball_API_Widgets {
 			return;
 		}
 
-		$rows = self::prepare_game_rows( $result['rows'] );
+		$rows = Swiss_Floorball_API_Table_Data::prepare_game_rows( $result['rows'] );
 		echo '<div class="sfa-widget">';
 		self::render_title( $result['data'], true, $fallback, 'hockey' );
 		if ( $rows ) {
@@ -939,6 +565,52 @@ class Swiss_Floorball_API_Widgets {
 	}
 
 	/**
+	 * Monday and Sunday (Y-m-d) of the week that contains a timestamp.
+	 *
+	 * @since 2.0.1
+	 * @param int $timestamp UTC timestamp.
+	 * @return string[] Week start and week end.
+	 */
+	private static function get_week_bounds( $timestamp ) {
+		$start = gmdate( 'Y-m-d', $timestamp - ( (int) gmdate( 'N', $timestamp ) - 1 ) * DAY_IN_SECONDS );
+		$end   = gmdate( 'Y-m-d', strtotime( $start . ' UTC' ) + 6 * DAY_IN_SECONDS );
+
+		return array( $start, $end );
+	}
+
+	/**
+	 * Keep the given week when it has games, otherwise use the week of the next game, or of the last one.
+	 *
+	 * @since 2.0.1
+	 * @param array  $rows       Game rows with an `sfa_date`.
+	 * @param string $week_start Start of the current week (Y-m-d).
+	 * @param string $week_end   End of the current week (Y-m-d).
+	 * @return string[] Week start and week end to show.
+	 */
+	private static function find_visible_week( $rows, $week_start, $week_end ) {
+		$next = '';
+		$last = '';
+		foreach ( $rows as $row ) {
+			$date = $row['sfa_date'];
+			if ( '' === $date ) {
+				continue;
+			}
+			if ( $date >= $week_start && $date <= $week_end ) {
+				return array( $week_start, $week_end );
+			}
+			if ( $date > $week_end && ( '' === $next || $date < $next ) ) {
+				$next = $date;
+			}
+			if ( $date < $week_start && $date > $last ) {
+				$last = $date;
+			}
+		}
+		$anchor = '' !== $next ? $next : $last;
+
+		return '' !== $anchor ? self::get_week_bounds( strtotime( $anchor . ' UTC' ) ) : array( $week_start, $week_end );
+	}
+
+	/**
 	 * Club games, shown week by week (uniho-club-games).
 	 *
 	 * @since 1.1.0
@@ -952,7 +624,7 @@ class Swiss_Floorball_API_Widgets {
 			return;
 		}
 
-		$result = self::fetch_all_pages(
+		$result = Swiss_Floorball_API_Table_Data::fetch_all_pages(
 			'games',
 			array(
 				'mode'    => 'club',
@@ -965,37 +637,11 @@ class Swiss_Floorball_API_Widgets {
 			return;
 		}
 
-		$rows       = self::prepare_game_rows( $result['rows'] );
-		$today_ts   = strtotime( current_time( 'Y-m-d' ) . ' UTC' );
-		$week_start = gmdate( 'Y-m-d', $today_ts - ( (int) gmdate( 'N', $today_ts ) - 1 ) * DAY_IN_SECONDS );
-		$week_end   = gmdate( 'Y-m-d', strtotime( $week_start . ' UTC' ) + 6 * DAY_IN_SECONDS );
+		$rows                          = Swiss_Floorball_API_Table_Data::prepare_game_rows( $result['rows'] );
+		list( $week_start, $week_end ) = self::get_week_bounds( strtotime( current_time( 'Y-m-d' ) . ' UTC' ) );
 
 		// Outside the playing weeks the current week is empty; jump to the next game, or the last one.
-		$in_week = false;
-		$next    = '';
-		$last    = '';
-		foreach ( $rows as $row ) {
-			$date = $row['sfa_date'];
-			if ( '' === $date ) {
-				continue;
-			}
-			if ( $date >= $week_start && $date <= $week_end ) {
-				$in_week = true;
-				break;
-			}
-			if ( $date > $week_end && ( '' === $next || $date < $next ) ) {
-				$next = $date;
-			}
-			if ( $date < $week_start && $date > $last ) {
-				$last = $date;
-			}
-		}
-		$anchor = '' !== $next ? $next : $last;
-		if ( ! $in_week && '' !== $anchor ) {
-			$anchor_ts  = strtotime( $anchor . ' UTC' );
-			$week_start = gmdate( 'Y-m-d', $anchor_ts - ( (int) gmdate( 'N', $anchor_ts ) - 1 ) * DAY_IN_SECONDS );
-			$week_end   = gmdate( 'Y-m-d', strtotime( $week_start . ' UTC' ) + 6 * DAY_IN_SECONDS );
-		}
+		list( $week_start, $week_end ) = self::find_visible_week( $rows, $week_start, $week_end );
 
 		$row_attrs = array();
 		$hidden    = array();
@@ -1051,7 +697,7 @@ class Swiss_Floorball_API_Widgets {
 		}
 		$page_size = $page_size > 0 ? min( $page_size, 50 ) : 4;
 
-		$result = self::fetch_all_pages(
+		$result = Swiss_Floorball_API_Table_Data::fetch_all_pages(
 			'games',
 			array(
 				'mode'    => 'team',
@@ -1064,7 +710,7 @@ class Swiss_Floorball_API_Widgets {
 			return;
 		}
 
-		$rows  = self::prepare_game_rows( $result['rows'] );
+		$rows  = Swiss_Floorball_API_Table_Data::prepare_game_rows( $result['rows'] );
 		$total = count( $rows );
 		$today = current_time( 'Y-m-d' );
 
@@ -1213,7 +859,7 @@ class Swiss_Floorball_API_Widgets {
 		);
 		$params      = array_merge( array( 'mode' => 'list' ), $base_params, $context );
 
-		$response = self::get_client()->fetch_data( 'games', self::clean_params( $params ) );
+		$response = self::get_client()->fetch_data( 'games', Swiss_Floorball_API_Table_Data::clean_params( $params ) );
 		if ( is_wp_error( $response ) || ! isset( $response['data']['regions'] ) ) {
 			self::render_error( $response );
 			return;
@@ -1221,11 +867,11 @@ class Swiss_Floorball_API_Widgets {
 
 		$data    = $response['data'];
 		$headers = isset( $data['headers'] ) && is_array( $data['headers'] ) ? $data['headers'] : array();
-		$rows    = self::prepare_game_rows( self::get_rows( $data ) );
+		$rows    = Swiss_Floorball_API_Table_Data::prepare_game_rows( Swiss_Floorball_API_Table_Data::get_rows( $data ) );
 		$last    = $headers ? end( $headers ) : array();
 		$drop    = isset( $last['text'] ) && '📺' === $last['text'];
-		$prev    = self::get_slider_context( $data, 'prev' );
-		$next    = self::get_slider_context( $data, 'next' );
+		$prev    = Swiss_Floorball_API_Table_Data::get_slider_context( $data, 'prev' );
+		$next    = Swiss_Floorball_API_Table_Data::get_slider_context( $data, 'next' );
 
 		?>
 		<div class="sfa-widget" data-sfa-widget="league" data-sfa-params="<?php echo esc_attr( wp_json_encode( $base_params ) ); ?>">
@@ -1236,55 +882,96 @@ class Swiss_Floorball_API_Widgets {
 			</div>
 			<?php
 			self::render_title( $data, true, '', 'hockey' );
-
-			$groups  = self::group_playoff_series( $headers, $rows );
-			$grouped = array();
-			foreach ( $groups as $series ) {
-				foreach ( $series['indexes'] as $index ) {
-					$grouped[ $index ] = true;
-				}
-			}
-			$single = array();
-			foreach ( $rows as $index => $row ) {
-				if ( ! isset( $grouped[ $index ] ) ) {
-					$single[] = $row;
-				}
-			}
-
-			foreach ( $groups as $position => $series ) {
-				$series_rows = array();
-				foreach ( $series['indexes'] as $index ) {
-					$series_rows[] = $rows[ $index ];
-				}
-				?>
-				<details class="sfa-playoff-group"<?php echo 0 === $position ? ' open' : ''; ?>>
-					<summary>
-						<span><?php echo esc_html( $series['title'] ); ?></span>
-						<small>
-							<?php
-							echo esc_html(
-								sprintf(
-									/* translators: %d: number of games in the series. */
-									_n( '%d Spiel', '%d Spiele', count( $series_rows ), 'swiss-floorball-api' ),
-									count( $series_rows )
-								)
-							);
-							?>
-						</small>
-					</summary>
-					<?php self::render_table( $headers, $series_rows, array( 'drop_last' => $drop ) ); ?>
-				</details>
-				<?php
-			}
-
-			if ( $single ) {
-				self::render_table( $headers, $single, array( 'drop_last' => $drop ) );
-			} elseif ( empty( $groups ) ) {
-				echo '<p class="sfa-empty">' . esc_html__( 'Keine Spiele gefunden.', 'swiss-floorball-api' ) . '</p>';
-			}
+			self::render_league_tables( $headers, $rows, $drop );
 			?>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Render the playoff series as collapsible groups, followed by the games that belong to no series.
+	 *
+	 * @since 2.0.1
+	 * @param array $headers Table headers.
+	 * @param array $rows    Prepared rows.
+	 * @param bool  $drop    Whether to drop the last (streaming) column.
+	 * @return void
+	 */
+	private static function render_league_tables( $headers, $rows, $drop ) {
+		$groups  = self::group_playoff_series( $headers, $rows );
+		$grouped = array();
+		foreach ( $groups as $series ) {
+			foreach ( $series['indexes'] as $index ) {
+				$grouped[ $index ] = true;
+			}
+		}
+
+		foreach ( $groups as $position => $series ) {
+			self::render_playoff_group( $series, 0 === $position, $headers, $rows, $drop );
+		}
+
+		$single = array_values( array_diff_key( $rows, $grouped ) );
+		if ( $single ) {
+			self::render_table( $headers, $single, array( 'drop_last' => $drop ) );
+		} elseif ( empty( $groups ) ) {
+			echo '<p class="sfa-empty">' . esc_html__( 'Keine Spiele gefunden.', 'swiss-floorball-api' ) . '</p>';
+		}
+	}
+
+	/**
+	 * Render one playoff series as a collapsible group.
+	 *
+	 * @since 2.0.1
+	 * @param array $series  Series with `title` and the row `indexes`.
+	 * @param bool  $is_open Whether the group starts expanded.
+	 * @param array $headers Table headers.
+	 * @param array $rows    Prepared rows.
+	 * @param bool  $drop    Whether to drop the last (streaming) column.
+	 * @return void
+	 */
+	private static function render_playoff_group( $series, $is_open, $headers, $rows, $drop ) {
+		$series_rows = array();
+		foreach ( $series['indexes'] as $index ) {
+			$series_rows[] = $rows[ $index ];
+		}
+		?>
+		<details class="sfa-playoff-group"<?php echo $is_open ? ' open' : ''; ?>>
+			<summary>
+				<span><?php echo esc_html( $series['title'] ); ?></span>
+				<small>
+					<?php
+					echo esc_html(
+						sprintf(
+							/* translators: %d: number of games in the series. */
+							_n( '%d Spiel', '%d Spiele', count( $series_rows ), 'swiss-floorball-api' ),
+							count( $series_rows )
+						)
+					);
+					?>
+				</small>
+			</summary>
+			<?php self::render_table( $headers, $series_rows, array( 'drop_last' => $drop ) ); ?>
+		</details>
+		<?php
+	}
+
+	/**
+	 * Index of the first header whose label contains a text, -1 when there is none.
+	 *
+	 * @since 2.0.1
+	 * @param array  $headers Table headers.
+	 * @param string $needle  Lower-case text to look for.
+	 * @return int Header index, or -1.
+	 */
+	private static function find_header_index( $headers, $needle ) {
+		foreach ( $headers as $index => $header ) {
+			$label = isset( $header['text'] ) ? strtolower( (string) $header['text'] ) : '';
+			if ( false !== strpos( $label, $needle ) ) {
+				return $index;
+			}
+		}
+
+		return -1;
 	}
 
 	/**
@@ -1296,25 +983,16 @@ class Swiss_Floorball_API_Widgets {
 	 * @return array List of series with `title` and the row `indexes`.
 	 */
 	private static function group_playoff_series( $headers, $rows ) {
-		$home_index = -1;
-		$away_index = -1;
-		foreach ( $headers as $index => $header ) {
-			$label = isset( $header['text'] ) ? strtolower( (string) $header['text'] ) : '';
-			if ( -1 === $home_index && false !== strpos( $label, 'heim' ) ) {
-				$home_index = $index;
-			}
-			if ( -1 === $away_index && false !== strpos( $label, 'gast' ) ) {
-				$away_index = $index;
-			}
-		}
+		$home_index = self::find_header_index( $headers, 'heim' );
+		$away_index = self::find_header_index( $headers, 'gast' );
 		if ( $home_index < 0 || $away_index < 0 ) {
 			return array();
 		}
 
 		$series = array();
 		foreach ( $rows as $index => $row ) {
-			$home = isset( $row['cells'][ $home_index ] ) ? self::get_cell_text( $row['cells'][ $home_index ] ) : '';
-			$away = isset( $row['cells'][ $away_index ] ) ? self::get_cell_text( $row['cells'][ $away_index ] ) : '';
+			$home = isset( $row['cells'][ $home_index ] ) ? Swiss_Floorball_API_Table_Data::get_cell_text( $row['cells'][ $home_index ] ) : '';
+			$away = isset( $row['cells'][ $away_index ] ) ? Swiss_Floorball_API_Table_Data::get_cell_text( $row['cells'][ $away_index ] ) : '';
 			if ( '' === $home || '' === $away ) {
 				continue;
 			}
@@ -1364,14 +1042,14 @@ class Swiss_Floorball_API_Widgets {
 			'group'      => $group,
 			'view'       => '' !== $view ? $view : 'full',
 		);
-		$response = self::get_client()->fetch_data( 'rankings', self::clean_params( $params ) );
+		$response = self::get_client()->fetch_data( 'rankings', Swiss_Floorball_API_Table_Data::clean_params( $params ) );
 		if ( is_wp_error( $response ) || ! isset( $response['data']['regions'] ) ) {
 			self::render_error( $response );
 			return;
 		}
 
 		$data = $response['data'];
-		$rows = self::get_rows( $data );
+		$rows = Swiss_Floorball_API_Table_Data::get_rows( $data );
 		?>
 		<div class="sfa-widget" data-sfa-widget="ranking">
 			<?php self::render_title( $data, true, __( 'Rangliste', 'swiss-floorball-api' ), 'chart' ); ?>
@@ -1404,7 +1082,7 @@ class Swiss_Floorball_API_Widgets {
 		// Without a club id the API returns the Mobiliar topscorers of the whole league.
 		$response = self::get_client()->fetch_data(
 			'topscorers/mobiliar-highlight',
-			self::clean_params(
+			Swiss_Floorball_API_Table_Data::clean_params(
 				array(
 					'season'    => $season,
 					'club_id'   => $club_id,
@@ -1417,23 +1095,7 @@ class Swiss_Floorball_API_Widgets {
 			return;
 		}
 
-		$rows    = self::get_rows( $response['data'] );
-		$players = array();
-		$count   = 0;
-		foreach ( array_slice( $rows, 0, 4 ) as $row ) {
-			$count = max( $count, isset( $row['cells'] ) ? count( $row['cells'] ) : 0 );
-		}
-		for ( $i = 0; $i < $count; $i++ ) {
-			$player = array(
-				'image'  => isset( $rows[0]['cells'][ $i ]['image']['url'] ) ? $rows[0]['cells'][ $i ]['image']['url'] : '',
-				'name'   => isset( $rows[1]['cells'][ $i ] ) ? self::get_cell_text( $rows[1]['cells'][ $i ] ) : '',
-				'club'   => isset( $rows[2]['cells'][ $i ] ) ? self::get_cell_text( $rows[2]['cells'][ $i ] ) : '',
-				'points' => isset( $rows[3]['cells'][ $i ] ) ? self::get_cell_text( $rows[3]['cells'][ $i ] ) : '',
-			);
-			if ( '' !== $player['image'] || '' !== $player['name'] || '' !== $player['club'] || '' !== $player['points'] ) {
-				$players[] = $player;
-			}
-		}
+		$players = self::collect_topscorers( Swiss_Floorball_API_Table_Data::get_rows( $response['data'] ) );
 
 		?>
 		<div class="sfa-widget sfa-topscorers" data-sfa-widget="topscorers">
@@ -1442,28 +1104,85 @@ class Swiss_Floorball_API_Widgets {
 			<?php else : ?>
 				<div class="sfa-topscorers__headline"><?php esc_html_e( 'die Mobiliar Topscorer', 'swiss-floorball-api' ); ?></div>
 				<div class="sfa-topscorers__list">
-					<?php foreach ( $players as $player ) : ?>
-						<article class="sfa-topscorers__item">
-							<div class="sfa-topscorers__image">
-								<?php if ( '' !== $player['image'] ) : ?>
-									<img src="<?php echo esc_url( $player['image'] ); ?>" alt="<?php echo esc_attr( $player['name'] ); ?>" loading="lazy" />
-								<?php endif; ?>
-							</div>
-							<div class="sfa-topscorers__info">
-								<h3><?php echo esc_html( $player['name'] ); ?></h3>
-								<?php if ( '' !== $player['club'] ) : ?>
-									<p><?php echo esc_html( $player['club'] ); ?></p>
-								<?php endif; ?>
-							</div>
-							<div class="sfa-topscorers__points">
-								<strong><?php echo esc_html( '' !== $player['points'] ? $player['points'] : '-' ); ?></strong>
-								<span><?php esc_html_e( 'Punkte', 'swiss-floorball-api' ); ?></span>
-							</div>
-						</article>
-					<?php endforeach; ?>
+					<?php
+					foreach ( $players as $player ) {
+						self::render_topscorer_item( $player );
+					}
+					?>
 				</div>
 			<?php endif; ?>
 		</div>
+		<?php
+	}
+
+	/**
+	 * Text of one cell of the topscorer grid, empty when the cell is missing.
+	 *
+	 * @since 2.0.1
+	 * @param array $rows   Grid rows (portraits, names, clubs, points).
+	 * @param int   $row    Row index.
+	 * @param int   $column Column index, one column per player.
+	 * @return string Cell text.
+	 */
+	private static function topscorer_text( $rows, $row, $column ) {
+		return isset( $rows[ $row ]['cells'][ $column ] ) ? Swiss_Floorball_API_Table_Data::get_cell_text( $rows[ $row ]['cells'][ $column ] ) : '';
+	}
+
+	/**
+	 * Read the players from the four-row topscorer grid.
+	 *
+	 * @since 2.0.1
+	 * @param array $rows Grid rows (portraits, names, clubs, points).
+	 * @return array[] Players with image, name, club and points; players without any data are skipped.
+	 */
+	private static function collect_topscorers( $rows ) {
+		$count = 0;
+		foreach ( array_slice( $rows, 0, 4 ) as $row ) {
+			$count = max( $count, isset( $row['cells'] ) ? count( $row['cells'] ) : 0 );
+		}
+
+		$players = array();
+		for ( $i = 0; $i < $count; $i++ ) {
+			$player = array(
+				'image'  => isset( $rows[0]['cells'][ $i ]['image']['url'] ) ? $rows[0]['cells'][ $i ]['image']['url'] : '',
+				'name'   => self::topscorer_text( $rows, 1, $i ),
+				'club'   => self::topscorer_text( $rows, 2, $i ),
+				'points' => self::topscorer_text( $rows, 3, $i ),
+			);
+			if ( '' !== implode( '', $player ) ) {
+				$players[] = $player;
+			}
+		}
+
+		return $players;
+	}
+
+	/**
+	 * Render one topscorer card.
+	 *
+	 * @since 2.0.1
+	 * @param array $player Player with image, name, club and points.
+	 * @return void
+	 */
+	private static function render_topscorer_item( $player ) {
+		?>
+		<article class="sfa-topscorers__item">
+			<div class="sfa-topscorers__image">
+				<?php if ( '' !== $player['image'] ) : ?>
+					<img src="<?php echo esc_url( $player['image'] ); ?>" alt="<?php echo esc_attr( $player['name'] ); ?>" loading="lazy" />
+				<?php endif; ?>
+			</div>
+			<div class="sfa-topscorers__info">
+				<h3><?php echo esc_html( $player['name'] ); ?></h3>
+				<?php if ( '' !== $player['club'] ) : ?>
+					<p><?php echo esc_html( $player['club'] ); ?></p>
+				<?php endif; ?>
+			</div>
+			<div class="sfa-topscorers__points">
+				<strong><?php echo esc_html( '' !== $player['points'] ? $player['points'] : '-' ); ?></strong>
+				<span><?php esc_html_e( 'Punkte', 'swiss-floorball-api' ); ?></span>
+			</div>
+		</article>
 		<?php
 	}
 

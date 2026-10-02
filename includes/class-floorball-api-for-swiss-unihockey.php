@@ -117,16 +117,22 @@ class Swiss_Floorball_Api {
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
 		require_once plugin_dir_path( __DIR__ ) . 'admin/class-floorball-api-for-swiss-unihockey-admin.php';
+		require_once plugin_dir_path( __DIR__ ) . 'admin/class-floorball-api-for-swiss-unihockey-admin-settings.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site.
 		 */
 		require_once plugin_dir_path( __DIR__ ) . 'public/class-floorball-api-for-swiss-unihockey-public.php';
+		require_once plugin_dir_path( __DIR__ ) . 'public/class-floorball-api-for-swiss-unihockey-public-assets.php';
 
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-floorball-api-for-swiss-unihockey-client.php';
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-floorball-api-for-swiss-unihockey-display.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-floorball-api-for-swiss-unihockey-theme.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-floorball-api-for-swiss-unihockey-display-stats.php';
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-floorball-api-for-swiss-unihockey-widgets.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-floorball-api-for-swiss-unihockey-calendar.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-floorball-api-for-swiss-unihockey-table-data.php';
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-floorball-api-for-swiss-unihockey-icons.php';
 
 		$this->loader = new Swiss_Floorball_Api_Loader();
@@ -173,9 +179,11 @@ class Swiss_Floorball_Api {
 	private function define_public_hooks() {
 
 		$plugin_public = new Swiss_Floorball_Api_Public( $this->get_plugin_name(), $this->get_version() );
+		$plugin_public->register_shortcodes();
+		$plugin_assets = new Swiss_Floorball_Api_Public_Assets( $this->get_plugin_name(), $this->get_version() );
 
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
+		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_assets, 'enqueue_styles' );
+		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_assets, 'enqueue_scripts' );
 		$this->loader->add_action( 'rest_api_init', 'Swiss_Floorball_API_Widgets', 'register_routes' );
 	}
 

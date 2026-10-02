@@ -34,7 +34,7 @@ $swfl_match_id = isset( $_GET['match_id'] ) ? absint( $_GET['match_id'] ) : null
 
 ?>
 
-<div class="wrap sfa-admin-wrap" data-sfa-theme="<?php echo esc_attr( Swiss_Floorball_API_Display::get_theme() ); ?>">
+<div class="wrap sfa-admin-wrap" data-sfa-theme="<?php echo esc_attr( Swiss_Floorball_API_Theme::get_theme() ); ?>">
 	<div class="sfa-admin-header">
 		<h1><?php Swiss_Floorball_Api_Icons::render( 'hockey' ); ?> <?php echo esc_html( get_admin_page_title() ); ?></h1>
 		<p><?php esc_html_e( 'Übersicht der letzten Spiele und Details', 'swiss-floorball-api' ); ?></p>
@@ -53,11 +53,11 @@ $swfl_match_id = isset( $_GET['match_id'] ) ? absint( $_GET['match_id'] ) : null
 		echo '<p><a href="' . esc_url( $swfl_back_url ) . '" class="button button-primary">' . Swiss_Floorball_Api_Icons::get( 'back' ) . ' ' . esc_html__( 'Zurück zur Übersicht', 'swiss-floorball-api' ) . '</a></p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Icon markup sanitized via wp_kses() in Swiss_Floorball_Api_Icons::get().
 
 		// Render Match Details.
-		Swiss_Floorball_API_Display::render_game_details_table( $swfl_match_id );
+		Swiss_Floorball_API_Display_Stats::render_game_details_table( $swfl_match_id );
 
 		// Show Game Events (Match Telegramm).
 		echo '<div class="sfa-card sfa-card--spaced-top">';
-		Swiss_Floorball_API_Display::render_game_events( $swfl_match_id, true );
+		Swiss_Floorball_API_Display_Stats::render_game_events( $swfl_match_id );
 		echo '</div>';
 		?>
 
@@ -66,7 +66,7 @@ $swfl_match_id = isset( $_GET['match_id'] ) ? absint( $_GET['match_id'] ) : null
 		// --- List View ---
 
 		// Render Club Games List.
-		Swiss_Floorball_API_Display::render_club_games( $swfl_club_id, $swfl_current_season, true );
+		Swiss_Floorball_API_Display::render_club_games( $swfl_club_id, $swfl_current_season );
 		?>
 
 		<hr class="sfa-divider">
@@ -94,7 +94,7 @@ $swfl_match_id = isset( $_GET['match_id'] ) ? absint( $_GET['match_id'] ) : null
 				echo '<div class="sfa-table-container sfa-table-container-flat">';
 
 				// Use the display class to render games for this team.
-				Swiss_Floorball_API_Display::render_team_games( $swfl_team_id, $swfl_current_season, true );
+				Swiss_Floorball_API_Display::render_team_games( $swfl_team_id, $swfl_current_season );
 
 				echo '</div>';
 				echo '</div>';

@@ -170,7 +170,11 @@ function _e( $t, $d = '' ) {
 
 require_once __DIR__ . '/includes/class-floorball-api-for-swiss-unihockey-client.php';
 require_once __DIR__ . '/includes/class-floorball-api-for-swiss-unihockey-display.php';
+require_once __DIR__ . '/includes/class-floorball-api-for-swiss-unihockey-theme.php';
+require_once __DIR__ . '/includes/class-floorball-api-for-swiss-unihockey-display-stats.php';
 require_once __DIR__ . '/includes/class-floorball-api-for-swiss-unihockey-widgets.php';
+require_once __DIR__ . '/includes/class-floorball-api-for-swiss-unihockey-calendar.php';
+require_once __DIR__ . '/includes/class-floorball-api-for-swiss-unihockey-table-data.php';
 require_once __DIR__ . '/includes/class-floorball-api-for-swiss-unihockey-icons.php';
 
 // ---------------------------------------------------------------------------
@@ -313,6 +317,7 @@ check( 'Client: zweiter Aufruf kommt aus dem Cache', function () use ( $client )
 // ---------------------------------------------------------------------------
 echo "Render-Methoden\n";
 $D = 'Swiss_Floorball_API_Display';
+$S = 'Swiss_Floorball_API_Display_Stats';
 
 $renders = array(
 	'render_seasons'          => function () use ( $D ) { $D::render_seasons(); },
@@ -320,17 +325,17 @@ $renders = array(
 	'render_clubs'            => function () use ( $D ) { $D::render_clubs(); },
 	'render_cups'             => function () use ( $D ) { $D::render_cups(); },
 	'render_teams'            => function () use ( $D ) { $D::render_teams(); },
-	'render_national_players' => function () use ( $D ) { $D::render_national_players(); },
+	'render_national_players' => function () use ( $S ) { $S::render_national_players(); },
 	'render_groups'           => function () use ( $D, $season, $league, $game_class ) { $D::render_groups( $season, $league, $game_class ); },
-	'render_rankings'         => function () use ( $D, $season, $league, $game_class, &$group ) { $D::render_rankings( $season, $league, $game_class, $group ); },
-	'render_topscorers'       => function () use ( $D, $season, $league, $game_class, &$group ) { $D::render_topscorers( $season, $league, $game_class, $group ); },
+	'render_rankings'         => function () use ( $S, $season, $league, $game_class, &$group ) { $S::render_rankings( $season, $league, $game_class, $group ); },
+	'render_topscorers'       => function () use ( $S, $season, $league, $game_class ) { $S::render_topscorers( $season, $league, $game_class ); },
 	'render_club_teams'       => function () use ( $D, $club_id ) { $D::render_club_teams( $club_id ); },
 	'render_club_teams_pub'   => function () use ( $D, $club_id ) { $D::render_club_teams_pub( $club_id ); },
 	'render_club_games'       => function () use ( $D, $club_id, $season ) { $D::render_club_games( $club_id, $season ); },
 	'render_club_games_cards' => function () use ( $D, $club_id, $season ) { $D::render_club_games_cards( $club_id, $season ); },
 	'render_calendars (Club)' => function () use ( $D, $club_id, $season ) { $D::render_calendars( null, $club_id, $season ); },
-	'render_game_details_table' => function () use ( $D, &$game_id ) { $D::render_game_details_table( $game_id ); },
-	'render_game_events'      => function () use ( $D, &$game_id ) { $D::render_game_events( $game_id ); },
+	'render_game_details_table' => function () use ( $S, &$game_id ) { $S::render_game_details_table( $game_id ); },
+	'render_game_events'      => function () use ( $S, &$game_id ) { $S::render_game_events( $game_id ); },
 );
 foreach ( $renders as $name => $fn ) {
 	check( $name, function () use ( $fn ) {
