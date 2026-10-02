@@ -281,85 +281,134 @@ class Swiss_Floorball_API_Widgets {
 				'admin_links' => false,
 			)
 		);
-		$labels    = array();
 		$col_count = is_array( $headers ) ? count( $headers ) : 0;
 		if ( $args['drop_last'] && $col_count > 0 ) {
 			--$col_count;
 		}
+		$labels = array();
 		for ( $i = 0; $i < $col_count; $i++ ) {
 			$labels[ $i ] = isset( $headers[ $i ]['text'] ) ? (string) $headers[ $i ]['text'] : '';
 		}
-		$minor = Swiss_Floorball_API_Table_Data::get_minor_columns( $labels );
+		$columns = array(
+			'headers' => $headers,
+			'labels'  => $labels,
+			'minor'   => Swiss_Floorball_API_Table_Data::get_minor_columns( $labels ),
+			'count'   => $col_count,
+		);
 		?>
 		<div class="sfa-table-wrap">
 			<table class="sfa-data-table">
 				<?php if ( '' !== $args['caption'] ) : ?>
 					<caption class="sfa-visually-hidden"><?php echo esc_html( $args['caption'] ); ?></caption>
 				<?php endif; ?>
-				<?php if ( $col_count > 0 ) : ?>
-					<thead>
-						<tr>
-							<?php foreach ( $labels as $i => $label ) : ?>
-								<?php
-								$th_class = array();
-								if ( isset( $headers[ $i ]['align'] ) && 'r' === $headers[ $i ]['align'] ) {
-									$th_class[] = 'sfa-align-right';
-								}
-								if ( isset( $minor[ $i ] ) ) {
-									$th_class[] = $minor[ $i ];
-								}
-								?>
-								<th scope="col"<?php echo $th_class ? ' class="' . esc_attr( implode( ' ', $th_class ) ) . '"' : ''; ?>><?php echo esc_html( $label ); ?></th>
-							<?php endforeach; ?>
-							<?php if ( $args['admin_links'] ) : ?>
-								<th scope="col"><?php esc_html_e( 'Aktionen', 'swiss-floorball-api' ); ?></th>
-							<?php endif; ?>
-						</tr>
-					</thead>
-				<?php endif; ?>
+				<?php
+				if ( $col_count > 0 ) {
+					self::render_table_head( $columns, $args['admin_links'] );
+				}
+				?>
 				<tbody>
-					<?php foreach ( $rows as $index => $row ) : ?>
-						<?php
-						$game_id = Swiss_Floorball_API_Table_Data::get_game_id( $row );
-						$attrs   = '';
-						if ( isset( $args['row_attrs'][ $index ] ) ) {
-							foreach ( $args['row_attrs'][ $index ] as $name => $value ) {
-								$attrs .= ' ' . esc_attr( $name ) . '="' . esc_attr( $value ) . '"';
-							}
-						}
-						$classes = ! empty( $row['highlight'] ) ? ' class="is-highlight"' : '';
-						$hidden  = in_array( $index, $args['hidden'], true ) ? ' hidden' : '';
-						?>
-						<tr<?php echo $classes . $attrs . $hidden; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built from constants and escaped attributes. ?>>
-							<?php
-							$cells = isset( $row['cells'] ) && is_array( $row['cells'] ) ? $row['cells'] : array();
-							foreach ( $cells as $i => $cell ) {
-								if ( $i >= $col_count && $col_count > 0 ) {
-									break;
-								}
-								self::render_cell( $cell, isset( $labels[ $i ] ) ? $labels[ $i ] : '', $game_id, isset( $headers[ $i ]['align'] ) ? $headers[ $i ]['align'] : '', isset( $minor[ $i ] ) ? $minor[ $i ] : '' );
-							}
-							if ( $args['admin_links'] ) {
-								echo '<td>';
-								if ( $game_id > 0 ) {
-									$details_url = add_query_arg(
-										array(
-											'page'     => 'floorball-api-for-swiss-unihockey-matches',
-											'match_id' => $game_id,
-										),
-										admin_url( 'admin.php' )
-									);
-									echo '<a href="' . esc_url( $details_url ) . '">' . esc_html__( 'Details', 'swiss-floorball-api' ) . '</a>';
-								}
-								echo '</td>';
-							}
-							?>
-						</tr>
-					<?php endforeach; ?>
+					<?php
+					foreach ( $rows as $index => $row ) {
+						self::render_table_row( $row, $index, $columns, $args );
+					}
+					?>
 				</tbody>
 			</table>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Render the table header row.
+	 *
+	 * @since 2.0.1
+	 * @param array $columns     Column data: headers, labels, minor (hidden-when-narrow classes) and count.
+	 * @param bool  $admin_links Whether a trailing "Aktionen" column is added.
+	 * @return void
+	 */
+	private static function render_table_head( $columns, $admin_links ) {
+		?>
+		<thead>
+			<tr>
+				<?php foreach ( $columns['labels'] as $i => $label ) : ?>
+					<?php
+					$th_class = array();
+					if ( isset( $columns['headers'][ $i ]['align'] ) && 'r' === $columns['headers'][ $i ]['align'] ) {
+						$th_class[] = 'sfa-align-right';
+					}
+					if ( isset( $columns['minor'][ $i ] ) ) {
+						$th_class[] = $columns['minor'][ $i ];
+					}
+					?>
+					<th scope="col"<?php echo $th_class ? ' class="' . esc_attr( implode( ' ', $th_class ) ) . '"' : ''; ?>><?php echo esc_html( $label ); ?></th>
+				<?php endforeach; ?>
+				<?php if ( $admin_links ) : ?>
+					<th scope="col"><?php esc_html_e( 'Aktionen', 'swiss-floorball-api' ); ?></th>
+				<?php endif; ?>
+			</tr>
+		</thead>
+		<?php
+	}
+
+	/**
+	 * Render one table row with its cells.
+	 *
+	 * @since 2.0.1
+	 * @param array      $row     Row.
+	 * @param int|string $index   Row index, used for extra attributes and the hidden state.
+	 * @param array      $columns Column data, see render_table_head().
+	 * @param array      $args    Table arguments of render_table().
+	 * @return void
+	 */
+	private static function render_table_row( $row, $index, $columns, $args ) {
+		$game_id = Swiss_Floorball_API_Table_Data::get_game_id( $row );
+		$attrs   = '';
+		if ( isset( $args['row_attrs'][ $index ] ) ) {
+			foreach ( $args['row_attrs'][ $index ] as $name => $value ) {
+				$attrs .= ' ' . esc_attr( $name ) . '="' . esc_attr( $value ) . '"';
+			}
+		}
+		$classes = ! empty( $row['highlight'] ) ? ' class="is-highlight"' : '';
+		$hidden  = in_array( $index, $args['hidden'], true ) ? ' hidden' : '';
+		?>
+		<tr<?php echo $classes . $attrs . $hidden; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built from constants and escaped attributes. ?>>
+			<?php
+			$cells = isset( $row['cells'] ) && is_array( $row['cells'] ) ? $row['cells'] : array();
+			foreach ( $cells as $i => $cell ) {
+				if ( $i >= $columns['count'] && $columns['count'] > 0 ) {
+					break;
+				}
+				$align = isset( $columns['headers'][ $i ]['align'] ) ? $columns['headers'][ $i ]['align'] : '';
+				self::render_cell( $cell, isset( $columns['labels'][ $i ] ) ? $columns['labels'][ $i ] : '', $game_id, $align, isset( $columns['minor'][ $i ] ) ? $columns['minor'][ $i ] : '' );
+			}
+			if ( $args['admin_links'] ) {
+				self::render_admin_link_cell( $game_id );
+			}
+			?>
+		</tr>
+		<?php
+	}
+
+	/**
+	 * Render the trailing cell that links a game to its admin detail page.
+	 *
+	 * @since 2.0.1
+	 * @param int $game_id Game id, 0 when the row has none.
+	 * @return void
+	 */
+	private static function render_admin_link_cell( $game_id ) {
+		echo '<td>';
+		if ( $game_id > 0 ) {
+			$details_url = add_query_arg(
+				array(
+					'page'     => 'floorball-api-for-swiss-unihockey-matches',
+					'match_id' => $game_id,
+				),
+				admin_url( 'admin.php' )
+			);
+			echo '<a href="' . esc_url( $details_url ) . '">' . esc_html__( 'Details', 'swiss-floorball-api' ) . '</a>';
+		}
+		echo '</td>';
 	}
 
 	/**
