@@ -162,7 +162,7 @@ jobs:
       - name: Build graphify knowledge graph
         if: inputs.stage != 'writer' || inputs.kind == 'docs'
         run: |
-          pip install --quiet graphifyy
+          pip install --quiet --only-binary :all: graphifyy==0.9.73
           graphify update .
           test -f graphify-out/graph.json
 
@@ -186,7 +186,7 @@ jobs:
           phpcbf --version
 
       - name: Load Claude token from 1Password
-        uses: 1password/load-secrets-action@v5
+        uses: 1password/load-secrets-action@70062d7a876d3eb6334754fa26efd2fbd90c32f2 # v5
         with:
           export-env: true
         env:
@@ -197,7 +197,7 @@ jobs:
         # Ergebnis zählt der Marker-Kommentar (Schritt "Read stage status"), nicht der Exit-Code der Action:
         # sie meldet z.B. "Erfolg nach 75 Turns, Limit 30" als Fehler, obwohl die Stufe fertig ist.
         continue-on-error: true
-        uses: anthropics/claude-code-action@v1
+        uses: anthropics/claude-code-action@97c53473391bff1901034d4b454b5bac7ab7a029 # v1
         with:
           claude_code_oauth_token: ${{ env.CLAUDE_CODE_OAUTH_TOKEN }}
           prompt: ${{ steps.prompt.outputs.text }}

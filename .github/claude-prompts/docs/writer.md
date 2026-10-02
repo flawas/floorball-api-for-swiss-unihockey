@@ -5,7 +5,7 @@ Sprache: siehe Zusatzhinweis ("Sprache der Dokumentation"); fehlt sie, Englisch.
 
 1. **Bestandsaufnahme (graphify zuerst, dann gezielt lesen):** Hauptdatei und Version, alle Klassen unter `includes/`,
    `admin/`, `public/`, alle Shortcodes (`add_shortcode`) mit ihren Attributen und Defaults, Admin-Seiten und
-   Einstellungen (`swissfloorball_*`), API-Endpunkte im Client, Caching (Transients `swfl_<md5>`), Hooks/Filter
+   Einstellungen (`swissfloorball_*`), API-Endpunkte im Client, Caching (Transients `swfl_<sha256>`), Hooks/Filter
    (`apply_filters`/`do_action`), Aktivierung/Deaktivierung/Deinstallation, Übersetzung, Docker-Entwicklung,
    `verify_api.php`. Was du dokumentierst, musst du im Code belegen können (Datei:Zeile) – nichts erfinden.
 2. **Schreibe/aktualisiere `docs/`** (der Agent liefert Struktur und Texte; du schreibst die Dateien selbst mit Write/Edit) (Dateien bei Bedarf anlegen, veraltetes entfernen/korrigieren):

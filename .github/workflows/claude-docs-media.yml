@@ -70,8 +70,8 @@ jobs:
         run: |
           mkdir -p "$RUNNER_TEMP/pw" && cd "$RUNNER_TEMP/pw"
           npm init -y >/dev/null
-          npm install --silent playwright
-          npx playwright install --with-deps chromium
+          npm install --silent --ignore-scripts playwright@1.63.0
+          ./node_modules/.bin/playwright install --with-deps chromium
           echo "NODE_PATH=$RUNNER_TEMP/pw/node_modules" >> "$GITHUB_ENV"
 
       - name: Capture screenshots and video

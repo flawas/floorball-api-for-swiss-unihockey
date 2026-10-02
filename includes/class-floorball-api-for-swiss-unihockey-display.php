@@ -746,7 +746,6 @@ class Swiss_Floorball_API_Display {
 	 * @return void
 	 */
 	public static function render_calendars( $team_id = null, $club_id = null, $season = null, $league = null, $game_class = null, $group = null ) {
-		$is_backend = false;
 		// 1. Construct WebCal Link URL (keep existing logic)
 		$params = array();
 
@@ -841,7 +840,6 @@ class Swiss_Floorball_API_Display {
 								$date           = self::get_cell_text( $game, 0, 0 );
 								$time           = self::get_cell_text( $game, 0, 1 );
 								$place_location = self::get_cell_text( $game, 1, 0 );
-								$place_name     = self::get_cell_text( $game, 1, 1 ); // Sometimes location is split.
 
 								// Read team names from the games list to avoid one detail request per game.
 								if ( 'club' === $mode ) {
@@ -1250,7 +1248,10 @@ class Swiss_Floorball_API_Display {
 						if ( ! empty( $headers ) ) {
 							echo '<thead><tr>';
 							foreach ( $headers as $header ) {
-								$header_text = isset( $header['text'] ) ? $header['text'] : ( is_string( $header ) ? $header : '' );
+								$header_text = is_string( $header ) ? $header : '';
+								if ( isset( $header['text'] ) ) {
+									$header_text = $header['text'];
+								}
 								echo '<th scope="col">' . esc_html( $header_text ) . '</th>';
 							}
 							echo '</tr></thead>';

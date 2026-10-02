@@ -74,20 +74,27 @@ function absint( $n ) {
 function is_wp_error( $thing ) {
 	return $thing instanceof WP_Error;
 }
-function apply_filters( $tag, $value ) {
+// The stubs below take the same parameters as the WordPress functions, so static analysis does not flag the real calls in the plugin.
+function apply_filters( $hook_name, $value, ...$args ) {
 	return $value;
 }
-function add_query_arg( $args, $url ) {
+function add_query_arg( $key, $value = false, $url = false ) {
+	if ( is_array( $key ) ) {
+		$args = $key;
+		$url  = $value;
+	} else {
+		$args = array( $key => $value );
+	}
 	return $url . ( false === strpos( $url, '?' ) ? '?' : '&' ) . http_build_query( $args );
 }
-function get_transient( $key ) {
-	return $GLOBALS['sfa_transients'][ $key ] ?? false;
+function get_transient( $transient ) {
+	return $GLOBALS['sfa_transients'][ $transient ] ?? false;
 }
-function set_transient( $key, $value ) {
-	$GLOBALS['sfa_transients'][ $key ] = $value;
+function set_transient( $transient, $value, $expiration = 0 ) {
+	$GLOBALS['sfa_transients'][ $transient ] = $value;
 	return true;
 }
-function wp_remote_get( $url ) {
+function wp_remote_get( $url, $args = array() ) {
 	$ctx  = stream_context_create( array(
 		'http' => array(
 			'method'        => 'GET',
@@ -139,7 +146,7 @@ function esc_html( $t ) {
 function esc_attr( $t ) {
 	return esc_html( $t );
 }
-function esc_url( $t ) {
+function esc_url( $t, $protocols = null, $context = 'display' ) {
 	return esc_html( $t );
 }
 function __( $t, $d = '' ) {

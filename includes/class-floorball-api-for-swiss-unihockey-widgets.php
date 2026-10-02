@@ -46,6 +46,22 @@ class Swiss_Floorball_API_Widgets {
 	const MAX_PAGES = 50;
 
 	/**
+	 * Namespace of the plugin REST routes.
+	 *
+	 * @since 2.0.0
+	 * @var   string
+	 */
+	const REST_NAMESPACE = 'swfl/v1';
+
+	/**
+	 * Date format of iCalendar UTC timestamps.
+	 *
+	 * @since 2.0.0
+	 * @var   string
+	 */
+	const ICAL_UTC_FORMAT = 'Ymd\THis\Z';
+
+	/**
 	 * Shared API client.
 	 *
 	 * @since 1.1.0
@@ -74,7 +90,7 @@ class Swiss_Floorball_API_Widgets {
 	 */
 	public static function register_routes() {
 		register_rest_route(
-			'swfl/v1',
+			self::REST_NAMESPACE,
 			'/team-games',
 			array(
 				'methods'             => 'GET',
@@ -99,7 +115,7 @@ class Swiss_Floorball_API_Widgets {
 		);
 
 		register_rest_route(
-			'swfl/v1',
+			self::REST_NAMESPACE,
 			'/league-games',
 			array(
 				'methods'             => 'GET',
@@ -133,7 +149,7 @@ class Swiss_Floorball_API_Widgets {
 		);
 
 		register_rest_route(
-			'swfl/v1',
+			self::REST_NAMESPACE,
 			'/calendar',
 			array(
 				'methods'             => 'GET',
@@ -261,7 +277,7 @@ class Swiss_Floorball_API_Widgets {
 		$zone  = new DateTimeZone( 'Europe/Zurich' );
 		$utc   = new DateTimeZone( 'UTC' );
 		$host  = (string) wp_parse_url( home_url(), PHP_URL_HOST );
-		$stamp = gmdate( 'Ymd\THis\Z' );
+		$stamp = gmdate( self::ICAL_UTC_FORMAT );
 
 		$lines = array(
 			'BEGIN:VCALENDAR',
@@ -293,14 +309,14 @@ class Swiss_Floorball_API_Widgets {
 			$game_id = self::get_game_id( $row );
 
 			$lines[] = 'BEGIN:VEVENT';
-			$lines[] = 'UID:' . ( $game_id ? 'game-' . $game_id : md5( $date . $home . $away ) ) . '@' . $host;
+			$lines[] = 'UID:' . ( $game_id ? 'game-' . $game_id : substr( hash( 'sha256', $date . $home . $away ), 0, 32 ) ) . '@' . $host;
 			$lines[] = 'DTSTAMP:' . $stamp;
 
 			if ( preg_match( '/(\d{1,2}):(\d{2})/', $text( 'date' ), $time ) ) {
 				$start   = new DateTime( $date . ' ' . sprintf( '%02d:%02d', $time[1], $time[2] ), $zone );
 				$end     = clone $start;
-				$lines[] = 'DTSTART:' . $start->setTimezone( $utc )->format( 'Ymd\THis\Z' );
-				$lines[] = 'DTEND:' . $end->modify( '+2 hours' )->setTimezone( $utc )->format( 'Ymd\THis\Z' );
+				$lines[] = 'DTSTART:' . $start->setTimezone( $utc )->format( self::ICAL_UTC_FORMAT );
+				$lines[] = 'DTEND:' . $end->modify( '+2 hours' )->setTimezone( $utc )->format( self::ICAL_UTC_FORMAT );
 			} else {
 				$lines[] = 'DTSTART;VALUE=DATE:' . str_replace( '-', '', $date );
 			}
@@ -652,7 +668,13 @@ class Swiss_Floorball_API_Widgets {
 	 * @return bool
 	 */
 	private static function is_game_link_cell( $text ) {
-		return (bool) preg_match( '/\d{1,2}\.\d{1,2}\.\d{2,4}|\d{1,2}:\d{2}|\d+\s*[:–-]\s*\d+/u', $text );
+		// Separate patterns (a date, a time or a score) keep each expression simple.
+		foreach ( array( '/\d{1,2}\.\d{1,2}\.\d{2,4}/', '/\d{1,2}:\d{2}/', '/\d+\s*[:–-]\s*\d+/u' ) as $pattern ) {
+			if ( preg_match( $pattern, $text ) ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -800,7 +822,12 @@ class Swiss_Floorball_API_Widgets {
 	 */
 	private static function render_cell( $cell, $label, $game_id, $align, $minor = '' ) {
 		$text  = self::get_cell_text( $cell );
-		$image = isset( $cell['image']['url'] ) ? $cell['image']['url'] : ( isset( $cell['image'] ) && is_string( $cell['image'] ) ? $cell['image'] : '' );
+		$image = '';
+		if ( isset( $cell['image']['url'] ) ) {
+			$image = $cell['image']['url'];
+		} elseif ( isset( $cell['image'] ) && is_string( $cell['image'] ) ) {
+			$image = $cell['image'];
+		}
 		$class = array();
 		if ( ! empty( $cell['highlight'] ) ) {
 			$class[] = 'is-highlight';

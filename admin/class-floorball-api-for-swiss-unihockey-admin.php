@@ -159,7 +159,6 @@ class Swiss_Floorball_Api_Admin {
 		// set this var to be used in the settings-display view
 		// Read-only admin navigation parameters, no state change.
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended
-		$active_tab = isset( $_GET['tab'] ) ? sanitize_key( $_GET['tab'] ) : 'general';
 		if ( isset( $_GET['error_message'] ) ) {
 			add_action( 'admin_notices', array( $this, 'settings_page_settings_messages' ) );
 			do_action(
@@ -180,7 +179,6 @@ class Swiss_Floorball_Api_Admin {
 		// set this var to be used in the settings-display view
 		// Read-only admin navigation parameters, no state change.
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended
-		$active_tab = isset( $_GET['tab'] ) ? sanitize_key( $_GET['tab'] ) : 'general';
 		if ( isset( $_GET['error_message'] ) ) {
 			add_action( 'admin_notices', array( $this, 'settings_page_settings_messages' ) );
 			do_action(
@@ -201,7 +199,6 @@ class Swiss_Floorball_Api_Admin {
 		// set this var to be used in the settings-display view
 		// Read-only admin navigation parameters, no state change.
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended
-		$active_tab = isset( $_GET['tab'] ) ? sanitize_key( $_GET['tab'] ) : 'general';
 		if ( isset( $_GET['error_message'] ) ) {
 			add_action( 'admin_notices', array( $this, 'settings_page_settings_messages' ) );
 			do_action(
@@ -222,7 +219,6 @@ class Swiss_Floorball_Api_Admin {
 		// set this var to be used in the settings-display view
 		// Read-only admin navigation parameters, no state change.
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended
-		$active_tab = isset( $_GET['tab'] ) ? sanitize_key( $_GET['tab'] ) : 'general';
 		if ( isset( $_GET['error_message'] ) ) {
 			add_action( 'admin_notices', array( $this, 'settings_page_settings_messages' ) );
 			do_action(
