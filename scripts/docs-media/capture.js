@@ -210,7 +210,7 @@ async function main() {
   log('Configuring WordPress ...');
   wp('option', 'update', 'swissfloorball_club_number', plainValue(ctx.club_id));
   wp('option', 'update', 'swissfloorball_club_name', plainValue(ctx.club_name));
-  wp('option', 'update', 'swissfloorball_actual_season', String(ctx.season));
+  wp('option', 'update', 'swissfloorball_actual_season', plainValue(ctx.season));
 
   const pages = createPages(ctx);
 
