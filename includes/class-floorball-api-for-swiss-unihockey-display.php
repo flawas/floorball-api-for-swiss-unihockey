@@ -1492,18 +1492,17 @@ class Swiss_Floorball_API_Display {
 	 * @param int|string $season Season ID.
 	 * @param int|string $league League ID.
 	 * @param int|string $game_class Game Class ID.
-	 * @param int|string $group Group ID.
+	 * @param int|string $group Deprecated. Ignored, the topscorers/su endpoint has no group parameter.
 	 * @return void
 	 */
-	public static function render_topscorers( $season, $league, $game_class, $group ) {
+	public static function render_topscorers( $season, $league, $game_class, $group = null ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Kept for backwards compatibility.
 		$client       = self::get_client();
 		$api_response = $client->fetch_data(
-			'topscorers',
+			'topscorers/su',
 			array(
 				'season'     => $season,
 				'league'     => $league,
 				'game_class' => $game_class,
-				'group'      => $group,
 			)
 		);
 
