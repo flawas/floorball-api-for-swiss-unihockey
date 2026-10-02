@@ -111,6 +111,10 @@ class Swiss_Floorball_Api_Public {
 			return;
 		}
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/floorball-api-for-swiss-unihockey-public.css', array(), $this->version, 'all' );
+		$seed_css = Swiss_Floorball_API_Display::get_seed_css();
+		if ( '' !== $seed_css ) {
+			wp_add_inline_style( $this->plugin_name, $seed_css );
+		}
 	}
 
 	/**

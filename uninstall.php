@@ -33,6 +33,7 @@ function swfl_uninstall_site() {
 	delete_option( 'swissfloorball_actual_season' );
 	delete_option( 'swissfloorball_request_timeout' );
 	delete_option( 'swissfloorball_theme' );
+	delete_option( 'swissfloorball_seed_color' );
 
 	// Delete all cached API data (transients with 'swfl_' prefix).
 	// This includes both the transient values and their timeout entries.
