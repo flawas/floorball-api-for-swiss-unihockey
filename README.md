@@ -184,6 +184,7 @@ This plugin connects to the **Swiss Unihockey API** (api-v2.swissunihockey.ch) t
 
 ## 📜 Changelog
 ### Unreleased
+* Fix: Reduce cognitive complexity in capture.js (S3776)
 * New: Theme setting (Auto / Light / Dark, default Auto) under Settings. Dark colours are `--sfa-sys-*` tokens scoped to the plugin containers (`data-sfa-theme` on `.swiss-floorball-plugin` and `.sfa-admin-wrap`); Auto follows `prefers-color-scheme`. The old hard-coded dark block was replaced by these tokens
 * Fix: Plugin Check readme issues: "Tested up to" raised to 7.1 and short description shortened to 150 characters or less
 * Fix: Resolve phpcs findings in admin and display classes: add translator comments, escape wp_die, use wp_safe_redirect, annotate DB queries (Issue #75)
