@@ -12,6 +12,7 @@ Untermenü «Einstellungen» (Gruppe `swfl_general_settings`). Gespeichert als W
 | `swissfloorball_club_name` | Club-Name, nur Anzeige (wird automatisch gesetzt) | – |
 | `swissfloorball_actual_season` | Aktuelle Saison als Jahreszahl, z. B. `2025` | `absint` |
 | `swissfloorball_show_icons` | Icons anzeigen (Standard `1`) | `'1'` oder `'0'` |
+| `swissfloorball_request_timeout` | API-Timeout in Sekunden (1–30, Standard `3`) | `absint`, begrenzt auf 1–30; 0/ungültig → `3` |
 | `swissfloorball_api_key` | Optionaler API-Key | `sanitize_text_field` |
 
 Hinweis: `swissfloorball_api_key` wird im Code nur gespeichert und bei der Deinstallation gelöscht; der Client sendet ihn nicht mit.

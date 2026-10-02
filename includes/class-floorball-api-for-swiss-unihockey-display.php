@@ -1140,6 +1140,7 @@ class Swiss_Floorball_API_Display {
 	/**
 	 * Get player details.
 	 *
+	 * @since 1.0.0
 	 * @param int|string $player_id Player ID.
 	 * @return void
 	 */
@@ -1152,10 +1153,57 @@ class Swiss_Floorball_API_Display {
 			return;
 		}
 
-		// Basic implementation to dump player details.
-		echo '<pre>';
-		print_r( $api_response );
-		echo '</pre>';
+		$data = isset( $api_response['data'] ) ? $api_response['data'] : $api_response;
+
+		// The response shape was not verified live, so render by structure and never dump raw data.
+		if ( is_array( $data ) && isset( $data['regions'] ) && is_array( $data['regions'] ) ) {
+			$rendered = false;
+			foreach ( $data['regions'] as $region ) {
+				if ( empty( $region['rows'] ) || ! is_array( $region['rows'] ) ) {
+					continue;
+				}
+				if ( ! $rendered ) {
+					echo '<table class="sfa-data-table"><tbody>';
+					$rendered = true;
+				}
+				foreach ( $region['rows'] as $row ) {
+					if ( empty( $row['cells'] ) || ! is_array( $row['cells'] ) ) {
+						continue;
+					}
+					echo '<tr>';
+					foreach ( $row['cells'] as $cell ) {
+						$text = '';
+						if ( isset( $cell['text'] ) && is_array( $cell['text'] ) ) {
+							$text = implode( ' ', array_filter( $cell['text'], 'is_scalar' ) );
+						}
+						echo '<td>' . esc_html( $text ) . '</td>';
+					}
+					echo '</tr>';
+				}
+			}
+			if ( $rendered ) {
+				echo '</tbody></table>';
+				return;
+			}
+		} elseif ( is_array( $data ) ) {
+			$lines = array();
+			foreach ( $data as $key => $value ) {
+				if ( ! is_scalar( $value ) || '' === (string) $value ) {
+					continue;
+				}
+				$lines[ $key ] = $value;
+			}
+			if ( ! empty( $lines ) ) {
+				echo '<table class="sfa-data-table"><tbody>';
+				foreach ( $lines as $key => $value ) {
+					echo '<tr><th>' . esc_html( str_replace( '_', ' ', (string) $key ) ) . '</th><td>' . esc_html( (string) $value ) . '</td></tr>';
+				}
+				echo '</tbody></table>';
+				return;
+			}
+		}
+
+		echo '<p>' . esc_html__( 'Keine Spielerdaten verfügbar.', 'swiss-floorball-api' ) . '</p>';
 	}
 
 	/**

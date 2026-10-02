@@ -31,13 +31,16 @@ function swiss_floorball_api_uninstall_site() {
 	delete_option( 'swissfloorball_club_number' );
 	delete_option( 'swissfloorball_club_name' );
 	delete_option( 'swissfloorball_actual_season' );
+	delete_option( 'swissfloorball_request_timeout' );
 
 	// Delete all cached API data (transients with 'swfl_' prefix)
 	// This includes both the transient values and their timeout entries.
 	$wpdb->query(
-		"DELETE FROM {$wpdb->options}
-		WHERE option_name LIKE '_transient_swfl_%'
-		OR option_name LIKE '_transient_timeout_swfl_%'"
+		$wpdb->prepare(
+			"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
+			$wpdb->esc_like( '_transient_swfl_' ) . '%',
+			$wpdb->esc_like( '_transient_timeout_swfl_' ) . '%'
+		)
 	);
 }
 

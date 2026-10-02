@@ -59,8 +59,8 @@ class Swiss_Floorball_API_Client {
 			return $cached_data;
 		}
 
-		// Request timeout in seconds; overridable via the swfl_request_timeout filter.
-		$timeout = max( 1, (float) apply_filters( 'swfl_request_timeout', 5, $url ) );
+		// Request timeout in seconds; defaults to the admin setting and is overridable via the swfl_request_timeout filter.
+		$timeout = max( 1, (float) apply_filters( 'swfl_request_timeout', (float) get_option( 'swissfloorball_request_timeout', 3 ), $url ) );
 
 		$response = wp_remote_get( $url, array( 'timeout' => $timeout ) );
 

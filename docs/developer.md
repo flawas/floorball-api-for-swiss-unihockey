@@ -4,7 +4,7 @@
 
 | Filter | Datei | Parameter | Zweck |
 |---|---|---|---|
-| `swfl_request_timeout` | `includes/class-floorball-api-for-swiss-unihockey-client.php` | `$timeout` (Standard `5`, Sekunden), `$url` | Timeout der API-Anfrage; Minimum 1 |
+| `swfl_request_timeout` | `includes/class-floorball-api-for-swiss-unihockey-client.php` | `$timeout` (Standard: Option `swissfloorball_request_timeout`, Standard `3`, Sekunden), `$url` | Timeout der API-Anfrage; Minimum 1 |
 | `swfl_icon_svg` | `includes/class-floorball-api-for-swiss-unihockey-icons.php` | `$svg`, `$name`, `$args` | SVG-Markup eines Icons ändern; Ergebnis wird erneut mit `wp_kses()` gefiltert |
 
 ```php
