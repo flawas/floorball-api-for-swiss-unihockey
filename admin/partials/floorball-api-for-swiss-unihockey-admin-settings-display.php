@@ -24,11 +24,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 	<?php
 	// Display cache cleared success message.
-	// Read-only status notice after the nonce-protected cache clear redirect.
-	if ( isset( $_GET['cache_cleared'] ) && '1' === $_GET['cache_cleared'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$swfl_deleted_count = isset( $_GET['deleted_count'] ) ? intval( $_GET['deleted_count'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	// One-time notice stored by the nonce-protected cache clear handler.
+	$swfl_deleted_count = get_transient( 'swfl_cache_cleared_' . get_current_user_id() );
+	if ( false !== $swfl_deleted_count ) {
+		delete_transient( 'swfl_cache_cleared_' . get_current_user_id() );
 		echo '<div class="notice notice-success is-dismissible">';
-		echo '<p><strong>' . Swiss_Floorball_Api_Icons::get( 'check' ) . ' Cache erfolgreich geleert!</strong> ' . esc_html( $swfl_deleted_count ) . ' zwischengespeicherte Einträge wurden gelöscht.</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Icon markup sanitized via wp_kses() in Swiss_Floorball_Api_Icons::get().
+		echo '<p><strong>' . Swiss_Floorball_Api_Icons::get( 'check' ) . ' Cache erfolgreich geleert!</strong> ' . esc_html( (int) $swfl_deleted_count ) . ' zwischengespeicherte Einträge wurden gelöscht.</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Icon markup sanitized via wp_kses() in Swiss_Floorball_Api_Icons::get().
 		echo '</div>';
 	}
 	?>
