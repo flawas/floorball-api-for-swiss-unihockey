@@ -30,6 +30,74 @@
 	 */
 
 	$(document).ready(function () {
+		// Save the settings form automatically, so no save button is needed.
+		const settingsForm = $('#sfa-settings-form');
+		const statusEl = $('#sfa-autosave-status');
+		let saveTimer = null;
+		let saving = false;
+		let pending = false;
+
+		const setStatus = function (text) {
+			statusEl.text(text);
+		};
+
+		const saveSettings = function () {
+			if (saving) {
+				pending = true;
+				return;
+			}
+			saving = true;
+			setStatus(sfaAutosave.saving);
+			$.post(settingsForm.attr('action'), settingsForm.serialize())
+				.done(function () {
+					setStatus(sfaAutosave.saved);
+				})
+				.fail(function () {
+					setStatus(sfaAutosave.error);
+				})
+				.always(function () {
+					saving = false;
+					if (pending) {
+						pending = false;
+						saveSettings();
+					}
+				});
+		};
+
+		const queueSave = function () {
+			clearTimeout(saveTimer);
+			saveTimer = setTimeout(saveSettings, 600);
+		};
+
+		// Colour pickers for the seed and table colour settings.
+		if ($.fn.wpColorPicker) {
+			$('#swissfloorball_seed_color, input[id^="swissfloorball_table_"][id$="_color"]').wpColorPicker({
+				change: queueSave,
+				clear: function () {
+					setTimeout(queueSave, 0);
+				}
+			});
+		}
+
+		if (settingsForm.length && 'undefined' !== typeof sfaAutosave) {
+			settingsForm.on('change input', 'input, select, textarea', queueSave);
+			settingsForm.on('submit', function (event) {
+				event.preventDefault();
+				saveSettings();
+			});
+		}
+
+		// Show the Partner API credentials only while the Partner API is selected.
+		const apiSource = $('#swissfloorball_api_source');
+		if (apiSource.length) {
+			const credentialRows = $('#swissfloorball_api_key, #swissfloorball_api_secret').closest('tr');
+			const toggleCredentials = function () {
+				credentialRows.toggle('partner' === apiSource.val());
+			};
+			apiSource.on('change', toggleCredentials);
+			toggleCredentials();
+		}
+
 		// Team search functionality
 		const searchInput = $('#sfa-team-search');
 		const dataTable = $('.sfa-data-table');

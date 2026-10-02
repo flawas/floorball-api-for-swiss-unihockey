@@ -4,6 +4,7 @@
  * Swiss Unihockey API, with the WordPress functions they depend on stubbed.
  *
  * Usage: php verify_api.php
+ *        SWFL_API_SOURCE=partner php verify_api.php   (free is the default; partner needs the stored key and secret)
  *
  * IDs (season, league, group, club, game, team, player) are discovered from the API itself,
  * so the test doesn't rot when a season ends. Fails (exit 1) on PHP warnings/notices,
@@ -35,6 +36,39 @@ class WP_Error {
 	public function get_error_message() {
 		return $this->message;
 	}
+	public function get_error_code() {
+		return $this->code;
+	}
+}
+function wp_parse_args( $args, $defaults = array() ) {
+	return array_merge( $defaults, (array) $args );
+}
+function wp_json_encode( $data ) {
+	return json_encode( $data );
+}
+function wp_unique_id( $prefix = '' ) {
+	static $n = 0;
+	return $prefix . ( ++$n );
+}
+function disabled( $value, $current = true, $display = true ) {
+	$out = (string) $value === (string) $current ? "disabled='disabled'" : '';
+	if ( $display ) {
+		echo $out;
+	}
+	return $out;
+}
+function _n( $single, $plural, $number, $domain = '' ) {
+	return 1 === $number ? $single : $plural;
+}
+function sanitize_text_field( $t ) {
+	return trim( strip_tags( (string) $t ) );
+}
+define( 'DAY_IN_SECONDS', 86400 );
+function current_time( $type ) {
+	return gmdate( 'mysql' === $type ? 'Y-m-d H:i:s' : $type );
+}
+function absint( $n ) {
+	return abs( (int) $n );
 }
 
 function is_wp_error( $thing ) {
@@ -79,10 +113,25 @@ function wp_remote_retrieve_body( $r ) {
 	return $r['body'];
 }
 function get_option( $name, $default = false ) {
-	return $default;
+	$options = array(
+		'swissfloorball_api_source' => getenv( 'SWFL_API_SOURCE' ) ? getenv( 'SWFL_API_SOURCE' ) : 'free',
+	);
+	return $options[ $name ] ?? $default;
 }
 function admin_url( $path = '' ) {
 	return 'http://localhost/wp-admin/' . $path;
+}
+function wp_kses( $html, $allowed = array() ) {
+	return $html;
+}
+function plugin_dir_path( $file ) {
+	return trailingslashit( dirname( $file ) );
+}
+function trailingslashit( $s ) {
+	return rtrim( $s, '/' ) . '/';
+}
+function rest_url( $path = '' ) {
+	return 'http://localhost/wp-json/' . $path;
 }
 function esc_html( $t ) {
 	return htmlspecialchars( (string) $t, ENT_QUOTES, 'UTF-8' );
@@ -114,6 +163,8 @@ function _e( $t, $d = '' ) {
 
 require_once __DIR__ . '/includes/class-floorball-api-for-swiss-unihockey-client.php';
 require_once __DIR__ . '/includes/class-floorball-api-for-swiss-unihockey-display.php';
+require_once __DIR__ . '/includes/class-floorball-api-for-swiss-unihockey-widgets.php';
+require_once __DIR__ . '/includes/class-floorball-api-for-swiss-unihockey-icons.php';
 
 // ---------------------------------------------------------------------------
 // Tiny test harness
@@ -183,6 +234,9 @@ $ctx = array();
 foreach ( array( 'seasons', 'leagues', 'clubs' ) as $endpoint ) {
 	check( "$endpoint: entries[] mit text + set_in_context", function () use ( $client, $endpoint, &$ctx ) {
 		$r = $client->fetch_data( $endpoint );
+		if ( is_wp_error( $r ) && 'swfl_endpoint_unavailable' === $r->get_error_code() ) {
+			return; // Expected on the free API: the client reports the gated endpoint instead of failing.
+		}
 		ensure( ! is_wp_error( $r ), is_wp_error( $r ) ? $r->get_error_message() : '' );
 		ensure( ! empty( $r['entries'] ), 'entries fehlt/leer' );
 		ensure( isset( $r['entries'][0]['text'], $r['entries'][0]['set_in_context'] ), 'Eintrag ohne text/set_in_context' );
@@ -192,16 +246,20 @@ foreach ( array( 'seasons', 'leagues', 'clubs' ) as $endpoint ) {
 
 // Previous season: complete, so data is stable. Falls back to the first one.
 $season     = $ctx['seasons'][1]['set_in_context']['season'] ?? ( $ctx['seasons'][0]['set_in_context']['season'] ?? null );
-$league     = $ctx['leagues'][0]['set_in_context']['league'] ?? null;
-$game_class = $ctx['leagues'][0]['set_in_context']['game_class'] ?? null;
+// The free API has no leagues endpoint, so fall back to a known league (2, class 11, "Gruppe 1").
+$league     = $ctx['leagues'][0]['set_in_context']['league'] ?? 2;
+$game_class = $ctx['leagues'][0]['set_in_context']['game_class'] ?? 11;
 $club_id    = $ctx['clubs'][0]['set_in_context']['club_id'] ?? null;
-$group      = null;
+$group      = 'Gruppe 1';
 $game_id    = null;
 $team_id    = null;
 echo "  Kontext: season=$season league=$league game_class=$game_class club=$club_id\n";
 
 check( 'groups: Gruppe für ermittelte Liga', function () use ( $client, $season, $league, $game_class, &$group ) {
 	$r = $client->fetch_data( 'groups', array( 'season' => $season, 'league' => $league, 'game_class' => $game_class, 'format' => 'dropdown' ) );
+	if ( is_wp_error( $r ) && 'swfl_endpoint_unavailable' === $r->get_error_code() ) {
+		return; // Expected on the free API; the default group stays in place.
+	}
 	ensure( ! is_wp_error( $r ) && ! empty( $r['entries'][0]['set_in_context']['group'] ), 'keine Gruppe gefunden' );
 	$group = $r['entries'][0]['set_in_context']['group'];
 } );
@@ -278,6 +336,24 @@ check( 'render_team_games', function () use ( $D, &$team_id, $season ) {
 	ensure( $team_id, 'keine Team-ID ermittelt' );
 	render( function () use ( $D, $team_id, $season ) { $D::render_team_games( $team_id, $season ); } );
 } );
+
+// Widgets modelled on the official web components (IDs from their README examples).
+$W = 'Swiss_Floorball_API_Widgets';
+$widgets = array(
+	'widget league-games'  => array( function () use ( $W, $season, $league, $game_class, $group ) { $W::render_league_games( $game_class, $league, $season, $group ); }, 'data-sfa-widget="league"', '<table' ),
+	'widget club-team-games' => array( function () use ( $W, $season ) { $W::render_club_team_games( 372, $season, 6 ); }, 'data-sfa-widget="team-select"', '<option' ),
+	'widget team-games'    => array( function () use ( $W, $season ) { $W::render_team_games( 429626, $season, 5 ); }, 'data-sfa-widget="pager"', '<table' ),
+	'widget club-games'    => array( function () use ( $W, $season, $club_id ) { $W::render_club_games( $club_id, $season ); }, 'data-sfa-widget="week"', '<table' ),
+	'widget ranking'       => array( function () use ( $W, $season, $league, $game_class, $group ) { $W::render_ranking( $season, $league, $game_class, $group ); }, 'data-sfa-widget="ranking"', '<table' ),
+	'widget mobiliar-topscorer' => array( function () use ( $W, $season ) { $W::render_mobiliar_topscorers( 463845, $season ); }, 'data-sfa-widget="topscorers"', 'sfa-topscorers' ),
+);
+foreach ( $widgets as $name => $def ) {
+	check( $name, function () use ( $def ) {
+		$html = render( $def[0] );
+		ensure( false !== strpos( $html, $def[1] ), 'Widget-Container fehlt' );
+		ensure( false !== strpos( $html, $def[2] ), 'erwartetes Markup fehlt: ' . $def[2] );
+	} );
+}
 
 // render_club_games_callout is intentionally not asserted:
 // the callout renders nothing when no game is upcoming.

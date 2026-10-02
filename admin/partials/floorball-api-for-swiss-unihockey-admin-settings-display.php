@@ -43,12 +43,13 @@ if ( ! current_user_can( 'manage_options' ) ) {
 		<?php settings_errors(); ?>
 		<p class="sfa-helper-text">Geben Sie hier die erforderlichen Informationen für die Verbindung zur Swiss Floorball API ein.</p>
 		
-		<form method="POST" action="options.php">  
+		<form method="POST" action="options.php" id="sfa-settings-form" class="sfa-autosave">
 			<?php
 				settings_fields( 'swfl_general_settings' );
 				do_settings_sections( 'swfl_general_settings' );
 			?>
-						<?php submit_button( 'Einstellungen speichern' ); ?>  
+			<p class="sfa-autosave-status" id="sfa-autosave-status" role="status" aria-live="polite"><?php esc_html_e( 'Changes are saved automatically.', 'swiss-floorball-api' ); ?></p>
+			<noscript><?php submit_button( __( 'Save settings', 'swiss-floorball-api' ) ); ?></noscript>
 		</form>
 	</div>
 

@@ -61,26 +61,35 @@ services:
         echo 'Activating plugin...'
         wp plugin activate floorball-api-for-swiss-unihockey --allow-root
         
+        # Pretty permalinks so the Shortcuts page is reachable at /shortcuts/.
+        wp rewrite structure '/%postname%/' --hard --allow-root
+
         echo 'Creating Shortcuts page...'
-        if ! wp post list --post_type=page --name=shortcuts --field=ID --allow-root | grep -q .; then
-          wp post create --post_type=page --post_title='Shortcuts' --post_status=publish --post_name='shortcuts' --post_content='
-            <h2>get-clubs</h2>[get-clubs]
-            <h2>get-teams</h2>[get-teams]
-            <h2>get-club-teams</h2>[get-club-teams]
-            <h2>get-club-games</h2>[get-club-games]
-            <h2>get-team-games</h2>[get-team-games]
-            <h2>get-calendars</h2>[get-calendars]
-            <h2>get-cups</h2>[get-cups]
-            <h2>get-groups</h2>[get-groups]
-            <h2>get-rankings</h2>[get-rankings]
-            <h2>get-player</h2>[get-player]
-            <h2>get-national-players</h2>[get-national-players]
-            <h2>get-topscorers</h2>[get-topscorers]
-            <h2>get-game-events</h2>[get-game-events]
-          ' --allow-root
-        else
-          echo 'Shortcuts page already exists.'
-        fi
+        # Recreated on every run so the page always lists the current shortcodes.
+        for id in $$(wp post list --post_type=page --name=shortcuts --field=ID --allow-root); do
+          wp post delete $$id --force --allow-root
+        done
+        wp post create --post_type=page --post_title='Shortcuts' --post_status=publish --post_name='shortcuts' --post_content='
+          <h2>swfl-club-games</h2>[swfl-club-games club_id=\"637\" season=\"2026\"]
+          <h2>swfl-team-games</h2>[swfl-team-games team_id=\"427892\" season=\"2026\" page_size=\"5\"]
+          <h2>swfl-club-team-games</h2>[swfl-club-team-games club_id=\"637\" season=\"2026\" page_size=\"6\"]
+          <h2>swfl-league-games</h2>[swfl-league-games game_class=\"11\" league=\"6\" season=\"2026\" group=\"Gruppe 6\"]
+          <h2>swfl-rankings</h2>[swfl-rankings season=\"2026\" league=\"6\" game_class=\"11\" group=\"Gruppe 6\"]
+          <h2>swfl-mobiliar-topscorer</h2>[swfl-mobiliar-topscorer season=\"2026\"]
+          <h2>swfl-clubs</h2>[swfl-clubs]
+          <h2>swfl-teams</h2>[swfl-teams]
+          <h2>swfl-club-teams</h2>[swfl-club-teams]
+          <h2>swfl-cups</h2>[swfl-cups]
+          <h2>swfl-groups</h2>[swfl-groups season=\"2026\" league=\"6\" game_class=\"11\"]
+          <h2>swfl-calendars</h2>[swfl-calendars club_id=\"637\" season=\"2026\"]
+          <h2>swfl-topscorers (nicht in der Gratis-API)</h2>[swfl-topscorers season=\"2026\" league=\"6\" game_class=\"11\" group=\"Gruppe 6\"]
+          <h2>swfl-player (nicht in der Gratis-API)</h2>[swfl-player player_id=\"1\"]
+          <h2>swfl-national-players (nicht in der Gratis-API)</h2>[swfl-national-players]
+          <h2>swfl-game-events (nicht in der Gratis-API)</h2>[swfl-game-events game_id=\"1096214\"]
+        ' --allow-root
+
+        echo 'Creating one page per shortcode...'
+        sh /var/www/html/wp-content/plugins/floorball-api-for-swiss-unihockey/scripts/create-test-pages.sh
       "
 
 volumes:
