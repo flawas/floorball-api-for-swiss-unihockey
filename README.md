@@ -155,6 +155,7 @@ This plugin connects to the **Swiss Unihockey API** (api-v2.swissunihockey.ch) t
 * Fix: Admin class methods to snake_case; prefix template variables with `swfl_`; apply Yoda conditions (PR #50, WPCS step 4/5)
 * Fix: End inline comments with full stops (WPCS 3c2)
 * Fix: Rename global functions to snake_case (WPCS)
+* Security: Add `manage_options` capability checks to admin partial templates (#4)
 
 ### 1.0.5 (2026-08-09)
 
