@@ -96,78 +96,109 @@ class Swiss_Floorball_API_Display_Stats {
 
 		if ( is_wp_error( $api_response ) ) {
 			Swiss_Floorball_API_Display::render_fetch_error( $api_response );
-			return;
-		}
-
-		if ( isset( $api_response['data'] ) ) {
-			echo '<div class="sfa-card">';
-
-			// Title/Header.
-			$title = isset( $api_response['data']['title'] ) ? $api_response['data']['title'] : 'Match Details';
-			echo '<h3>' . esc_html( $title ) . '</h3>';
-			if ( ! empty( $api_response['data']['subtitle'] ) && is_string( $api_response['data']['subtitle'] ) ) {
-				echo '<p class="sfa-widget__subtitle">' . esc_html( $api_response['data']['subtitle'] ) . '</p>';
-			}
-
-			if ( isset( $api_response['data']['regions'][0]['rows'] ) ) {
-				foreach ( $api_response['data']['regions'] as $region ) {
-					if ( ! empty( $region['title'] ) ) {
-						echo '<h4 class="sfa-region-title">' . esc_html( $region['title'] ) . '</h4>';
-					}
-					if ( isset( $region['rows'] ) ) {
-						echo '<div class="sfa-table-container sfa-table-container-flat">';
-						echo '<div class="sfa-table-wrap"><table class="sfa-data-table"><caption class="sfa-visually-hidden">' . esc_html__( 'Spieldetails', 'swiss-floorball-api' ) . '</caption>';
-
-						// Check for headers.
-						$headers = isset( $api_response['data']['headers'] ) ? $api_response['data']['headers'] : null;
-						if ( ! empty( $headers ) ) {
-							echo '<thead><tr>';
-							foreach ( $headers as $header ) {
-								$header_text = is_string( $header ) ? $header : '';
-								if ( isset( $header['text'] ) ) {
-									$header_text = $header['text'];
-								}
-								echo '<th scope="col">' . esc_html( $header_text ) . '</th>';
-							}
-							echo '</tr></thead>';
-						}
-
-						foreach ( $region['rows'] as $row ) {
-							echo '<tr>';
-							if ( isset( $row['cells'] ) ) {
-								foreach ( $row['cells'] as $cell ) {
-									echo '<td>';
-									// Check if cell contains an image.
-									if ( isset( $cell['image'] ) ) {
-										$img_url = isset( $cell['image']['url'] ) ? $cell['image']['url'] : '';
-										$img_alt = isset( $cell['image']['alt'] ) ? $cell['image']['alt'] : '';
-										if ( ! empty( $img_url ) ) {
-											echo '<img src="' . esc_url( $img_url ) . '" alt="' . esc_attr( $img_alt ) . '" class="sfa-cell-image">';
-										}
-									}
-									// Display text content.
-									if ( isset( $cell['text'] ) ) {
-										foreach ( $cell['text'] as $text ) {
-											echo esc_html( $text ) . '<br>';
-										}
-									}
-									echo '</td>';
-								}
-							}
-							echo '</tr>';
-						}
-						echo '</table></div>';
-						echo '</div>';
-					}
-				}
-			} else {
-				echo '<pre>' . esc_html( print_r( $api_response, true ) ) . '</pre>'; // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- Fallback dump of an unknown response shape.
-			}
-
-			echo '</div>';
+		} elseif ( isset( $api_response['data'] ) ) {
+			self::render_details_card( $api_response );
 		} else {
 			echo '<div class="sfa-empty-state"><p class="sfa-empty-state-text">' . esc_html__( 'Keine Details verfügbar.', 'swiss-floorball-api' ) . '</p></div>';
 		}
+	}
+
+	/**
+	 * Render the card of a game: title, subtitle and one table per region.
+	 *
+	 * @since 2.0.1
+	 * @param array $api_response Decoded game response with a `data` key.
+	 * @return void
+	 */
+	private static function render_details_card( $api_response ) {
+		$data = $api_response['data'];
+		echo '<div class="sfa-card">';
+
+		// Title/Header.
+		$title = isset( $data['title'] ) ? $data['title'] : 'Match Details';
+		echo '<h3>' . esc_html( $title ) . '</h3>';
+		if ( ! empty( $data['subtitle'] ) && is_string( $data['subtitle'] ) ) {
+			echo '<p class="sfa-widget__subtitle">' . esc_html( $data['subtitle'] ) . '</p>';
+		}
+
+		if ( isset( $data['regions'][0]['rows'] ) ) {
+			$headers = isset( $data['headers'] ) ? $data['headers'] : null;
+			foreach ( $data['regions'] as $region ) {
+				self::render_details_region( $region, $headers );
+			}
+		} else {
+			echo '<pre>' . esc_html( print_r( $api_response, true ) ) . '</pre>'; // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- Fallback dump of an unknown response shape.
+		}
+
+		echo '</div>';
+	}
+
+	/**
+	 * Render one region of a game as a titled table.
+	 *
+	 * @since 2.0.1
+	 * @param array      $region  Region with optional `title` and `rows`.
+	 * @param array|null $headers Table headers of the response.
+	 * @return void
+	 */
+	private static function render_details_region( $region, $headers ) {
+		if ( ! empty( $region['title'] ) ) {
+			echo '<h4 class="sfa-region-title">' . esc_html( $region['title'] ) . '</h4>';
+		}
+		if ( ! isset( $region['rows'] ) ) {
+			return;
+		}
+
+		echo '<div class="sfa-table-container sfa-table-container-flat">';
+		echo '<div class="sfa-table-wrap"><table class="sfa-data-table"><caption class="sfa-visually-hidden">' . esc_html__( 'Spieldetails', 'swiss-floorball-api' ) . '</caption>';
+
+		if ( ! empty( $headers ) ) {
+			echo '<thead><tr>';
+			foreach ( $headers as $header ) {
+				$header_text = is_string( $header ) ? $header : '';
+				if ( isset( $header['text'] ) ) {
+					$header_text = $header['text'];
+				}
+				echo '<th scope="col">' . esc_html( $header_text ) . '</th>';
+			}
+			echo '</tr></thead>';
+		}
+
+		foreach ( $region['rows'] as $row ) {
+			echo '<tr>';
+			if ( isset( $row['cells'] ) ) {
+				foreach ( $row['cells'] as $cell ) {
+					self::render_details_cell( $cell );
+				}
+			}
+			echo '</tr>';
+		}
+		echo '</table></div>';
+		echo '</div>';
+	}
+
+	/**
+	 * Render one table cell with an optional image and its text lines.
+	 *
+	 * @since 2.0.1
+	 * @param array $cell Cell with optional `image` and `text`.
+	 * @return void
+	 */
+	private static function render_details_cell( $cell ) {
+		echo '<td>';
+		if ( isset( $cell['image'] ) ) {
+			$img_url = isset( $cell['image']['url'] ) ? $cell['image']['url'] : '';
+			$img_alt = isset( $cell['image']['alt'] ) ? $cell['image']['alt'] : '';
+			if ( ! empty( $img_url ) ) {
+				echo '<img src="' . esc_url( $img_url ) . '" alt="' . esc_attr( $img_alt ) . '" class="sfa-cell-image">';
+			}
+		}
+		if ( isset( $cell['text'] ) ) {
+			foreach ( $cell['text'] as $text ) {
+				echo esc_html( $text ) . '<br>';
+			}
+		}
+		echo '</td>';
 	}
 
 	/**
