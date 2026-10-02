@@ -423,277 +423,208 @@ class Swiss_Floorball_Api_Admin {
 			// Title to be displayed on the administration page.
 			'Einstellungen',
 			// Callback used to render the description of the section.
-				array( $this, 'settings_page_display_general_account' ),
+			array( $this, 'settings_page_display_general_account' ),
 			// Page on which to add this section of options.
 			'swfl_general_settings'
 		);
 
-		unset( $args );
-		$args = array(
-			'type'        => 'select',
-			'id'          => 'swissfloorball_api_source',
-			'name'        => 'swissfloorball_api_source',
-			'wp_data'     => 'option',
-			'default'     => Swiss_Floorball_API_Client::SOURCE_FREE,
-			'options'     => array(
-				Swiss_Floorball_API_Client::SOURCE_FREE    => __( 'Free API (wc.swissunihockey.ch)', 'swiss-floorball-api' ),
-				Swiss_Floorball_API_Client::SOURCE_PARTNER => __( 'Partner API (API key and secret required)', 'swiss-floorball-api' ),
+		$fields = array_merge(
+			$this->get_connection_fields(),
+			$this->get_appearance_fields(),
+			$this->get_table_fields(),
+			$this->get_request_fields()
+		);
+		foreach ( $fields as $field ) {
+			add_settings_field(
+				$field['args']['id'],
+				$field['label'],
+				array( $this, 'settings_page_render_settings_field' ),
+				'swfl_general_settings',
+				'swfl_general_section',
+				$field['args']
+			);
+
+			// Fields without a sanitizer (the read-only club name) are not registered as options.
+			if ( isset( $field['sanitize'] ) ) {
+				register_setting( 'swfl_general_settings', $field['args']['id'], $field['sanitize'] );
+			}
+		}
+	}
+
+	/**
+	 * Build the definition of an input settings field.
+	 *
+	 * @since 2.0.1
+	 * @param string $id      Option name, also used as field ID and name.
+	 * @param string $subtype Input type (text, number, password, checkbox).
+	 * @param array  $extra   Optional. Further field arguments (default, description, min, max, step, placeholder, required, disabled).
+	 * @return array Field arguments for settings_page_render_settings_field().
+	 */
+	private function input_args( $id, $subtype, $extra = array() ) {
+		return array_merge(
+			array(
+				'type'             => 'input',
+				'subtype'          => $subtype,
+				'id'               => $id,
+				'name'             => $id,
+				'required'         => '',
+				'get_options_list' => '',
+				'value_type'       => 'normal',
+				'wp_data'          => 'option',
 			),
-			'description' => __( 'The free API needs no credentials but does not provide leagues, groups, topscorers, player profiles, national players and game events. Those shortcodes need the Partner API; the API key and secret fields appear once you select it.', 'swiss-floorball-api' ),
+			$extra
 		);
-		add_settings_field(
-			'swissfloorball_api_source',
-			__( 'API source', 'swiss-floorball-api' ),
-			array( $this, 'settings_page_render_settings_field' ),
-			'swfl_general_settings',
-			'swfl_general_section',
-			$args
-		);
+	}
 
-		register_setting(
-			'swfl_general_settings',
-			'swissfloorball_api_source',
-			array( $this, 'sanitize_api_source' )
-		);
-
-		unset( $args );
-		$args = array(
-			'type'             => 'input',
-			'subtype'          => 'text',
-			'id'               => 'swissfloorball_api_key',
-			'name'             => 'swissfloorball_api_key',
-			'required'         => '',
-			'get_options_list' => '',
-			'value_type'       => 'normal',
-			'wp_data'          => 'option',
-			'description'      => __( 'The API key issued to you by Swiss Unihockey for the Partner API. Used together with the API secret to request a short-lived access token.', 'swiss-floorball-api' ),
-		);
-		add_settings_field(
-			'swissfloorball_api_key',
-			__( 'Partner API: API key', 'swiss-floorball-api' ),
-			array( $this, 'settings_page_render_settings_field' ),
-			'swfl_general_settings',
-			'swfl_general_section',
-			$args
-		);
-
-		register_setting(
-			'swfl_general_settings',
-			'swissfloorball_api_key',
-			array( $this, 'sanitize_partner_credential' )
-		);
-
-		unset( $args );
-		$args = array(
-			'type'             => 'input',
-			'subtype'          => 'password',
-			'id'               => 'swissfloorball_api_secret',
-			'name'             => 'swissfloorball_api_secret',
-			'required'         => '',
-			'get_options_list' => '',
-			'value_type'       => 'normal',
-			'wp_data'          => 'option',
-			'description'      => __( 'The API secret that belongs to the API key above. Both are required; it is stored in the database and never shown on the website.', 'swiss-floorball-api' ),
-		);
-		add_settings_field(
-			'swissfloorball_api_secret',
-			__( 'Partner API: API secret', 'swiss-floorball-api' ),
-			array( $this, 'settings_page_render_settings_field' ),
-			'swfl_general_settings',
-			'swfl_general_section',
-			$args
-		);
-
-		register_setting(
-			'swfl_general_settings',
-			'swissfloorball_api_secret',
-			array( $this, 'sanitize_partner_credential' )
-		);
-
-		unset( $args );
-		$args = array(
-			'type'             => 'input',
-			'subtype'          => 'number',
-			'id'               => 'swissfloorball_club_number',
-			'name'             => 'swissfloorball_club_number',
-			'required'         => 'false',
-			'get_options_list' => '',
-			'value_type'       => 'normal',
-			'wp_data'          => 'option',
-		);
-		add_settings_field(
-			'swissfloorball_club_number',
-			'Swiss Floorball Club Number',
-			array( $this, 'settings_page_render_settings_field' ),
-			'swfl_general_settings',
-			'swfl_general_section',
-			$args
-		);
-
-		register_setting(
-			'swfl_general_settings',
-			'swissfloorball_club_number',
-			array( $this, 'sanitize_club_number' )
-		);
-
-		unset( $args );
-		$args = array(
-			'type'             => 'input',
-			'subtype'          => 'text',
-			'id'               => 'swissfloorball_club_name',
-			'name'             => 'swissfloorball_club_name',
-			'required'         => 'false',
-			'get_options_list' => '',
-			'value_type'       => 'normal',
-			'wp_data'          => 'option',
-			'disabled'         => true,
-		);
-		add_settings_field(
-			'swissfloorball_club_name',
-			'Swiss Floorball Club Name',
-			array( $this, 'settings_page_render_settings_field' ),
-			'swfl_general_settings',
-			'swfl_general_section',
-			$args
-		);
-
-		unset( $args );
-		$args = array(
-			'type'             => 'input',
-			'subtype'          => 'number',
-			'id'               => 'swissfloorball_actual_season',
-			'name'             => 'swissfloorball_actual_season',
-			'required'         => 'false',
-			'get_options_list' => '',
-			'value_type'       => 'normal',
-			'wp_data'          => 'option',
-		);
-		add_settings_field(
-			'swissfloorball_actual_season',
-			'Swiss Floorball Aktuelle Saison (Jahrzahl, z.B. 2023)',
-			array( $this, 'settings_page_render_settings_field' ),
-			'swfl_general_settings',
-			'swfl_general_section',
-			$args
-		);
-
-		register_setting(
-			'swfl_general_settings',
-			'swissfloorball_actual_season',
-			'absint'
-		);
-
-		unset( $args );
-		$args = array(
-			'type'             => 'input',
-			'subtype'          => 'checkbox',
-			'id'               => 'swissfloorball_show_icons',
-			'name'             => 'swissfloorball_show_icons',
-			'required'         => '',
-			'get_options_list' => '',
-			'value_type'       => 'normal',
-			'wp_data'          => 'option',
-			'default'          => '1',
-		);
-		add_settings_field(
-			'swissfloorball_show_icons',
-			__( 'Show icons', 'swiss-floorball-api' ),
-			array( $this, 'settings_page_render_settings_field' ),
-			'swfl_general_settings',
-			'swfl_general_section',
-			$args
-		);
-
-		register_setting(
-			'swfl_general_settings',
-			'swissfloorball_show_icons',
-			array( $this, 'sanitize_show_icons' )
-		);
-
-		unset( $args );
-		$args = array(
+	/**
+	 * Build the definition of a select settings field.
+	 *
+	 * @since 2.0.1
+	 * @param string $id          Option name, also used as field ID and name.
+	 * @param array  $options     Value => label pairs.
+	 * @param string $default_value     Default value.
+	 * @param string $description Help text below the field.
+	 * @return array Field arguments for settings_page_render_settings_field().
+	 */
+	private function select_args( $id, $options, $default_value, $description ) {
+		return array(
 			'type'        => 'select',
-			'id'          => 'swissfloorball_theme',
-			'name'        => 'swissfloorball_theme',
+			'id'          => $id,
+			'name'        => $id,
 			'wp_data'     => 'option',
-			'default'     => 'auto',
-			'options'     => array(
-				'auto'  => __( 'Auto (follow system)', 'swiss-floorball-api' ),
-				'light' => __( 'Light', 'swiss-floorball-api' ),
-				'dark'  => __( 'Dark', 'swiss-floorball-api' ),
+			'default'     => $default_value,
+			'options'     => $options,
+			'description' => $description,
+		);
+	}
+
+	/**
+	 * Fields for the API source, the Partner API credentials, the club and the season.
+	 *
+	 * @since 2.0.1
+	 * @return array[] Field definitions with label, args and optional sanitize callback.
+	 */
+	private function get_connection_fields() {
+		return array(
+			array(
+				'label'    => __( 'API source', 'swiss-floorball-api' ),
+				'args'     => $this->select_args(
+					'swissfloorball_api_source',
+					array(
+						Swiss_Floorball_API_Client::SOURCE_FREE    => __( 'Free API (wc.swissunihockey.ch)', 'swiss-floorball-api' ),
+						Swiss_Floorball_API_Client::SOURCE_PARTNER => __( 'Partner API (API key and secret required)', 'swiss-floorball-api' ),
+					),
+					Swiss_Floorball_API_Client::SOURCE_FREE,
+					__( 'The free API needs no credentials but does not provide leagues, groups, topscorers, player profiles, national players and game events. Those shortcodes need the Partner API; the API key and secret fields appear once you select it.', 'swiss-floorball-api' )
+				),
+				'sanitize' => array( $this, 'sanitize_api_source' ),
 			),
-			'description' => __( 'Controls the colour scheme of shortcodes and admin pages. Auto follows the visitor\'s system setting.', 'swiss-floorball-api' ),
-		);
-		add_settings_field(
-			'swissfloorball_theme',
-			__( 'Theme', 'swiss-floorball-api' ),
-			array( $this, 'settings_page_render_settings_field' ),
-			'swfl_general_settings',
-			'swfl_general_section',
-			$args
-		);
-
-		register_setting(
-			'swfl_general_settings',
-			'swissfloorball_theme',
-			array( $this, 'sanitize_theme' )
-		);
-
-		unset( $args );
-		$args = array(
-			'type'             => 'input',
-			'subtype'          => 'text',
-			'id'               => 'swissfloorball_seed_color',
-			'name'             => 'swissfloorball_seed_color',
-			'required'         => '',
-			'get_options_list' => '',
-			'value_type'       => 'normal',
-			'wp_data'          => 'option',
-			'default'          => '',
-			'placeholder'      => '#0066cc',
-			'description'      => __( 'Optional brand colour (hex, e.g. #0066cc). The plugin derives its colour palette from it. Leave empty to use the default colours.', 'swiss-floorball-api' ),
-		);
-		add_settings_field(
-			'swissfloorball_seed_color',
-			__( 'Seed colour', 'swiss-floorball-api' ),
-			array( $this, 'settings_page_render_settings_field' ),
-			'swfl_general_settings',
-			'swfl_general_section',
-			$args
-		);
-
-		register_setting(
-			'swfl_general_settings',
-			'swissfloorball_seed_color',
-			array( $this, 'sanitize_seed_color' )
-		);
-
-		unset( $args );
-		$args = array(
-			'type'        => 'select',
-			'id'          => 'swissfloorball_table_style',
-			'name'        => 'swissfloorball_table_style',
-			'wp_data'     => 'option',
-			'default'     => 'flat',
-			'options'     => array(
-				'flat'    => __( 'Flat', 'swiss-floorball-api' ),
-				'classic' => __( 'Classic (boxed, rounded)', 'swiss-floorball-api' ),
+			array(
+				'label'    => __( 'Partner API: API key', 'swiss-floorball-api' ),
+				'args'     => $this->input_args(
+					'swissfloorball_api_key',
+					'text',
+					array( 'description' => __( 'The API key issued to you by Swiss Unihockey for the Partner API. Used together with the API secret to request a short-lived access token.', 'swiss-floorball-api' ) )
+				),
+				'sanitize' => array( $this, 'sanitize_partner_credential' ),
 			),
-			'description' => __( 'Flat tables have no border or shadow, thin row dividers and an accent line under the header.', 'swiss-floorball-api' ),
+			array(
+				'label'    => __( 'Partner API: API secret', 'swiss-floorball-api' ),
+				'args'     => $this->input_args(
+					'swissfloorball_api_secret',
+					'password',
+					array( 'description' => __( 'The API secret that belongs to the API key above. Both are required; it is stored in the database and never shown on the website.', 'swiss-floorball-api' ) )
+				),
+				'sanitize' => array( $this, 'sanitize_partner_credential' ),
+			),
+			array(
+				'label'    => 'Swiss Floorball Club Number',
+				'args'     => $this->input_args( 'swissfloorball_club_number', 'number', array( 'required' => 'false' ) ),
+				'sanitize' => array( $this, 'sanitize_club_number' ),
+			),
+			array(
+				'label' => 'Swiss Floorball Club Name',
+				'args'  => $this->input_args(
+					'swissfloorball_club_name',
+					'text',
+					array(
+						'required' => 'false',
+						'disabled' => true,
+					)
+				),
+			),
+			array(
+				'label'    => 'Swiss Floorball Aktuelle Saison (Jahrzahl, z.B. 2023)',
+				'args'     => $this->input_args( 'swissfloorball_actual_season', 'number', array( 'required' => 'false' ) ),
+				'sanitize' => 'absint',
+			),
 		);
-		add_settings_field(
-			'swissfloorball_table_style',
-			__( 'Table style', 'swiss-floorball-api' ),
-			array( $this, 'settings_page_render_settings_field' ),
-			'swfl_general_settings',
-			'swfl_general_section',
-			$args
-		);
+	}
 
-		register_setting(
-			'swfl_general_settings',
-			'swissfloorball_table_style',
-			array( $this, 'sanitize_table_style' )
+	/**
+	 * Fields for icons, theme and seed colour.
+	 *
+	 * @since 2.0.1
+	 * @return array[] Field definitions with label, args and sanitize callback.
+	 */
+	private function get_appearance_fields() {
+		return array(
+			array(
+				'label'    => __( 'Show icons', 'swiss-floorball-api' ),
+				'args'     => $this->input_args( 'swissfloorball_show_icons', 'checkbox', array( 'default' => '1' ) ),
+				'sanitize' => array( $this, 'sanitize_show_icons' ),
+			),
+			array(
+				'label'    => __( 'Theme', 'swiss-floorball-api' ),
+				'args'     => $this->select_args(
+					'swissfloorball_theme',
+					array(
+						'auto'  => __( 'Auto (follow system)', 'swiss-floorball-api' ),
+						'light' => __( 'Light', 'swiss-floorball-api' ),
+						'dark'  => __( 'Dark', 'swiss-floorball-api' ),
+					),
+					'auto',
+					__( 'Controls the colour scheme of shortcodes and admin pages. Auto follows the visitor\'s system setting.', 'swiss-floorball-api' )
+				),
+				'sanitize' => array( $this, 'sanitize_theme' ),
+			),
+			array(
+				'label'    => __( 'Seed colour', 'swiss-floorball-api' ),
+				'args'     => $this->input_args(
+					'swissfloorball_seed_color',
+					'text',
+					array(
+						'default'     => '',
+						'placeholder' => '#0066cc',
+						'description' => __( 'Optional brand colour (hex, e.g. #0066cc). The plugin derives its colour palette from it. Leave empty to use the default colours.', 'swiss-floorball-api' ),
+					)
+				),
+				'sanitize' => array( $this, 'sanitize_seed_color' ),
+			),
+		);
+	}
+
+	/**
+	 * Fields for the table style, the table colours and striped rows.
+	 *
+	 * @since 2.0.1
+	 * @return array[] Field definitions with label, args and sanitize callback.
+	 */
+	private function get_table_fields() {
+		$fields = array(
+			array(
+				'label'    => __( 'Table style', 'swiss-floorball-api' ),
+				'args'     => $this->select_args(
+					'swissfloorball_table_style',
+					array(
+						'flat'    => __( 'Flat', 'swiss-floorball-api' ),
+						'classic' => __( 'Classic (boxed, rounded)', 'swiss-floorball-api' ),
+					),
+					'flat',
+					__( 'Flat tables have no border or shadow, thin row dividers and an accent line under the header.', 'swiss-floorball-api' )
+				),
+				'sanitize' => array( $this, 'sanitize_table_style' ),
+			),
 		);
 
 		$table_colors = array(
@@ -715,96 +646,56 @@ class Swiss_Floorball_Api_Admin {
 			),
 		);
 		foreach ( $table_colors as $color_key => $color_labels ) {
-			$option_name = 'swissfloorball_table_' . $color_key . '_color';
-			unset( $args );
-			$args = array(
-				'type'             => 'input',
-				'subtype'          => 'text',
-				'id'               => $option_name,
-				'name'             => $option_name,
-				'required'         => '',
-				'get_options_list' => '',
-				'value_type'       => 'normal',
-				'wp_data'          => 'option',
-				'default'          => '',
-				'description'      => $color_labels[1],
-			);
-			add_settings_field(
-				$option_name,
-				$color_labels[0],
-				array( $this, 'settings_page_render_settings_field' ),
-				'swfl_general_settings',
-				'swfl_general_section',
-				$args
-			);
-
-			register_setting(
-				'swfl_general_settings',
-				$option_name,
-				array( $this, 'sanitize_seed_color' )
+			$fields[] = array(
+				'label'    => $color_labels[0],
+				'args'     => $this->input_args(
+					'swissfloorball_table_' . $color_key . '_color',
+					'text',
+					array(
+						'default'     => '',
+						'description' => $color_labels[1],
+					)
+				),
+				'sanitize' => array( $this, 'sanitize_seed_color' ),
 			);
 		}
 
-		unset( $args );
-		$args = array(
-			'type'             => 'input',
-			'subtype'          => 'checkbox',
-			'id'               => 'swissfloorball_table_striped',
-			'name'             => 'swissfloorball_table_striped',
-			'required'         => '',
-			'get_options_list' => '',
-			'value_type'       => 'normal',
-			'wp_data'          => 'option',
-			'default'          => '0',
-		);
-		add_settings_field(
-			'swissfloorball_table_striped',
-			__( 'Striped table rows', 'swiss-floorball-api' ),
-			array( $this, 'settings_page_render_settings_field' ),
-			'swfl_general_settings',
-			'swfl_general_section',
-			$args
+		$fields[] = array(
+			'label'    => __( 'Striped table rows', 'swiss-floorball-api' ),
+			'args'     => $this->input_args( 'swissfloorball_table_striped', 'checkbox', array( 'default' => '0' ) ),
+			'sanitize' => array( $this, 'sanitize_show_icons' ),
 		);
 
-		register_setting(
-			'swfl_general_settings',
-			'swissfloorball_table_striped',
-			array( $this, 'sanitize_show_icons' )
-		);
+		return $fields;
+	}
 
-		unset( $args );
-		$args = array(
-			'type'             => 'input',
-			'subtype'          => 'number',
-			'id'               => 'swissfloorball_request_timeout',
-			'name'             => 'swissfloorball_request_timeout',
-			'required'         => '',
-			'get_options_list' => '',
-			'value_type'       => 'normal',
-			'wp_data'          => 'option',
-			'min'              => '1',
-			'max'              => '30',
-			'step'             => '1',
-			'default'          => '3',
-			'description'      => __( 'Maximum wait time for the Swiss Unihockey API in seconds (1-30, default 3). Can be overridden with the swfl_request_timeout filter.', 'swiss-floorball-api' ),
-		);
-		add_settings_field(
-			'swissfloorball_request_timeout',
-			__( 'API request timeout (seconds)', 'swiss-floorball-api' ),
-			array( $this, 'settings_page_render_settings_field' ),
-			'swfl_general_settings',
-			'swfl_general_section',
-			$args
-		);
-
-		register_setting(
-			'swfl_general_settings',
-			'swissfloorball_request_timeout',
+	/**
+	 * Field for the API request timeout.
+	 *
+	 * @since 2.0.1
+	 * @return array[] Field definitions with label, args and sanitize settings.
+	 */
+	private function get_request_fields() {
+		return array(
 			array(
-				'type'              => 'integer',
-				'sanitize_callback' => array( $this, 'sanitize_request_timeout' ),
-				'default'           => 3,
-			)
+				'label'    => __( 'API request timeout (seconds)', 'swiss-floorball-api' ),
+				'args'     => $this->input_args(
+					'swissfloorball_request_timeout',
+					'number',
+					array(
+						'min'         => '1',
+						'max'         => '30',
+						'step'        => '1',
+						'default'     => '3',
+						'description' => __( 'Maximum wait time for the Swiss Unihockey API in seconds (1-30, default 3). Can be overridden with the swfl_request_timeout filter.', 'swiss-floorball-api' ),
+					)
+				),
+				'sanitize' => array(
+					'type'              => 'integer',
+					'sanitize_callback' => array( $this, 'sanitize_request_timeout' ),
+					'default'           => 3,
+				),
+			),
 		);
 	}
 
