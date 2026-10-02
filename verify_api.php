@@ -273,8 +273,8 @@ check( 'render_team_games', function () use ( $D, &$team_id, $season ) {
 	render( function () use ( $D, $team_id, $season ) { $D::render_team_games( $team_id, $season ); } );
 } );
 
-// render_club_games_callout and render_sessions are intentionally not asserted:
-// the callout renders nothing when no game is upcoming, and sessions only exist during a live season.
+// render_club_games_callout is intentionally not asserted:
+// the callout renders nothing when no game is upcoming.
 
 // ---------------------------------------------------------------------------
 echo "\n";
