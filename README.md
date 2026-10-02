@@ -1,5 +1,20 @@
 # Swiss Floorball API for WordPress
 
+[![Quality gate status](https://sonarcloud.io/api/project_badges/measure?project=flawas_swiss-floorball-api&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=flawas_swiss-floorball-api)
+[![Security rating](https://sonarcloud.io/api/project_badges/measure?project=flawas_swiss-floorball-api&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=flawas_swiss-floorball-api)
+[![Maintainability rating](https://sonarcloud.io/api/project_badges/measure?project=flawas_swiss-floorball-api&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=flawas_swiss-floorball-api)
+[![Reliability rating](https://sonarcloud.io/api/project_badges/measure?project=flawas_swiss-floorball-api&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=flawas_swiss-floorball-api)
+[![CI](https://github.com/flawas/floorball-api-for-swiss-unihockey/actions/workflows/ci.yml/badge.svg)](https://github.com/flawas/floorball-api-for-swiss-unihockey/actions/workflows/ci.yml)
+[![Latest release](https://img.shields.io/github/v/release/flawas/floorball-api-for-swiss-unihockey)](https://github.com/flawas/floorball-api-for-swiss-unihockey/releases)
+[![WordPress plugin version](https://img.shields.io/wordpress/plugin/v/swiss-floorball-api)](https://wordpress.org/plugins/swiss-floorball-api/)
+[![WordPress downloads](https://img.shields.io/wordpress/plugin/dt/swiss-floorball-api)](https://wordpress.org/plugins/swiss-floorball-api/)
+[![WordPress rating](https://img.shields.io/wordpress/plugin/stars/swiss-floorball-api)](https://wordpress.org/plugins/swiss-floorball-api/#reviews)
+[![WordPress tested up to](https://img.shields.io/wordpress/plugin/tested/swiss-floorball-api)](https://wordpress.org/plugins/swiss-floorball-api/)
+[![PHP version](https://img.shields.io/badge/PHP-7.4%2B-777BB4?logo=php&logoColor=white)](https://www.php.net/)
+[![License: GPL v2+](https://img.shields.io/badge/License-GPLv2%2B-blue.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
+[![Last commit](https://img.shields.io/github/last-commit/flawas/floorball-api-for-swiss-unihockey)](https://github.com/flawas/floorball-api-for-swiss-unihockey/commits/main)
+[![Made with Claude Code](https://img.shields.io/badge/Made%20with-Claude%20Code-D97757?logo=anthropic&logoColor=white)](https://claude.com/claude-code)
+
 ![Banner](assets/banner-914x298.png)
 
 **Contributors:** flaviowaser  
