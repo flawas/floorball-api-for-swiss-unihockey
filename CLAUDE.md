@@ -91,15 +91,24 @@ centralized outside that split:
   endpoints (games, rankings, topscorers, teams) vs. an `entries[]` list shape for simpler lookup
   endpoints (leagues, seasons, clubs, groups) — check which shape an endpoint uses before writing a new
   render method.
+- Classes are kept small (SonarCloud limits a class to 20 methods) and split by topic; the output code
+  is spread over these siblings, all in `includes/`:
+  `Swiss_Floorball_API_Display_Stats` (game details, rankings, players, topscorers),
+  `Swiss_Floorball_API_Widgets` (widget output and REST routes) with `Swiss_Floorball_API_Table_Data`
+  (reading and paging grid rows) and `Swiss_Floorball_API_Calendar` (iCalendar feed), and
+  `Swiss_Floorball_API_Theme` (theme, seed colour and table colour CSS).
 - `public/class-floorball-api-for-swiss-unihockey-public.php` — registers all `swfl-*` shortcodes;
   each shortcode callback just sanitizes attributes (`absint()` on IDs) and delegates straight to a
   `Swiss_Floorball_API_Display::render_*` method, wrapped in an output buffer inside a
-  `.swiss-floorball-plugin` div. Styles/scripts are only enqueued when `page_has_shortcode()` detects
-  one of the registered shortcodes in the current post content.
+  `.swiss-floorball-plugin` div. Styles/scripts (`public/class-floorball-api-for-swiss-unihockey-public-assets.php`)
+  are only enqueued when `page_has_shortcode()` detects one of the registered shortcodes in the current
+  post content.
 - `admin/class-floorball-api-for-swiss-unihockey-admin.php` — settings page (Club ID, season) plus
   "helper" admin pages (Liga, Clubs, Spiele/Matches, Saison) that call the same `Display::render_*`
   methods to let admins browse/discover IDs (league, game_class, group, team, game) needed for
-  shortcode attributes. Also handles cache-busting via `admin_post_swfl_clear_cache`.
+  shortcode attributes. Also handles cache-busting via `admin_post_swfl_clear_cache`. The Settings API
+  part (field definitions, sanitizers, field output) lives in
+  `admin/class-floorball-api-for-swiss-unihockey-admin-settings.php`.
 - Settings are stored as plain WordPress options: `swissfloorball_club_number`,
   `swissfloorball_actual_season`.
 
