@@ -5,6 +5,7 @@
  *
  * Env: WP_URL (default http://localhost:8000), OUT_DIR (default docs/media), CLUB_ID (optional, default 637 = HC Weggis Küssnacht),
  *      SEASON (optional; default = previous, complete season like verify_api.php),
+ *      DOCKER_BIN / FFMPEG_BIN (optional; absolute path of the tool, default = looked up in fixed system directories, no PATH search),
  *      SWFL_API_BASE (optional; default = free API). The free API has no leagues, groups or topscorers: league 2 / class 11 / "Gruppe 1"
  *      are used as in verify_api.php, and scenes that need a player id are skipped.
  * Run from the repo root with Playwright resolvable (NODE_PATH) and ffmpeg installed.
@@ -21,6 +22,16 @@ const DEFAULT_CLUB_ID = '637'; // HC Weggis Küssnacht
 // Desktop frontend and admin shots are always exactly the desktop viewport size (see scenes.json).
 const cfg = JSON.parse(fs.readFileSync(path.join(__dirname, 'scenes.json'), 'utf8'));
 const manifest = { generated: new Date().toISOString(), context: {}, screenshots: [], videos: [], skipped: [] };
+
+// Tools are looked up in fixed system directories (no PATH search), or taken from DOCKER_BIN / FFMPEG_BIN.
+const BIN_DIRS = ['/opt/homebrew/bin', '/usr/local/bin', '/usr/bin', '/bin', '/snap/bin'];
+
+function resolveBin(name, envVar) {
+  if (process.env[envVar]) return process.env[envVar];
+  const found = BIN_DIRS.map((dir) => path.join(dir, name)).find((candidate) => fs.existsSync(candidate));
+  if (!found) throw new Error(`${name} not found in ${BIN_DIRS.join(', ')}; set ${envVar}`);
+  return found;
+}
 
 const log = (...a) => console.log(...a);
 const skip = (id, reason) => { log(`  skip ${id}: ${reason}`); manifest.skipped.push({ id, reason }); };
@@ -79,7 +90,12 @@ async function discover() {
 }
 
 function wp(...args) {
-  return execFileSync('docker', ['compose', 'run', '--rm', '-T', 'wp-cli', 'wp', ...args, '--allow-root'], { encoding: 'utf8' }).trim();
+  return execFileSync(resolveBin('docker', 'DOCKER_BIN'), ['compose', 'run', '--rm', '-T', 'wp-cli', 'wp', ...args, '--allow-root'], { encoding: 'utf8' }).trim();
+}
+
+// API values reach wp-cli through STDIN (it reads the value there when it is omitted), so they can never be parsed as options.
+function wpOptionUpdate(key, value) {
+  return execFileSync(resolveBin('docker', 'DOCKER_BIN'), ['compose', 'run', '--rm', '-T', 'wp-cli', 'wp', 'option', 'update', key, '--allow-root'], { encoding: 'utf8', input: String(value) }).trim();
 }
 
 function fill(template, ctx) {
@@ -172,8 +188,9 @@ async function recordWalkthrough(browser, state, pages) {
   await context.close();
   try {
     const gif = path.join(OUT, 'walkthrough.gif'), mp4 = path.join(OUT, 'walkthrough.mp4');
-    execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', video, '-vf', 'fps=8,scale=800:-1:flags=lanczos', '-loop', '0', gif]);
-    execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', video, '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', mp4]);
+    const ffmpeg = resolveBin('ffmpeg', 'FFMPEG_BIN');
+    execFileSync(ffmpeg, ['-y', '-loglevel', 'error', '-i', video, '-vf', 'fps=8,scale=800:-1:flags=lanczos', '-loop', '0', gif]);
+    execFileSync(ffmpeg, ['-y', '-loglevel', 'error', '-i', video, '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', mp4]);
     manifest.videos.push({ id: 'walkthrough', title: 'Walkthrough: admin pages and shortcode output', gif: 'walkthrough.gif', mp4: 'walkthrough.mp4' });
     log('  ok walkthrough.gif / walkthrough.mp4');
   } catch (e) {
@@ -189,9 +206,9 @@ async function main() {
   log(ctx);
 
   log('Configuring WordPress ...');
-  wp('option', 'update', 'swissfloorball_club_number', ctx.club_id);
-  wp('option', 'update', 'swissfloorball_club_name', ctx.club_name);
-  wp('option', 'update', 'swissfloorball_actual_season', String(ctx.season));
+  wpOptionUpdate('swissfloorball_club_number', ctx.club_id);
+  wpOptionUpdate('swissfloorball_club_name', ctx.club_name);
+  wpOptionUpdate('swissfloorball_actual_season', ctx.season);
 
   const pages = createPages(ctx);
 

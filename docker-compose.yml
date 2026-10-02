@@ -7,10 +7,10 @@ services:
       - db_data:/var/lib/mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: somewordpress
+      MYSQL_ROOT_PASSWORD: ${SWFL_DB_ROOT_PASSWORD:-somewordpress}
       MYSQL_DATABASE: wordpress
       MYSQL_USER: wordpress
-      MYSQL_PASSWORD: wordpress
+      MYSQL_PASSWORD: ${SWFL_DB_PASSWORD:-wordpress}
     platform: linux/amd64
 
   wordpress:
@@ -23,7 +23,7 @@ services:
     environment:
       WORDPRESS_DB_HOST: db:3306
       WORDPRESS_DB_USER: wordpress
-      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_PASSWORD: ${SWFL_DB_PASSWORD:-wordpress}
       WORDPRESS_DB_NAME: wordpress
     volumes:
       - wp_data:/var/www/html
@@ -40,7 +40,7 @@ services:
     environment:
       WORDPRESS_DB_HOST: db:3306
       WORDPRESS_DB_USER: wordpress
-      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_PASSWORD: ${SWFL_DB_PASSWORD:-wordpress}
       WORDPRESS_DB_NAME: wordpress
     command: >
       /bin/sh -c "
