@@ -21,13 +21,13 @@
 **Donate link:** https://www.paypal.me/flaviowaser  
 **Tags:** floorball, api, swiss floorball, unihockey, sports  
 **Requires at least:** 5.0  
-**Tested up to:** 7.0  
+**Tested up to:** 7.1  
 **Requires PHP:** 7.4  
 **Stable tag:** 1.0.5  
 **License:** GPLv2 or later  
 **License URI:** https://www.gnu.org/licenses/gpl-2.0.html  
 
-The **Swiss Floorball API** plugin brings the power of the Swiss Floorball API v2 to your WordPress site. Display games, rankings, team rosters, and player statistics with ease using simple shortcodes.
+Display Swiss Floorball games, rankings, topscorers, team rosters and player stats from the Swiss Unihockey API v2 using simple shortcodes.
 
 ## 🚀 Features
 
@@ -185,6 +185,8 @@ This plugin connects to the **Swiss Unihockey API** (api-v2.swissunihockey.ch) t
 ## 📜 Changelog
 ### Unreleased
 * New: Theme setting (Auto / Light / Dark, default Auto) under Settings. Dark colours are `--sfa-sys-*` tokens scoped to the plugin containers (`data-sfa-theme` on `.swiss-floorball-plugin` and `.sfa-admin-wrap`); Auto follows `prefers-color-scheme`. The old hard-coded dark block was replaced by these tokens
+* Fix: Plugin Check readme issues: "Tested up to" raised to 7.1 and short description shortened to 150 characters or less
+* Fix: Resolve phpcs findings in admin and display classes: add translator comments, escape wp_die, use wp_safe_redirect, annotate DB queries (Issue #75)
 * New: Admin dashboard restyled in Material 3 (header, tonal navigation buttons, outlined form fields, filled/outlined buttons, cards and tables) using the `--sfa-sys-*` tokens; 48 px touch targets and visible keyboard focus. Markup, shortcodes and options are unchanged
 * Change: Frontend tables and cards in Material 3 look using only `--sfa-sys-*` tokens: surface-container tables with dividers, hover/focus state layer, sticky header, `.sfa-card` variants (`--elevated`, `--filled`, `--outlined`), 48 px touch targets and reduced-motion support. On narrow screens tables now scroll horizontally instead of switching to a card layout
 * New: Visually hidden `<caption>` and `scope` attributes on all plugin tables for accessibility

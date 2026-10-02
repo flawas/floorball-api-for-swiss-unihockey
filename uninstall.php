@@ -23,7 +23,7 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
  *
  * @since    1.0.0
  */
-function swiss_floorball_api_uninstall_site() {
+function swfl_uninstall_site() {
 	global $wpdb;
 
 	// Delete plugin options.
@@ -34,8 +34,10 @@ function swiss_floorball_api_uninstall_site() {
 	delete_option( 'swissfloorball_request_timeout' );
 	delete_option( 'swissfloorball_theme' );
 
-	// Delete all cached API data (transients with 'swfl_' prefix)
+	// Delete all cached API data (transients with 'swfl_' prefix).
 	// This includes both the transient values and their timeout entries.
+	// Transients cannot be deleted by prefix via the transient API, and caching is pointless during uninstall.
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Prefix-based transient cleanup is not possible via the transient API.
 	$wpdb->query(
 		$wpdb->prepare(
 			"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
@@ -53,17 +55,21 @@ function swiss_floorball_api_uninstall_site() {
  *
  * @since    1.0.0
  */
-if ( is_multisite() ) {
-	// Get all sites in the network.
-	$sites = get_sites( array( 'number' => 0 ) );
+function swfl_uninstall() {
+	if ( is_multisite() ) {
+		// Get all sites in the network.
+		$sites = get_sites( array( 'number' => 0 ) );
 
-	foreach ( $sites as $site ) {
-		// Switch to each site and run cleanup.
-		switch_to_blog( $site->blog_id );
-		swiss_floorball_api_uninstall_site();
-		restore_current_blog();
+		foreach ( $sites as $site ) {
+			// Switch to each site and run cleanup.
+			switch_to_blog( $site->blog_id );
+			swfl_uninstall_site();
+			restore_current_blog();
+		}
+	} else {
+		// Single site installation.
+		swfl_uninstall_site();
 	}
-} else {
-	// Single site installation.
-	swiss_floorball_api_uninstall_site();
 }
+
+swfl_uninstall();

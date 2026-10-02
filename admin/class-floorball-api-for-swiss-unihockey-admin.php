@@ -248,6 +248,7 @@ class Swiss_Floorball_Api_Admin {
 		// If club number changed, clear all cached API data.
 		if ( $old_club_number != $club_number && ! empty( $club_number ) ) {
 			global $wpdb;
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transient cleanup; query is already prepared.
 			$wpdb->query(
 				$wpdb->prepare(
 					"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
@@ -289,6 +290,7 @@ class Swiss_Floorball_Api_Admin {
 			add_settings_error(
 				'swissfloorball_club_name',
 				'club_name_updated',
+				/* translators: %s: club name returned by the Swiss Unihockey API. */
 				sprintf( __( 'Club name automatically set to: %s', 'swiss-floorball-api' ), $club_name ),
 				'success'
 			);
@@ -299,11 +301,10 @@ class Swiss_Floorball_Api_Admin {
 			add_settings_error(
 				'swissfloorball_club_name',
 				'club_name_not_found',
+				/* translators: %s: club ID that was entered in the settings. */
 				sprintf( __( 'Could not find club name for club ID: %s', 'swiss-floorball-api' ), $club_number ),
 				'error'
 			);
-			// Log error for debugging.
-			error_log( 'Swiss Floorball API: Could not fetch club name for club ID ' . $club_number );
 		}
 
 		return $club_number;
@@ -318,16 +319,17 @@ class Swiss_Floorball_Api_Admin {
 	public function handle_clear_cache() {
 		// Check nonce for security.
 		if ( ! isset( $_POST['swfl_clear_cache_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['swfl_clear_cache_nonce'] ) ), 'swfl_clear_cache_action' ) ) {
-			wp_die( __( 'Security check failed', 'swiss-floorball-api' ) );
+			wp_die( esc_html__( 'Security check failed', 'swiss-floorball-api' ) );
 		}
 
 		// Check user permissions.
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( __( 'You do not have permission to perform this action', 'swiss-floorball-api' ) );
+			wp_die( esc_html__( 'You do not have permission to perform this action', 'swiss-floorball-api' ) );
 		}
 
 		// Clear all cached API data.
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transient cleanup; query is already prepared.
 		$deleted = $wpdb->query(
 			$wpdb->prepare(
 				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
@@ -347,7 +349,7 @@ class Swiss_Floorball_Api_Admin {
 			admin_url( 'admin.php' )
 		);
 
-		wp_redirect( $redirect_url );
+		wp_safe_redirect( $redirect_url );
 		exit;
 	}
 

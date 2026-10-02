@@ -13,6 +13,12 @@
  * Dev-only: not part of the release ZIP and needs network access.
  */
 
+// This script defines ABSPATH itself, so on a git install (no release ZIP) a web request would run it
+// and trigger outgoing API requests. Abort silently unless it is run from the command line.
+if ( 'cli' !== PHP_SAPI ) {
+	exit;
+}
+
 define( 'ABSPATH', __DIR__ . '/' );
 error_reporting( E_ALL );
 
