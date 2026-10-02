@@ -73,6 +73,10 @@ class Swiss_Floorball_Api_Admin {
 			return;
 		}
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/floorball-api-for-swiss-unihockey-admin.css', array(), $this->version, 'all' );
+		$seed_css = Swiss_Floorball_API_Display::get_seed_css();
+		if ( '' !== $seed_css ) {
+			wp_add_inline_style( $this->plugin_name, $seed_css );
+		}
 	}
 
 	/**
@@ -533,6 +537,35 @@ class Swiss_Floorball_Api_Admin {
 		unset( $args );
 		$args = array(
 			'type'             => 'input',
+			'subtype'          => 'text',
+			'id'               => 'swissfloorball_seed_color',
+			'name'             => 'swissfloorball_seed_color',
+			'required'         => '',
+			'get_options_list' => '',
+			'value_type'       => 'normal',
+			'wp_data'          => 'option',
+			'default'          => '',
+			'placeholder'      => '#0066cc',
+			'description'      => __( 'Optional brand colour (hex, e.g. #0066cc). The plugin derives its colour palette from it. Leave empty to use the default colours.', 'swiss-floorball-api' ),
+		);
+		add_settings_field(
+			'swissfloorball_seed_color',
+			__( 'Seed colour', 'swiss-floorball-api' ),
+			array( $this, 'settings_page_render_settings_field' ),
+			'swfl_general_settings',
+			'swfl_general_section',
+			$args
+		);
+
+		register_setting(
+			'swfl_general_settings',
+			'swissfloorball_seed_color',
+			array( $this, 'sanitize_seed_color' )
+		);
+
+		unset( $args );
+		$args = array(
+			'type'             => 'input',
 			'subtype'          => 'number',
 			'id'               => 'swissfloorball_request_timeout',
 			'name'             => 'swissfloorball_request_timeout',
@@ -605,6 +638,19 @@ class Swiss_Floorball_Api_Admin {
 	}
 
 	/**
+	 * Sanitize the seed colour: a valid hex colour or an empty string.
+	 *
+	 * @since 1.0.6
+	 *
+	 * @param mixed $value Raw submitted value.
+	 * @return string Sanitized hex colour, or '' to use the default colours.
+	 */
+	public function sanitize_seed_color( $value ) {
+		$color = sanitize_hex_color( trim( (string) $value ) );
+		return empty( $color ) ? '' : $color;
+	}
+
+	/**
 	 * Return admin display header slug
 	 *
 	 * @since    1.0.0
@@ -647,11 +693,12 @@ class Swiss_Floorball_Api_Admin {
 						$step         = ( isset( $args['step'] ) ) ? 'step="' . esc_attr( $args['step'] ) . '"' : '';
 						$min          = ( isset( $args['min'] ) ) ? 'min="' . esc_attr( $args['min'] ) . '"' : '';
 						$max          = ( isset( $args['max'] ) ) ? 'max="' . esc_attr( $args['max'] ) . '"' : '';
+						$placeholder  = ( isset( $args['placeholder'] ) ) ? 'placeholder="' . esc_attr( $args['placeholder'] ) . '"' : '';
 					if ( isset( $args['disabled'] ) ) {
 						// hide the actual input bc if it was just a disabled input the info saved in the database would be wrong - bc it would pass empty values and wipe the actual information.
 						echo $prepend_start . '<input type="' . esc_attr( $args['subtype'] ) . '" id="' . esc_attr( $args['id'] ) . '_disabled" ' . $step . ' ' . $max . ' ' . $min . ' name="' . esc_attr( $args['name'] ) . '_disabled" size="40" disabled value="' . esc_attr( $value ) . '" /><input type="hidden" id="' . esc_attr( $args['id'] ) . '" ' . $step . ' ' . $max . ' ' . $min . ' name="' . esc_attr( $args['name'] ) . '" size="40" value="' . esc_attr( $value ) . '" />' . $prepend_end; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					} else {
-						echo $prepend_start . '<input type="' . esc_attr( $args['subtype'] ) . '" id="' . esc_attr( $args['id'] ) . '" ' . esc_attr( $args['required'] ) . ' ' . $step . ' ' . $max . ' ' . $min . ' name="' . esc_attr( $args['name'] ) . '" size="40" value="' . esc_attr( $value ) . '" />' . $prepend_end; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						echo $prepend_start . '<input type="' . esc_attr( $args['subtype'] ) . '" id="' . esc_attr( $args['id'] ) . '" ' . esc_attr( $args['required'] ) . ' ' . $step . ' ' . $max . ' ' . $min . ' ' . $placeholder . ' name="' . esc_attr( $args['name'] ) . '" size="40" value="' . esc_attr( $value ) . '" />' . $prepend_end; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					}
 				} else {
 						$checked = ( $value ) ? 'checked' : '';
