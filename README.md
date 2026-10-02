@@ -1,5 +1,20 @@
 # Swiss Floorball API for WordPress
 
+[![Quality gate status](https://sonarcloud.io/api/project_badges/measure?project=flawas_swiss-floorball-api&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=flawas_swiss-floorball-api)
+[![Security rating](https://sonarcloud.io/api/project_badges/measure?project=flawas_swiss-floorball-api&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=flawas_swiss-floorball-api)
+[![Maintainability rating](https://sonarcloud.io/api/project_badges/measure?project=flawas_swiss-floorball-api&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=flawas_swiss-floorball-api)
+[![Reliability rating](https://sonarcloud.io/api/project_badges/measure?project=flawas_swiss-floorball-api&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=flawas_swiss-floorball-api)
+[![CI](https://github.com/flawas/floorball-api-for-swiss-unihockey/actions/workflows/ci.yml/badge.svg)](https://github.com/flawas/floorball-api-for-swiss-unihockey/actions/workflows/ci.yml)
+[![Latest release](https://img.shields.io/github/v/release/flawas/floorball-api-for-swiss-unihockey)](https://github.com/flawas/floorball-api-for-swiss-unihockey/releases)
+[![WordPress plugin version](https://img.shields.io/wordpress/plugin/v/swiss-floorball-api)](https://wordpress.org/plugins/swiss-floorball-api/)
+[![WordPress downloads](https://img.shields.io/wordpress/plugin/dt/swiss-floorball-api)](https://wordpress.org/plugins/swiss-floorball-api/)
+[![WordPress rating](https://img.shields.io/wordpress/plugin/stars/swiss-floorball-api)](https://wordpress.org/plugins/swiss-floorball-api/#reviews)
+[![WordPress tested up to](https://img.shields.io/wordpress/plugin/tested/swiss-floorball-api)](https://wordpress.org/plugins/swiss-floorball-api/)
+[![PHP version](https://img.shields.io/badge/PHP-7.4%2B-777BB4?logo=php&logoColor=white)](https://www.php.net/)
+[![License: GPL v2+](https://img.shields.io/badge/License-GPLv2%2B-blue.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
+[![Last commit](https://img.shields.io/github/last-commit/flawas/floorball-api-for-swiss-unihockey)](https://github.com/flawas/floorball-api-for-swiss-unihockey/commits/main)
+[![Made with Claude Code](https://img.shields.io/badge/Made%20with-Claude%20Code-D97757?logo=anthropic&logoColor=white)](https://claude.com/claude-code)
+
 ![Banner](assets/banner-914x298.png)
 
 **Contributors:** flaviowaser  
@@ -169,6 +184,10 @@ This plugin connects to the **Swiss Unihockey API** (api-v2.swissunihockey.ch) t
 ## 📜 Changelog
 ### Unreleased
 * New: Admin dashboard restyled in Material 3 (header, tonal navigation buttons, outlined form fields, filled/outlined buttons, cards and tables) using the `--sfa-sys-*` tokens; 48 px touch targets and visible keyboard focus. Markup, shortcodes and options are unchanged
+* Change: Frontend tables and cards in Material 3 look using only `--sfa-sys-*` tokens: surface-container tables with dividers, hover/focus state layer, sticky header, `.sfa-card` variants (`--elevated`, `--filled`, `--outlined`), 48 px touch targets and reduced-motion support. On narrow screens tables now scroll horizontally instead of switching to a card layout
+* New: Visually hidden `<caption>` and `scope` attributes on all plugin tables for accessibility
+* Change: Frontend buttons (`.button`, `.btn`), calendar subscribe link, info boxes and empty states restyled with the `--sfa-sys-*` tokens (state layers, focus ring, 48px touch targets, motion tokens). Themes that style `.button` inside the plugin will see the new look
+* Change: Failed API requests render a `.sfa-info-box--danger` banner with `role="alert"` instead of a bare paragraph; the calendar link gets `rel="noopener noreferrer"`; `.sfa-empty-state*` now styled (legacy `.empty-state*` kept)
 * New: Design-token layer (`--sfa-sys-*` colors, typography, shape, elevation 0-5) for the frontend and admin styles, scoped to `.swiss-floorball-plugin` / `.sfa-admin-wrap`. Existing `--sfa-*` variables, Roboto and dark mode are unchanged; no visual change
 * Fix: Add explicit request timeout (5 seconds, minimum 1 second) to API client calls, filterable via `swfl_request_timeout` hook
 * Fix: Add `apply_filters()` stub to verify_api.php for test compatibility

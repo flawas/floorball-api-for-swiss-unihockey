@@ -36,7 +36,7 @@ foreach ( $lines as $line ) {
     }
 
     // Skip images/badges at the top
-    if ( $in_header && ( strpos( $line, '![' ) === 0 || empty( trim( $line ) ) ) ) {
+    if ( $in_header && ( strpos( $line, '![' ) === 0 || strpos( $line, '[![' ) === 0 || empty( trim( $line ) ) ) ) {
         continue;
     }
 
