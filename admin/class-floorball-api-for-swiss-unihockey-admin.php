@@ -251,8 +251,8 @@ class Swiss_Floorball_Api_Admin {
 			$wpdb->query(
 				$wpdb->prepare(
 					"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
-					'_transient_swfl_%',
-					'_transient_timeout_swfl_%'
+					$wpdb->esc_like( '_transient_swfl_' ) . '%',
+					$wpdb->esc_like( '_transient_timeout_swfl_' ) . '%'
 				)
 			);
 		}
@@ -331,8 +331,8 @@ class Swiss_Floorball_Api_Admin {
 		$deleted = $wpdb->query(
 			$wpdb->prepare(
 				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
-				'_transient_swfl_%',
-				'_transient_timeout_swfl_%'
+				$wpdb->esc_like( '_transient_swfl_' ) . '%',
+				$wpdb->esc_like( '_transient_timeout_swfl_' ) . '%'
 			)
 		);
 
