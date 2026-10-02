@@ -130,6 +130,8 @@ class Swiss_Floorball_Api {
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-floorball-api-for-swiss-unihockey-theme.php';
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-floorball-api-for-swiss-unihockey-display-stats.php';
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-floorball-api-for-swiss-unihockey-widgets.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-floorball-api-for-swiss-unihockey-calendar.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-floorball-api-for-swiss-unihockey-table-data.php';
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-floorball-api-for-swiss-unihockey-icons.php';
 
 		$this->loader = new Swiss_Floorball_Api_Loader();

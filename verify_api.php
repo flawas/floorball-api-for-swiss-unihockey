@@ -173,6 +173,8 @@ require_once __DIR__ . '/includes/class-floorball-api-for-swiss-unihockey-displa
 require_once __DIR__ . '/includes/class-floorball-api-for-swiss-unihockey-theme.php';
 require_once __DIR__ . '/includes/class-floorball-api-for-swiss-unihockey-display-stats.php';
 require_once __DIR__ . '/includes/class-floorball-api-for-swiss-unihockey-widgets.php';
+require_once __DIR__ . '/includes/class-floorball-api-for-swiss-unihockey-calendar.php';
+require_once __DIR__ . '/includes/class-floorball-api-for-swiss-unihockey-table-data.php';
 require_once __DIR__ . '/includes/class-floorball-api-for-swiss-unihockey-icons.php';
 
 // ---------------------------------------------------------------------------
