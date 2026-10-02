@@ -33,13 +33,6 @@ function resolveBin(name, envVar) {
   return found;
 }
 
-// API values are passed to wp-cli as positional arguments, so anything it could read as an option is refused.
-function plainValue(value) {
-  const text = String(value);
-  if (text.startsWith('-')) throw new Error(`Refusing option-like value: ${text}`);
-  return text;
-}
-
 const log = (...a) => console.log(...a);
 const skip = (id, reason) => { log(`  skip ${id}: ${reason}`); manifest.skipped.push({ id, reason }); };
 
@@ -98,6 +91,11 @@ async function discover() {
 
 function wp(...args) {
   return execFileSync(resolveBin('docker', 'DOCKER_BIN'), ['compose', 'run', '--rm', '-T', 'wp-cli', 'wp', ...args, '--allow-root'], { encoding: 'utf8' }).trim();
+}
+
+// API values reach wp-cli through STDIN (it reads the value there when it is omitted), so they can never be parsed as options.
+function wpOptionUpdate(key, value) {
+  return execFileSync(resolveBin('docker', 'DOCKER_BIN'), ['compose', 'run', '--rm', '-T', 'wp-cli', 'wp', 'option', 'update', key, '--allow-root'], { encoding: 'utf8', input: String(value) }).trim();
 }
 
 function fill(template, ctx) {
@@ -208,9 +206,9 @@ async function main() {
   log(ctx);
 
   log('Configuring WordPress ...');
-  wp('option', 'update', 'swissfloorball_club_number', plainValue(ctx.club_id));
-  wp('option', 'update', 'swissfloorball_club_name', plainValue(ctx.club_name));
-  wp('option', 'update', 'swissfloorball_actual_season', plainValue(ctx.season));
+  wpOptionUpdate('swissfloorball_club_number', ctx.club_id);
+  wpOptionUpdate('swissfloorball_club_name', ctx.club_name);
+  wpOptionUpdate('swissfloorball_actual_season', ctx.season);
 
   const pages = createPages(ctx);
 
