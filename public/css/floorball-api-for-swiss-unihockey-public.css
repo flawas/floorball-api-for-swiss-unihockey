@@ -821,66 +821,165 @@
     }
 }
 
-/* Dark Mode Support - Fixed for readability */
+/* Dark mode. Auto follows the system setting; data-sfa-theme="light" opts out, "dark" forces it.
+   The two blocks below are intentionally identical: CSS cannot share selectors across a media query. */
 @media (prefers-color-scheme: dark) {
-    .swiss-floorball-plugin {
-        --sfa-light-bg: #1a1a1a;
-        --sfa-border: #333333;
-        --sfa-text: #ffffff;
-        --sfa-text-light: #b0b0b0;
+    .swiss-floorball-plugin:not([data-sfa-theme="light"]) {
+        --sfa-sys-color-primary: #8ab4f8;
+        --sfa-sys-color-on-primary: #00315c;
+        --sfa-sys-color-primary-container: #1f4a7a;
+        --sfa-sys-color-on-primary-container: #d6e6f7;
+        --sfa-sys-color-secondary: #ffb27a;
+        --sfa-sys-color-on-secondary: #4d1f00;
+        --sfa-sys-color-secondary-container: #7a3300;
+        --sfa-sys-color-on-secondary-container: #ffe0cc;
+        --sfa-sys-color-tertiary: #f2c14e;
+        --sfa-sys-color-on-tertiary: #261a00;
+        --sfa-sys-color-tertiary-container: #5c4300;
+        --sfa-sys-color-on-tertiary-container: #ffe4a8;
+        --sfa-sys-color-error: #ff8a80;
+        --sfa-sys-color-on-error: #5c0a04;
+        --sfa-sys-color-error-container: #7a1f17;
+        --sfa-sys-color-on-error-container: #fbe3df;
+        --sfa-sys-color-success: #6fcf97;
+        --sfa-sys-color-success-container: #1b4d31;
+        --sfa-sys-color-on-success-container: #d9f2e3;
+        --sfa-sys-color-warning: #f5b942;
+        --sfa-sys-color-warning-container: #5c3f00;
+        --sfa-sys-color-on-warning-container: #fdebc8;
+        --sfa-sys-color-surface: #121417;
+        --sfa-sys-color-on-surface: #e3e6ea;
+        --sfa-sys-color-on-surface-variant: #b0b7bf;
+        --sfa-sys-color-surface-container: #1c2024;
+        --sfa-sys-color-outline: #3a4048;
+        --sfa-sys-color-focus-ring: #8ab4f8;
+        --sfa-light-bg: #1c2024;
+        --sfa-border: #3a4048;
+        --sfa-text: #e3e6ea;
+        --sfa-text-light: #b0b7bf;
+        background: var(--sfa-sys-color-surface);
+        color: var(--sfa-sys-color-on-surface);
+        border-radius: 12px;
+        padding: 16px;
     }
 
-    .swiss-floorball-plugin .card,
-    .swiss-floorball-plugin .table,
-    .swiss-floorball-plugin .sfa-data-table {
-        background: #000000;
-        border-color: #333333;
-    }
-
-    .swiss-floorball-plugin .table thead,
-    .swiss-floorball-plugin .sfa-data-table thead {
-        background: linear-gradient(180deg, #1a1a1a 0%, #000000 100%);
-    }
-
-    .swiss-floorball-plugin .table td,
-    .swiss-floorball-plugin .sfa-data-table td {
-        color: #ffffff;
-        border-bottom-color: #333333;
-    }
-
-    .swiss-floorball-plugin .table th,
-    .swiss-floorball-plugin .sfa-data-table th {
-        color: #ffffff;
-    }
-
-    .swiss-floorball-plugin .card-title {
-        color: #ffffff;
-    }
-
-    .swiss-floorball-plugin .card-text {
-        color: #b0b0b0;
-    }
-
-    .swiss-floorball-plugin .empty-state {
-        background: #1a1a1a;
-        border-color: #333333;
-    }
-
-    .swiss-floorball-plugin .game-score-card {
-        background: #000000;
-        border-color: #333333;
+    .swiss-floorball-plugin:not([data-sfa-theme="light"]) .card,
+    .swiss-floorball-plugin:not([data-sfa-theme="light"]) .table,
+    .swiss-floorball-plugin:not([data-sfa-theme="light"]) .sfa-data-table,
+    .swiss-floorball-plugin:not([data-sfa-theme="light"]) .game-score-card,
+    .swiss-floorball-plugin:not([data-sfa-theme="light"]) .empty-state {
+        background: var(--sfa-sys-color-surface-container);
+        border-color: var(--sfa-sys-color-outline);
     }
 
     /* Dark surface for the sticky header cells (th carries its own background) and cards. */
-    .swiss-floorball-plugin .table th,
-    .swiss-floorball-plugin .sfa-data-table th,
-    .swiss-floorball-plugin .sfa-card {
-        background: #1a1a1a;
+    .swiss-floorball-plugin:not([data-sfa-theme="light"]) .table thead,
+    .swiss-floorball-plugin:not([data-sfa-theme="light"]) .sfa-data-table thead,
+    .swiss-floorball-plugin:not([data-sfa-theme="light"]) .table th,
+    .swiss-floorball-plugin:not([data-sfa-theme="light"]) .sfa-data-table th,
+    .swiss-floorball-plugin:not([data-sfa-theme="light"]) .sfa-card {
+        background: var(--sfa-sys-color-surface-container);
     }
 
-    .swiss-floorball-plugin .sfa-card {
-        color: #ffffff;
+    .swiss-floorball-plugin:not([data-sfa-theme="light"]) .table td,
+    .swiss-floorball-plugin:not([data-sfa-theme="light"]) .sfa-data-table td {
+        color: var(--sfa-sys-color-on-surface);
+        border-bottom-color: var(--sfa-sys-color-outline);
     }
+
+    .swiss-floorball-plugin:not([data-sfa-theme="light"]) .table th,
+    .swiss-floorball-plugin:not([data-sfa-theme="light"]) .sfa-data-table th,
+    .swiss-floorball-plugin:not([data-sfa-theme="light"]) .card-title,
+    .swiss-floorball-plugin:not([data-sfa-theme="light"]) .sfa-card {
+        color: var(--sfa-sys-color-on-surface);
+    }
+
+    .swiss-floorball-plugin:not([data-sfa-theme="light"]) .card-text {
+        color: var(--sfa-sys-color-on-surface-variant);
+    }
+
+    .swiss-floorball-plugin:not([data-sfa-theme="light"]) .game-score,
+    .swiss-floorball-plugin:not([data-sfa-theme="light"]) .sfa-section-title {
+        color: var(--sfa-sys-color-primary);
+    }
+}
+
+.swiss-floorball-plugin[data-sfa-theme="dark"] {
+    --sfa-sys-color-primary: #8ab4f8;
+    --sfa-sys-color-on-primary: #00315c;
+    --sfa-sys-color-primary-container: #1f4a7a;
+    --sfa-sys-color-on-primary-container: #d6e6f7;
+    --sfa-sys-color-secondary: #ffb27a;
+    --sfa-sys-color-on-secondary: #4d1f00;
+    --sfa-sys-color-secondary-container: #7a3300;
+    --sfa-sys-color-on-secondary-container: #ffe0cc;
+    --sfa-sys-color-tertiary: #f2c14e;
+    --sfa-sys-color-on-tertiary: #261a00;
+    --sfa-sys-color-tertiary-container: #5c4300;
+    --sfa-sys-color-on-tertiary-container: #ffe4a8;
+    --sfa-sys-color-error: #ff8a80;
+    --sfa-sys-color-on-error: #5c0a04;
+    --sfa-sys-color-error-container: #7a1f17;
+    --sfa-sys-color-on-error-container: #fbe3df;
+    --sfa-sys-color-success: #6fcf97;
+    --sfa-sys-color-success-container: #1b4d31;
+    --sfa-sys-color-on-success-container: #d9f2e3;
+    --sfa-sys-color-warning: #f5b942;
+    --sfa-sys-color-warning-container: #5c3f00;
+    --sfa-sys-color-on-warning-container: #fdebc8;
+    --sfa-sys-color-surface: #121417;
+    --sfa-sys-color-on-surface: #e3e6ea;
+    --sfa-sys-color-on-surface-variant: #b0b7bf;
+    --sfa-sys-color-surface-container: #1c2024;
+    --sfa-sys-color-outline: #3a4048;
+    --sfa-sys-color-focus-ring: #8ab4f8;
+    --sfa-light-bg: #1c2024;
+    --sfa-border: #3a4048;
+    --sfa-text: #e3e6ea;
+    --sfa-text-light: #b0b7bf;
+    background: var(--sfa-sys-color-surface);
+    color: var(--sfa-sys-color-on-surface);
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.swiss-floorball-plugin[data-sfa-theme="dark"] .card,
+.swiss-floorball-plugin[data-sfa-theme="dark"] .table,
+.swiss-floorball-plugin[data-sfa-theme="dark"] .sfa-data-table,
+.swiss-floorball-plugin[data-sfa-theme="dark"] .game-score-card,
+.swiss-floorball-plugin[data-sfa-theme="dark"] .empty-state {
+    background: var(--sfa-sys-color-surface-container);
+    border-color: var(--sfa-sys-color-outline);
+}
+
+.swiss-floorball-plugin[data-sfa-theme="dark"] .table thead,
+.swiss-floorball-plugin[data-sfa-theme="dark"] .sfa-data-table thead,
+.swiss-floorball-plugin[data-sfa-theme="dark"] .table th,
+.swiss-floorball-plugin[data-sfa-theme="dark"] .sfa-data-table th,
+.swiss-floorball-plugin[data-sfa-theme="dark"] .sfa-card {
+    background: var(--sfa-sys-color-surface-container);
+}
+
+.swiss-floorball-plugin[data-sfa-theme="dark"] .table td,
+.swiss-floorball-plugin[data-sfa-theme="dark"] .sfa-data-table td {
+    color: var(--sfa-sys-color-on-surface);
+    border-bottom-color: var(--sfa-sys-color-outline);
+}
+
+.swiss-floorball-plugin[data-sfa-theme="dark"] .table th,
+.swiss-floorball-plugin[data-sfa-theme="dark"] .sfa-data-table th,
+.swiss-floorball-plugin[data-sfa-theme="dark"] .card-title,
+.swiss-floorball-plugin[data-sfa-theme="dark"] .sfa-card {
+    color: var(--sfa-sys-color-on-surface);
+}
+
+.swiss-floorball-plugin[data-sfa-theme="dark"] .card-text {
+    color: var(--sfa-sys-color-on-surface-variant);
+}
+
+.swiss-floorball-plugin[data-sfa-theme="dark"] .game-score,
+.swiss-floorball-plugin[data-sfa-theme="dark"] .sfa-section-title {
+    color: var(--sfa-sys-color-primary);
 }
 
 /* Additional Mobile Enhancements */

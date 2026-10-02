@@ -59,6 +59,16 @@ class Swiss_Floorball_Api_Public {
 	}
 
 	/**
+	 * Open the shortcode wrapper div, including the configured colour theme.
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	private function open_wrapper() {
+		echo '<div class="swiss-floorball-plugin" data-sfa-theme="' . esc_attr( Swiss_Floorball_API_Display::get_theme() ) . '">';
+	}
+
+	/**
 	 * Register the stylesheets for the public-facing side of the site.
 	 *
 	 * @since    1.0.0
@@ -154,7 +164,7 @@ class Swiss_Floorball_Api_Public {
 	 */
 	public function get_club_teams_func() {
 		ob_start();
-		echo '<div class="swiss-floorball-plugin">';
+		$this->open_wrapper();
 		Swiss_Floorball_API_Display::render_club_teams( get_option( 'swissfloorball_club_number' ) );
 		echo '</div>';
 		$output = ob_get_contents();
@@ -170,7 +180,7 @@ class Swiss_Floorball_Api_Public {
 	 */
 	public function get_club_games_func() {
 		ob_start();
-		echo '<div class="swiss-floorball-plugin">';
+		$this->open_wrapper();
 		Swiss_Floorball_API_Display::render_club_games( get_option( 'swissfloorball_club_number' ), Swiss_Floorball_API_Display::get_current_season() );
 		echo '</div>';
 		$output = ob_get_contents();
@@ -194,7 +204,7 @@ class Swiss_Floorball_Api_Public {
 		);
 
 		ob_start();
-		echo '<div class="swiss-floorball-plugin">';
+		$this->open_wrapper();
 		Swiss_Floorball_API_Display::render_team_games( absint( $a['team_id'] ), Swiss_Floorball_API_Display::get_current_season() );
 		echo '</div>';
 		$output = ob_get_contents();
@@ -210,7 +220,7 @@ class Swiss_Floorball_Api_Public {
 	 */
 	public function get_clubs_func() {
 		ob_start();
-		echo '<div class="swiss-floorball-plugin">';
+		$this->open_wrapper();
 		Swiss_Floorball_API_Display::render_clubs();
 		echo '</div>';
 		$output = ob_get_contents();
@@ -239,7 +249,7 @@ class Swiss_Floorball_Api_Public {
 		);
 
 		ob_start();
-		echo '<div class="swiss-floorball-plugin">';
+		$this->open_wrapper();
 		Swiss_Floorball_API_Display::render_calendars(
 			$a['team_id'] ? absint( $a['team_id'] ) : null,
 			$a['club_id'] ? absint( $a['club_id'] ) : null,
@@ -262,7 +272,7 @@ class Swiss_Floorball_Api_Public {
 	 */
 	public function get_cups_func() {
 		ob_start();
-		echo '<div class="swiss-floorball-plugin">';
+		$this->open_wrapper();
 		Swiss_Floorball_API_Display::render_cups();
 		echo '</div>';
 		$output = ob_get_contents();
@@ -288,7 +298,7 @@ class Swiss_Floorball_Api_Public {
 		);
 
 		ob_start();
-		echo '<div class="swiss-floorball-plugin">';
+		$this->open_wrapper();
 		Swiss_Floorball_API_Display::render_groups( absint( $a['season'] ), absint( $a['league'] ), absint( $a['game_class'] ) );
 		echo '</div>';
 		$output = ob_get_contents();
@@ -304,7 +314,7 @@ class Swiss_Floorball_Api_Public {
 	 */
 	public function get_teams_func() {
 		ob_start();
-		echo '<div class="swiss-floorball-plugin">';
+		$this->open_wrapper();
 		Swiss_Floorball_API_Display::render_teams();
 		echo '</div>';
 		$output = ob_get_contents();
@@ -331,7 +341,7 @@ class Swiss_Floorball_Api_Public {
 		);
 
 		ob_start();
-		echo '<div class="swiss-floorball-plugin">';
+		$this->open_wrapper();
 		Swiss_Floorball_API_Display::render_rankings( absint( $a['season'] ), absint( $a['league'] ), absint( $a['game_class'] ), absint( $a['group'] ) );
 		echo '</div>';
 		$output = ob_get_contents();
@@ -355,7 +365,7 @@ class Swiss_Floorball_Api_Public {
 		);
 
 		ob_start();
-		echo '<div class="swiss-floorball-plugin">';
+		$this->open_wrapper();
 		Swiss_Floorball_API_Display::render_player( absint( $a['player_id'] ) );
 		echo '</div>';
 		$output = ob_get_contents();
@@ -371,7 +381,7 @@ class Swiss_Floorball_Api_Public {
 	 */
 	public function get_national_players_func() {
 		ob_start();
-		echo '<div class="swiss-floorball-plugin">';
+		$this->open_wrapper();
 		Swiss_Floorball_API_Display::render_national_players();
 		echo '</div>';
 		$output = ob_get_contents();
@@ -398,7 +408,7 @@ class Swiss_Floorball_Api_Public {
 		);
 
 		ob_start();
-		echo '<div class="swiss-floorball-plugin">';
+		$this->open_wrapper();
 		Swiss_Floorball_API_Display::render_topscorers( absint( $a['season'] ), absint( $a['league'] ), absint( $a['game_class'] ), absint( $a['group'] ) );
 		echo '</div>';
 		$output = ob_get_contents();
@@ -422,7 +432,7 @@ class Swiss_Floorball_Api_Public {
 		);
 
 		ob_start();
-		echo '<div class="swiss-floorball-plugin">';
+		$this->open_wrapper();
 		Swiss_Floorball_API_Display::render_game_events( absint( $a['game_id'] ) );
 		echo '</div>';
 		$output = ob_get_contents();

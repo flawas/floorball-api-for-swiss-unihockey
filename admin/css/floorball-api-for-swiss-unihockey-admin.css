@@ -775,164 +775,261 @@
     opacity: 0.7;
 }
 
-/* Dark Mode Support for WordPress Admin */
+/* Dark mode. Auto follows the system setting; data-sfa-theme="light" opts out, "dark" forces it.
+   The two blocks below are intentionally identical: CSS cannot share selectors across a media query. */
 @media (prefers-color-scheme: dark) {
-    .sfa-admin-wrap {
-        --sfa-light-bg: #1a1a1a;
-        --sfa-border: #333333;
-        --sfa-text: #ffffff;
-        --sfa-text-light: #b0b0b0;
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) {
+        --sfa-sys-color-primary: #8ab4f8;
+        --sfa-sys-color-on-primary: #00315c;
+        --sfa-sys-color-primary-container: #1f4a7a;
+        --sfa-sys-color-on-primary-container: #d6e6f7;
+        --sfa-sys-color-secondary: #ffb27a;
+        --sfa-sys-color-on-secondary: #4d1f00;
+        --sfa-sys-color-secondary-container: #7a3300;
+        --sfa-sys-color-on-secondary-container: #ffe0cc;
+        --sfa-sys-color-tertiary: #f2c14e;
+        --sfa-sys-color-on-tertiary: #261a00;
+        --sfa-sys-color-tertiary-container: #5c4300;
+        --sfa-sys-color-on-tertiary-container: #ffe4a8;
+        --sfa-sys-color-error: #ff8a80;
+        --sfa-sys-color-on-error: #5c0a04;
+        --sfa-sys-color-surface: #121417;
+        --sfa-sys-color-on-surface: #e3e6ea;
+        --sfa-sys-color-on-surface-variant: #b0b7bf;
+        --sfa-sys-color-surface-container: #1c2024;
+        --sfa-sys-color-outline: #3a4048;
+        --sfa-light-bg: #1c2024;
+        --sfa-border: #3a4048;
+        --sfa-text: #e3e6ea;
+        --sfa-text-light: #b0b7bf;
     }
 
     /* Admin containers and cards */
-    .sfa-admin-wrap .sfa-card,
-    .sfa-table-container,
-    .sfa-form-section {
-        background: #000000;
-        border-color: #333333;
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .sfa-card,
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .sfa-table-container,
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .sfa-form-section,
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .sfa-data-table,
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .sfa-empty-state,
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .sfa-stat-card {
+        background: var(--sfa-sys-color-surface-container);
+        border-color: var(--sfa-sys-color-outline);
     }
 
-    /* Data tables */
-    .sfa-data-table {
-        background: #000000;
-        border-color: #333333;
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .sfa-data-table thead {
+        background: var(--sfa-sys-color-surface);
     }
 
-    .sfa-data-table thead {
-        background: linear-gradient(180deg, #1a1a1a 0%, #000000 100%);
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .sfa-data-table th,
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .sfa-data-table td,
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .sfa-card h3,
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .sfa-settings-table td:last-child,
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .form-table th {
+        color: var(--sfa-sys-color-on-surface);
     }
 
-    .sfa-data-table th {
-        color: #ffffff;
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .sfa-data-table td,
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .sfa-card h3,
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .sfa-settings-table tr,
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .sfa-table-container h2,
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .sfa-form-section h2 {
+        border-bottom-color: var(--sfa-sys-color-outline);
     }
 
-    .sfa-data-table td {
-        color: #ffffff;
-        border-bottom-color: #333333;
-    }
-
-    .sfa-data-table tbody tr:nth-child(even) {
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .sfa-data-table tbody tr:nth-child(even) {
         background: rgba(255, 255, 255, 0.03);
     }
 
-    .sfa-data-table tbody tr:hover {
-        background: linear-gradient(90deg, rgba(0, 102, 204, 0.1) 0%, transparent 100%);
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .sfa-data-table tbody tr:hover {
+        background: linear-gradient(90deg, rgba(138, 180, 248, 0.12) 0%, transparent 100%);
     }
 
-    /* Card headings */
-    .sfa-card h3 {
-        color: #ffffff;
-        border-bottom-color: #333333;
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .sfa-settings-table tr:hover {
+        background: rgba(138, 180, 248, 0.08);
     }
 
-    /* Settings table */
-    .sfa-settings-table td:first-child {
-        color: #b0b0b0;
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .sfa-settings-table td:first-child,
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .sfa-empty-state,
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .sfa-helper-text,
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .sfa-stat-label {
+        color: var(--sfa-sys-color-on-surface-variant);
     }
 
-    .sfa-settings-table td:last-child {
-        color: #ffffff;
+    /* Form elements, card buttons and search input */
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .form-table input[type="text"],
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .form-table input[type="number"],
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .form-table select,
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .sfa-card .button,
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .sfa-search-input {
+        background: var(--sfa-sys-color-surface-container);
+        border-color: var(--sfa-sys-color-outline);
+        color: var(--sfa-sys-color-on-surface);
     }
 
-    .sfa-settings-table tr {
-        border-bottom-color: #333333;
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .form-table input[type="text"]:focus,
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .form-table input[type="number"]:focus,
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .form-table select:focus {
+        background: var(--sfa-sys-color-surface);
+        border-color: var(--sfa-sys-color-primary);
     }
 
-    .sfa-settings-table tr:hover {
-        background: rgba(0, 102, 204, 0.05);
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .sfa-search-input:focus {
+        background: var(--sfa-sys-color-surface);
     }
 
-    /* Form elements */
-    .sfa-admin-wrap .form-table th {
-        color: #ffffff;
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .sfa-card .button:hover {
+        background: var(--sfa-sys-color-primary);
+        color: var(--sfa-sys-color-on-primary);
     }
 
-    .sfa-admin-wrap .form-table input[type="text"],
-    .sfa-admin-wrap .form-table input[type="number"] {
-        background: #1a1a1a;
-        border-color: #333333;
-        color: #ffffff;
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .sfa-search-input::placeholder {
+        color: var(--sfa-sys-color-on-surface-variant);
     }
 
-    .sfa-admin-wrap .form-table input[type="text"]:focus,
-    .sfa-admin-wrap .form-table input[type="number"]:focus {
-        background: #000000;
-        border-color: var(--sfa-primary);
-    }
-
-    /* Card buttons */
-    .sfa-admin-wrap .sfa-card .button {
-        background: #1a1a1a;
-        color: #ffffff;
-        border-color: #333333;
-    }
-
-    .sfa-admin-wrap .sfa-card .button:hover {
-        background: var(--sfa-primary);
-        color: white;
-    }
-
-    /* Empty state */
-    .sfa-empty-state {
-        background: #1a1a1a;
-        border-color: #333333;
-        color: #b0b0b0;
-    }
-
-    /* Search input */
-    .sfa-search-input {
-        background: #1a1a1a;
-        border-color: #333333;
-        color: #ffffff;
-    }
-
-    .sfa-search-input:focus {
-        background: #000000;
-    }
-
-    .sfa-search-input::placeholder {
-        color: #666666;
-    }
-
-    /* Helper text */
-    .sfa-helper-text {
-        color: #b0b0b0;
-    }
-
-    /* Table container headings */
-    .sfa-table-container h2,
-    .sfa-form-section h2 {
-        color: var(--sfa-primary-light);
-        border-bottom-color: #333333;
-    }
-
-    /* Stat cards */
-    .sfa-stat-card {
-        background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
-        border-color: #333333;
-    }
-
-    .sfa-stat-label {
-        color: #b0b0b0;
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .sfa-table-container h2,
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .sfa-form-section h2 {
+        color: var(--sfa-sys-color-primary);
     }
 
     /* WordPress notices - ensure readability in dark mode */
-    .sfa-admin-wrap .notice,
-    .sfa-admin-wrap .updated,
-    .sfa-admin-wrap .error,
-    .sfa-admin-wrap .settings-error {
-        background: #1a1a1a !important;
-        border-left-color: var(--sfa-primary) !important;
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .notice,
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .updated,
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .error,
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .settings-error {
+        background: var(--sfa-sys-color-surface-container) !important;
+        border-left-color: var(--sfa-sys-color-primary) !important;
     }
 
-    .sfa-admin-wrap .notice p,
-    .sfa-admin-wrap .updated p,
-    .sfa-admin-wrap .error p,
-    .sfa-admin-wrap .settings-error p {
-        color: #ffffff !important;
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .notice p,
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .updated p,
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .error p,
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .settings-error p,
+    .sfa-admin-wrap:not([data-sfa-theme="light"]) .notice-dismiss {
+        color: var(--sfa-sys-color-on-surface) !important;
     }
+}
 
-    .sfa-admin-wrap .notice-dismiss {
-        color: #ffffff !important;
-    }
+.sfa-admin-wrap[data-sfa-theme="dark"] {
+    --sfa-sys-color-primary: #8ab4f8;
+    --sfa-sys-color-on-primary: #00315c;
+    --sfa-sys-color-primary-container: #1f4a7a;
+    --sfa-sys-color-on-primary-container: #d6e6f7;
+    --sfa-sys-color-secondary: #ffb27a;
+    --sfa-sys-color-on-secondary: #4d1f00;
+    --sfa-sys-color-secondary-container: #7a3300;
+    --sfa-sys-color-on-secondary-container: #ffe0cc;
+    --sfa-sys-color-tertiary: #f2c14e;
+    --sfa-sys-color-on-tertiary: #261a00;
+    --sfa-sys-color-tertiary-container: #5c4300;
+    --sfa-sys-color-on-tertiary-container: #ffe4a8;
+    --sfa-sys-color-error: #ff8a80;
+    --sfa-sys-color-on-error: #5c0a04;
+    --sfa-sys-color-surface: #121417;
+    --sfa-sys-color-on-surface: #e3e6ea;
+    --sfa-sys-color-on-surface-variant: #b0b7bf;
+    --sfa-sys-color-surface-container: #1c2024;
+    --sfa-sys-color-outline: #3a4048;
+    --sfa-light-bg: #1c2024;
+    --sfa-border: #3a4048;
+    --sfa-text: #e3e6ea;
+    --sfa-text-light: #b0b7bf;
+}
+
+.sfa-admin-wrap[data-sfa-theme="dark"] .sfa-card,
+.sfa-admin-wrap[data-sfa-theme="dark"] .sfa-table-container,
+.sfa-admin-wrap[data-sfa-theme="dark"] .sfa-form-section,
+.sfa-admin-wrap[data-sfa-theme="dark"] .sfa-data-table,
+.sfa-admin-wrap[data-sfa-theme="dark"] .sfa-empty-state,
+.sfa-admin-wrap[data-sfa-theme="dark"] .sfa-stat-card {
+    background: var(--sfa-sys-color-surface-container);
+    border-color: var(--sfa-sys-color-outline);
+}
+
+.sfa-admin-wrap[data-sfa-theme="dark"] .sfa-data-table thead {
+    background: var(--sfa-sys-color-surface);
+}
+
+.sfa-admin-wrap[data-sfa-theme="dark"] .sfa-data-table th,
+.sfa-admin-wrap[data-sfa-theme="dark"] .sfa-data-table td,
+.sfa-admin-wrap[data-sfa-theme="dark"] .sfa-card h3,
+.sfa-admin-wrap[data-sfa-theme="dark"] .sfa-settings-table td:last-child,
+.sfa-admin-wrap[data-sfa-theme="dark"] .form-table th {
+    color: var(--sfa-sys-color-on-surface);
+}
+
+.sfa-admin-wrap[data-sfa-theme="dark"] .sfa-data-table td,
+.sfa-admin-wrap[data-sfa-theme="dark"] .sfa-card h3,
+.sfa-admin-wrap[data-sfa-theme="dark"] .sfa-settings-table tr,
+.sfa-admin-wrap[data-sfa-theme="dark"] .sfa-table-container h2,
+.sfa-admin-wrap[data-sfa-theme="dark"] .sfa-form-section h2 {
+    border-bottom-color: var(--sfa-sys-color-outline);
+}
+
+.sfa-admin-wrap[data-sfa-theme="dark"] .sfa-data-table tbody tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.sfa-admin-wrap[data-sfa-theme="dark"] .sfa-data-table tbody tr:hover {
+    background: linear-gradient(90deg, rgba(138, 180, 248, 0.12) 0%, transparent 100%);
+}
+
+.sfa-admin-wrap[data-sfa-theme="dark"] .sfa-settings-table tr:hover {
+    background: rgba(138, 180, 248, 0.08);
+}
+
+.sfa-admin-wrap[data-sfa-theme="dark"] .sfa-settings-table td:first-child,
+.sfa-admin-wrap[data-sfa-theme="dark"] .sfa-empty-state,
+.sfa-admin-wrap[data-sfa-theme="dark"] .sfa-helper-text,
+.sfa-admin-wrap[data-sfa-theme="dark"] .sfa-stat-label {
+    color: var(--sfa-sys-color-on-surface-variant);
+}
+
+.sfa-admin-wrap[data-sfa-theme="dark"] .form-table input[type="text"],
+.sfa-admin-wrap[data-sfa-theme="dark"] .form-table input[type="number"],
+.sfa-admin-wrap[data-sfa-theme="dark"] .form-table select,
+.sfa-admin-wrap[data-sfa-theme="dark"] .sfa-card .button,
+.sfa-admin-wrap[data-sfa-theme="dark"] .sfa-search-input {
+    background: var(--sfa-sys-color-surface-container);
+    border-color: var(--sfa-sys-color-outline);
+    color: var(--sfa-sys-color-on-surface);
+}
+
+.sfa-admin-wrap[data-sfa-theme="dark"] .form-table input[type="text"]:focus,
+.sfa-admin-wrap[data-sfa-theme="dark"] .form-table input[type="number"]:focus,
+.sfa-admin-wrap[data-sfa-theme="dark"] .form-table select:focus {
+    background: var(--sfa-sys-color-surface);
+    border-color: var(--sfa-sys-color-primary);
+}
+
+.sfa-admin-wrap[data-sfa-theme="dark"] .sfa-search-input:focus {
+    background: var(--sfa-sys-color-surface);
+}
+
+.sfa-admin-wrap[data-sfa-theme="dark"] .sfa-card .button:hover {
+    background: var(--sfa-sys-color-primary);
+    color: var(--sfa-sys-color-on-primary);
+}
+
+.sfa-admin-wrap[data-sfa-theme="dark"] .sfa-search-input::placeholder {
+    color: var(--sfa-sys-color-on-surface-variant);
+}
+
+.sfa-admin-wrap[data-sfa-theme="dark"] .sfa-table-container h2,
+.sfa-admin-wrap[data-sfa-theme="dark"] .sfa-form-section h2 {
+    color: var(--sfa-sys-color-primary);
+}
+
+.sfa-admin-wrap[data-sfa-theme="dark"] .notice,
+.sfa-admin-wrap[data-sfa-theme="dark"] .updated,
+.sfa-admin-wrap[data-sfa-theme="dark"] .error,
+.sfa-admin-wrap[data-sfa-theme="dark"] .settings-error {
+    background: var(--sfa-sys-color-surface-container) !important;
+    border-left-color: var(--sfa-sys-color-primary) !important;
+}
+
+.sfa-admin-wrap[data-sfa-theme="dark"] .notice p,
+.sfa-admin-wrap[data-sfa-theme="dark"] .updated p,
+.sfa-admin-wrap[data-sfa-theme="dark"] .error p,
+.sfa-admin-wrap[data-sfa-theme="dark"] .settings-error p,
+.sfa-admin-wrap[data-sfa-theme="dark"] .notice-dismiss {
+    color: var(--sfa-sys-color-on-surface) !important;
 }

@@ -183,6 +183,7 @@ This plugin connects to the **Swiss Unihockey API** (api-v2.swissunihockey.ch) t
 
 ## 📜 Changelog
 ### Unreleased
+* New: Theme setting (Auto / Light / Dark, default Auto) under Settings. Dark colours are `--sfa-sys-*` tokens scoped to the plugin containers (`data-sfa-theme` on `.swiss-floorball-plugin` and `.sfa-admin-wrap`); Auto follows `prefers-color-scheme`. The old hard-coded dark block was replaced by these tokens
 * New: Admin dashboard restyled in Material 3 (header, tonal navigation buttons, outlined form fields, filled/outlined buttons, cards and tables) using the `--sfa-sys-*` tokens; 48 px touch targets and visible keyboard focus. Markup, shortcodes and options are unchanged
 * Change: Frontend tables and cards in Material 3 look using only `--sfa-sys-*` tokens: surface-container tables with dividers, hover/focus state layer, sticky header, `.sfa-card` variants (`--elevated`, `--filled`, `--outlined`), 48 px touch targets and reduced-motion support. On narrow screens tables now scroll horizontally instead of switching to a card layout
 * New: Visually hidden `<caption>` and `scope` attributes on all plugin tables for accessibility
