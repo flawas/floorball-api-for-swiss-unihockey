@@ -61,6 +61,7 @@ The **Swiss Floorball API** plugin brings the power of the Swiss Floorball API v
 | Swiss Floorball Club Name | Filled in automatically from the API when you save a new Club ID (`swissfloorball_club_name`). |
 | Swiss Floorball Aktuelle Saison | Season as a year, e.g. `2025` (`swissfloorball_actual_season`). Used when a shortcode has no `season` attribute. |
 | Show icons | Show or hide all icons (on by default). |
+| Theme | Controls whether the plugin uses light, dark, or auto (follows system preference) colors (`swissfloorball_theme`). Option values are `auto` (default), `light`, or `dark`. |
 | API request timeout (seconds) | Seconds to wait for the API, 1-30 (default 3). |
 
 The admin interface is currently in German. Under **Cache Verwaltung** the button **Cache leeren** removes all cached API responses. Changing the Club Number clears the cache automatically.
