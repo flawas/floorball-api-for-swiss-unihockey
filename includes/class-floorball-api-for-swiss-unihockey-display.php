@@ -169,7 +169,7 @@ class Swiss_Floorball_API_Display {
 		?>
 		<h5><?php echo esc_html( $title ); ?></h5>
 		<table class="sfa-data-table">
-			<caption class="sfa-visually-hidden"><?php esc_html_e( 'Teams des Clubs', 'swiss-floorball-api' ); ?></caption>
+			<caption class="sfa-visually-hidden"><?php esc_html_e( 'Platzierungen der Club-Teams', 'swiss-floorball-api' ); ?></caption>
 			<thead>
 				<tr>
 					<th scope="col"><?php esc_html_e( 'Team Name', 'swiss-floorball-api' ); ?></th>

@@ -220,15 +220,12 @@
 }
 
 /* Data tables (Material 3 look, tokens only).
-   The table itself is the scroll container: narrow viewports scroll horizontally instead of
-   restructuring the rows, and max-height lets the header stick while scrolling vertically. */
+   The table keeps its native table semantics; narrow viewports scroll horizontally in the
+   plugin container (see the max-width: 768px block) instead of restructuring the rows. */
 .swiss-floorball-plugin .table,
 .swiss-floorball-plugin .sfa-data-table {
-    display: block;
     width: 100%;
     max-width: 100%;
-    max-height: 70vh;
-    overflow: auto;
     border-collapse: separate;
     border-spacing: 0;
     background: var(--sfa-sys-color-surface-container);
@@ -730,6 +727,15 @@
 
 /* Additional Mobile Enhancements */
 @media screen and (max-width: 768px) {
+
+    .swiss-floorball-plugin {
+        overflow-x: auto;
+    }
+
+    .swiss-floorball-plugin .table,
+    .swiss-floorball-plugin .sfa-data-table {
+        min-width: max-content;
+    }
 
     /* Add breathing room */
     .swiss-floorball-plugin .swiss-floorball-container {
