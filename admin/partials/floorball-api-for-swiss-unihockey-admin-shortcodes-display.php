@@ -239,7 +239,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 		<div class="sfa-info-box">
 			<h3 class="sfa-info-box__title">ℹ️ Hinweis</h3>
 			<p style="margin-bottom: 0;">
-				Wenn Sie eine dieser Backend-Funktionen als öffentlichen Shortcode benötigen, können Sie dies als Feature-Request einreichen. 
+				Wenn Sie eine dieser Backend-Funktionen als öffentlichen Shortcode benötigen, können Sie dies als Feature-Request einreichen.
 				Die Funktionen sind bereits in der API-Client-Klasse implementiert und könnten bei Bedarf als Shortcodes verfügbar gemacht werden.
 			</p>
 		</div>

@@ -52,7 +52,8 @@
 
 		target.setAttribute( 'aria-busy', 'true' );
 
-		return fetch( config.restUrl + route + '?' + query.toString(), { headers: { Accept: 'application/json' } } )
+		// Errors are handled below, so the promise is not returned and callers have nothing left to await.
+		fetch( config.restUrl + route + '?' + query.toString(), { headers: { Accept: 'application/json' } } )
 			.then( function ( response ) {
 				if ( ! response.ok ) {
 					throw new Error( 'HTTP ' + response.status );
@@ -80,7 +81,7 @@
 	}
 
 	function initWeek( widget ) {
-		var weekStart = parseIso( widget.getAttribute( 'data-sfa-week-start' ) );
+		var weekStart = parseIso( widget.dataset.sfaWeekStart );
 		var offset = 0;
 		var label = widget.querySelector( '[data-sfa-label]' );
 		var empty = widget.querySelector( '[data-sfa-empty]' );
@@ -94,7 +95,7 @@
 			var visible = 0;
 
 			rows.forEach( function ( row ) {
-				var date = row.getAttribute( 'data-sfa-date' );
+				var date = row.dataset.sfaDate;
 				var show = date !== '' && date >= from && date <= to;
 				row.hidden = ! show;
 				if ( show ) {
@@ -110,15 +111,15 @@
 
 		widget.querySelectorAll( '[data-sfa-action]' ).forEach( function ( button ) {
 			button.addEventListener( 'click', function () {
-				offset += button.getAttribute( 'data-sfa-action' ) === 'next' ? 1 : -1;
+				offset += button.dataset.sfaAction === 'next' ? 1 : -1;
 				render();
 			} );
 		} );
 	}
 
 	function initPager( widget ) {
-		var size = Number( widget.getAttribute( 'data-sfa-page-size' ) ) || 4;
-		var start = Number( widget.getAttribute( 'data-sfa-start' ) ) || 0;
+		var size = Number( widget.dataset.sfaPageSize ) || 4;
+		var start = Number( widget.dataset.sfaStart ) || 0;
 		var rows = widget.querySelectorAll( 'tbody tr' );
 		var total = rows.length;
 		var label = widget.querySelector( '[data-sfa-label]' );
@@ -154,8 +155,8 @@
 				'team-games',
 				{
 					team_id: select.value,
-					season: widget.getAttribute( 'data-sfa-season' ),
-					page_size: widget.getAttribute( 'data-sfa-page-size' )
+					season: widget.dataset.sfaSeason,
+					page_size: widget.dataset.sfaPageSize
 				},
 				slot,
 				false
@@ -164,15 +165,15 @@
 	}
 
 	function initLeague( widget ) {
-		var params = parseJson( widget.getAttribute( 'data-sfa-params' ) );
+		var params = parseJson( widget.dataset.sfaParams );
 
 		widget.querySelectorAll( '[data-sfa-action]' ).forEach( function ( button ) {
 			button.addEventListener( 'click', function () {
-				var context = parseJson( button.getAttribute( 'data-sfa-context' ) );
+				var context = parseJson( button.dataset.sfaContext );
 				if ( ! context.round ) {
 					return;
 				}
-				var request = Object.assign( {}, params, { round: context.round } );
+				var request = { ...params, round: context.round };
 				reload( 'league-games', request, widget, true );
 			} );
 		} );
@@ -180,12 +181,12 @@
 
 	function init( root ) {
 		root.querySelectorAll( '[data-sfa-widget]' ).forEach( function ( widget ) {
-			if ( widget.getAttribute( 'data-sfa-ready' ) ) {
+			if ( widget.dataset.sfaReady ) {
 				return;
 			}
-			widget.setAttribute( 'data-sfa-ready', '1' );
+			widget.dataset.sfaReady = '1';
 
-			switch ( widget.getAttribute( 'data-sfa-widget' ) ) {
+			switch ( widget.dataset.sfaWidget ) {
 				case 'week':
 					initWeek( widget );
 					break;

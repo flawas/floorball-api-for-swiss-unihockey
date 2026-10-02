@@ -80,7 +80,7 @@ centralized outside that split:
   queue, run in `Swiss_Floorball_Api::run()`.
 - `includes/class-floorball-api-for-swiss-unihockey-client.php` (`Swiss_Floorball_API_Client`) — the
   **only** place that talks to the external API. `fetch_data($endpoint, $args, $cache_time)` builds the
-  URL, caches responses as WordPress transients keyed `swfl_<md5(url)>` (default 1 hour), and returns
+  URL, caches responses as WordPress transients keyed `swfl_<sha256(url)>` (default 1 hour), and returns
   the decoded JSON array or a `WP_Error`. Any new API call should go through this client, not a direct
   `wp_remote_get`.
 - `includes/class-floorball-api-for-swiss-unihockey-display.php` (`Swiss_Floorball_API_Display`) — all

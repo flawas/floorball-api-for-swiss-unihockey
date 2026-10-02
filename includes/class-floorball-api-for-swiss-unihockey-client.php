@@ -119,8 +119,10 @@ class Swiss_Floorball_API_Client {
 
 		$body  = json_decode( wp_remote_retrieve_body( $response ), true );
 		$token = '';
-		if ( is_array( $body ) ) {
-			$token = isset( $body['auth_token'] ) ? $body['auth_token'] : ( isset( $body['data']['auth_token'] ) ? $body['data']['auth_token'] : '' );
+		if ( isset( $body['auth_token'] ) ) {
+			$token = $body['auth_token'];
+		} elseif ( isset( $body['data']['auth_token'] ) ) {
+			$token = $body['data']['auth_token'];
 		}
 		if ( 200 !== wp_remote_retrieve_response_code( $response ) || ! is_string( $token ) || '' === $token ) {
 			return new WP_Error( 'swfl_partner_auth', 'Partner API authentication failed' );
@@ -151,7 +153,7 @@ class Swiss_Floorball_API_Client {
 		}
 
 		// Generate a unique cache key for this request.
-		$cache_key   = 'swfl_' . md5( $url );
+		$cache_key   = 'swfl_' . hash( 'sha256', $url );
 		$cached_data = get_transient( $cache_key );
 
 		if ( false !== $cached_data ) {
