@@ -93,6 +93,81 @@ async function login(browser) {
   return state;
 }
 
+function createPages(ctx) {
+  const pages = [];
+  for (const s of cfg.frontend) {
+    const { out, missing } = fill(s.shortcode, ctx);
+    if (missing) { skip(s.id, `no ${missing} discovered`); continue; }
+    wp('post', 'create', '--post_type=page', '--post_status=publish', `--post_title=${s.title}`, `--post_name=docs-${s.id}`, `--post_content=${out}`, '--porcelain');
+    pages.push({ ...s, shortcode: out });
+  }
+  return pages;
+}
+
+// Frontend screenshot of the plugin container for one page and viewport.
+async function shootFrontend(browser, s, vpName, vp) {
+  const context = await browser.newContext({ viewport: vp });
+  const page = await context.newPage();
+  try {
+    await page.goto(`${WP}/docs-${s.id}/`, { waitUntil: 'networkidle' });
+    const el = page.locator('.swiss-floorball-plugin').first();
+    if (!(await el.count())) { skip(`${s.id}-${vpName}`, 'no plugin output'); return; }
+    const text = ((await el.innerText()) || '').trim();
+    if (text.length < 20) { skip(`${s.id}-${vpName}`, 'empty output'); return; }
+    const file = `${s.id}-${vpName}.png`;
+    await el.screenshot({ path: path.join(OUT, file) });
+    manifest.screenshots.push({ id: s.id, title: s.title, type: 'frontend', viewport: vpName, file, shortcode: s.shortcode });
+    log(`  ok ${file}`);
+  } catch (e) {
+    skip(`${s.id}-${vpName}`, e.message);
+  } finally {
+    await context.close();
+  }
+}
+
+// Admin screenshots (desktop).
+async function shootAdmin(browser, state) {
+  const context = await browser.newContext({ viewport: cfg.viewports.desktop, storageState: state });
+  const page = await context.newPage();
+  for (const s of cfg.admin) {
+    try {
+      await page.goto(`${WP}/wp-admin/admin.php?page=${s.page}`, { waitUntil: 'networkidle' });
+      const file = `${s.id}.png`;
+      await page.screenshot({ path: path.join(OUT, file), fullPage: true });
+      manifest.screenshots.push({ id: s.id, title: s.title, type: 'admin', viewport: 'desktop', file });
+      log(`  ok ${file}`);
+    } catch (e) {
+      skip(s.id, e.message);
+    }
+  }
+  await context.close();
+}
+
+// Walkthrough video: admin pages, then a shortcode page (login is not recorded).
+async function recordWalkthrough(browser, state, pages) {
+  const tmp = fs.mkdtempSync(path.join(require('node:os').tmpdir(), 'vid-'));
+  const context = await browser.newContext({ viewport: { width: 1280, height: 720 }, storageState: state, recordVideo: { dir: tmp, size: { width: 1280, height: 720 } } });
+  const page = await context.newPage();
+  const steps = cfg.admin.map((s) => `${WP}/wp-admin/admin.php?page=${s.page}`).concat(pages.slice(0, 3).map((s) => `${WP}/docs-${s.id}/`));
+  for (const url of steps) {
+    await page.goto(url, { waitUntil: 'networkidle' });
+    await page.waitForTimeout(1200);
+    await page.mouse.wheel(0, 500);
+    await page.waitForTimeout(1200);
+  }
+  const video = await page.video().path();
+  await context.close();
+  try {
+    const gif = path.join(OUT, 'walkthrough.gif'), mp4 = path.join(OUT, 'walkthrough.mp4');
+    execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', video, '-vf', 'fps=8,scale=800:-1:flags=lanczos', '-loop', '0', gif]);
+    execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', video, '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', mp4]);
+    manifest.videos.push({ id: 'walkthrough', title: 'Walkthrough: admin pages and shortcode output', gif: 'walkthrough.gif', mp4: 'walkthrough.mp4' });
+    log('  ok walkthrough.gif / walkthrough.mp4');
+  } catch (e) {
+    skip('walkthrough', `ffmpeg: ${e.message}`);
+  }
+}
+
 async function main() {
   fs.mkdirSync(OUT, { recursive: true });
   log('Discovering IDs from the Swiss Unihockey API ...');
@@ -105,82 +180,18 @@ async function main() {
   wp('option', 'update', 'swissfloorball_club_name', ctx.club_name);
   wp('option', 'update', 'swissfloorball_actual_season', String(ctx.season));
 
-  const pages = [];
-  for (const s of cfg.frontend) {
-    const { out, missing } = fill(s.shortcode, ctx);
-    if (missing) { skip(s.id, `no ${missing} discovered`); continue; }
-    wp('post', 'create', '--post_type=page', '--post_status=publish', `--post_title=${s.title}`, `--post_name=docs-${s.id}`, `--post_content=${out}`, '--porcelain');
-    pages.push({ ...s, shortcode: out });
-  }
+  const pages = createPages(ctx);
 
   const browser = await chromium.launch();
   const state = await login(browser);
 
-  // Frontend screenshots (only the plugin container, per viewport)
   for (const s of pages) {
     for (const [vpName, vp] of Object.entries(cfg.viewports)) {
-      const context = await browser.newContext({ viewport: vp });
-      const page = await context.newPage();
-      try {
-        await page.goto(`${WP}/docs-${s.id}/`, { waitUntil: 'networkidle' });
-        const el = page.locator('.swiss-floorball-plugin').first();
-        if (!(await el.count())) { skip(`${s.id}-${vpName}`, 'no plugin output'); continue; }
-        const text = ((await el.innerText()) || '').trim();
-        if (text.length < 20) { skip(`${s.id}-${vpName}`, 'empty output'); continue; }
-        const file = `${s.id}-${vpName}.png`;
-        await el.screenshot({ path: path.join(OUT, file) });
-        manifest.screenshots.push({ id: s.id, title: s.title, type: 'frontend', viewport: vpName, file, shortcode: s.shortcode });
-        log(`  ok ${file}`);
-      } catch (e) {
-        skip(`${s.id}-${vpName}`, e.message);
-      } finally {
-        await context.close();
-      }
+      await shootFrontend(browser, s, vpName, vp);
     }
   }
-
-  // Admin screenshots (desktop)
-  {
-    const context = await browser.newContext({ viewport: cfg.viewports.desktop, storageState: state });
-    const page = await context.newPage();
-    for (const s of cfg.admin) {
-      try {
-        await page.goto(`${WP}/wp-admin/admin.php?page=${s.page}`, { waitUntil: 'networkidle' });
-        const file = `${s.id}.png`;
-        await page.screenshot({ path: path.join(OUT, file), fullPage: true });
-        manifest.screenshots.push({ id: s.id, title: s.title, type: 'admin', viewport: 'desktop', file });
-        log(`  ok ${file}`);
-      } catch (e) {
-        skip(s.id, e.message);
-      }
-    }
-    await context.close();
-  }
-
-  // Walkthrough video: admin pages, then a shortcode page (login is not recorded)
-  {
-    const tmp = fs.mkdtempSync(path.join(require('node:os').tmpdir(), 'vid-'));
-    const context = await browser.newContext({ viewport: { width: 1280, height: 720 }, storageState: state, recordVideo: { dir: tmp, size: { width: 1280, height: 720 } } });
-    const page = await context.newPage();
-    const steps = cfg.admin.map((s) => `${WP}/wp-admin/admin.php?page=${s.page}`).concat(pages.slice(0, 3).map((s) => `${WP}/docs-${s.id}/`));
-    for (const url of steps) {
-      await page.goto(url, { waitUntil: 'networkidle' });
-      await page.waitForTimeout(1200);
-      await page.mouse.wheel(0, 500);
-      await page.waitForTimeout(1200);
-    }
-    const video = await page.video().path();
-    await context.close();
-    try {
-      const gif = path.join(OUT, 'walkthrough.gif'), mp4 = path.join(OUT, 'walkthrough.mp4');
-      execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', video, '-vf', 'fps=8,scale=800:-1:flags=lanczos', '-loop', '0', gif]);
-      execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', video, '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', mp4]);
-      manifest.videos.push({ id: 'walkthrough', title: 'Walkthrough: admin pages and shortcode output', gif: 'walkthrough.gif', mp4: 'walkthrough.mp4' });
-      log('  ok walkthrough.gif / walkthrough.mp4');
-    } catch (e) {
-      skip('walkthrough', `ffmpeg: ${e.message}`);
-    }
-  }
+  await shootAdmin(browser, state);
+  await recordWalkthrough(browser, state, pages);
 
   await browser.close();
   fs.writeFileSync(path.join(OUT, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
