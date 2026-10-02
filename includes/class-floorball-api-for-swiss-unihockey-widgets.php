@@ -1135,7 +1135,10 @@ class Swiss_Floorball_API_Widgets {
 			return;
 		}
 		$first_team = (int) key( $teams );
-		$select_id  = 'sfa-team-select-' . wp_unique_id();
+		// Own counter instead of wp_unique_id(), which needs WordPress 5.0.3 while the plugin supports 5.0.
+		static $select_count = 0;
+		++$select_count;
+		$select_id = 'sfa-team-select-' . $select_count;
 
 		?>
 		<div class="sfa-widget" data-sfa-widget="team-select" data-sfa-season="<?php echo esc_attr( $season ); ?>" data-sfa-page-size="<?php echo esc_attr( $page_size ); ?>">
