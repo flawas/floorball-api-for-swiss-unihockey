@@ -490,26 +490,35 @@ class Swiss_Floorball_API_Display_Stats {
 			<tbody>
 				<?php
 				foreach ( $rows as $row ) {
-					$rank    = isset( $row['cells'][0]['text'][0] ) ? $row['cells'][0]['text'][0] : '';
-					$player  = isset( $row['cells'][1]['text'][0] ) ? $row['cells'][1]['text'][0] : '';
-					$team    = isset( $row['cells'][2]['text'][0] ) ? $row['cells'][2]['text'][0] : '';
-					$goals   = isset( $row['cells'][3]['text'][0] ) ? $row['cells'][3]['text'][0] : '';
-					$assists = isset( $row['cells'][4]['text'][0] ) ? $row['cells'][4]['text'][0] : '';
-					$points  = isset( $row['cells'][5]['text'][0] ) ? $row['cells'][5]['text'][0] : '';
-					?>
-					<tr>
-						<td data-label="<?php esc_attr_e( 'Rang', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $rank ); ?></td>
-						<td data-label="<?php esc_attr_e( 'Spieler', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $player ); ?></td>
-						<td data-label="<?php esc_attr_e( 'Team', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $team ); ?></td>
-						<td class="sfa-align-right" data-label="<?php esc_attr_e( 'Tore', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $goals ); ?></td>
-						<td class="sfa-align-right" data-label="<?php esc_attr_e( 'Assists', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $assists ); ?></td>
-						<td class="sfa-align-right" data-label="<?php esc_attr_e( 'Punkte', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $points ); ?></td>
-					</tr>
-					<?php
+					self::render_topscorer_row( $row );
 				}
 				?>
 			</tbody>
 		</table></div>
+		<?php
+	}
+
+	/**
+	 * Render one row of the topscorer table.
+	 *
+	 * @since 2.0.1
+	 * @param array $row Row with the cells rank, player, team, goals, assists and points.
+	 * @return void
+	 */
+	private static function render_topscorer_row( $row ) {
+		$text = array();
+		for ( $i = 0; $i < 6; $i++ ) {
+			$text[ $i ] = isset( $row['cells'][ $i ]['text'][0] ) ? $row['cells'][ $i ]['text'][0] : '';
+		}
+		?>
+		<tr>
+			<td data-label="<?php esc_attr_e( 'Rang', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $text[0] ); ?></td>
+			<td data-label="<?php esc_attr_e( 'Spieler', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $text[1] ); ?></td>
+			<td data-label="<?php esc_attr_e( 'Team', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $text[2] ); ?></td>
+			<td class="sfa-align-right" data-label="<?php esc_attr_e( 'Tore', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $text[3] ); ?></td>
+			<td class="sfa-align-right" data-label="<?php esc_attr_e( 'Assists', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $text[4] ); ?></td>
+			<td class="sfa-align-right" data-label="<?php esc_attr_e( 'Punkte', 'swiss-floorball-api' ); ?>"><?php echo esc_html( $text[5] ); ?></td>
+		</tr>
 		<?php
 	}
 
