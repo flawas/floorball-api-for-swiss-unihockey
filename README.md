@@ -185,6 +185,7 @@ This plugin connects to the **Swiss Unihockey API** (api-v2.swissunihockey.ch) t
 
 ## 📜 Changelog
 ### Unreleased
+* Fix: `[swfl-topscorers]` now uses the `topscorers/su` API endpoint (the old `topscorers` endpoint returned 404). The `group` attribute is still accepted but ignored; lists for leagues with several groups may be longer (Issue #27)
 * New: Optional Seed colour setting (hex). Derives the primary/secondary `--sfa-sys-color-*` tokens, including `on-*` colours with AA contrast, for light, dark and auto mode on the frontend and in the admin. Empty keeps the default look; a set value overrides `--sfa-primary` / `--sfa-secondary` theme overrides
 * New: Theme setting (Auto / Light / Dark, default Auto) under Settings. Dark colours are `--sfa-sys-*` tokens scoped to the plugin containers (`data-sfa-theme` on `.swiss-floorball-plugin` and `.sfa-admin-wrap`); Auto follows `prefers-color-scheme`. The old hard-coded dark block was replaced by these tokens
 * Fix: Plugin Check readme issues: "Tested up to" raised to 7.1 and short description shortened to 150 characters or less
