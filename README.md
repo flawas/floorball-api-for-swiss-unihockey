@@ -183,6 +183,8 @@ This plugin connects to the **Swiss Unihockey API** (api-v2.swissunihockey.ch) t
 
 ## 📜 Changelog
 ### Unreleased
+* Change: Frontend buttons (`.button`, `.btn`), calendar subscribe link, info boxes and empty states restyled with the `--sfa-sys-*` tokens (state layers, focus ring, 48px touch targets, motion tokens). Themes that style `.button` inside the plugin will see the new look
+* Change: Failed API requests render a `.sfa-info-box--danger` banner with `role="alert"` instead of a bare paragraph; the calendar link gets `rel="noopener noreferrer"`; `.sfa-empty-state*` now styled (legacy `.empty-state*` kept)
 * New: Design-token layer (`--sfa-sys-*` colors, typography, shape, elevation 0-5) for the frontend and admin styles, scoped to `.swiss-floorball-plugin` / `.sfa-admin-wrap`. Existing `--sfa-*` variables, Roboto and dark mode are unchanged; no visual change
 * Fix: Add explicit request timeout (5 seconds, minimum 1 second) to API client calls, filterable via `swfl_request_timeout` hook
 * Fix: Add `apply_filters()` stub to verify_api.php for test compatibility

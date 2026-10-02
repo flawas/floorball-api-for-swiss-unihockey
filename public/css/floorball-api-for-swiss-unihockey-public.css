@@ -43,6 +43,24 @@
     --sfa-sys-color-on-surface-variant: var(--sfa-text-light, #7f8c8d);
     --sfa-sys-color-surface-container: #eef1f4;
     --sfa-sys-color-outline: var(--sfa-border, #e0e0e0);
+    --sfa-sys-color-error-container: #fbe3df;
+    --sfa-sys-color-on-error-container: #5c110a;
+    --sfa-sys-color-success: var(--sfa-success, #27ae60);
+    --sfa-sys-color-success-container: #d9f2e3;
+    --sfa-sys-color-on-success-container: #0b3a1f;
+    --sfa-sys-color-warning: var(--sfa-warning, #f39c12);
+    --sfa-sys-color-warning-container: #fdebc8;
+    --sfa-sys-color-on-warning-container: #3d2700;
+    --sfa-sys-color-focus-ring: #00509e;
+
+    /* State layers */
+    --sfa-sys-state-hover-opacity: 0.08;
+    --sfa-sys-state-focus-opacity: 0.1;
+    --sfa-sys-state-pressed-opacity: 0.1;
+
+    /* Motion */
+    --sfa-sys-motion-duration-short: 150ms;
+    --sfa-sys-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
 
     /* Typography */
     --sfa-sys-font-family: 'SFA Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -479,28 +497,105 @@
 
 /* Button Styling - Fully Responsive */
 .swiss-floorball-plugin .button,
-.swiss-floorball-plugin .btn {
-    display: inline-block;
-    padding: clamp(8px, 2vw, 12px) clamp(16px, 3vw, 24px);
-    background: linear-gradient(135deg, var(--sfa-primary) 0%, var(--sfa-primary-dark) 100%);
-    color: white;
+.swiss-floorball-plugin .btn,
+.swiss-floorball-plugin .sfa-button,
+.swiss-floorball-plugin .sfa-calendar-subscribe {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-width: 48px;
+    min-height: 48px;
+    padding: 0 clamp(16px, 3vw, 24px);
+    background: var(--sfa-sys-color-primary);
+    color: var(--sfa-sys-color-on-primary);
     text-decoration: none;
-    border-radius: 6px;
-    font-weight: 600;
-    font-size: clamp(13px, 2.5vw, 15px);
-    border: none;
+    border-radius: var(--sfa-sys-shape-corner-full);
+    font-family: var(--sfa-sys-font-family);
+    font-weight: var(--sfa-sys-font-weight-medium);
+    font-size: var(--sfa-sys-font-size-body);
+    line-height: var(--sfa-sys-line-height-tight);
+    border: 1px solid transparent;
     cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+    overflow: hidden;
+    box-shadow: var(--sfa-sys-elevation-0);
+    transition: box-shadow var(--sfa-sys-motion-duration-short) var(--sfa-sys-motion-easing-standard);
     text-align: center;
 }
 
+/* State layer: currentColor overlay so every variant shares one hover/focus/pressed rule. */
+.swiss-floorball-plugin .button::before,
+.swiss-floorball-plugin .btn::before,
+.swiss-floorball-plugin .sfa-button::before,
+.swiss-floorball-plugin .sfa-calendar-subscribe::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: currentColor;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--sfa-sys-motion-duration-short) var(--sfa-sys-motion-easing-standard);
+}
+
 .swiss-floorball-plugin .button:hover,
-.swiss-floorball-plugin .btn:hover {
-    background: linear-gradient(135deg, var(--sfa-primary-dark) 0%, var(--sfa-primary) 100%);
-    box-shadow: 0 6px 20px rgba(0, 102, 204, 0.4);
-    transform: translateY(-2px);
-    color: white;
+.swiss-floorball-plugin .btn:hover,
+.swiss-floorball-plugin .sfa-button:hover,
+.swiss-floorball-plugin .sfa-calendar-subscribe:hover {
+    color: var(--sfa-sys-color-on-primary);
+    text-decoration: none;
+}
+
+.swiss-floorball-plugin .button:hover::before,
+.swiss-floorball-plugin .btn:hover::before,
+.swiss-floorball-plugin .sfa-button:hover::before,
+.swiss-floorball-plugin .sfa-calendar-subscribe:hover::before {
+    opacity: var(--sfa-sys-state-hover-opacity);
+}
+
+.swiss-floorball-plugin .button:focus-visible::before,
+.swiss-floorball-plugin .btn:focus-visible::before,
+.swiss-floorball-plugin .sfa-button:focus-visible::before,
+.swiss-floorball-plugin .sfa-calendar-subscribe:focus-visible::before {
+    opacity: var(--sfa-sys-state-focus-opacity);
+}
+
+.swiss-floorball-plugin .button:active::before,
+.swiss-floorball-plugin .btn:active::before,
+.swiss-floorball-plugin .sfa-button:active::before,
+.swiss-floorball-plugin .sfa-calendar-subscribe:active::before {
+    opacity: var(--sfa-sys-state-pressed-opacity);
+}
+
+.swiss-floorball-plugin .button:focus-visible,
+.swiss-floorball-plugin .btn:focus-visible,
+.swiss-floorball-plugin .sfa-button:focus-visible,
+.swiss-floorball-plugin .sfa-calendar-subscribe:focus-visible,
+.swiss-floorball-plugin a:focus-visible {
+    outline: 2px solid var(--sfa-sys-color-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Button variants (filled is the default above). */
+.swiss-floorball-plugin .sfa-button--tonal,
+.swiss-floorball-plugin .sfa-button--tonal:hover {
+    background: var(--sfa-sys-color-primary-container);
+    color: var(--sfa-sys-color-on-primary-container);
+}
+
+.swiss-floorball-plugin .sfa-button--outlined,
+.swiss-floorball-plugin .sfa-button--outlined:hover {
+    background: transparent;
+    color: var(--sfa-sys-color-primary);
+    border-color: var(--sfa-sys-color-outline);
+}
+
+.swiss-floorball-plugin .sfa-button--text,
+.swiss-floorball-plugin .sfa-button--text:hover,
+.swiss-floorball-plugin .sfa-calendar-subscribe,
+.swiss-floorball-plugin .sfa-calendar-subscribe:hover {
+    background: transparent;
+    color: var(--sfa-sys-color-primary);
 }
 
 /* Text Utilities - Responsive */
@@ -598,7 +693,69 @@
     }
 }
 
+/* Info boxes (banners) */
+.swiss-floorball-plugin .sfa-info-box {
+    box-sizing: border-box;
+    margin: 0 0 16px;
+    padding: 12px 16px;
+    border-radius: var(--sfa-sys-shape-corner-md);
+    background: var(--sfa-sys-color-primary-container);
+    color: var(--sfa-sys-color-on-primary-container);
+    font-size: var(--sfa-sys-font-size-body);
+    line-height: var(--sfa-sys-line-height-body);
+}
+
+.swiss-floorball-plugin .sfa-info-box > p {
+    margin: 0;
+}
+
+.swiss-floorball-plugin .sfa-info-box--success {
+    background: var(--sfa-sys-color-success-container);
+    color: var(--sfa-sys-color-on-success-container);
+}
+
+.swiss-floorball-plugin .sfa-info-box--warning {
+    background: var(--sfa-sys-color-warning-container);
+    color: var(--sfa-sys-color-on-warning-container);
+}
+
+.swiss-floorball-plugin .sfa-info-box--danger {
+    background: var(--sfa-sys-color-error-container);
+    color: var(--sfa-sys-color-on-error-container);
+}
+
+/* Outlined text field (search). Styling only; the frontend renders no search input yet. */
+.swiss-floorball-plugin .sfa-search-input {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 48px;
+    padding: 0 16px;
+    background: transparent;
+    color: var(--sfa-sys-color-on-surface);
+    border: 1px solid var(--sfa-sys-color-on-surface-variant);
+    border-radius: var(--sfa-sys-shape-corner-xs);
+    font-family: var(--sfa-sys-font-family);
+    font-size: var(--sfa-sys-font-size-title);
+    transition: border-color var(--sfa-sys-motion-duration-short) var(--sfa-sys-motion-easing-standard);
+}
+
+.swiss-floorball-plugin .sfa-search-input:hover {
+    border-color: var(--sfa-sys-color-on-surface);
+}
+
+.swiss-floorball-plugin .sfa-search-input:focus {
+    outline: none;
+    border-color: var(--sfa-sys-color-primary);
+    box-shadow: inset 0 0 0 1px var(--sfa-sys-color-primary);
+}
+
+.swiss-floorball-plugin .sfa-search-input[aria-invalid="true"] {
+    border-color: var(--sfa-sys-color-error);
+    box-shadow: inset 0 0 0 1px var(--sfa-sys-color-error);
+}
+
 /* Empty State */
+.swiss-floorball-plugin .sfa-empty-state,
 .swiss-floorball-plugin .empty-state {
     text-align: center;
     padding: clamp(40px, 8vw, 70px) clamp(16px, 3vw, 24px);
@@ -614,6 +771,7 @@
     opacity: 0.4;
 }
 
+.swiss-floorball-plugin .sfa-empty-state-text,
 .swiss-floorball-plugin .empty-state-text {
     font-size: clamp(14px, 3vw, 16px);
     font-weight: 500;
@@ -982,10 +1140,8 @@
     margin-top: 16px;
 }
 
-/* Calendar subscribe link */
+/* Calendar subscribe link: text-button look comes from the shared button rules above. */
 .sfa-calendar-subscribe {
-    text-decoration: underline;
-    color: var(--sfa-text-light);
     font-size: 0.9em;
 }
 
