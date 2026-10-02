@@ -98,9 +98,22 @@ Use these shortcodes in any Page or Post to display data. Attributes that are le
 
 The plugin uses standard CSS classes prefixed with `.sfa-`, scoped to `.swiss-floorball-plugin`. You can override them in your theme's `style.css` or the Customizer to match your site's branding.
 
+### CSS Classes
+
+| Class | Modifiers | Purpose |
+|-------|-----------|---------|
+| `.sfa-button` | `--filled` (default), `--tonal`, `--outlined`, `--text` | Buttons with state layers (hover, focus, pressed), focus ring, and 48px touch targets. |
+| `.sfa-calendar-subscribe` | — | Calendar subscription link styled as a text button with focus ring. |
+| `.sfa-info-box` | `--success`, `--warning`, `--danger`, `--info` | Alert banners with icon, container color, and semantic role (`role="status"` or `role="alert"`). |
+| `.sfa-search-input` | — | Text input field with outlined style, focus ring, and error state support. |
+| `.sfa-empty-state` | — | Container for empty state message with icon and text. |
+| `.sfa-empty-state-text` | — | Text content inside empty state container. |
+| `.sfa-data-table` | — | Responsive table for rankings, games, teams, and topscorers. |
+| `.sfa-icon` | — | Inline SVG icon with `--swfl-icon-size` and `--swfl-icon-color` variables. |
+
 ## 🖼 Icons
 
-The plugin ships inline SVG icons from [Material Symbols](https://github.com/google/material-design-icons) (Outlined, filled, Apache License 2.0, see `THIRD-PARTY.md`). No fonts or external requests are used.
+The plugin ships inline SVG icons from [Material Symbols](https://github.com/google/material-design-icons) (Outlined, filled, Apache License 2.0, see `THIRD-PARTY.md`). No fonts or external requests are used. Icons are used in calendars, info boxes (error, success, warning, info), and other UI elements.
 
 * **Setting:** Show or hide all icons under **Settings > Swiss Floorball API > Show icons** (option `swissfloorball_show_icons`, on by default).
 * **Styling:** Use the CSS variables `--swfl-icon-size` and `--swfl-icon-color` on `.swiss-floorball-plugin`.
