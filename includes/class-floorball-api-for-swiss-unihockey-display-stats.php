@@ -299,54 +299,103 @@ class Swiss_Floorball_API_Display_Stats {
 		$data = isset( $api_response['data'] ) ? $api_response['data'] : $api_response;
 
 		// The response shape was not verified live, so render by structure and never dump raw data.
+		$rendered = false;
 		if ( is_array( $data ) && isset( $data['regions'] ) && is_array( $data['regions'] ) ) {
-			$rendered = false;
-			foreach ( $data['regions'] as $region ) {
-				if ( empty( $region['rows'] ) || ! is_array( $region['rows'] ) ) {
-					continue;
-				}
-				if ( ! $rendered ) {
-					echo '<div class="sfa-table-wrap"><table class="sfa-data-table"><caption class="sfa-visually-hidden">' . esc_html__( 'Spielerprofil', 'swiss-floorball-api' ) . '</caption><tbody>';
-					$rendered = true;
-				}
-				foreach ( $region['rows'] as $row ) {
-					if ( empty( $row['cells'] ) || ! is_array( $row['cells'] ) ) {
-						continue;
-					}
-					echo '<tr>';
-					foreach ( $row['cells'] as $cell ) {
-						$text = '';
-						if ( isset( $cell['text'] ) && is_array( $cell['text'] ) ) {
-							$text = implode( ' ', array_filter( $cell['text'], 'is_scalar' ) );
-						}
-						echo '<td>' . esc_html( $text ) . '</td>';
-					}
-					echo '</tr>';
-				}
-			}
-			if ( $rendered ) {
-				echo '</tbody></table></div>';
-				return;
-			}
+			$rendered = self::render_player_regions( $data['regions'] );
 		} elseif ( is_array( $data ) ) {
-			$lines = array();
-			foreach ( $data as $key => $value ) {
-				if ( ! is_scalar( $value ) || '' === (string) $value ) {
-					continue;
-				}
-				$lines[ $key ] = $value;
-			}
-			if ( ! empty( $lines ) ) {
-				echo '<div class="sfa-table-wrap"><table class="sfa-data-table"><caption class="sfa-visually-hidden">' . esc_html__( 'Spielerprofil', 'swiss-floorball-api' ) . '</caption><tbody>';
-				foreach ( $lines as $key => $value ) {
-					echo '<tr><th scope="row">' . esc_html( str_replace( '_', ' ', (string) $key ) ) . '</th><td>' . esc_html( (string) $value ) . '</td></tr>';
-				}
-				echo '</tbody></table></div>';
-				return;
-			}
+			$rendered = self::render_player_fields( $data );
 		}
 
-		echo '<p>' . esc_html__( 'Keine Spielerdaten verfügbar.', 'swiss-floorball-api' ) . '</p>';
+		if ( ! $rendered ) {
+			echo '<p>' . esc_html__( 'Keine Spielerdaten verfügbar.', 'swiss-floorball-api' ) . '</p>';
+		}
+	}
+
+	/**
+	 * Output opening of the player profile table.
+	 *
+	 * @since 2.0.1
+	 * @return void
+	 */
+	private static function open_player_table() {
+		echo '<div class="sfa-table-wrap"><table class="sfa-data-table"><caption class="sfa-visually-hidden">' . esc_html__( 'Spielerprofil', 'swiss-floorball-api' ) . '</caption><tbody>';
+	}
+
+	/**
+	 * Render the player profile from the grid regions of the response.
+	 *
+	 * @since 2.0.1
+	 * @param array $regions Regions with rows of cells.
+	 * @return bool Whether a table was rendered.
+	 */
+	private static function render_player_regions( $regions ) {
+		$rendered = false;
+		foreach ( $regions as $region ) {
+			if ( empty( $region['rows'] ) || ! is_array( $region['rows'] ) ) {
+				continue;
+			}
+			if ( ! $rendered ) {
+				self::open_player_table();
+				$rendered = true;
+			}
+			foreach ( $region['rows'] as $row ) {
+				self::render_player_row( $row );
+			}
+		}
+		if ( $rendered ) {
+			echo '</tbody></table></div>';
+		}
+
+		return $rendered;
+	}
+
+	/**
+	 * Render one row of the player profile, skipping rows without cells.
+	 *
+	 * @since 2.0.1
+	 * @param array $row Row with cells.
+	 * @return void
+	 */
+	private static function render_player_row( $row ) {
+		if ( empty( $row['cells'] ) || ! is_array( $row['cells'] ) ) {
+			return;
+		}
+		echo '<tr>';
+		foreach ( $row['cells'] as $cell ) {
+			$text = '';
+			if ( isset( $cell['text'] ) && is_array( $cell['text'] ) ) {
+				$text = implode( ' ', array_filter( $cell['text'], 'is_scalar' ) );
+			}
+			echo '<td>' . esc_html( $text ) . '</td>';
+		}
+		echo '</tr>';
+	}
+
+	/**
+	 * Render the player profile from a flat list of fields.
+	 *
+	 * @since 2.0.1
+	 * @param array $data Field name => value pairs.
+	 * @return bool Whether a table was rendered.
+	 */
+	private static function render_player_fields( $data ) {
+		$lines = array();
+		foreach ( $data as $key => $value ) {
+			if ( is_scalar( $value ) && '' !== (string) $value ) {
+				$lines[ $key ] = $value;
+			}
+		}
+		if ( empty( $lines ) ) {
+			return false;
+		}
+
+		self::open_player_table();
+		foreach ( $lines as $key => $value ) {
+			echo '<tr><th scope="row">' . esc_html( str_replace( '_', ' ', (string) $key ) ) . '</th><td>' . esc_html( (string) $value ) . '</td></tr>';
+		}
+		echo '</tbody></table></div>';
+
+		return true;
 	}
 
 	/**
