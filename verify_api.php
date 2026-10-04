@@ -29,9 +29,14 @@ error_reporting( E_ALL );
 class WP_Error {
 	public $code;
 	public $message;
-	public function __construct( $code = '', $message = '' ) {
+	public $data;
+	public function __construct( $code = '', $message = '', $data = '' ) {
 		$this->code    = $code;
 		$this->message = $message;
+		$this->data    = $data;
+	}
+	public function get_error_data() {
+		return $this->data;
 	}
 	public function get_error_message() {
 		return $this->message;
@@ -66,6 +71,9 @@ function sanitize_text_field( $t ) {
 define( 'DAY_IN_SECONDS', 86400 );
 function current_time( $type ) {
 	return gmdate( 'mysql' === $type ? 'Y-m-d H:i:s' : $type );
+}
+function current_user_can( $capability ) {
+	return true;
 }
 function absint( $n ) {
 	return abs( (int) $n );
@@ -304,6 +312,15 @@ check( 'clubs/{id}/statistics: Struktur', function () use ( $client, $club_id ) 
 check( 'Client: HTTP-Fehler liefert WP_Error statt Daten', function () use ( $client ) {
 	$r = $client->fetch_data( 'rankings', array( 'season' => 2025, 'league' => 2, 'game_class' => 11, 'group' => 'Gibt es nicht' ) );
 	ensure( is_wp_error( $r ), 'WP_Error erwartet' );
+} );
+
+check( 'Client: API-Fehlermeldung wird für Admins angezeigt', function () use ( $client ) {
+	$r = $client->fetch_data( 'rankings', array( 'season' => 2025, 'league' => 2, 'game_class' => 11, 'group' => 'Gibt es nicht' ) );
+	ensure( is_wp_error( $r ), 'WP_Error erwartet' );
+	ob_start();
+	Swiss_Floorball_API_Display::render_fetch_error( $r );
+	$html = ob_get_clean();
+	ensure( false !== strpos( $html, 'Antwort der API' ) && false !== strpos( $html, 'Gibt es nicht' ), 'API-Meldung fehlt in der Ausgabe: ' . $html );
 } );
 
 check( 'Client: zweiter Aufruf kommt aus dem Cache', function () use ( $client ) {

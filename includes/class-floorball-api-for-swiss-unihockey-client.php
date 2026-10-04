@@ -260,7 +260,10 @@ class Swiss_Floorball_API_Client {
 			return new WP_Error( 'swfl_endpoint_unavailable', 'Endpoint not available in the free API' );
 		}
 		if ( 200 !== $code ) {
-			return new WP_Error( 'api_error', 'API returned status code ' . $code );
+			// Keep the API's own message (e.g. unknown group) so administrators can see why a request failed.
+			$body    = json_decode( wp_remote_retrieve_body( $response ), true );
+			$details = is_array( $body ) && isset( $body['error'] ) && is_string( $body['error'] ) ? $body['error'] : '';
+			return new WP_Error( 'api_error', 'API returned status code ' . $code, array( 'api_message' => $details ) );
 		}
 
 		$data = json_decode( wp_remote_retrieve_body( $response ), true );
