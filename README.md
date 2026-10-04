@@ -23,7 +23,7 @@
 **Requires at least:** 5.0  
 **Tested up to:** 7.1  
 **Requires PHP:** 7.4  
-**Stable tag:** 2.0.0  
+**Stable tag:** 2.0.1  
 **License:** GPLv2 or later  
 **License URI:** https://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -237,10 +237,11 @@ Version 2.0.0 contains breaking changes (API source, calendar feed, shortcode at
 4. Check custom CSS, or set *Table style* to `classic`.
 
 ## 📜 Changelog
-### Unreleased
+### 2.0.1 (2026-10-04)
 * Fix: Plugin Check error: `wp_unique_id()` needs WordPress 5.0.3 but the plugin supports 5.0, replaced by a local counter
 * Fix: phpcs warnings for the unused `$is_backend` parameters, kept for backwards compatibility
 * Fix: Plugin guidelines: the bundled Roboto font is documented in `THIRD-PARTY.md` and ships with its licence (`fonts/OFL.txt`); the external services section now discloses the Cloudinary image host (team logos, player portraits) and links to OpenStreetMap and the Swiss Unihockey app; added a disclaimer that the plugin is not affiliated with Swiss Unihockey or Floorball Schweiz
+* Change: Internal refactoring without functional change: the large display, widget, admin and public classes are split into smaller topic classes (SonarCloud findings)
 ### 2.0.0 (2026-10-02)
 * **Breaking:** API source switch. `api-v2.swissunihockey.ch` is no longer used; the default is the free API (`wc.swissunihockey.ch`), optionally the Partner API (`office.swissunihockey.ch`, API key + secret). Leagues, groups, topscorers, player profiles, national players and game events need the Partner API. See [docs/migration.md](docs/migration.md)
 * **Breaking:** Calendar subscriptions: the old calendar export is gone. The plugin serves its own iCalendar feed at `/wp-json/swfl/v1/calendar`; previously subscribed URLs must be subscribed again
