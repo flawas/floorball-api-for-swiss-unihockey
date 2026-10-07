@@ -5,8 +5,8 @@
  * @link       https://flaviowaser.ch
  * @since      2.0.1
  *
- * @package    Swiss_Floorball_Api
- * @subpackage Swiss_Floorball_Api/public
+ * @package    SWFL
+ * @subpackage SWFL_Plugin/public
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -16,14 +16,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Enqueues the public styles and scripts, only on pages that use a plugin shortcode.
  *
- * Split out of Swiss_Floorball_Api_Public, which keeps the shortcode callbacks.
+ * Split out of SWFL_Public, which keeps the shortcode callbacks.
  *
  * @since      2.0.1
- * @package    Swiss_Floorball_Api
- * @subpackage Swiss_Floorball_Api/public
+ * @package    SWFL
+ * @subpackage SWFL_Plugin/public
  * @author     Flavio Waser <kontakt@flawas.ch>
  */
-class Swiss_Floorball_Api_Public_Assets {
+class SWFL_Public_Assets {
 
 	/**
 	 * The ID of this plugin.
@@ -98,12 +98,12 @@ class Swiss_Floorball_Api_Public_Assets {
 		if ( ! $this->page_has_shortcode() ) {
 			return;
 		}
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/floorball-api-for-swiss-unihockey-public.css', array(), $this->version, 'all' );
-		$seed_css = Swiss_Floorball_API_Theme::get_seed_css();
+		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/swfl-public.css', array(), $this->version, 'all' );
+		$seed_css = SWFL_Theme::get_seed_css();
 		if ( '' !== $seed_css ) {
 			wp_add_inline_style( $this->plugin_name, $seed_css );
 		}
-		$table_css = Swiss_Floorball_API_Theme::get_table_css();
+		$table_css = SWFL_Theme::get_table_css();
 		if ( '' !== $table_css ) {
 			wp_add_inline_style( $this->plugin_name, $table_css );
 		}
@@ -118,7 +118,7 @@ class Swiss_Floorball_Api_Public_Assets {
 		if ( ! $this->page_has_shortcode() ) {
 			return;
 		}
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/floorball-api-for-swiss-unihockey-public.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/swfl-public.js', array( 'jquery' ), $this->version, false );
 		wp_enqueue_script( $this->plugin_name . '-widgets', plugin_dir_url( __FILE__ ) . 'js/swfl-widgets.js', array(), $this->version, true );
 		wp_localize_script(
 			$this->plugin_name . '-widgets',

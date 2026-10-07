@@ -5,8 +5,8 @@
  * @link       https://flaviowaser.ch
  * @since      2.0.1
  *
- * @package    Swiss_Floorball_Api
- * @subpackage Swiss_Floorball_Api/includes
+ * @package    SWFL
+ * @subpackage SWFL_Plugin/includes
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -16,14 +16,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Renders game details, rankings, player data and topscorers from the Swiss Unihockey API.
  *
- * Split out of Swiss_Floorball_API_Display, which keeps the club, league and lookup lists.
+ * Split out of SWFL_Display, which keeps the club, league and lookup lists.
  *
  * @since      2.0.1
- * @package    Swiss_Floorball_Api
- * @subpackage Swiss_Floorball_Api/includes
+ * @package    SWFL
+ * @subpackage SWFL_Plugin/includes
  * @author     Flavio Waser <kontakt@flawas.ch>
  */
-class Swiss_Floorball_API_Display_Stats {
+class SWFL_Display_Stats {
 
 	/**
 	 * Get team details image.
@@ -32,7 +32,7 @@ class Swiss_Floorball_API_Display_Stats {
 	 * @return string
 	 */
 	public static function get_teamdetails_image( $team_id ) {
-		$client       = Swiss_Floorball_API_Display::get_client();
+		$client       = SWFL_Display::get_client();
 		$api_response = $client->fetch_data( 'teams/' . $team_id );
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['data']['regions'][0]['rows'][0]['cells'][1]['image']['url'] ) ) {
@@ -49,7 +49,7 @@ class Swiss_Floorball_API_Display_Stats {
 	 * @return array|false
 	 */
 	public static function get_gamedetails( $game_id ) {
-		$client       = Swiss_Floorball_API_Display::get_client();
+		$client       = SWFL_Display::get_client();
 		$api_response = $client->fetch_data( 'games/' . $game_id );
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['data']['regions'][0]['rows'][0]['cells'] ) ) {
@@ -91,11 +91,11 @@ class Swiss_Floorball_API_Display_Stats {
 	 * @return void
 	 */
 	public static function render_game_details_table( $game_id ) {
-		$client       = Swiss_Floorball_API_Display::get_client();
+		$client       = SWFL_Display::get_client();
 		$api_response = $client->fetch_data( 'games/' . $game_id );
 
 		if ( is_wp_error( $api_response ) ) {
-			Swiss_Floorball_API_Display::render_fetch_error( $api_response );
+			SWFL_Display::render_fetch_error( $api_response );
 		} elseif ( isset( $api_response['data'] ) ) {
 			self::render_details_card( $api_response );
 		} else {
@@ -222,7 +222,7 @@ class Swiss_Floorball_API_Display_Stats {
 	 * @return void
 	 */
 	public static function render_team_ranking( $season, $league, $game_class, $group ) {
-		$client       = Swiss_Floorball_API_Display::get_client();
+		$client       = SWFL_Display::get_client();
 		$api_response = $client->fetch_data(
 			'rankings',
 			array(
@@ -234,7 +234,7 @@ class Swiss_Floorball_API_Display_Stats {
 		);
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['data']['regions'][0]['rows'] ) ) {
-			Swiss_Floorball_API_Display::render_fetch_error( $api_response );
+			SWFL_Display::render_fetch_error( $api_response );
 			return;
 		}
 
@@ -242,7 +242,7 @@ class Swiss_Floorball_API_Display_Stats {
 		$title = isset( $api_response['data']['title'] ) ? $api_response['data']['title'] : 'Rangliste';
 
 		?>
-		<h3 class="sfa-section-title"><?php Swiss_Floorball_Api_Icons::render( 'chart' ); ?> <?php echo esc_html( $title ); ?></h3>
+		<h3 class="sfa-section-title"><?php SWFL_Icons::render( 'chart' ); ?> <?php echo esc_html( $title ); ?></h3>
 		<div class="sfa-table-wrap"><table class="sfa-data-table">
 			<caption class="sfa-visually-hidden"><?php esc_html_e( 'Rangliste', 'swiss-floorball-api' ); ?></caption>
 			<thead>
@@ -299,11 +299,11 @@ class Swiss_Floorball_API_Display_Stats {
 	 * @return void
 	 */
 	public static function render_player( $player_id ) {
-		$client       = Swiss_Floorball_API_Display::get_client();
+		$client       = SWFL_Display::get_client();
 		$api_response = $client->fetch_data( 'players/' . $player_id );
 
 		if ( is_wp_error( $api_response ) ) {
-			Swiss_Floorball_API_Display::render_fetch_error( $api_response );
+			SWFL_Display::render_fetch_error( $api_response );
 			return;
 		}
 
@@ -415,11 +415,11 @@ class Swiss_Floorball_API_Display_Stats {
 	 * @return void
 	 */
 	public static function render_national_players() {
-		$client       = Swiss_Floorball_API_Display::get_client();
+		$client       = SWFL_Display::get_client();
 		$api_response = $client->fetch_data( 'national_players' );
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['data']['regions'][0]['rows'] ) ) {
-			Swiss_Floorball_API_Display::render_fetch_error( $api_response );
+			SWFL_Display::render_fetch_error( $api_response );
 			return;
 		}
 
@@ -427,7 +427,7 @@ class Swiss_Floorball_API_Display_Stats {
 		$title = isset( $api_response['data']['title'] ) ? $api_response['data']['title'] : 'Nationalspieler';
 
 		?>
-		<h2 class="sfa-section-title"><?php Swiss_Floorball_Api_Icons::render( 'person' ); ?> <?php echo esc_html( $title ); ?></h2>
+		<h2 class="sfa-section-title"><?php SWFL_Icons::render( 'person' ); ?> <?php echo esc_html( $title ); ?></h2>
 		<div class="sfa-table-wrap"><table class="sfa-data-table">
 			<caption class="sfa-visually-hidden"><?php esc_html_e( 'Nationalspieler', 'swiss-floorball-api' ); ?></caption>
 			<thead>
@@ -466,7 +466,7 @@ class Swiss_Floorball_API_Display_Stats {
 	 * @return void
 	 */
 	public static function render_topscorers( $season, $league, $game_class ) {
-		$client       = Swiss_Floorball_API_Display::get_client();
+		$client       = SWFL_Display::get_client();
 		$api_response = $client->fetch_data(
 			'topscorers/su',
 			array(
@@ -477,7 +477,7 @@ class Swiss_Floorball_API_Display_Stats {
 		);
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['data']['regions'][0]['rows'] ) ) {
-			Swiss_Floorball_API_Display::render_fetch_error( $api_response );
+			SWFL_Display::render_fetch_error( $api_response );
 			return;
 		}
 
@@ -485,7 +485,7 @@ class Swiss_Floorball_API_Display_Stats {
 		$title = isset( $api_response['data']['title'] ) ? $api_response['data']['title'] : 'Topscorer';
 
 		?>
-		<h3 class="sfa-section-title"><?php Swiss_Floorball_Api_Icons::render( 'trophy' ); ?> <?php echo esc_html( $title ); ?></h3>
+		<h3 class="sfa-section-title"><?php SWFL_Icons::render( 'trophy' ); ?> <?php echo esc_html( $title ); ?></h3>
 		<div class="sfa-table-wrap"><table class="sfa-data-table">
 			<caption class="sfa-visually-hidden"><?php esc_html_e( 'Topscorer', 'swiss-floorball-api' ); ?></caption>
 			<thead>
@@ -540,11 +540,11 @@ class Swiss_Floorball_API_Display_Stats {
 	 * @return void
 	 */
 	public static function render_game_events( $game_id ) {
-		$client       = Swiss_Floorball_API_Display::get_client();
+		$client       = SWFL_Display::get_client();
 		$api_response = $client->fetch_data( 'game_events/' . $game_id );
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['data']['regions'][0]['rows'] ) ) {
-			Swiss_Floorball_API_Display::render_fetch_error( $api_response );
+			SWFL_Display::render_fetch_error( $api_response );
 			return;
 		}
 

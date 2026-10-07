@@ -20,13 +20,13 @@ if ( ! current_user_can( 'manage_options' ) ) {
 }
 ?>
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
-<div class="wrap sfa-admin-wrap" data-sfa-theme="<?php echo esc_attr( Swiss_Floorball_API_Theme::get_theme() ); ?>">
+<div class="wrap sfa-admin-wrap" data-sfa-theme="<?php echo esc_attr( SWFL_Theme::get_theme() ); ?>">
 	<div class="sfa-admin-header">
-		<h1><?php Swiss_Floorball_Api_Icons::render( 'trophy' ); ?> Ligen</h1>
+		<h1><?php SWFL_Icons::render( 'trophy' ); ?> Ligen</h1>
 		<p>Übersicht aller verfügbaren Ligen</p>
 	</div>
 
 	<div class="sfa-table-container">
-		<?php Swiss_Floorball_API_Display::render_leagues(); ?>
+		<?php SWFL_Display::render_leagues(); ?>
 	</div>
 </div>

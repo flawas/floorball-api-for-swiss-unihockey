@@ -23,7 +23,7 @@
 **Requires at least:** 5.0  
 **Tested up to:** 7.1  
 **Requires PHP:** 7.4  
-**Stable tag:** 2.0.1  
+**Stable tag:** 2.0.2  
 **License:** GPLv2 or later  
 **License URI:** https://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -69,17 +69,17 @@ The free API is a read-only whitelist. Shortcodes that need an endpoint it does 
 
 | Setting | Description |
 |---------|-------------|
-| API source | Where the data comes from (`swissfloorball_api_source`). **Free API** (default, `wc.swissunihockey.ch`) or **Partner API** (`office.swissunihockey.ch`, needs credentials). See the table below for what each source provides. |
-| Partner API key / secret | Credentials for the Partner API (`swissfloorball_api_key`, `swissfloorball_api_secret`). Only used when the source is *Partner API*; the plugin exchanges them for a short-lived auth token. |
-| Swiss Floorball Club Number | Your club's ID (`swissfloorball_club_number`), used by the club shortcodes. |
-| Swiss Floorball Club Name | Filled in automatically from the API when you save a new Club ID (`swissfloorball_club_name`). |
-| Swiss Floorball Aktuelle Saison | Season as a year, e.g. `2025` (`swissfloorball_actual_season`). Used when a shortcode has no `season` attribute. |
+| API source | Where the data comes from (`swfl_api_source`). **Free API** (default, `wc.swissunihockey.ch`) or **Partner API** (`office.swissunihockey.ch`, needs credentials). See the table below for what each source provides. |
+| Partner API key / secret | Credentials for the Partner API (`swfl_api_key`, `swfl_api_secret`). Only used when the source is *Partner API*; the plugin exchanges them for a short-lived auth token. |
+| Swiss Floorball Club Number | Your club's ID (`swfl_club_number`), used by the club shortcodes. |
+| Swiss Floorball Club Name | Filled in automatically from the API when you save a new Club ID (`swfl_club_name`). |
+| Swiss Floorball Aktuelle Saison | Season as a year, e.g. `2025` (`swfl_actual_season`). Used when a shortcode has no `season` attribute. |
 | Show icons | Show or hide all icons in the admin and in the shortcodes (on by default). |
-| Theme | Controls whether the plugin uses light, dark, or auto (follows system preference) colors (`swissfloorball_theme`). Option values are `auto` (default), `light`, or `dark`. |
-| Seed colour | Optional brand colour as hex, e.g. `#0066cc` (`swissfloorball_seed_color`). Primary and secondary colours are derived from it for light and dark mode with AA text contrast. Leave empty for the default colours. |
-| Table style | `flat` (default: no border or shadow, thin row dividers, accent line under the header) or `classic` (the previous boxed look) (`swissfloorball_table_style`). |
-| Table colours | Optional hex colours picked with the WordPress colour picker: accent (header line), header text, row divider and row highlight (`swissfloorball_table_{accent,header,divider,highlight}_color`). Accent and header text are adjusted to keep AA contrast in light and dark mode. Empty uses the defaults derived from the seed colour. |
-| Striped table rows | Subtle zebra striping for table rows (`swissfloorball_table_striped`, off by default). |
+| Theme | Controls whether the plugin uses light, dark, or auto (follows system preference) colors (`swfl_theme`). Option values are `auto` (default), `light`, or `dark`. |
+| Seed colour | Optional brand colour as hex, e.g. `#0066cc` (`swfl_seed_color`). Primary and secondary colours are derived from it for light and dark mode with AA text contrast. Leave empty for the default colours. |
+| Table style | `flat` (default: no border or shadow, thin row dividers, accent line under the header) or `classic` (the previous boxed look) (`swfl_table_style`). |
+| Table colours | Optional hex colours picked with the WordPress colour picker: accent (header line), header text, row divider and row highlight (`swfl_table_{accent,header,divider,highlight}_color`). Accent and header text are adjusted to keep AA contrast in light and dark mode. Empty uses the defaults derived from the seed colour. |
+| Striped table rows | Subtle zebra striping for table rows (`swfl_table_striped`, off by default). |
 | API request timeout (seconds) | Seconds to wait for the API, 1-30 (default 3). |
 
 The admin interface is currently in German. Under **Cache Verwaltung** the button **Cache leeren** removes all cached API responses. Changing the Club Number clears the cache automatically.
@@ -146,7 +146,7 @@ The plugin uses standard CSS classes prefixed with `.sfa-`, scoped to `.swiss-fl
 
 The plugin ships inline SVG icons from [Material Symbols](https://github.com/google/material-design-icons) (Outlined, filled, Apache License 2.0, see `THIRD-PARTY.md`). No fonts or external requests are used.
 
-* **Setting:** Show or hide all icons under **Settings > Swiss Floorball API > Show icons** (option `swissfloorball_show_icons`, on by default).
+* **Setting:** Show or hide all icons under **Settings > Swiss Floorball API > Show icons** (option `swfl_show_icons`, on by default).
 * **Styling:** Use the CSS variables `--swfl-icon-size` and `--swfl-icon-color` on `.swiss-floorball-plugin`.
 * **Filter:** `swfl_icon_svg` lets you replace an icon. The result is sanitized with `wp_kses()` (only `svg`, `path` and `span` with a fixed set of attributes are kept).
 
@@ -237,7 +237,11 @@ Version 2.0.0 contains breaking changes (API source, calendar feed, shortcode at
 4. Check custom CSS, or set *Table style* to `classic`.
 
 ## 📜 Changelog
-### Unreleased
+### 2.0.2 (2026-10-07)
+* Fix: WordPress.org plugin review: all PHP globals now use the single prefix `swfl`. Options `swissfloorball_*` became `swfl_*` (existing settings are copied automatically on the first request after the update, `uninstall.php` removes both), classes `Swiss_Floorball_Api*` became `SWFL_*`, the constant `SWISS_FLOORBALL_API_VERSION` became `SWFL_VERSION` and the JS global `sfaAutosave` became `swflAutosave`. Custom code that reads `swissfloorball_*` options or calls the old class names must be adjusted
+* Change: The main file is now `swiss-floorball-api.php` and all other files are named `class-swfl-*.php` / `swfl-*`. The old main file stays as a small loader that moves the activation to the new file; if the plugin shows as deactivated after a manual single update, activate it once. Admin page URLs changed to `admin.php?page=swiss-floorball-api…`
+* Fix: `uninstall.php` now also removes the *Show icons* option
+* Fix: Every registered setting has an explicit type and sanitize callback; the Partner API secret keeps all printable characters instead of going through `sanitize_text_field()`
 * Change: When data cannot be loaded, administrators now also see the reason returned by the API (e.g. `No such group with name "Gruppe 4".`); visitors still see the generic message
 ### 2.0.1 (2026-10-04)
 * Fix: Plugin Check error: `wp_unique_id()` needs WordPress 5.0.3 but the plugin supports 5.0, replaced by a local counter

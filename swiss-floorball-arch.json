@@ -47,7 +47,7 @@
     {
       "id": "core_orch",
       "type": "backend",
-      "label": "Swiss_Floorball_Api",
+      "label": "SWFL_Plugin",
       "pos": [460, 265],
       "size": [152, 52]
     },
@@ -61,28 +61,28 @@
     {
       "id": "admin_cls",
       "type": "backend",
-      "label": "Swiss_Floorball_Api_Admin",
+      "label": "SWFL_Admin",
       "pos": [678, 175],
       "size": [188, 52]
     },
     {
       "id": "public_cls",
       "type": "frontend",
-      "label": "Swiss_Floorball_Api_Public",
+      "label": "SWFL_Public",
       "pos": [678, 370],
       "size": [188, 52]
     },
     {
       "id": "display",
       "type": "backend",
-      "label": "Swiss_Floorball_API_Display",
+      "label": "SWFL_Display",
       "pos": [930, 265],
       "size": [194, 58]
     },
     {
       "id": "api_client",
       "type": "backend",
-      "label": "Swiss_Floorball_API_Client",
+      "label": "SWFL_Client",
       "pos": [1182, 265],
       "size": [188, 58]
     },
@@ -224,14 +224,14 @@
       "dot": "cyan",
       "title": "Plugin Bootstrap & Core Orchestrator",
       "items": [
-        "Entry: floorball-api-for-swiss-unihockey.php — defines SWISS_FLOORBALL_API_VERSION",
-        "Swiss_Floorball_Api init sequence: load_dependencies() → set_locale() → define_admin_hooks() → define_public_hooks() → run()",
+        "Entry: swiss-floorball-api.php — defines SWFL_VERSION",
+        "SWFL_Plugin init sequence: load_dependencies() → set_locale() → define_admin_hooks() → define_public_hooks() → run()",
         "Api_Loader buffers all add_action / add_filter calls then executes them all at once on run()"
       ]
     },
     {
       "dot": "violet",
-      "title": "Swiss_Floorball_Api_Public — 13 Shortcodes",
+      "title": "SWFL_Public — 13 Shortcodes",
       "items": [
         "swfl-club-teams · swfl-club-games · swfl-team-games · swfl-clubs",
         "swfl-calendars · swfl-cups · swfl-groups · swfl-teams",
@@ -241,16 +241,16 @@
     },
     {
       "dot": "amber",
-      "title": "Swiss_Floorball_API_Display — God Node (38 edges)",
+      "title": "SWFL_Display — God Node (38 edges)",
       "items": [
         "All render_*() methods are static — render_club_games, render_rankings, render_calendars, render_topscorers, render_game_events, render_club_games_cards …",
         "Lazy-initialises API_Client singleton via private get_client()",
-        "Reads swissfloorball_club_number and swissfloorball_actual_season from wp_options"
+        "Reads swfl_club_number and swfl_actual_season from wp_options"
       ]
     },
     {
       "dot": "rose",
-      "title": "Swiss_Floorball_API_Client — Transient Cache",
+      "title": "SWFL_Client — Transient Cache",
       "items": [
         "Cache key: sfa_ + md5(full URL including all query args) — stored in WP Transients",
         "Default TTL: 3600 s (1 hour); configurable per fetch_data() call",
@@ -260,9 +260,9 @@
     },
     {
       "dot": "emerald",
-      "title": "Swiss_Floorball_Api_Admin — Admin Pages",
+      "title": "SWFL_Admin — Admin Pages",
       "items": [
-        "Settings page: configure swissfloorball_club_number and swissfloorball_actual_season",
+        "Settings page: configure swfl_club_number and swfl_actual_season",
         "Club Teams · Club Games / Matches detail view · Shortcode Reference",
         "Helper browsers (read-only): Leagues, Seasons, Teams",
         "CSS / JS enqueued via admin_enqueue_scripts hook only in WP admin context"

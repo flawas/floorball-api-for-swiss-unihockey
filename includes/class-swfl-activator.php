@@ -5,8 +5,8 @@
  * @link       https://flaviowaser.ch
  * @since      1.0.0
  *
- * @package    Swiss_Floorball_Api
- * @subpackage Swiss_Floorball_Api/includes
+ * @package    SWFL
+ * @subpackage SWFL_Plugin/includes
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -19,11 +19,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  * This class defines all code necessary to run during the plugin's activation.
  *
  * @since      1.0.0
- * @package    Swiss_Floorball_Api
- * @subpackage Swiss_Floorball_Api/includes
+ * @package    SWFL
+ * @subpackage SWFL_Plugin/includes
  * @author     Flavio Waser <kontakt@flawas.ch>
  */
-class Swiss_Floorball_Api_Activator {
+class SWFL_Activator {
 
 	/**
 	 * Short Description. (use period)

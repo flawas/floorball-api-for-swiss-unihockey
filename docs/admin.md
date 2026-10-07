@@ -1,6 +1,6 @@
 # Administration
 
-Das Menü «Swiss Floorball» (Capability `manage_options`, Menüposition 26) wird in `admin/class-floorball-api-for-swiss-unihockey-admin.php` (`addPluginAdminMenu()`) angelegt.
+Das Menü «Swiss Floorball» (Capability `manage_options`, Menüposition 26) wird in `admin/class-swfl-admin.php` (`addPluginAdminMenu()`) angelegt.
 
 ## Einstellungen
 
@@ -8,19 +8,19 @@ Untermenü «Einstellungen» (Gruppe `swfl_general_settings`). Gespeichert als W
 
 | Option | Bedeutung | Bereinigung |
 |---|---|---|
-| `swissfloorball_club_number` | Club-Nummer (ID) | `absint`; bei Änderung wird der API-Cache geleert und der Club-Name automatisch geholt |
-| `swissfloorball_club_name` | Club-Name, nur Anzeige (wird automatisch gesetzt) | – |
-| `swissfloorball_actual_season` | Aktuelle Saison als Jahreszahl, z. B. `2025` | `absint` |
-| `swissfloorball_show_icons` | Icons anzeigen (Standard `1`) | `'1'` oder `'0'` |
-| `swissfloorball_request_timeout` | API-Timeout in Sekunden (1–30, Standard `3`) | `absint`, begrenzt auf 1–30; 0/ungültig → `3` |
-| `swissfloorball_api_source` | API-Quelle: `free` (Standard) oder `partner` | nur diese zwei Werte, sonst `free`; leert das Auth-Token |
-| `swissfloorball_api_key` | Partner-API: API-Key | `sanitize_text_field`; leert das Auth-Token |
-| `swissfloorball_api_secret` | Partner-API: API-Secret (Passwortfeld) | `sanitize_text_field`; leert das Auth-Token |
-| `swissfloorball_theme` | `auto` (Standard), `light`, `dark` | Whitelist |
-| `swissfloorball_seed_color` | Markenfarbe (Hex), leer = Standardfarben | Hex-Prüfung |
-| `swissfloorball_table_style` | `flat` (Standard) oder `classic` | Whitelist |
-| `swissfloorball_table_striped` | Zebra-Streifen (Standard aus) | `'1'` oder `'0'` |
-| `swissfloorball_table_{accent,header,divider,highlight}_color` | Tabellenfarben (Farbwähler) | Hex-Prüfung |
+| `swfl_club_number` | Club-Nummer (ID) | `absint`; bei Änderung wird der API-Cache geleert und der Club-Name automatisch geholt |
+| `swfl_club_name` | Club-Name, nur Anzeige (wird automatisch gesetzt) | – |
+| `swfl_actual_season` | Aktuelle Saison als Jahreszahl, z. B. `2025` | `absint` |
+| `swfl_show_icons` | Icons anzeigen (Standard `1`) | `'1'` oder `'0'` |
+| `swfl_request_timeout` | API-Timeout in Sekunden (1–30, Standard `3`) | `absint`, begrenzt auf 1–30; 0/ungültig → `3` |
+| `swfl_api_source` | API-Quelle: `free` (Standard) oder `partner` | nur diese zwei Werte, sonst `free`; leert das Auth-Token |
+| `swfl_api_key` | Partner-API: API-Key | `sanitize_text_field`; leert das Auth-Token |
+| `swfl_api_secret` | Partner-API: API-Secret (Passwortfeld) | nur Steuerzeichen und umgebende Leerzeichen entfernt (`sanitize_text_field` würde gültige Zeichen verändern); leert das Auth-Token |
+| `swfl_theme` | `auto` (Standard), `light`, `dark` | Whitelist |
+| `swfl_seed_color` | Markenfarbe (Hex), leer = Standardfarben | Hex-Prüfung |
+| `swfl_table_style` | `flat` (Standard) oder `classic` | Whitelist |
+| `swfl_table_striped` | Zebra-Streifen (Standard aus) | `'1'` oder `'0'` |
+| `swfl_table_{accent,header,divider,highlight}_color` | Tabellenfarben (Farbwähler) | Hex-Prüfung |
 
 ![Einstellungen mit Free-API: die Partner-Felder sind ausgeblendet](media/admin-settings.png)
 
@@ -62,7 +62,7 @@ Beispiele der Helper-Seiten:
 
 ![Seite Shortcodes mit Übersicht aller Shortcodes](media/admin-shortcodes.png)
 
-Die Seiten nutzen dieselben `Swiss_Floorball_API_Display::render_*`-Methoden wie die Shortcodes (siehe [Architektur](architecture.md)).
+Die Seiten nutzen dieselben `SWFL_Display::render_*`-Methoden wie die Shortcodes (siehe [Architektur](architecture.md)).
 
 ## IDs finden
 

@@ -4,8 +4,8 @@
 
 | Filter | Datei | Parameter | Zweck |
 |---|---|---|---|
-| `swfl_request_timeout` | `includes/class-floorball-api-for-swiss-unihockey-client.php` | `$timeout` (Standard: Option `swissfloorball_request_timeout`, Standard `3`, Sekunden), `$url` | Timeout der API-Anfrage; Minimum 1 |
-| `swfl_icon_svg` | `includes/class-floorball-api-for-swiss-unihockey-icons.php` | `$svg`, `$name`, `$args` | SVG-Markup eines Icons ändern; Ergebnis wird erneut mit `wp_kses()` gefiltert |
+| `swfl_request_timeout` | `includes/class-swfl-client.php` | `$timeout` (Standard: Option `swfl_request_timeout`, Standard `3`, Sekunden), `$url` | Timeout der API-Anfrage; Minimum 1 |
+| `swfl_icon_svg` | `includes/class-swfl-icons.php` | `$svg`, `$name`, `$args` | SVG-Markup eines Icons ändern; Ergebnis wird erneut mit `wp_kses()` gefiltert |
 
 ```php
 add_filter(
@@ -22,9 +22,9 @@ Eigene `do_action`-Hooks gibt es nicht.
 
 ## Erweiterung
 
-- Neue API-Aufrufe immer über `Swiss_Floorball_API_Client::fetch_data()`, nie direkt `wp_remote_get`. Der Client wählt die Quelle (Free/Partner) selbst. Prüfe bei neuen Endpunkten, ob die Free-API sie anbietet; sonst zeigt `swfl_endpoint_unavailable` den Partner-Hinweis.
-- Neue Ausgabe als statische `render_*`-Methode in `Swiss_Floorball_API_Display`; Ausgabe escapen, Strings mit Textdomain `swiss-floorball-api`.
-- Interaktive Widgets (Navigation per JavaScript) liegen in `Swiss_Floorball_API_Widgets` mit REST-Route (`swfl/v1`) und `public/js/swfl-widgets.js`.
+- Neue API-Aufrufe immer über `SWFL_Client::fetch_data()`, nie direkt `wp_remote_get`. Der Client wählt die Quelle (Free/Partner) selbst. Prüfe bei neuen Endpunkten, ob die Free-API sie anbietet; sonst zeigt `swfl_endpoint_unavailable` den Partner-Hinweis.
+- Neue Ausgabe als statische `render_*`-Methode in `SWFL_Display`; Ausgabe escapen, Strings mit Textdomain `swiss-floorball-api`.
+- Interaktive Widgets (Navigation per JavaScript) liegen in `SWFL_Widgets` mit REST-Route (`swfl/v1`) und `public/js/swfl-widgets.js`.
 - Neuer Shortcode: in `register_shortcodes()` registrieren, Callback mit `shortcode_atts()` und `absint()`, und den Namen in `page_has_shortcode()` aufnehmen (sonst werden Assets nicht geladen).
 
 ## Lokale Entwicklung

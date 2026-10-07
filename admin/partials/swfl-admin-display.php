@@ -7,8 +7,8 @@
  * @link       https://flaviowaser.ch
  * @since      1.0.0
  *
- * @package    Swiss_Floorball_Api
- * @subpackage Swiss_Floorball_Api/admin/partials
+ * @package    SWFL
+ * @subpackage SWFL_Plugin/admin/partials
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -21,10 +21,10 @@ if ( ! current_user_can( 'manage_options' ) ) {
 ?>
 
 <?php
-$swfl_club_number = get_option( 'swissfloorball_club_number' );
-$swfl_club_name   = get_option( 'swissfloorball_club_name' );
-$swfl_season      = Swiss_Floorball_API_Display::get_current_season();
-$swfl_api_source  = Swiss_Floorball_API_Client::get_source();
+$swfl_club_number = get_option( 'swfl_club_number' );
+$swfl_club_name   = get_option( 'swfl_club_name' );
+$swfl_season      = SWFL_Display::get_current_season();
+$swfl_api_source  = SWFL_Client::get_source();
 $swfl_configured  = $swfl_club_number && $swfl_season;
 
 $swfl_stats = array(
@@ -44,17 +44,17 @@ $swfl_tiles = array(
 	array( 'settings', __( 'Einstellungen', 'swiss-floorball-api' ), __( 'API, Club, Design und Cache', 'swiss-floorball-api' ), 'settings' ),
 );
 ?>
-<div class="wrap sfa-admin-wrap" data-sfa-theme="<?php echo esc_attr( Swiss_Floorball_API_Theme::get_theme() ); ?>">
+<div class="wrap sfa-admin-wrap" data-sfa-theme="<?php echo esc_attr( SWFL_Theme::get_theme() ); ?>">
 	<div class="sfa-admin-header">
-		<h1><?php Swiss_Floorball_Api_Icons::render( 'hockey' ); ?> Swiss Floorball</h1>
+		<h1><?php SWFL_Icons::render( 'hockey' ); ?> Swiss Floorball</h1>
 		<p><?php esc_html_e( 'Übersicht und Verwaltung Ihrer Swiss Floorball Daten', 'swiss-floorball-api' ); ?></p>
 	</div>
 
 	<?php if ( ! $swfl_configured ) : ?>
 		<div class="sfa-callout">
-			<?php Swiss_Floorball_Api_Icons::render( 'warning' ); ?>
+			<?php SWFL_Icons::render( 'warning' ); ?>
 			<span><?php esc_html_e( 'Bitte konfigurieren Sie zuerst die Einstellungen (Club ID und Saison).', 'swiss-floorball-api' ); ?></span>
-			<a href="<?php echo esc_url( admin_url( 'admin.php?page=floorball-api-for-swiss-unihockey-settings' ) ); ?>" class="button button-primary"><?php esc_html_e( 'Einstellungen', 'swiss-floorball-api' ); ?></a>
+			<a href="<?php echo esc_url( admin_url( 'admin.php?page=swiss-floorball-api-settings' ) ); ?>" class="button button-primary"><?php esc_html_e( 'Einstellungen', 'swiss-floorball-api' ); ?></a>
 		</div>
 	<?php endif; ?>
 
@@ -69,8 +69,8 @@ $swfl_tiles = array(
 
 	<div class="sfa-tile-grid">
 		<?php foreach ( $swfl_tiles as $swfl_tile ) : ?>
-			<a class="sfa-tile" href="<?php echo esc_url( admin_url( 'admin.php?page=floorball-api-for-swiss-unihockey-' . $swfl_tile[3] ) ); ?>">
-				<span class="sfa-tile__icon"><?php Swiss_Floorball_Api_Icons::render( $swfl_tile[0] ); ?></span>
+			<a class="sfa-tile" href="<?php echo esc_url( admin_url( 'admin.php?page=swiss-floorball-api-' . $swfl_tile[3] ) ); ?>">
+				<span class="sfa-tile__icon"><?php SWFL_Icons::render( $swfl_tile[0] ); ?></span>
 				<span class="sfa-tile__title"><?php echo esc_html( $swfl_tile[1] ); ?></span>
 				<span class="sfa-tile__text"><?php echo esc_html( $swfl_tile[2] ); ?></span>
 			</a>

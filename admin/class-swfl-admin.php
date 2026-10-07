@@ -5,8 +5,8 @@
  * @link       https://flaviowaser.ch
  * @since      1.0.0
  *
- * @package    Swiss_Floorball_Api
- * @subpackage Swiss_Floorball_Api/admin
+ * @package    SWFL
+ * @subpackage SWFL_Plugin/admin
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -19,11 +19,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Defines the plugin name, version, and two examples hooks for how to
  * enqueue the admin-specific stylesheet and JavaScript.
  *
- * @package    Swiss_Floorball_Api
- * @subpackage Swiss_Floorball_Api/admin
+ * @package    SWFL
+ * @subpackage SWFL_Plugin/admin
  * @author     Flavio Waser <kontakt@flawas.ch>
  */
-class Swiss_Floorball_Api_Admin {
+class SWFL_Admin {
 
 	/**
 	 * Page title of the plugin admin pages.
@@ -63,7 +63,7 @@ class Swiss_Floorball_Api_Admin {
 	 * Settings page registration.
 	 *
 	 * @since 2.0.1
-	 * @var   Swiss_Floorball_Api_Admin_Settings
+	 * @var   SWFL_Admin_Settings
 	 */
 	private $settings;
 
@@ -79,7 +79,7 @@ class Swiss_Floorball_Api_Admin {
 		$this->plugin_name = $plugin_name;
 		$this->version     = $version;
 		add_action( 'admin_menu', array( $this, 'add_plugin_admin_menu' ), 9 );
-		$this->settings = new Swiss_Floorball_Api_Admin_Settings();
+		$this->settings = new SWFL_Admin_Settings();
 		add_action( 'admin_init', array( $this->settings, 'register_and_build_fields' ) );
 		add_action( 'admin_post_swfl_clear_cache', array( $this, 'handle_clear_cache' ) );
 	}
@@ -95,12 +95,12 @@ class Swiss_Floorball_Api_Admin {
 		if ( false === strpos( $page, $this->plugin_name ) ) {
 			return;
 		}
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/floorball-api-for-swiss-unihockey-admin.css', array(), $this->version, 'all' );
-		$seed_css = Swiss_Floorball_API_Theme::get_seed_css();
+		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/swfl-admin.css', array(), $this->version, 'all' );
+		$seed_css = SWFL_Theme::get_seed_css();
 		if ( '' !== $seed_css ) {
 			wp_add_inline_style( $this->plugin_name, $seed_css );
 		}
-		$table_css = Swiss_Floorball_API_Theme::get_table_css();
+		$table_css = SWFL_Theme::get_table_css();
 		if ( '' !== $table_css ) {
 			wp_add_inline_style( $this->plugin_name, $table_css );
 		}
@@ -119,12 +119,12 @@ class Swiss_Floorball_Api_Admin {
 		}
 		wp_enqueue_style( 'wp-color-picker' );
 		// The file modification time is the version so browsers never serve a stale admin script after an update.
-		$script_path    = plugin_dir_path( __FILE__ ) . 'js/floorball-api-for-swiss-unihockey-admin.js';
+		$script_path    = plugin_dir_path( __FILE__ ) . 'js/swfl-admin.js';
 		$script_version = file_exists( $script_path ) ? (string) filemtime( $script_path ) : $this->version;
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/floorball-api-for-swiss-unihockey-admin.js', array( 'jquery', 'wp-color-picker' ), $script_version, false );
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/swfl-admin.js', array( 'jquery', 'wp-color-picker' ), $script_version, false );
 		wp_localize_script(
 			$this->plugin_name,
-			'sfaAutosave',
+			'swflAutosave',
 			array(
 				'saving' => __( 'Saving…', 'swiss-floorball-api' ),
 				'saved'  => __( 'Saved.', 'swiss-floorball-api' ),
@@ -161,7 +161,7 @@ class Swiss_Floorball_Api_Admin {
 	 * @since    1.0.0
 	 */
 	public function display_plugin_admin_dashboard() {
-		require_once self::PARTIALS_DIR . $this->plugin_name . '-admin-display.php';
+		require_once self::PARTIALS_DIR . 'swfl-admin-display.php';
 	}
 
 	/**
@@ -170,7 +170,7 @@ class Swiss_Floorball_Api_Admin {
 	 * @since    1.0.6
 	 */
 	public function display_plugin_admin_overview() {
-		require_once self::PARTIALS_DIR . $this->plugin_name . '-admin-overview-display.php';
+		require_once self::PARTIALS_DIR . 'swfl-admin-overview-display.php';
 	}
 
 	/**
@@ -190,7 +190,7 @@ class Swiss_Floorball_Api_Admin {
 			);
 		}
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
-		require_once self::PARTIALS_DIR . $this->plugin_name . '-admin-settings-display.php';
+		require_once self::PARTIALS_DIR . 'swfl-admin-settings-display.php';
 	}
 
 	/**
@@ -210,7 +210,7 @@ class Swiss_Floorball_Api_Admin {
 			);
 		}
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
-		require_once self::PARTIALS_DIR . $this->plugin_name . '-admin-helper-league-display.php';
+		require_once self::PARTIALS_DIR . 'swfl-admin-helper-league-display.php';
 	}
 
 	/**
@@ -230,7 +230,7 @@ class Swiss_Floorball_Api_Admin {
 			);
 		}
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
-		require_once self::PARTIALS_DIR . $this->plugin_name . '-admin-helper-seasons-display.php';
+		require_once self::PARTIALS_DIR . 'swfl-admin-helper-seasons-display.php';
 	}
 
 	/**
@@ -250,7 +250,7 @@ class Swiss_Floorball_Api_Admin {
 			);
 		}
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
-		require_once self::PARTIALS_DIR . $this->plugin_name . '-admin-helper-teams-display.php';
+		require_once self::PARTIALS_DIR . 'swfl-admin-helper-teams-display.php';
 	}
 
 	/**
@@ -259,7 +259,7 @@ class Swiss_Floorball_Api_Admin {
 	 * @since    1.0.0
 	 */
 	public function display_plugin_admin_shortcodes() {
-		require_once self::PARTIALS_DIR . $this->plugin_name . '-admin-shortcodes-display.php';
+		require_once self::PARTIALS_DIR . 'swfl-admin-shortcodes-display.php';
 	}
 
 	/**
@@ -268,7 +268,7 @@ class Swiss_Floorball_Api_Admin {
 	 * @since    1.0.0
 	 */
 	public function display_plugin_admin_matches() {
-		require_once self::PARTIALS_DIR . $this->plugin_name . '-admin-matches-display.php';
+		require_once self::PARTIALS_DIR . 'swfl-admin-matches-display.php';
 	}
 
 	/**
@@ -278,8 +278,8 @@ class Swiss_Floorball_Api_Admin {
 	 */
 	public function settings_page_settings_messages() {
 		add_settings_error(
-			'swissfloorball_api_key',
-			'swissfloorball_api_key',
+			'swfl_api_key',
+			'swfl_api_key',
 			__( 'There was an error adding this setting. Please try again.  If this persists, shoot us an email.', 'swiss-floorball-api' ),
 			'error'
 		);
@@ -318,7 +318,7 @@ class Swiss_Floorball_Api_Admin {
 		// Redirect back to settings page.
 		$redirect_url = add_query_arg(
 			array(
-				'page' => 'floorball-api-for-swiss-unihockey-settings',
+				'page' => 'swiss-floorball-api-settings',
 			),
 			admin_url( 'admin.php' )
 		);

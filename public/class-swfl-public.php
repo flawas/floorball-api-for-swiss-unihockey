@@ -5,8 +5,8 @@
  * @link       https://flaviowaser.ch
  * @since      1.0.0
  *
- * @package    Swiss_Floorball_Api
- * @subpackage Swiss_Floorball_Api/public
+ * @package    SWFL
+ * @subpackage SWFL_Plugin/public
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -19,11 +19,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Defines the plugin name, version, and two examples hooks for how to
  * enqueue the public-facing stylesheet and JavaScript.
  *
- * @package    Swiss_Floorball_Api
- * @subpackage Swiss_Floorball_Api/public
+ * @package    SWFL
+ * @subpackage SWFL_Plugin/public
  * @author     Flavio Waser <kontakt@flawas.ch>
  */
-class Swiss_Floorball_Api_Public {
+class SWFL_Public {
 
 	/**
 	 * The ID of this plugin.
@@ -63,11 +63,11 @@ class Swiss_Floorball_Api_Public {
 	 * @return void
 	 */
 	private function open_wrapper() {
-		$classes = 'swiss-floorball-plugin sfa-table--' . Swiss_Floorball_API_Theme::get_table_style();
-		if ( Swiss_Floorball_API_Theme::is_table_striped() ) {
+		$classes = 'swiss-floorball-plugin sfa-table--' . SWFL_Theme::get_table_style();
+		if ( SWFL_Theme::is_table_striped() ) {
 			$classes .= ' sfa-table--striped';
 		}
-		echo '<div class="' . esc_attr( $classes ) . '" data-sfa-theme="' . esc_attr( Swiss_Floorball_API_Theme::get_theme() ) . '">';
+		echo '<div class="' . esc_attr( $classes ) . '" data-sfa-theme="' . esc_attr( SWFL_Theme::get_theme() ) . '">';
 	}
 
 	/**
@@ -104,7 +104,7 @@ class Swiss_Floorball_Api_Public {
 	public function get_club_teams_func() {
 		ob_start();
 		$this->open_wrapper();
-		Swiss_Floorball_API_Display::render_club_teams( get_option( 'swissfloorball_club_number' ) );
+		SWFL_Display::render_club_teams( get_option( 'swfl_club_number' ) );
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();
@@ -123,14 +123,14 @@ class Swiss_Floorball_Api_Public {
 	public function get_club_games_func( $atts ) {
 		$a = shortcode_atts(
 			array(
-				'season' => Swiss_Floorball_API_Display::get_current_season(),
+				'season' => SWFL_Display::get_current_season(),
 			),
 			$this->normalize_atts( $atts )
 		);
 
 		ob_start();
 		$this->open_wrapper();
-		Swiss_Floorball_API_Widgets::render_club_games( absint( get_option( 'swissfloorball_club_number' ) ), absint( $a['season'] ) );
+		SWFL_Widgets::render_club_games( absint( get_option( 'swfl_club_number' ) ), absint( $a['season'] ) );
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();
@@ -150,7 +150,7 @@ class Swiss_Floorball_Api_Public {
 		$a = shortcode_atts(
 			array(
 				'team_id'   => '',
-				'season'    => Swiss_Floorball_API_Display::get_current_season(),
+				'season'    => SWFL_Display::get_current_season(),
 				'page_size' => 4,
 			),
 			$this->normalize_atts( $atts )
@@ -158,7 +158,7 @@ class Swiss_Floorball_Api_Public {
 
 		ob_start();
 		$this->open_wrapper();
-		Swiss_Floorball_API_Widgets::render_team_games( absint( $a['team_id'] ), absint( $a['season'] ), absint( $a['page_size'] ) );
+		SWFL_Widgets::render_team_games( absint( $a['team_id'] ), absint( $a['season'] ), absint( $a['page_size'] ) );
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();
@@ -174,7 +174,7 @@ class Swiss_Floorball_Api_Public {
 	public function get_clubs_func() {
 		ob_start();
 		$this->open_wrapper();
-		Swiss_Floorball_API_Display::render_clubs();
+		SWFL_Display::render_clubs();
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();
@@ -203,7 +203,7 @@ class Swiss_Floorball_Api_Public {
 
 		ob_start();
 		$this->open_wrapper();
-		Swiss_Floorball_API_Display::render_calendars(
+		SWFL_Display::render_calendars(
 			$a['team_id'] ? absint( $a['team_id'] ) : null,
 			$a['club_id'] ? absint( $a['club_id'] ) : null,
 			$a['season'] ? absint( $a['season'] ) : null,
@@ -226,7 +226,7 @@ class Swiss_Floorball_Api_Public {
 	public function get_cups_func() {
 		ob_start();
 		$this->open_wrapper();
-		Swiss_Floorball_API_Display::render_cups();
+		SWFL_Display::render_cups();
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();
@@ -243,7 +243,7 @@ class Swiss_Floorball_Api_Public {
 	public function get_groups_func( $atts ) {
 		$a = shortcode_atts(
 			array(
-				'season'     => Swiss_Floorball_API_Display::get_current_season(),
+				'season'     => SWFL_Display::get_current_season(),
 				'league'     => '',
 				'game_class' => '',
 			),
@@ -252,7 +252,7 @@ class Swiss_Floorball_Api_Public {
 
 		ob_start();
 		$this->open_wrapper();
-		Swiss_Floorball_API_Display::render_groups( absint( $a['season'] ), absint( $a['league'] ), absint( $a['game_class'] ) );
+		SWFL_Display::render_groups( absint( $a['season'] ), absint( $a['league'] ), absint( $a['game_class'] ) );
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();
@@ -268,7 +268,7 @@ class Swiss_Floorball_Api_Public {
 	public function get_teams_func() {
 		ob_start();
 		$this->open_wrapper();
-		Swiss_Floorball_API_Display::render_teams();
+		SWFL_Display::render_teams();
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();
@@ -287,7 +287,7 @@ class Swiss_Floorball_Api_Public {
 	public function get_rankings_func( $atts ) {
 		$a = shortcode_atts(
 			array(
-				'season'     => Swiss_Floorball_API_Display::get_current_season(),
+				'season'     => SWFL_Display::get_current_season(),
 				'league'     => '',
 				'game_class' => '',
 				'group'      => '',
@@ -298,7 +298,7 @@ class Swiss_Floorball_Api_Public {
 
 		ob_start();
 		$this->open_wrapper();
-		Swiss_Floorball_API_Widgets::render_ranking( absint( $a['season'] ), absint( $a['league'] ), absint( $a['game_class'] ), sanitize_text_field( $a['group'] ), sanitize_key( $a['view'] ) );
+		SWFL_Widgets::render_ranking( absint( $a['season'] ), absint( $a['league'] ), absint( $a['game_class'] ), sanitize_text_field( $a['group'] ), sanitize_key( $a['view'] ) );
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();
@@ -322,7 +322,7 @@ class Swiss_Floorball_Api_Public {
 
 		ob_start();
 		$this->open_wrapper();
-		Swiss_Floorball_API_Display_Stats::render_player( absint( $a['player_id'] ) );
+		SWFL_Display_Stats::render_player( absint( $a['player_id'] ) );
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();
@@ -338,7 +338,7 @@ class Swiss_Floorball_Api_Public {
 	public function get_national_players_func() {
 		ob_start();
 		$this->open_wrapper();
-		Swiss_Floorball_API_Display_Stats::render_national_players();
+		SWFL_Display_Stats::render_national_players();
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();
@@ -355,7 +355,7 @@ class Swiss_Floorball_Api_Public {
 	public function get_topscorers_func( $atts ) {
 		$a = shortcode_atts(
 			array(
-				'season'     => Swiss_Floorball_API_Display::get_current_season(),
+				'season'     => SWFL_Display::get_current_season(),
 				'league'     => '',
 				'game_class' => '',
 				'group'      => '',
@@ -365,7 +365,7 @@ class Swiss_Floorball_Api_Public {
 
 		ob_start();
 		$this->open_wrapper();
-		Swiss_Floorball_API_Display_Stats::render_topscorers( absint( $a['season'] ), absint( $a['league'] ), absint( $a['game_class'] ) );
+		SWFL_Display_Stats::render_topscorers( absint( $a['season'] ), absint( $a['league'] ), absint( $a['game_class'] ) );
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();
@@ -389,7 +389,7 @@ class Swiss_Floorball_Api_Public {
 
 		ob_start();
 		$this->open_wrapper();
-		Swiss_Floorball_API_Display_Stats::render_game_events( absint( $a['game_id'] ) );
+		SWFL_Display_Stats::render_game_events( absint( $a['game_id'] ) );
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();
@@ -425,7 +425,7 @@ class Swiss_Floorball_Api_Public {
 			array(
 				'game_class' => '',
 				'league'     => '',
-				'season'     => Swiss_Floorball_API_Display::get_current_season(),
+				'season'     => SWFL_Display::get_current_season(),
 				'group'      => '',
 			),
 			$this->normalize_atts( $atts )
@@ -433,7 +433,7 @@ class Swiss_Floorball_Api_Public {
 
 		ob_start();
 		$this->open_wrapper();
-		Swiss_Floorball_API_Widgets::render_league_games( absint( $a['game_class'] ), absint( $a['league'] ), absint( $a['season'] ), sanitize_text_field( $a['group'] ) );
+		SWFL_Widgets::render_league_games( absint( $a['game_class'] ), absint( $a['league'] ), absint( $a['season'] ), sanitize_text_field( $a['group'] ) );
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();
@@ -452,7 +452,7 @@ class Swiss_Floorball_Api_Public {
 	public function get_club_team_games_func( $atts ) {
 		$a = shortcode_atts(
 			array(
-				'season'    => Swiss_Floorball_API_Display::get_current_season(),
+				'season'    => SWFL_Display::get_current_season(),
 				'page_size' => 4,
 			),
 			$this->normalize_atts( $atts )
@@ -460,7 +460,7 @@ class Swiss_Floorball_Api_Public {
 
 		ob_start();
 		$this->open_wrapper();
-		Swiss_Floorball_API_Widgets::render_club_team_games( absint( get_option( 'swissfloorball_club_number' ) ), absint( $a['season'] ), absint( $a['page_size'] ) );
+		SWFL_Widgets::render_club_team_games( absint( get_option( 'swfl_club_number' ) ), absint( $a['season'] ), absint( $a['page_size'] ) );
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();
@@ -480,14 +480,14 @@ class Swiss_Floorball_Api_Public {
 		$a = shortcode_atts(
 			array(
 				'club_id' => '',
-				'season'  => Swiss_Floorball_API_Display::get_current_season(),
+				'season'  => SWFL_Display::get_current_season(),
 			),
 			$this->normalize_atts( $atts )
 		);
 
 		ob_start();
 		$this->open_wrapper();
-		Swiss_Floorball_API_Widgets::render_mobiliar_topscorers( absint( $a['club_id'] ), absint( $a['season'] ) );
+		SWFL_Widgets::render_mobiliar_topscorers( absint( $a['club_id'] ), absint( $a['season'] ) );
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();

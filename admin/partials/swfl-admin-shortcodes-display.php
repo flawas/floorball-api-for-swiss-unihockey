@@ -7,8 +7,8 @@
  * @link       https://flaviowaser.ch
  * @since      1.0.0
  *
- * @package    Swiss_Floorball_Api
- * @subpackage Swiss_Floorball_Api/admin/partials
+ * @package    SWFL
+ * @subpackage SWFL_Plugin/admin/partials
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -20,9 +20,9 @@ if ( ! current_user_can( 'manage_options' ) ) {
 }
 ?>
 
-<div class="wrap sfa-admin-wrap" data-sfa-theme="<?php echo esc_attr( Swiss_Floorball_API_Theme::get_theme() ); ?>">
+<div class="wrap sfa-admin-wrap" data-sfa-theme="<?php echo esc_attr( SWFL_Theme::get_theme() ); ?>">
 	<div class="sfa-admin-header">
-		<h1><?php Swiss_Floorball_Api_Icons::render( 'description' ); ?> Shortcodes Übersicht</h1>
+		<h1><?php SWFL_Icons::render( 'description' ); ?> Shortcodes Übersicht</h1>
 		<p>Hier finden Sie eine Übersicht über alle verfügbaren Shortcodes, deren Parameter und Anwendungsbeispiele.</p>
 	</div>
 
@@ -60,7 +60,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 						<strong>team_id</strong> (erforderlich): Die ID des Teams.<br>
 						<strong>season</strong>: Startjahr der Saison (Standard: aktuelle Saison).<br>
 						<strong>page_size</strong>: Spiele pro Seite (Standard: 4).<br>
-						<em>Zu finden auf der <a href="<?php echo esc_url( admin_url( 'admin.php?page=floorball-api-for-swiss-unihockey-teams' ) ); ?>">Teams Übersicht</a> oder im <a href="<?php echo esc_url( admin_url( 'admin.php?page=floorball-api-for-swiss-unihockey' ) ); ?>">Dashboard</a>.</em>
+						<em>Zu finden auf der <a href="<?php echo esc_url( admin_url( 'admin.php?page=swiss-floorball-api-teams' ) ); ?>">Teams Übersicht</a> oder im <a href="<?php echo esc_url( admin_url( 'admin.php?page=swiss-floorball-api' ) ); ?>">Dashboard</a>.</em>
 					</td>
 					<td><code>[swfl-team-games team_id="429626" season="2025" page_size="5"]</code></td>
 				</tr>
@@ -110,7 +110,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 						<strong>league</strong>: Die Liga.<br>
 						<strong>game_class</strong>: Die Spielklasse.<br>
 						<strong>group</strong>: Die Gruppe.<br>
-						<em>Team IDs finden Sie auf der <a href="<?php echo esc_url( admin_url( 'admin.php?page=floorball-api-for-swiss-unihockey-teams' ) ); ?>">Teams Übersicht</a>.</em>
+						<em>Team IDs finden Sie auf der <a href="<?php echo esc_url( admin_url( 'admin.php?page=swiss-floorball-api-teams' ) ); ?>">Teams Übersicht</a>.</em>
 					</td>
 					<td>
 						<strong>Team Kalender:</strong><br>
@@ -191,7 +191,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 	</div>
 
 	<div class="sfa-table-container">
-		<h2><?php Swiss_Floorball_Api_Icons::render( 'settings' ); ?> Backend-Only Funktionen</h2>
+		<h2><?php SWFL_Icons::render( 'settings' ); ?> Backend-Only Funktionen</h2>
 		<p>Die folgenden Funktionen sind nur im Backend verfügbar und haben keine öffentlichen Shortcodes. Sie werden hauptsächlich für administrative Zwecke verwendet.</p>
 		
 		<table class="sfa-data-table">

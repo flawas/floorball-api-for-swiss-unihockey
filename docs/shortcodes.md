@@ -1,6 +1,6 @@
 # Shortcodes
 
-Alle Shortcodes sind in `public/class-floorball-api-for-swiss-unihockey-public.php` registriert (`register_shortcodes()`). Jede Ausgabe steckt in einem `<div class="swiss-floorball-plugin">`. ID-Attribute werden mit `absint()` bereinigt. CSS/JS werden nur auf Seiten geladen, deren Inhalt einen dieser Shortcodes enthält.
+Alle Shortcodes sind in `public/class-swfl-public.php` registriert (`register_shortcodes()`). Jede Ausgabe steckt in einem `<div class="swiss-floorball-plugin">`. ID-Attribute werden mit `absint()` bereinigt. CSS/JS werden nur auf Seiten geladen, deren Inhalt einen dieser Shortcodes enthält.
 
 Die benötigten IDs findest du in den [Helper-Seiten](admin.md). Änderungen gegenüber 1.x stehen in [Umstieg auf 2.0.0](migration.md#3-geänderte-shortcodes).
 
@@ -53,7 +53,7 @@ Auf dem Smartphone:
 
 | Attribut | Typ | Default | Pflicht |
 |---|---|---|---|
-| `season` | int | Option `swissfloorball_actual_season` | nein |
+| `season` | int | Option `swfl_actual_season` | nein |
 
 ```text
 [swfl-club-games]
@@ -192,7 +192,7 @@ Gruppen einer Liga/Spielklasse (`groups`, Format `dropdown`). Nur Partner-API.
 
 | Attribut | Typ | Default | Pflicht |
 |---|---|---|---|
-| `season` | int | Option `swissfloorball_actual_season` | nein |
+| `season` | int | Option `swfl_actual_season` | nein |
 | `league` | int | leer | ja (fachlich) |
 | `game_class` | int | leer | ja (fachlich) |
 
@@ -222,7 +222,7 @@ Auf dem Smartphone passt sich das Layout an die Breite an:
 
 | Attribut | Typ | Default | Pflicht |
 |---|---|---|---|
-| `season` | int | Option `swissfloorball_actual_season` | nein |
+| `season` | int | Option `swfl_actual_season` | nein |
 | `league` | int | leer | ja (fachlich) |
 | `game_class` | int | leer | ja (fachlich) |
 | `group` | Text | leer | ja (fachlich), **Gruppenname** wie `Gruppe 1` (vorher: ID) |
@@ -254,7 +254,7 @@ Topscorer einer Liga (`topscorers/su`). Nur Partner-API. `group` wird weiterhin 
 
 | Attribut | Typ | Default | Pflicht |
 |---|---|---|---|
-| `season` | int | Option `swissfloorball_actual_season` | nein |
+| `season` | int | Option `swfl_actual_season` | nein |
 | `league` | int | leer | ja (fachlich) |
 | `game_class` | int | leer | ja (fachlich) |
 | `group` | Text | leer | nein, wird ignoriert |

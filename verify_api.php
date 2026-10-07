@@ -129,7 +129,7 @@ function wp_remote_retrieve_body( $r ) {
 }
 function get_option( $name, $default = false ) {
 	$options = array(
-		'swissfloorball_api_source' => getenv( 'SWFL_API_SOURCE' ) ? getenv( 'SWFL_API_SOURCE' ) : 'free',
+		'swfl_api_source' => getenv( 'SWFL_API_SOURCE' ) ? getenv( 'SWFL_API_SOURCE' ) : 'free',
 	);
 	return $options[ $name ] ?? $default;
 }
@@ -176,14 +176,14 @@ function _e( $t, $d = '' ) {
 	echo $t;
 }
 
-require_once __DIR__ . '/includes/class-floorball-api-for-swiss-unihockey-client.php';
-require_once __DIR__ . '/includes/class-floorball-api-for-swiss-unihockey-display.php';
-require_once __DIR__ . '/includes/class-floorball-api-for-swiss-unihockey-theme.php';
-require_once __DIR__ . '/includes/class-floorball-api-for-swiss-unihockey-display-stats.php';
-require_once __DIR__ . '/includes/class-floorball-api-for-swiss-unihockey-widgets.php';
-require_once __DIR__ . '/includes/class-floorball-api-for-swiss-unihockey-calendar.php';
-require_once __DIR__ . '/includes/class-floorball-api-for-swiss-unihockey-table-data.php';
-require_once __DIR__ . '/includes/class-floorball-api-for-swiss-unihockey-icons.php';
+require_once __DIR__ . '/includes/class-swfl-client.php';
+require_once __DIR__ . '/includes/class-swfl-display.php';
+require_once __DIR__ . '/includes/class-swfl-theme.php';
+require_once __DIR__ . '/includes/class-swfl-display-stats.php';
+require_once __DIR__ . '/includes/class-swfl-widgets.php';
+require_once __DIR__ . '/includes/class-swfl-calendar.php';
+require_once __DIR__ . '/includes/class-swfl-table-data.php';
+require_once __DIR__ . '/includes/class-swfl-icons.php';
 
 // ---------------------------------------------------------------------------
 // Tiny test harness
@@ -242,7 +242,7 @@ function find_link_ids( $node, $page, &$out ) {
 	}
 }
 
-$client = new Swiss_Floorball_API_Client();
+$client = new SWFL_Client();
 
 // ---------------------------------------------------------------------------
 // 1. Raw API shapes (what the render methods rely on)
@@ -318,7 +318,7 @@ check( 'Client: API-Fehlermeldung wird für Admins angezeigt', function () use (
 	$r = $client->fetch_data( 'rankings', array( 'season' => 2025, 'league' => 2, 'game_class' => 11, 'group' => 'Gibt es nicht' ) );
 	ensure( is_wp_error( $r ), 'WP_Error erwartet' );
 	ob_start();
-	Swiss_Floorball_API_Display::render_fetch_error( $r );
+	SWFL_Display::render_fetch_error( $r );
 	$html = ob_get_clean();
 	ensure( false !== strpos( $html, 'Antwort der API' ) && false !== strpos( $html, 'Gibt es nicht' ), 'API-Meldung fehlt in der Ausgabe: ' . $html );
 } );
@@ -333,8 +333,8 @@ check( 'Client: zweiter Aufruf kommt aus dem Cache', function () use ( $client )
 // 2. Render methods (same code as shortcodes and admin pages)
 // ---------------------------------------------------------------------------
 echo "Render-Methoden\n";
-$D = 'Swiss_Floorball_API_Display';
-$S = 'Swiss_Floorball_API_Display_Stats';
+$D = 'SWFL_Display';
+$S = 'SWFL_Display_Stats';
 
 $renders = array(
 	'render_seasons'          => function () use ( $D ) { $D::render_seasons(); },
@@ -367,7 +367,7 @@ check( 'render_team_games', function () use ( $D, &$team_id, $season ) {
 } );
 
 // Widgets modelled on the official web components (IDs from their README examples).
-$W = 'Swiss_Floorball_API_Widgets';
+$W = 'SWFL_Widgets';
 $widgets = array(
 	'widget league-games'  => array( function () use ( $W, $season, $league, $game_class, $group ) { $W::render_league_games( $game_class, $league, $season, $group ); }, 'data-sfa-widget="league"', '<table' ),
 	'widget club-team-games' => array( function () use ( $W, $season ) { $W::render_club_team_games( 372, $season, 6 ); }, 'data-sfa-widget="team-select"', '<option' ),

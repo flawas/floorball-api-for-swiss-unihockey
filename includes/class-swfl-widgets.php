@@ -5,8 +5,8 @@
  * @link       https://github.com/swissunihockey/swissunihockey-webcomponents
  * @since      1.1.0
  *
- * @package    Swiss_Floorball_Api
- * @subpackage Swiss_Floorball_Api/includes
+ * @package    SWFL
+ * @subpackage SWFL_Plugin/includes
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -23,11 +23,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  * the REST routes registered here, which render the same markup.
  *
  * @since      1.1.0
- * @package    Swiss_Floorball_Api
- * @subpackage Swiss_Floorball_Api/includes
+ * @package    SWFL
+ * @subpackage SWFL_Plugin/includes
  * @author     Flavio Waser <kontakt@flawas.ch>
  */
-class Swiss_Floorball_API_Widgets {
+class SWFL_Widgets {
 
 	/**
 	 * Base of the public game link, as used by the official components.
@@ -58,7 +58,7 @@ class Swiss_Floorball_API_Widgets {
 	 * Shared API client.
 	 *
 	 * @since 1.1.0
-	 * @var   Swiss_Floorball_API_Client|null
+	 * @var   SWFL_Client|null
 	 */
 	private static $client = null;
 
@@ -66,11 +66,11 @@ class Swiss_Floorball_API_Widgets {
 	 * Get the API client instance.
 	 *
 	 * @since 1.1.0
-	 * @return Swiss_Floorball_API_Client
+	 * @return SWFL_Client
 	 */
 	public static function get_client() {
 		if ( null === self::$client ) {
-			self::$client = new Swiss_Floorball_API_Client();
+			self::$client = new SWFL_Client();
 		}
 		return self::$client;
 	}
@@ -87,7 +87,7 @@ class Swiss_Floorball_API_Widgets {
 			'/team-games',
 			array(
 				'methods'             => 'GET',
-				'callback'            => array( 'Swiss_Floorball_API_Widgets', 'rest_team_games' ),
+				'callback'            => array( 'SWFL_Widgets', 'rest_team_games' ),
 				'permission_callback' => '__return_true',
 				'args'                => array(
 					'team_id'   => array(
@@ -112,7 +112,7 @@ class Swiss_Floorball_API_Widgets {
 			'/league-games',
 			array(
 				'methods'             => 'GET',
-				'callback'            => array( 'Swiss_Floorball_API_Widgets', 'rest_league_games' ),
+				'callback'            => array( 'SWFL_Widgets', 'rest_league_games' ),
 				'permission_callback' => '__return_true',
 				'args'                => array(
 					'game_class' => array(
@@ -146,7 +146,7 @@ class Swiss_Floorball_API_Widgets {
 			'/calendar',
 			array(
 				'methods'             => 'GET',
-				'callback'            => array( 'Swiss_Floorball_API_Calendar', 'rest_calendar' ),
+				'callback'            => array( 'SWFL_Calendar', 'rest_calendar' ),
 				'permission_callback' => '__return_true',
 				'args'                => array(
 					'team_id'    => array(
@@ -178,7 +178,7 @@ class Swiss_Floorball_API_Widgets {
 		);
 
 		// The calendar route returns text/calendar instead of JSON.
-		add_filter( 'rest_pre_serve_request', array( 'Swiss_Floorball_API_Calendar', 'serve_calendar' ), 10, 3 );
+		add_filter( 'rest_pre_serve_request', array( 'SWFL_Calendar', 'serve_calendar' ), 10, 3 );
 	}
 
 	/**
@@ -232,7 +232,7 @@ class Swiss_Floorball_API_Widgets {
 	 * @return void
 	 */
 	private static function render_error( $api_response ) {
-		Swiss_Floorball_API_Display::render_fetch_error( $api_response );
+		SWFL_Display::render_fetch_error( $api_response );
 	}
 
 	/**
@@ -285,7 +285,7 @@ class Swiss_Floorball_API_Widgets {
 		$columns = array(
 			'headers' => $headers,
 			'labels'  => $labels,
-			'minor'   => Swiss_Floorball_API_Table_Data::get_minor_columns( $labels ),
+			'minor'   => SWFL_Table_Data::get_minor_columns( $labels ),
 			'count'   => $col_count,
 		);
 		?>
@@ -384,7 +384,7 @@ class Swiss_Floorball_API_Widgets {
 	 * @return void
 	 */
 	private static function render_table_row( $row, $index, $columns, $args ) {
-		$game_id = Swiss_Floorball_API_Table_Data::get_game_id( $row );
+		$game_id = SWFL_Table_Data::get_game_id( $row );
 		$cells   = isset( $row['cells'] ) && is_array( $row['cells'] ) ? $row['cells'] : array();
 		?>
 		<tr<?php echo self::get_row_attributes( $row, $index, $args ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built from constants and escaped attributes. ?>>
@@ -418,7 +418,7 @@ class Swiss_Floorball_API_Widgets {
 		if ( $game_id > 0 ) {
 			$details_url = add_query_arg(
 				array(
-					'page'     => 'floorball-api-for-swiss-unihockey-matches',
+					'page'     => 'swiss-floorball-api-matches',
 					'match_id' => $game_id,
 				),
 				admin_url( 'admin.php' )
@@ -440,7 +440,7 @@ class Swiss_Floorball_API_Widgets {
 	 * @return void
 	 */
 	private static function render_cell( $cell, $label, $game_id, $align, $minor = '' ) {
-		$text  = Swiss_Floorball_API_Table_Data::get_cell_text( $cell );
+		$text  = SWFL_Table_Data::get_cell_text( $cell );
 		$image = '';
 		if ( isset( $cell['image']['url'] ) ) {
 			$image = $cell['image']['url'];
@@ -469,7 +469,7 @@ class Swiss_Floorball_API_Widgets {
 				),
 				'https://www.openstreetmap.org/'
 			) . '#map=16/' . (float) $cell['link']['y'] . '/' . (float) $cell['link']['x'];
-			echo '<a class="sfa-map-link" href="' . esc_url( $map_url ) . '" target="_blank" rel="noopener noreferrer">' . Swiss_Floorball_Api_Icons::get( 'place' ) . ' ' . esc_html( $text ) . '</a></td>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Icon markup sanitized via wp_kses() in Swiss_Floorball_Api_Icons::get().
+			echo '<a class="sfa-map-link" href="' . esc_url( $map_url ) . '" target="_blank" rel="noopener noreferrer">' . SWFL_Icons::get( 'place' ) . ' ' . esc_html( $text ) . '</a></td>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Icon markup sanitized via wp_kses() in SWFL_Icons::get().
 			return;
 		}
 
@@ -479,7 +479,7 @@ class Swiss_Floorball_API_Widgets {
 			$content = esc_html( $text );
 		}
 
-		if ( $game_id > 0 && '' === $image && Swiss_Floorball_API_Table_Data::is_game_link_cell( $text ) ) {
+		if ( $game_id > 0 && '' === $image && SWFL_Table_Data::is_game_link_cell( $text ) ) {
 			echo '<a href="' . esc_url( self::GAME_LINK_BASE . $game_id ) . '" target="_blank" rel="noopener noreferrer">' . $content . '</a>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $content is escaped above.
 		} else {
 			echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $content is escaped above.
@@ -504,7 +504,7 @@ class Swiss_Floorball_API_Widgets {
 		}
 		$title = isset( $data['title'] ) && is_string( $data['title'] ) && '' !== $data['title'] ? $data['title'] : $fallback;
 		if ( '' !== $title ) {
-			echo '<h3 class="sfa-section-title">' . ( '' !== $icon ? Swiss_Floorball_Api_Icons::get( $icon ) . ' ' : '' ) . esc_html( $title ) . '</h3>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Icon markup sanitized via wp_kses() in Swiss_Floorball_Api_Icons::get().
+			echo '<h3 class="sfa-section-title">' . ( '' !== $icon ? SWFL_Icons::get( $icon ) . ' ' : '' ) . esc_html( $title ) . '</h3>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Icon markup sanitized via wp_kses() in SWFL_Icons::get().
 		}
 		if ( isset( $data['subtitle'] ) && is_string( $data['subtitle'] ) && '' !== $data['subtitle'] ) {
 			echo '<p class="sfa-widget__subtitle">' . esc_html( $data['subtitle'] ) . '</p>';
@@ -526,7 +526,7 @@ class Swiss_Floorball_API_Widgets {
 	 * @return void
 	 */
 	public static function render_admin_games( $mode, $id, $season, $fallback, $caption ) {
-		$result = Swiss_Floorball_API_Table_Data::fetch_all_pages(
+		$result = SWFL_Table_Data::fetch_all_pages(
 			'games',
 			array(
 				'mode'        => $mode,
@@ -539,7 +539,7 @@ class Swiss_Floorball_API_Widgets {
 			return;
 		}
 
-		$rows = Swiss_Floorball_API_Table_Data::prepare_game_rows( $result['rows'] );
+		$rows = SWFL_Table_Data::prepare_game_rows( $result['rows'] );
 		echo '<div class="sfa-widget">';
 		self::render_title( $result['data'], true, $fallback, 'hockey' );
 		if ( $rows ) {
@@ -617,7 +617,7 @@ class Swiss_Floorball_API_Widgets {
 			return;
 		}
 
-		$result = Swiss_Floorball_API_Table_Data::fetch_all_pages(
+		$result = SWFL_Table_Data::fetch_all_pages(
 			'games',
 			array(
 				'mode'    => 'club',
@@ -630,7 +630,7 @@ class Swiss_Floorball_API_Widgets {
 			return;
 		}
 
-		$rows                          = Swiss_Floorball_API_Table_Data::prepare_game_rows( $result['rows'] );
+		$rows                          = SWFL_Table_Data::prepare_game_rows( $result['rows'] );
 		list( $week_start, $week_end ) = self::get_week_bounds( strtotime( current_time( 'Y-m-d' ) . ' UTC' ) );
 
 		// Outside the playing weeks the current week is empty; jump to the next game, or the last one.
@@ -653,9 +653,9 @@ class Swiss_Floorball_API_Widgets {
 		<div class="sfa-widget" data-sfa-widget="week" data-sfa-week-start="<?php echo esc_attr( $week_start ); ?>">
 			<?php self::render_title( $result['data'], true, __( 'Clubspiele', 'swiss-floorball-api' ), 'hockey' ); ?>
 			<div class="sfa-widget__controls">
-				<button type="button" class="sfa-btn" data-sfa-action="prev"><?php Swiss_Floorball_Api_Icons::render( 'chevron_left' ); ?> <?php esc_html_e( 'Letzte Woche', 'swiss-floorball-api' ); ?></button>
+				<button type="button" class="sfa-btn" data-sfa-action="prev"><?php SWFL_Icons::render( 'chevron_left' ); ?> <?php esc_html_e( 'Letzte Woche', 'swiss-floorball-api' ); ?></button>
 				<span class="sfa-widget__label" data-sfa-label><?php echo esc_html( self::format_date( $week_start ) . ' – ' . self::format_date( $week_end ) ); ?></span>
-				<button type="button" class="sfa-btn" data-sfa-action="next"><?php esc_html_e( 'Nächste Woche', 'swiss-floorball-api' ); ?> <?php Swiss_Floorball_Api_Icons::render( 'chevron_right' ); ?></button>
+				<button type="button" class="sfa-btn" data-sfa-action="next"><?php esc_html_e( 'Nächste Woche', 'swiss-floorball-api' ); ?> <?php SWFL_Icons::render( 'chevron_right' ); ?></button>
 			</div>
 			<?php
 			self::render_table(
@@ -690,7 +690,7 @@ class Swiss_Floorball_API_Widgets {
 		}
 		$page_size = $page_size > 0 ? min( $page_size, 50 ) : 4;
 
-		$result = Swiss_Floorball_API_Table_Data::fetch_all_pages(
+		$result = SWFL_Table_Data::fetch_all_pages(
 			'games',
 			array(
 				'mode'    => 'team',
@@ -703,7 +703,7 @@ class Swiss_Floorball_API_Widgets {
 			return;
 		}
 
-		$rows  = Swiss_Floorball_API_Table_Data::prepare_game_rows( $result['rows'] );
+		$rows  = SWFL_Table_Data::prepare_game_rows( $result['rows'] );
 		$total = count( $rows );
 		$today = current_time( 'Y-m-d' );
 
@@ -729,7 +729,7 @@ class Swiss_Floorball_API_Widgets {
 		<div class="sfa-widget" data-sfa-widget="pager" data-sfa-page-size="<?php echo esc_attr( $page_size ); ?>" data-sfa-start="<?php echo esc_attr( $start ); ?>">
 			<?php self::render_title( $result['data'], ! $embedded, __( 'Teamspiele', 'swiss-floorball-api' ), 'hockey' ); ?>
 			<div class="sfa-widget__controls">
-				<button type="button" class="sfa-btn" data-sfa-action="prev" <?php disabled( $start <= 0 ); ?>><?php Swiss_Floorball_Api_Icons::render( 'chevron_left' ); ?> <?php esc_html_e( 'Frühere Spiele', 'swiss-floorball-api' ); ?></button>
+				<button type="button" class="sfa-btn" data-sfa-action="prev" <?php disabled( $start <= 0 ); ?>><?php SWFL_Icons::render( 'chevron_left' ); ?> <?php esc_html_e( 'Frühere Spiele', 'swiss-floorball-api' ); ?></button>
 				<span class="sfa-widget__label" data-sfa-label>
 					<?php
 					echo esc_html(
@@ -743,7 +743,7 @@ class Swiss_Floorball_API_Widgets {
 					);
 					?>
 				</span>
-				<button type="button" class="sfa-btn" data-sfa-action="next" <?php disabled( $start + $page_size >= $total ); ?>><?php esc_html_e( 'Weitere Spiele', 'swiss-floorball-api' ); ?> <?php Swiss_Floorball_Api_Icons::render( 'chevron_right' ); ?></button>
+				<button type="button" class="sfa-btn" data-sfa-action="next" <?php disabled( $start + $page_size >= $total ); ?>><?php esc_html_e( 'Weitere Spiele', 'swiss-floorball-api' ); ?> <?php SWFL_Icons::render( 'chevron_right' ); ?></button>
 			</div>
 			<?php
 			self::render_table(
@@ -808,7 +808,7 @@ class Swiss_Floorball_API_Widgets {
 
 		?>
 		<div class="sfa-widget" data-sfa-widget="team-select" data-sfa-season="<?php echo esc_attr( $season ); ?>" data-sfa-page-size="<?php echo esc_attr( $page_size ); ?>">
-			<h3 class="sfa-section-title"><?php Swiss_Floorball_Api_Icons::render( 'group' ); ?> <?php esc_html_e( 'Teamspiele nach Verein', 'swiss-floorball-api' ); ?></h3>
+			<h3 class="sfa-section-title"><?php SWFL_Icons::render( 'group' ); ?> <?php esc_html_e( 'Teamspiele nach Verein', 'swiss-floorball-api' ); ?></h3>
 			<label class="sfa-widget__field" for="<?php echo esc_attr( $select_id ); ?>">
 				<span><?php esc_html_e( 'Team auswählen', 'swiss-floorball-api' ); ?></span>
 				<select id="<?php echo esc_attr( $select_id ); ?>" class="sfa-widget__select" data-sfa-select>
@@ -852,7 +852,7 @@ class Swiss_Floorball_API_Widgets {
 		);
 		$params      = array_merge( array( 'mode' => 'list' ), $base_params, $context );
 
-		$response = self::get_client()->fetch_data( 'games', Swiss_Floorball_API_Table_Data::clean_params( $params ) );
+		$response = self::get_client()->fetch_data( 'games', SWFL_Table_Data::clean_params( $params ) );
 		if ( is_wp_error( $response ) || ! isset( $response['data']['regions'] ) ) {
 			self::render_error( $response );
 			return;
@@ -860,18 +860,18 @@ class Swiss_Floorball_API_Widgets {
 
 		$data    = $response['data'];
 		$headers = isset( $data['headers'] ) && is_array( $data['headers'] ) ? $data['headers'] : array();
-		$rows    = Swiss_Floorball_API_Table_Data::prepare_game_rows( Swiss_Floorball_API_Table_Data::get_rows( $data ) );
+		$rows    = SWFL_Table_Data::prepare_game_rows( SWFL_Table_Data::get_rows( $data ) );
 		$last    = $headers ? end( $headers ) : array();
 		$drop    = isset( $last['text'] ) && '📺' === $last['text'];
-		$prev    = Swiss_Floorball_API_Table_Data::get_slider_context( $data, 'prev' );
-		$next    = Swiss_Floorball_API_Table_Data::get_slider_context( $data, 'next' );
+		$prev    = SWFL_Table_Data::get_slider_context( $data, 'prev' );
+		$next    = SWFL_Table_Data::get_slider_context( $data, 'next' );
 
 		?>
 		<div class="sfa-widget" data-sfa-widget="league" data-sfa-params="<?php echo esc_attr( wp_json_encode( $base_params ) ); ?>">
 			<div class="sfa-widget__controls">
-				<button type="button" class="sfa-btn" data-sfa-action="prev" data-sfa-context="<?php echo esc_attr( wp_json_encode( $prev ) ); ?>" <?php disabled( empty( $prev ) ); ?>><?php Swiss_Floorball_Api_Icons::render( 'chevron_left' ); ?> <?php esc_html_e( 'Frühere Spiele', 'swiss-floorball-api' ); ?></button>
+				<button type="button" class="sfa-btn" data-sfa-action="prev" data-sfa-context="<?php echo esc_attr( wp_json_encode( $prev ) ); ?>" <?php disabled( empty( $prev ) ); ?>><?php SWFL_Icons::render( 'chevron_left' ); ?> <?php esc_html_e( 'Frühere Spiele', 'swiss-floorball-api' ); ?></button>
 				<span class="sfa-widget__label"><?php echo esc_html( ! empty( $data['slider']['text'] ) ? $data['slider']['text'] : __( 'Aktuelle Runde', 'swiss-floorball-api' ) ); ?></span>
-				<button type="button" class="sfa-btn" data-sfa-action="next" data-sfa-context="<?php echo esc_attr( wp_json_encode( $next ) ); ?>" <?php disabled( empty( $next ) ); ?>><?php esc_html_e( 'Weitere Spiele', 'swiss-floorball-api' ); ?> <?php Swiss_Floorball_Api_Icons::render( 'chevron_right' ); ?></button>
+				<button type="button" class="sfa-btn" data-sfa-action="next" data-sfa-context="<?php echo esc_attr( wp_json_encode( $next ) ); ?>" <?php disabled( empty( $next ) ); ?>><?php esc_html_e( 'Weitere Spiele', 'swiss-floorball-api' ); ?> <?php SWFL_Icons::render( 'chevron_right' ); ?></button>
 			</div>
 			<?php
 			self::render_title( $data, true, '', 'hockey' );
@@ -984,8 +984,8 @@ class Swiss_Floorball_API_Widgets {
 
 		$series = array();
 		foreach ( $rows as $index => $row ) {
-			$home = isset( $row['cells'][ $home_index ] ) ? Swiss_Floorball_API_Table_Data::get_cell_text( $row['cells'][ $home_index ] ) : '';
-			$away = isset( $row['cells'][ $away_index ] ) ? Swiss_Floorball_API_Table_Data::get_cell_text( $row['cells'][ $away_index ] ) : '';
+			$home = isset( $row['cells'][ $home_index ] ) ? SWFL_Table_Data::get_cell_text( $row['cells'][ $home_index ] ) : '';
+			$away = isset( $row['cells'][ $away_index ] ) ? SWFL_Table_Data::get_cell_text( $row['cells'][ $away_index ] ) : '';
 			if ( '' === $home || '' === $away ) {
 				continue;
 			}
@@ -1035,14 +1035,14 @@ class Swiss_Floorball_API_Widgets {
 			'group'      => $group,
 			'view'       => '' !== $view ? $view : 'full',
 		);
-		$response = self::get_client()->fetch_data( 'rankings', Swiss_Floorball_API_Table_Data::clean_params( $params ) );
+		$response = self::get_client()->fetch_data( 'rankings', SWFL_Table_Data::clean_params( $params ) );
 		if ( is_wp_error( $response ) || ! isset( $response['data']['regions'] ) ) {
 			self::render_error( $response );
 			return;
 		}
 
 		$data = $response['data'];
-		$rows = Swiss_Floorball_API_Table_Data::get_rows( $data );
+		$rows = SWFL_Table_Data::get_rows( $data );
 		?>
 		<div class="sfa-widget" data-sfa-widget="ranking">
 			<?php self::render_title( $data, true, __( 'Rangliste', 'swiss-floorball-api' ), 'chart' ); ?>
@@ -1075,7 +1075,7 @@ class Swiss_Floorball_API_Widgets {
 		// Without a club id the API returns the Mobiliar topscorers of the whole league.
 		$response = self::get_client()->fetch_data(
 			'topscorers/mobiliar-highlight',
-			Swiss_Floorball_API_Table_Data::clean_params(
+			SWFL_Table_Data::clean_params(
 				array(
 					'season'    => $season,
 					'club_id'   => $club_id,
@@ -1088,7 +1088,7 @@ class Swiss_Floorball_API_Widgets {
 			return;
 		}
 
-		$players = self::collect_topscorers( Swiss_Floorball_API_Table_Data::get_rows( $response['data'] ) );
+		$players = self::collect_topscorers( SWFL_Table_Data::get_rows( $response['data'] ) );
 
 		?>
 		<div class="sfa-widget sfa-topscorers" data-sfa-widget="topscorers">
@@ -1118,7 +1118,7 @@ class Swiss_Floorball_API_Widgets {
 	 * @return string Cell text.
 	 */
 	private static function topscorer_text( $rows, $row, $column ) {
-		return isset( $rows[ $row ]['cells'][ $column ] ) ? Swiss_Floorball_API_Table_Data::get_cell_text( $rows[ $row ]['cells'][ $column ] ) : '';
+		return isset( $rows[ $row ]['cells'][ $column ] ) ? SWFL_Table_Data::get_cell_text( $rows[ $row ]['cells'][ $column ] ) : '';
 	}
 
 	/**

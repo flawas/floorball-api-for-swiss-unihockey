@@ -20,9 +20,9 @@ if ( ! current_user_can( 'manage_options' ) ) {
 }
 ?>
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
-<div class="wrap sfa-admin-wrap" data-sfa-theme="<?php echo esc_attr( Swiss_Floorball_API_Theme::get_theme() ); ?>">
+<div class="wrap sfa-admin-wrap" data-sfa-theme="<?php echo esc_attr( SWFL_Theme::get_theme() ); ?>">
 	<div class="sfa-admin-header">
-		<h1><?php Swiss_Floorball_Api_Icons::render( 'settings' ); ?> Einstellungen</h1>
+		<h1><?php SWFL_Icons::render( 'settings' ); ?> Einstellungen</h1>
 		<p>Konfigurieren Sie Ihre Swiss Floorball API Verbindung</p>
 	</div>
 
@@ -33,7 +33,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 	if ( false !== $swfl_deleted_count ) {
 		delete_transient( 'swfl_cache_cleared_' . get_current_user_id() );
 		echo '<div class="notice notice-success is-dismissible">';
-		echo '<p><strong>' . Swiss_Floorball_Api_Icons::get( 'check' ) . ' Cache erfolgreich geleert!</strong> ' . esc_html( (int) $swfl_deleted_count ) . ' zwischengespeicherte Einträge wurden gelöscht.</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Icon markup sanitized via wp_kses() in Swiss_Floorball_Api_Icons::get().
+		echo '<p><strong>' . SWFL_Icons::get( 'check' ) . ' Cache erfolgreich geleert!</strong> ' . esc_html( (int) $swfl_deleted_count ) . ' zwischengespeicherte Einträge wurden gelöscht.</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Icon markup sanitized via wp_kses() in SWFL_Icons::get().
 		echo '</div>';
 	}
 	?>
@@ -54,13 +54,13 @@ if ( ! current_user_can( 'manage_options' ) ) {
 	</div>
 
 	<div class="sfa-form-section">
-		<h2><?php Swiss_Floorball_Api_Icons::render( 'delete' ); ?> Cache Verwaltung</h2>
+		<h2><?php SWFL_Icons::render( 'delete' ); ?> Cache Verwaltung</h2>
 		<p class="sfa-helper-text">Löschen Sie alle zwischengespeicherten API-Daten, um frische Daten vom Server zu laden.</p>
 		<form method="POST" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="sfa-form--spaced-top">
 			<input type="hidden" name="action" value="swfl_clear_cache">
 			<?php wp_nonce_field( 'swfl_clear_cache_action', 'swfl_clear_cache_nonce' ); ?>
 			<button type="submit" class="button button-secondary" onclick="return confirm('Möchten Sie wirklich den gesamten Cache leeren?');">
-				<?php Swiss_Floorball_Api_Icons::render( 'delete' ); ?> Cache leeren
+				<?php SWFL_Icons::render( 'delete' ); ?> Cache leeren
 			</button>
 		</form>
 	</div>
