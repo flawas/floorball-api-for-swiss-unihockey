@@ -5,8 +5,8 @@
  * @link       https://flaviowaser.ch
  * @since      1.0.0
  *
- * @package    Swiss_Floorball_Api
- * @subpackage Swiss_Floorball_Api/includes
+ * @package    SWFL
+ * @subpackage SWFL_Plugin/includes
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -19,11 +19,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  * This class defines all code necessary to run during the plugin's activation.
  *
  * @since      1.0.0
- * @package    Swiss_Floorball_Api
- * @subpackage Swiss_Floorball_Api/includes
+ * @package    SWFL
+ * @subpackage SWFL_Plugin/includes
  * @author     Flavio Waser <kontakt@flawas.ch>
  */
-class Swiss_Floorball_API_Client {
+class SWFL_Client {
 
 	/**
 	 * Free public API (read-only whitelist of endpoints, no credentials).
@@ -67,7 +67,7 @@ class Swiss_Floorball_API_Client {
 	 * @return string One of the SOURCE_* constants.
 	 */
 	public static function get_source() {
-		$source = get_option( 'swissfloorball_api_source', self::SOURCE_FREE );
+		$source = get_option( 'swfl_api_source', self::SOURCE_FREE );
 		// A stored removed source (the former 'legacy' API) falls back to the free API.
 		return array_key_exists( $source, self::BASE_URLS ) ? $source : self::SOURCE_FREE;
 	}
@@ -113,8 +113,8 @@ class Swiss_Floorball_API_Client {
 	 * @return string|WP_Error Token, or WP_Error when credentials are missing or rejected.
 	 */
 	private function request_partner_token() {
-		$api_key = get_option( 'swissfloorball_api_key', '' );
-		$secret  = get_option( 'swissfloorball_api_secret', '' );
+		$api_key = get_option( 'swfl_api_key', '' );
+		$secret  = get_option( 'swfl_api_secret', '' );
 		if ( '' === $api_key || '' === $secret ) {
 			return new WP_Error( 'swfl_partner_credentials', 'API key or secret missing' );
 		}
@@ -198,7 +198,7 @@ class Swiss_Floorball_API_Client {
 	 */
 	private function request_data( $url ) {
 		// Request timeout in seconds; defaults to the admin setting and is overridable via the swfl_request_timeout filter.
-		$timeout = max( 1, (float) apply_filters( 'swfl_request_timeout', (float) get_option( 'swissfloorball_request_timeout', 3 ), $url ) );
+		$timeout = max( 1, (float) apply_filters( 'swfl_request_timeout', (float) get_option( 'swfl_request_timeout', 3 ), $url ) );
 
 		$response = $this->send_request(
 			$url,

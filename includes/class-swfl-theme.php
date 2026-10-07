@@ -5,8 +5,8 @@
  * @link       https://flaviowaser.ch
  * @since      2.0.1
  *
- * @package    Swiss_Floorball_Api
- * @subpackage Swiss_Floorball_Api/includes
+ * @package    SWFL
+ * @subpackage SWFL_Plugin/includes
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -16,14 +16,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Reads the theme options and derives contrast-safe CSS colours from them.
  *
- * Split out of Swiss_Floorball_API_Display, which only renders API data.
+ * Split out of SWFL_Display, which only renders API data.
  *
  * @since      2.0.1
- * @package    Swiss_Floorball_Api
- * @subpackage Swiss_Floorball_Api/includes
+ * @package    SWFL
+ * @subpackage SWFL_Plugin/includes
  * @author     Flavio Waser <kontakt@flawas.ch>
  */
-class Swiss_Floorball_API_Theme {
+class SWFL_Theme {
 
 	/**
 	 * Get the configured colour theme.
@@ -33,7 +33,7 @@ class Swiss_Floorball_API_Theme {
 	 * @return string One of 'auto', 'light' or 'dark'; falls back to 'auto'.
 	 */
 	public static function get_theme() {
-		$theme = get_option( 'swissfloorball_theme', 'auto' );
+		$theme = get_option( 'swfl_theme', 'auto' );
 		return in_array( $theme, array( 'auto', 'light', 'dark' ), true ) ? $theme : 'auto';
 	}
 
@@ -45,7 +45,7 @@ class Swiss_Floorball_API_Theme {
 	 * @return string Normalised 6-digit hex colour like '#0066cc', or '' when unset or invalid.
 	 */
 	public static function get_seed_color() {
-		$color = sanitize_hex_color( trim( (string) get_option( 'swissfloorball_seed_color', '' ) ) );
+		$color = sanitize_hex_color( trim( (string) get_option( 'swfl_seed_color', '' ) ) );
 		if ( empty( $color ) ) {
 			return '';
 		}
@@ -138,7 +138,7 @@ class Swiss_Floorball_API_Theme {
 	 * @return string 'flat' (default) or 'classic'.
 	 */
 	public static function get_table_style() {
-		$style = get_option( 'swissfloorball_table_style', 'flat' );
+		$style = get_option( 'swfl_table_style', 'flat' );
 		return in_array( $style, array( 'flat', 'classic' ), true ) ? $style : 'flat';
 	}
 
@@ -150,7 +150,7 @@ class Swiss_Floorball_API_Theme {
 	 * @return bool True when zebra striping is enabled.
 	 */
 	public static function is_table_striped() {
-		return '1' === (string) get_option( 'swissfloorball_table_striped', '0' );
+		return '1' === (string) get_option( 'swfl_table_striped', '0' );
 	}
 
 	/**
@@ -162,7 +162,7 @@ class Swiss_Floorball_API_Theme {
 	 * @return string Colour like '#0066cc', or '' when unset or invalid.
 	 */
 	private static function get_table_color( $name ) {
-		$color = sanitize_hex_color( trim( (string) get_option( 'swissfloorball_table_' . $name . '_color', '' ) ) );
+		$color = sanitize_hex_color( trim( (string) get_option( 'swfl_table_' . $name . '_color', '' ) ) );
 		if ( empty( $color ) ) {
 			return '';
 		}

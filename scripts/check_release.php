@@ -4,7 +4,7 @@
  *
  * Usage: php scripts/check_release.php [expected-version]
  *
- * Verifies that the plugin header, SWISS_FLOORBALL_API_VERSION, the README "Stable tag"
+ * Verifies that the plugin header, SWFL_VERSION, the README "Stable tag"
  * and the top changelog entry agree, that every PHP file has an ABSPATH guard, and that
  * translation functions use the correct text domain. Exit code 1 on any failure.
  */
@@ -14,12 +14,12 @@ $errors   = array();
 $expected = $argv[1] ?? null;
 $expected = $expected !== null ? ltrim( $expected, 'v' ) : null;
 
-$main   = file_get_contents( $root . '/floorball-api-for-swiss-unihockey.php' );
+$main   = file_get_contents( $root . '/swiss-floorball-api.php' );
 $readme = file_get_contents( $root . '/README.md' );
 
 preg_match( '/^\s*\*\s*Version:\s*(\S+)/m', $main, $m );
 $header = $m[1] ?? null;
-preg_match( "/define\(\s*'SWISS_FLOORBALL_API_VERSION',\s*'([^']+)'/", $main, $m );
+preg_match( "/define\(\s*'SWFL_VERSION',\s*'([^']+)'/", $main, $m );
 $const = $m[1] ?? null;
 preg_match( '/\*\*Stable tag:\*\*\s*(\S+)/', $readme, $m );
 $stable = $m[1] ?? null;

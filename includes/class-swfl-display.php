@@ -5,8 +5,8 @@
  * @link       https://flaviowaser.ch
  * @since      1.0.0
  *
- * @package    Swiss_Floorball_Api
- * @subpackage Swiss_Floorball_Api/includes
+ * @package    SWFL
+ * @subpackage SWFL_Plugin/includes
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -17,16 +17,16 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Class to handle HTML display of API data.
  *
  * @since      1.0.0
- * @package    Swiss_Floorball_Api
- * @subpackage Swiss_Floorball_Api/includes
+ * @package    SWFL
+ * @subpackage SWFL_Plugin/includes
  * @author     Flavio Waser <kontakt@flawas.ch>
  */
-class Swiss_Floorball_API_Display {
+class SWFL_Display {
 
 	/**
 	 * API Client instance.
 	 *
-	 * @var Swiss_Floorball_API_Client
+	 * @var SWFL_Client
 	 */
 	private static $client;
 
@@ -39,7 +39,7 @@ class Swiss_Floorball_API_Display {
 	 * @return void
 	 */
 	private static function render_error_notice( $message ) {
-		echo '<div class="sfa-info-box sfa-info-box--danger" role="alert"><p>' . Swiss_Floorball_Api_Icons::get( 'error' ) . ' ' . esc_html( $message ) . '</p></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Icon markup sanitized via wp_kses() in Swiss_Floorball_Api_Icons::get().
+		echo '<div class="sfa-info-box sfa-info-box--danger" role="alert"><p>' . SWFL_Icons::get( 'error' ) . ' ' . esc_html( $message ) . '</p></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Icon markup sanitized via wp_kses() in SWFL_Icons::get().
 	}
 
 	/**
@@ -77,11 +77,11 @@ class Swiss_Floorball_API_Display {
 	/**
 	 * Get the API client instance.
 	 *
-	 * @return Swiss_Floorball_API_Client
+	 * @return SWFL_Client
 	 */
 	public static function get_client() {
 		if ( null === self::$client ) {
-			self::$client = new Swiss_Floorball_API_Client();
+			self::$client = new SWFL_Client();
 		}
 		return self::$client;
 	}
@@ -116,7 +116,7 @@ class Swiss_Floorball_API_Display {
 	 * @return int Season year.
 	 */
 	public static function get_current_season() {
-		$season = absint( get_option( 'swissfloorball_actual_season', 0 ) );
+		$season = absint( get_option( 'swfl_actual_season', 0 ) );
 		if ( 0 === $season ) {
 			$season = absint( current_time( 'Y' ) );
 		}
@@ -126,16 +126,16 @@ class Swiss_Floorball_API_Display {
 	/**
 	 * Retrieve all teams of the club (Admin)
 	 *
-	 * @param int|string $swissfloorball_club_number Club ID.
+	 * @param int|string $swfl_club_number Club ID.
 	 * @return void
 	 */
-	public static function render_club_teams( $swissfloorball_club_number ) {
-		if ( empty( $swissfloorball_club_number ) ) {
+	public static function render_club_teams( $swfl_club_number ) {
+		if ( empty( $swfl_club_number ) ) {
 			return;
 		}
 
 		$client       = self::get_client();
-		$api_response = $client->fetch_data( 'clubs/' . $swissfloorball_club_number . '/statistics' );
+		$api_response = $client->fetch_data( 'clubs/' . $swfl_club_number . '/statistics' );
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['data']['regions'][0]['rows'] ) ) {
 			self::render_fetch_error( $api_response );
@@ -148,7 +148,7 @@ class Swiss_Floorball_API_Display {
 		$current_season = self::get_current_season();
 
 		?>
-		<h2 class="sfa-section-title"><?php Swiss_Floorball_Api_Icons::render( 'group' ); ?> <?php echo esc_html( $title ); ?></h2>
+		<h2 class="sfa-section-title"><?php SWFL_Icons::render( 'group' ); ?> <?php echo esc_html( $title ); ?></h2>
 		<?php /* translators: %d: number of teams registered with Swiss Floorball. */ ?>
 		<p><?php printf( esc_html__( 'Teams bei Swiss Floorball angemeldet: %d', 'swiss-floorball-api' ), intval( $team_count ) ); ?></p>
 
@@ -211,16 +211,16 @@ class Swiss_Floorball_API_Display {
 	/**
 	 * Retrieve all teams of the club (Public)
 	 *
-	 * @param int|string $swissfloorball_club_number Club ID.
+	 * @param int|string $swfl_club_number Club ID.
 	 * @return void
 	 */
-	public static function render_club_teams_pub( $swissfloorball_club_number ) {
-		if ( empty( $swissfloorball_club_number ) ) {
+	public static function render_club_teams_pub( $swfl_club_number ) {
+		if ( empty( $swfl_club_number ) ) {
 			return;
 		}
 
 		$client       = self::get_client();
-		$api_response = $client->fetch_data( 'clubs/' . $swissfloorball_club_number . '/statistics' );
+		$api_response = $client->fetch_data( 'clubs/' . $swfl_club_number . '/statistics' );
 
 		if ( is_wp_error( $api_response ) || ! isset( $api_response['data']['regions'][0]['rows'] ) ) {
 			self::render_fetch_error( $api_response );
@@ -231,7 +231,7 @@ class Swiss_Floorball_API_Display {
 		$title = isset( $api_response['data']['title'] ) ? $api_response['data']['title'] : '';
 
 		?>
-		<h3 class="sfa-section-title"><?php Swiss_Floorball_Api_Icons::render( 'group' ); ?> <?php echo esc_html( $title ); ?></h3>
+		<h3 class="sfa-section-title"><?php SWFL_Icons::render( 'group' ); ?> <?php echo esc_html( $title ); ?></h3>
 		<div class="sfa-table-wrap"><table class="sfa-data-table">
 			<caption class="sfa-visually-hidden"><?php esc_html_e( 'Platzierungen der Club-Teams', 'swiss-floorball-api' ); ?></caption>
 			<thead>
@@ -255,23 +255,23 @@ class Swiss_Floorball_API_Display {
 	/**
 	 * Get club games.
 	 *
-	 * @param int|string $swissfloorball_club_number Club ID.
+	 * @param int|string $swfl_club_number Club ID.
 	 * @param int|string $season Season ID.
 	 * @return void
 	 */
-	public static function render_club_games( $swissfloorball_club_number, $season ) {
-		Swiss_Floorball_API_Widgets::render_admin_games( 'club', absint( $swissfloorball_club_number ), absint( $season ), __( 'Clubspiele', 'swiss-floorball-api' ), __( 'Spiele des Clubs', 'swiss-floorball-api' ) );
+	public static function render_club_games( $swfl_club_number, $season ) {
+		SWFL_Widgets::render_admin_games( 'club', absint( $swfl_club_number ), absint( $season ), __( 'Clubspiele', 'swiss-floorball-api' ), __( 'Spiele des Clubs', 'swiss-floorball-api' ) );
 	}
 
 	/**
 	 * Get team games.
 	 *
-	 * @param int|string $swissfloorball_team_number Team ID.
+	 * @param int|string $swfl_team_number Team ID.
 	 * @param int|string $season Season ID.
 	 * @return void
 	 */
-	public static function render_team_games( $swissfloorball_team_number, $season ) {
-		Swiss_Floorball_API_Widgets::render_admin_games( 'team', absint( $swissfloorball_team_number ), absint( $season ), __( 'Teamspiele', 'swiss-floorball-api' ), __( 'Spiele des Teams', 'swiss-floorball-api' ) );
+	public static function render_team_games( $swfl_team_number, $season ) {
+		SWFL_Widgets::render_admin_games( 'team', absint( $swfl_team_number ), absint( $season ), __( 'Teamspiele', 'swiss-floorball-api' ), __( 'Spiele des Teams', 'swiss-floorball-api' ) );
 	}
 
 	/**
@@ -292,7 +292,7 @@ class Swiss_Floorball_API_Display {
 		$title   = isset( $api_response['text'] ) ? $api_response['text'] : '';
 
 		?>
-		<h2 class="sfa-section-title"><?php Swiss_Floorball_Api_Icons::render( 'trophy' ); ?> <?php echo esc_html( $title ); ?></h2>
+		<h2 class="sfa-section-title"><?php SWFL_Icons::render( 'trophy' ); ?> <?php echo esc_html( $title ); ?></h2>
 
 		<div class="sfa-table-wrap"><table class="sfa-data-table">
 			<caption class="sfa-visually-hidden"><?php esc_html_e( 'Ligen', 'swiss-floorball-api' ); ?></caption>
@@ -341,7 +341,7 @@ class Swiss_Floorball_API_Display {
 		$title   = isset( $api_response['text'] ) ? $api_response['text'] : '';
 
 		?>
-		<h2 class="sfa-section-title"><?php Swiss_Floorball_Api_Icons::render( 'calendar' ); ?> <?php echo esc_html( $title ); ?></h2>
+		<h2 class="sfa-section-title"><?php SWFL_Icons::render( 'calendar' ); ?> <?php echo esc_html( $title ); ?></h2>
 
 		<div class="sfa-table-wrap"><table class="sfa-data-table">
 			<caption class="sfa-visually-hidden"><?php esc_html_e( 'Saisons', 'swiss-floorball-api' ); ?></caption>
@@ -387,7 +387,7 @@ class Swiss_Floorball_API_Display {
 		$title   = isset( $api_response['text'] ) ? $api_response['text'] : '';
 
 		?>
-		<h2 class="sfa-section-title"><?php Swiss_Floorball_Api_Icons::render( 'group' ); ?> <?php echo esc_html( $title ); ?></h2>
+		<h2 class="sfa-section-title"><?php SWFL_Icons::render( 'group' ); ?> <?php echo esc_html( $title ); ?></h2>
 
 		<div class="sfa-table-wrap"><table class="sfa-data-table">
 			<caption class="sfa-visually-hidden"><?php esc_html_e( 'Clubs', 'swiss-floorball-api' ); ?></caption>
@@ -448,7 +448,7 @@ class Swiss_Floorball_API_Display {
 		?>
 		<div class="sfa-calendar-link">
 			<a href="<?php echo esc_url( preg_replace( '#^https?://#', 'webcal://', $url ), array( 'webcal' ) ); ?>" target="_blank" rel="noopener noreferrer" class="sfa-calendar-subscribe">
-				<?php Swiss_Floorball_Api_Icons::render( 'calendar' ); ?> <?php esc_html_e( 'Kalender abonnieren', 'swiss-floorball-api' ); ?>
+				<?php SWFL_Icons::render( 'calendar' ); ?> <?php esc_html_e( 'Kalender abonnieren', 'swiss-floorball-api' ); ?>
 			</a>
 		</div>
 		<?php
@@ -546,7 +546,7 @@ class Swiss_Floorball_API_Display {
 		// Read team names from the games list to avoid one detail request per game.
 		$home_column = 'club' === $mode ? 3 : 2;
 		?>
-		<h3 class="sfa-calendar-title"><?php Swiss_Floorball_Api_Icons::render( 'schedule' ); ?> <?php esc_html_e( 'Nächste Spiele', 'swiss-floorball-api' ); ?></h3>
+		<h3 class="sfa-calendar-title"><?php SWFL_Icons::render( 'schedule' ); ?> <?php esc_html_e( 'Nächste Spiele', 'swiss-floorball-api' ); ?></h3>
 		<div class="sfa-table-wrap"><table class="sfa-data-table sfa-calendar-table">
 			<caption class="sfa-visually-hidden"><?php esc_html_e( 'Spielkalender', 'swiss-floorball-api' ); ?></caption>
 			<thead>
@@ -593,7 +593,7 @@ class Swiss_Floorball_API_Display {
 		$title = isset( $api_response['data']['title'] ) ? $api_response['data']['title'] : 'Cups';
 
 		?>
-		<h2 class="sfa-section-title"><?php Swiss_Floorball_Api_Icons::render( 'trophy' ); ?> <?php echo esc_html( $title ); ?></h2>
+		<h2 class="sfa-section-title"><?php SWFL_Icons::render( 'trophy' ); ?> <?php echo esc_html( $title ); ?></h2>
 		<div class="sfa-table-wrap"><table class="sfa-data-table">
 			<caption class="sfa-visually-hidden"><?php esc_html_e( 'Cups', 'swiss-floorball-api' ); ?></caption>
 			<thead>
@@ -641,7 +641,7 @@ class Swiss_Floorball_API_Display {
 		$title   = isset( $api_response['text'] ) ? $api_response['text'] : 'Gruppen';
 
 		?>
-		<h2 class="sfa-section-title"><?php Swiss_Floorball_Api_Icons::render( 'group' ); ?> <?php echo esc_html( $title ); ?></h2>
+		<h2 class="sfa-section-title"><?php SWFL_Icons::render( 'group' ); ?> <?php echo esc_html( $title ); ?></h2>
 		<div class="sfa-table-wrap"><table class="sfa-data-table">
 			<caption class="sfa-visually-hidden"><?php esc_html_e( 'Gruppen', 'swiss-floorball-api' ); ?></caption>
 			<thead>
@@ -678,7 +678,7 @@ class Swiss_Floorball_API_Display {
 		$title = isset( $api_response['data']['title'] ) ? $api_response['data']['title'] : 'Teams';
 
 		?>
-		<h2 class="sfa-section-title"><?php Swiss_Floorball_Api_Icons::render( 'group' ); ?> <?php echo esc_html( $title ); ?></h2>
+		<h2 class="sfa-section-title"><?php SWFL_Icons::render( 'group' ); ?> <?php echo esc_html( $title ); ?></h2>
 		<div class="sfa-table-wrap"><table class="sfa-data-table">
 			<caption class="sfa-visually-hidden"><?php esc_html_e( 'Teams', 'swiss-floorball-api' ); ?></caption>
 			<thead>
@@ -708,17 +708,17 @@ class Swiss_Floorball_API_Display {
 	/**
 	 * Get club games callout.
 	 *
-	 * @param int|string $swissfloorball_club_number Club ID.
+	 * @param int|string $swfl_club_number Club ID.
 	 * @param int|string $season Season ID.
 	 * @return void
 	 */
-	public static function render_club_games_callout( $swissfloorball_club_number, $season ) {
+	public static function render_club_games_callout( $swfl_club_number, $season ) {
 		$client       = self::get_client();
 		$api_response = $client->fetch_data(
 			'games',
 			array(
 				'mode'    => 'club',
-				'club_id' => $swissfloorball_club_number,
+				'club_id' => $swfl_club_number,
 				'season'  => $season,
 			)
 		);
@@ -737,7 +737,7 @@ class Swiss_Floorball_API_Display {
 				continue;
 			}
 			$game_id      = $rows[ $i ]['link']['ids'][0];
-			$game_details = Swiss_Floorball_API_Display_Stats::get_gamedetails( $game_id );
+			$game_details = SWFL_Display_Stats::get_gamedetails( $game_id );
 
 			if ( ! $game_details ) {
 				continue;
@@ -774,17 +774,17 @@ class Swiss_Floorball_API_Display {
 	/**
 	 * Get club games cards.
 	 *
-	 * @param int|string $swissfloorball_club_number Club ID.
+	 * @param int|string $swfl_club_number Club ID.
 	 * @param int|string $season Season ID.
 	 * @return void
 	 */
-	public static function render_club_games_cards( $swissfloorball_club_number, $season ) {
+	public static function render_club_games_cards( $swfl_club_number, $season ) {
 		$client       = self::get_client();
 		$api_response = $client->fetch_data(
 			'games',
 			array(
 				'mode'    => 'club',
-				'club_id' => $swissfloorball_club_number,
+				'club_id' => $swfl_club_number,
 				'season'  => $season,
 			)
 		);
@@ -809,7 +809,7 @@ class Swiss_Floorball_API_Display {
 						continue;
 					}
 					$game_id      = $rows[ $i ]['link']['ids'][0];
-					$game_details = Swiss_Floorball_API_Display_Stats::get_gamedetails( $game_id );
+					$game_details = SWFL_Display_Stats::get_gamedetails( $game_id );
 
 					if ( ! $game_details ) {
 						continue;

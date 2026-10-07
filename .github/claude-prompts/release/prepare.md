@@ -3,7 +3,7 @@
    Die Version muss `^[0-9]+\.[0-9]+\.[0-9]+$` entsprechen und grösser als der neueste Tag sein.
 2. Erstelle den Branch `release/vX.Y.Z` vom Default-Branch (existiert er schon: Abbruchregel).
 3. Ändere NUR diese Stellen:
-   - `floorball-api-for-swiss-unihockey.php`: Header `Version:` und Konstante `SWISS_FLOORBALL_API_VERSION`
+   - `swiss-floorball-api.php`: Header `Version:` und Konstante `SWFL_VERSION`
    - `README.md`: `**Stable tag:**` und neuer Changelog-Eintrag oben (`### X.Y.Z (YYYY-MM-DD)`, heutiges Datum,
      englisch, Entwurf aus dem plan-Kommentar). Nie `readme.txt`.
    Keine Code-Änderungen, kein Refactoring.

@@ -4,7 +4,7 @@ Version 2.0.0 ist ein Major-Release. Bitte vor dem Update lesen, besonders wenn 
 
 ## 1. Wechsel der API-Quelle
 
-Die bisherige API (`https://api-v2.swissunihockey.ch/api/`) ist **keine API-Quelle mehr**. Das Plugin kennt jetzt zwei Quellen, einstellbar unter «Swiss Floorball» → «Einstellungen» → «API source» (Option `swissfloorball_api_source`):
+Die bisherige API (`https://api-v2.swissunihockey.ch/api/`) ist **keine API-Quelle mehr**. Das Plugin kennt jetzt zwei Quellen, einstellbar unter «Swiss Floorball» → «Einstellungen» → «API source» (Option `swfl_api_source`):
 
 | Quelle | Basis-URL | Zugangsdaten | Standard |
 |---|---|---|---|
@@ -36,7 +36,7 @@ Alles andere (Spiele, Ranglisten, Teams, Clubs, Saisons, Cups, Spieldetails, Kal
 
 ![Einstellungen mit gewählter Partner-API](media/admin-settings-partner.png)
 
-Hinweis: Die Option `swissfloorball_api_key` existierte schon vorher, wurde aber nie für Anfragen verwendet. Ein dort gespeicherter Wert wird jetzt als Partner-Key interpretiert, aber nur, wenn die Quelle auf «Partner API» steht.
+Hinweis: Die Option `swfl_api_key` existierte schon vorher, wurde aber nie für Anfragen verwendet. Ein dort gespeicherter Wert wird jetzt als Partner-Key interpretiert, aber nur, wenn die Quelle auf «Partner API» steht.
 
 ## 2. Kalender-Abos (ICS)
 
@@ -82,13 +82,13 @@ Alle Optionen werden bei der Deinstallation gelöscht.
 
 | Option | Bedeutung |
 |---|---|
-| `swissfloorball_api_source` | `free` (Standard) oder `partner` |
-| `swissfloorball_api_key`, `swissfloorball_api_secret` | Zugangsdaten der Partner API |
-| `swissfloorball_theme` | `auto` (Standard), `light`, `dark` |
-| `swissfloorball_seed_color` | Markenfarbe als Hex, leitet Primär- und Sekundärfarben ab |
-| `swissfloorball_table_style` | `flat` (Standard) oder `classic` |
-| `swissfloorball_table_striped` | Zebra-Streifen (Standard aus) |
-| `swissfloorball_table_{accent,header,divider,highlight}_color` | Tabellenfarben |
+| `swfl_api_source` | `free` (Standard) oder `partner` |
+| `swfl_api_key`, `swfl_api_secret` | Zugangsdaten der Partner API |
+| `swfl_theme` | `auto` (Standard), `light`, `dark` |
+| `swfl_seed_color` | Markenfarbe als Hex, leitet Primär- und Sekundärfarben ab |
+| `swfl_table_style` | `flat` (Standard) oder `classic` |
+| `swfl_table_striped` | Zebra-Streifen (Standard aus) |
+| `swfl_table_{accent,header,divider,highlight}_color` | Tabellenfarben |
 
 ## 6. Admin-Bereich
 
@@ -103,3 +103,14 @@ Alle Optionen werden bei der Deinstallation gelöscht.
 3. Gibt es abonnierte Kalender? Neu abonnieren.
 4. Eigenes CSS auf Plugin-Klassen? Nach dem Update prüfen, notfalls «Table style» = `classic`.
 5. Nach dem Update den Cache leeren («Cache leeren» in den Einstellungen).
+
+## Optionen heissen jetzt `swfl_*`
+
+Alle Einstellungen heissen nicht mehr `swissfloorball_*`, sondern `swfl_*` (WordPress.org verlangt einen eindeutigen Präfix). Beim ersten Seitenaufruf nach dem Update kopiert `SWFL_Migrator` die gespeicherten Werte und löscht die alten Einträge; danach merkt sich die Option `swfl_options_migrated`, dass es erledigt ist. Es geht nichts verloren, ein bereits unter dem neuen Namen gespeicherter Wert wird nie überschrieben. Wer auf eine ältere Version zurückgeht, muss die Einstellungen neu eintragen. Eigener Code, der `get_option( 'swissfloorball_…' )` liest, muss auf `swfl_…` umgestellt werden.
+
+## Hauptdatei heisst jetzt `swiss-floorball-api.php`
+
+Die Hauptdatei und alle internen Dateien tragen jetzt den Namen des WordPress.org-Slugs bzw. den Präfix `swfl` (`class-swfl-*.php`, `swfl-*.css|js|php`). Die alte Datei `floorball-api-for-swiss-unihockey.php` bleibt als kleiner Weiterleiter bestehen: Beim ersten Laden trägt sie die neue Hauptdatei bei den aktiven Plugins und bei den automatischen Updates ein. Die Admin-Seiten heissen jetzt `admin.php?page=swiss-floorball-api…` (statt `…floorball-api-for-swiss-unihockey…`); alte Lesezeichen müssen einmal angepasst werden.
+
+Wird das Plugin nach einem manuellen Einzel-Update (Plugin-Seite ohne JavaScript) als deaktiviert angezeigt, genügt einmal «Aktivieren»; die Einstellungen bleiben erhalten.
+

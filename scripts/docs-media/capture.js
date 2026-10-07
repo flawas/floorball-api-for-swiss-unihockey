@@ -206,9 +206,9 @@ async function main() {
   log(ctx);
 
   log('Configuring WordPress ...');
-  wpOptionUpdate('swissfloorball_club_number', ctx.club_id);
-  wpOptionUpdate('swissfloorball_club_name', ctx.club_name);
-  wpOptionUpdate('swissfloorball_actual_season', ctx.season);
+  wpOptionUpdate('swfl_club_number', ctx.club_id);
+  wpOptionUpdate('swfl_club_name', ctx.club_name);
+  wpOptionUpdate('swfl_actual_season', ctx.season);
 
   const pages = createPages(ctx);
 

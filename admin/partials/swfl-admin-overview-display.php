@@ -7,8 +7,8 @@
  * @link       https://flaviowaser.ch
  * @since      1.0.0
  *
- * @package    Swiss_Floorball_Api
- * @subpackage Swiss_Floorball_Api/admin/partials
+ * @package    SWFL
+ * @subpackage SWFL_Plugin/admin/partials
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -21,27 +21,27 @@ if ( ! current_user_can( 'manage_options' ) ) {
 ?>
 
 <?php
-$swfl_club_number = get_option( 'swissfloorball_club_number' );
-$swfl_season      = Swiss_Floorball_API_Display::get_current_season();
+$swfl_club_number = get_option( 'swfl_club_number' );
+$swfl_season      = SWFL_Display::get_current_season();
 ?>
-<div class="wrap sfa-admin-wrap" data-sfa-theme="<?php echo esc_attr( Swiss_Floorball_API_Theme::get_theme() ); ?>">
+<div class="wrap sfa-admin-wrap" data-sfa-theme="<?php echo esc_attr( SWFL_Theme::get_theme() ); ?>">
 	<div class="sfa-admin-header">
-		<h1><?php Swiss_Floorball_Api_Icons::render( 'chart' ); ?> <?php esc_html_e( 'Club-Übersicht', 'swiss-floorball-api' ); ?></h1>
+		<h1><?php SWFL_Icons::render( 'chart' ); ?> <?php esc_html_e( 'Club-Übersicht', 'swiss-floorball-api' ); ?></h1>
 		<p><?php esc_html_e( 'Teams und Spiele des konfigurierten Clubs', 'swiss-floorball-api' ); ?></p>
 	</div>
 
 	<?php if ( $swfl_club_number && $swfl_season ) : ?>
 		<div class="sfa-table-container">
-			<?php Swiss_Floorball_API_Display::render_club_teams( $swfl_club_number ); ?>
+			<?php SWFL_Display::render_club_teams( $swfl_club_number ); ?>
 		</div>
 		<div class="sfa-table-container">
-			<?php Swiss_Floorball_API_Display::render_club_games( $swfl_club_number, $swfl_season ); ?>
+			<?php SWFL_Display::render_club_games( $swfl_club_number, $swfl_season ); ?>
 		</div>
 	<?php else : ?>
 		<div class="sfa-callout">
-			<?php Swiss_Floorball_Api_Icons::render( 'warning' ); ?>
+			<?php SWFL_Icons::render( 'warning' ); ?>
 			<span><?php esc_html_e( 'Bitte konfigurieren Sie zuerst die Einstellungen (Club ID und Saison).', 'swiss-floorball-api' ); ?></span>
-			<a href="<?php echo esc_url( admin_url( 'admin.php?page=floorball-api-for-swiss-unihockey-settings' ) ); ?>" class="button button-primary"><?php esc_html_e( 'Einstellungen', 'swiss-floorball-api' ); ?></a>
+			<a href="<?php echo esc_url( admin_url( 'admin.php?page=swiss-floorball-api-settings' ) ); ?>" class="button button-primary"><?php esc_html_e( 'Einstellungen', 'swiss-floorball-api' ); ?></a>
 		</div>
 	<?php endif; ?>
 </div>

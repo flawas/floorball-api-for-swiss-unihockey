@@ -10,7 +10,7 @@
  * @link       https://flaviowaser.ch
  * @since      1.0.0
  *
- * @package    Swiss_Floorball_Api
+ * @package    SWFL
  */
 
 // If uninstall not called from WordPress, then exit.
@@ -26,23 +26,31 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 function swfl_uninstall_site() {
 	global $wpdb;
 
-	// Delete plugin options.
-	delete_option( 'swissfloorball_api_key' );
-	delete_option( 'swissfloorball_api_secret' );
-	delete_option( 'swissfloorball_api_source' );
+	// Delete plugin options, including the ones stored under the legacy `swissfloorball_` prefix.
+	$suffixes = array(
+		'api_key',
+		'api_secret',
+		'api_source',
+		'club_number',
+		'club_name',
+		'actual_season',
+		'request_timeout',
+		'show_icons',
+		'theme',
+		'seed_color',
+		'table_style',
+		'table_striped',
+		'table_accent_color',
+		'table_header_color',
+		'table_divider_color',
+		'table_highlight_color',
+	);
+	foreach ( $suffixes as $suffix ) {
+		delete_option( 'swfl_' . $suffix );
+		delete_option( 'swissfloorball_' . $suffix );
+	}
+	delete_option( 'swfl_options_migrated' );
 	delete_transient( 'swfl_partner_token' );
-	delete_option( 'swissfloorball_club_number' );
-	delete_option( 'swissfloorball_club_name' );
-	delete_option( 'swissfloorball_actual_season' );
-	delete_option( 'swissfloorball_request_timeout' );
-	delete_option( 'swissfloorball_theme' );
-	delete_option( 'swissfloorball_seed_color' );
-	delete_option( 'swissfloorball_table_style' );
-	delete_option( 'swissfloorball_table_striped' );
-	delete_option( 'swissfloorball_table_accent_color' );
-	delete_option( 'swissfloorball_table_header_color' );
-	delete_option( 'swissfloorball_table_divider_color' );
-	delete_option( 'swissfloorball_table_highlight_color' );
 
 	// Delete all cached API data (transients with 'swfl_' prefix).
 	// This includes both the transient values and their timeout entries.

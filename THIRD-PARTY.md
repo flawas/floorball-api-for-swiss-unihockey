@@ -17,7 +17,7 @@ Icons in `public/icons/`:
 * `info`
 * `refresh`
 
-The icon path data embedded in `includes/class-floorball-api-for-swiss-unihockey-icons.php`
+The icon path data embedded in `includes/class-swfl-icons.php`
 originates from the same Material icon set (also Apache 2.0).
 
 ## Roboto (Google Fonts)

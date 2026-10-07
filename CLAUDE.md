@@ -7,8 +7,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 A WordPress plugin ("Swiss Floorball API") that fetches data from the Swiss Unihockey public API
 (`wc.swissunihockey.ch`) and renders it via shortcodes (games, rankings, topscorers, player
 profiles, calendars) and an admin dashboard. PHP only, no build step, no Composer/npm dependencies.
-Plugin slug on WordPress.org is `swiss-floorball-api`; the main file and class names still use the
-older `floorball-api-for-swiss-unihockey` naming (see Naming below).
+Plugin slug on WordPress.org is `swiss-floorball-api`; the main file is `swiss-floorball-api.php`, all PHP
+globals use the prefix `swfl` (see Naming below).
 
 ## Local development
 
@@ -35,8 +35,8 @@ php verify_api.php
 ```
 
 Use it to sanity-check real API responses/shapes when changing anything in
-`includes/class-floorball-api-for-swiss-unihockey-client.php` or the render methods in
-`includes/class-floorball-api-for-swiss-unihockey-display.php`.
+`includes/class-swfl-client.php` or the render methods in
+`includes/class-swfl-display.php`.
 
 ## Release process
 
@@ -52,7 +52,7 @@ Manual path:
 Releases are tag-driven via `.github/workflows/release.yml`, triggered by pushing a `vX.Y.Z` tag (or
 manual dispatch with a tag input):
 
-1. The workflow verifies the `Version:` header in `floorball-api-for-swiss-unihockey.php` matches the
+1. The workflow verifies the `Version:` header in `swiss-floorball-api.php` matches the
    tag — a mismatch fails the build.
 2. `scripts/convert_readme.php` generates `readme.txt` from `README.md` (metadata block + heading
    levels converted to WordPress.org readme format). `readme.txt` is gitignored and never hand-edited.
@@ -63,7 +63,7 @@ manual dispatch with a tag input):
 4. A second job deploys the same tag to the WordPress.org SVN repo (slug `swiss-floorball-api`).
 
 When bumping the version, update it in **both** places: the `Version:` header and
-`SWISS_FLOORBALL_API_VERSION` constant in `floorball-api-for-swiss-unihockey.php`, and add a changelog
+`SWFL_VERSION` constant in `swiss-floorball-api.php`, and add a changelog
 entry at the top of `README.md` (the single source of truth — `readme.txt` is generated from it, never
 edited directly).
 
@@ -72,18 +72,18 @@ edited directly).
 Standard WordPress plugin boilerplate (loader/i18n/admin/public split), with all API logic
 centralized outside that split:
 
-- `floorball-api-for-swiss-unihockey.php` — plugin bootstrap; defines `SWISS_FLOORBALL_API_VERSION`,
-  registers activation/deactivation hooks, instantiates `Swiss_Floorball_Api`.
-- `includes/class-floorball-api-for-swiss-unihockey.php` — core orchestrator. Loads every other class
+- `swiss-floorball-api.php` — plugin bootstrap; defines `SWFL_VERSION`,
+  registers activation/deactivation hooks, instantiates `SWFL_Plugin`.
+- `includes/class-swfl-plugin.php` — core orchestrator. Loads every other class
   and wires admin/public hooks through the loader.
-- `includes/class-floorball-api-for-swiss-unihockey-loader.php` — generic action/filter registration
-  queue, run in `Swiss_Floorball_Api::run()`.
-- `includes/class-floorball-api-for-swiss-unihockey-client.php` (`Swiss_Floorball_API_Client`) — the
+- `includes/class-swfl-loader.php` — generic action/filter registration
+  queue, run in `SWFL_Plugin::run()`.
+- `includes/class-swfl-client.php` (`SWFL_Client`) — the
   **only** place that talks to the external API. `fetch_data($endpoint, $args, $cache_time)` builds the
   URL, caches responses as WordPress transients keyed `swfl_<sha256(url)>` (default 1 hour), and returns
   the decoded JSON array or a `WP_Error`. Any new API call should go through this client, not a direct
   `wp_remote_get`.
-- `includes/class-floorball-api-for-swiss-unihockey-display.php` (`Swiss_Floorball_API_Display`) — all
+- `includes/class-swfl-display.php` (`SWFL_Display`) — all
   HTML rendering. Every `render_*` method fetches via the shared client and echoes a `.sfa-data-table`
   (or similar) directly — these are **not** templates, they're static methods called from both admin
   partials and public shortcode callbacks, so admin and frontend reuse the exact same rendering code.
@@ -93,33 +93,41 @@ centralized outside that split:
   render method.
 - Classes are kept small (SonarCloud limits a class to 20 methods) and split by topic; the output code
   is spread over these siblings, all in `includes/`:
-  `Swiss_Floorball_API_Display_Stats` (game details, rankings, players, topscorers),
-  `Swiss_Floorball_API_Widgets` (widget output and REST routes) with `Swiss_Floorball_API_Table_Data`
-  (reading and paging grid rows) and `Swiss_Floorball_API_Calendar` (iCalendar feed), and
-  `Swiss_Floorball_API_Theme` (theme, seed colour and table colour CSS).
-- `public/class-floorball-api-for-swiss-unihockey-public.php` — registers all `swfl-*` shortcodes;
+  `SWFL_Display_Stats` (game details, rankings, players, topscorers),
+  `SWFL_Widgets` (widget output and REST routes) with `SWFL_Table_Data`
+  (reading and paging grid rows) and `SWFL_Calendar` (iCalendar feed), and
+  `SWFL_Theme` (theme, seed colour and table colour CSS).
+- `public/class-swfl-public.php` — registers all `swfl-*` shortcodes;
   each shortcode callback just sanitizes attributes (`absint()` on IDs) and delegates straight to a
-  `Swiss_Floorball_API_Display::render_*` method, wrapped in an output buffer inside a
-  `.swiss-floorball-plugin` div. Styles/scripts (`public/class-floorball-api-for-swiss-unihockey-public-assets.php`)
+  `SWFL_Display::render_*` method, wrapped in an output buffer inside a
+  `.swiss-floorball-plugin` div. Styles/scripts (`public/class-swfl-public-assets.php`)
   are only enqueued when `page_has_shortcode()` detects one of the registered shortcodes in the current
   post content.
-- `admin/class-floorball-api-for-swiss-unihockey-admin.php` — settings page (Club ID, season) plus
+- `admin/class-swfl-admin.php` — settings page (Club ID, season) plus
   "helper" admin pages (Liga, Clubs, Spiele/Matches, Saison) that call the same `Display::render_*`
   methods to let admins browse/discover IDs (league, game_class, group, team, game) needed for
   shortcode attributes. Also handles cache-busting via `admin_post_swfl_clear_cache`. The Settings API
   part (field definitions, sanitizers, field output) lives in
-  `admin/class-floorball-api-for-swiss-unihockey-admin-settings.php`.
-- Settings are stored as plain WordPress options: `swissfloorball_club_number`,
-  `swissfloorball_actual_season`.
+  `admin/class-swfl-admin-settings.php`.
+- Settings are stored as plain WordPress options: `swfl_club_number`,
+  `swfl_actual_season`.
 
-### Naming inconsistency (intentional, documented in README changelog)
+### Naming
 
-The WordPress.org slug, shortcode prefix, text domain, and option prefix are `swiss-floorball-api` /
-`swfl-*` / `swiss-floorball-api` / `swissfloorball_*`, but the plugin's internal PHP class names, file
-names, and the `$plugin_name` property still use `floorball-api-for-swiss-unihockey` (the original
-slug before the WordPress.org rename). Don't try to "fix" this inconsistency as a drive-by refactor —
-it was a deliberate, scoped decision (changing class/file names would be a much larger breaking
-change) and is called out in the 1.0.5 changelog.
+The plugin slug, text domain and main file are `swiss-floorball-api`. Everything else uses the single
+prefix `swfl` (WordPress.org plugin review requires one unique prefix of at least four characters):
+classes `SWFL_*` in `class-swfl-*.php` files, the version constant `SWFL_VERSION`, options and
+transients `swfl_*`, hooks `swfl_*`, shortcodes `swfl-*`, assets and partials `swfl-*.{css,js,php}`, JS
+globals `swflWidgets` / `swflAutosave`. Admin pages use the slug `swiss-floorball-api[-suffix]`.
+
+Legacy names that still exist on purpose, all handled for upgrades:
+- Options were called `swissfloorball_*` up to 2.0.1. `SWFL_Migrator` copies them to `swfl_*` once on
+  `plugins_loaded`; `uninstall.php` removes both generations. New options start as `swfl_*` and need
+  no migration, but must be added to the list in `uninstall.php`.
+- The main file was called `floorball-api-for-swiss-unihockey.php`. That file is now a header-less
+  stub that points `active_plugins` / `active_sitewide_plugins` to `swiss-floorball-api.php` and loads
+  it, so sites that updated do not lose their activation (the stub has no plugin header on purpose, which means the legacy single-update path can still leave the plugin deactivated once). Don't delete it before most sites have
+  loaded it once.
 
 ## Conventions
 
@@ -147,7 +155,7 @@ don't reformat untouched code as a drive-by.
   single-line `if`), strict comparisons (`===`, `in_array( ..., true )`), no short open tags.
 - **Naming:** `snake_case` for functions, methods and variables; `Capitalized_Words_With_Underscores`
   for classes; class files named `class-*.php` in lowercase with hyphens; hook names, options and
-  transients prefixed (`swfl_`, `swissfloorball_`) to avoid global collisions.
+  transients prefixed (`swfl_`) to avoid global collisions.
 - **Security:** sanitize input (`sanitize_text_field`, `absint`, `wp_unslash`), validate, escape
   late on output, nonce + capability checks on every state-changing request, `$wpdb->prepare()` for
   any SQL (see Conventions above).

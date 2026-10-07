@@ -7,8 +7,8 @@
  * @link       https://flaviowaser.ch
  * @since      1.0.0
  *
- * @package    Swiss_Floorball_Api
- * @subpackage Swiss_Floorball_Api/public/partials
+ * @package    SWFL
+ * @subpackage SWFL_Plugin/public/partials
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

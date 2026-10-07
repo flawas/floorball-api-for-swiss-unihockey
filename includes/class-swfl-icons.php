@@ -2,7 +2,7 @@
 /**
  * Inline SVG icon set.
  *
- * @package Swiss_Floorball_Api
+ * @package SWFL
  * @since   1.0.5
  */
 
@@ -19,11 +19,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @link       https://flaviowaser.ch
  * @since      1.0.6
  *
- * @package    Swiss_Floorball_Api
- * @subpackage Swiss_Floorball_Api/includes
+ * @package    SWFL
+ * @subpackage SWFL_Plugin/includes
  * @author     Flavio Waser <kontakt@flawas.ch>
  */
-class Swiss_Floorball_Api_Icons {
+class SWFL_Icons {
 
 	/**
 	 * Path data for each available icon, keyed by name.
@@ -69,7 +69,7 @@ class Swiss_Floorball_Api_Icons {
 	 * @return string Sanitized inline SVG markup, or an empty string if icons are disabled or $name is unknown.
 	 */
 	public static function get( $name, $args = '' ) {
-		if ( '1' !== (string) get_option( 'swissfloorball_show_icons', '1' ) || ! is_string( $name ) || ! preg_match( '/^[a-z0-9_]+$/', $name ) ) {
+		if ( '1' !== (string) get_option( 'swfl_show_icons', '1' ) || ! is_string( $name ) || ! preg_match( '/^[a-z0-9_]+$/', $name ) ) {
 			return '';
 		}
 

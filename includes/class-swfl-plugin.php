@@ -8,8 +8,8 @@
  * @link       https://flaviowaser.ch
  * @since      1.0.0
  *
- * @package    Swiss_Floorball_Api
- * @subpackage Swiss_Floorball_Api/includes
+ * @package    SWFL
+ * @subpackage SWFL_Plugin/includes
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -26,11 +26,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  * version of the plugin.
  *
  * @since      1.0.0
- * @package    Swiss_Floorball_Api
- * @subpackage Swiss_Floorball_Api/includes
+ * @package    SWFL
+ * @subpackage SWFL_Plugin/includes
  * @author     Flavio Waser <kontakt@flawas.ch>
  */
-class Swiss_Floorball_Api {
+class SWFL_Plugin {
 
 	/**
 	 * The loader that's responsible for maintaining and registering all hooks that power
@@ -38,7 +38,7 @@ class Swiss_Floorball_Api {
 	 *
 	 * @since    1.0.0
 	 * @access   protected
-	 * @var      Swiss_Floorball_Api_Loader    $loader    Maintains and registers all hooks for the plugin.
+	 * @var      SWFL_Loader    $loader    Maintains and registers all hooks for the plugin.
 	 */
 	protected $loader;
 
@@ -70,12 +70,12 @@ class Swiss_Floorball_Api {
 	 * @since    1.0.0
 	 */
 	public function __construct() {
-		if ( defined( 'SWISS_FLOORBALL_API_VERSION' ) ) {
-			$this->version = SWISS_FLOORBALL_API_VERSION;
+		if ( defined( 'SWFL_VERSION' ) ) {
+			$this->version = SWFL_VERSION;
 		} else {
 			$this->version = '1.0.0';
 		}
-		$this->plugin_name = 'floorball-api-for-swiss-unihockey';
+		$this->plugin_name = 'swiss-floorball-api';
 
 		$this->load_dependencies();
 		$this->set_locale();
@@ -88,10 +88,10 @@ class Swiss_Floorball_Api {
 	 *
 	 * Include the following files that make up the plugin:
 	 *
-	 * - Swiss_Floorball_Api_Loader. Orchestrates the hooks of the plugin.
-	 * - Swiss_Floorball_Api_i18n. Defines internationalization functionality.
-	 * - Swiss_Floorball_Api_Admin. Defines all hooks for the admin area.
-	 * - Swiss_Floorball_Api_Public. Defines all hooks for the public side of the site.
+	 * - SWFL_Loader. Orchestrates the hooks of the plugin.
+	 * - SWFL_I18n. Defines internationalization functionality.
+	 * - SWFL_Admin. Defines all hooks for the admin area.
+	 * - SWFL_Public. Defines all hooks for the public side of the site.
 	 *
 	 * Create an instance of the loader which will be used to register the hooks
 	 * with WordPress.
@@ -105,43 +105,44 @@ class Swiss_Floorball_Api {
 		 * The class responsible for orchestrating the actions and filters of the
 		 * core plugin.
 		 */
-		require_once plugin_dir_path( __DIR__ ) . 'includes/class-floorball-api-for-swiss-unihockey-loader.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-loader.php';
 
 		/**
 		 * The class responsible for defining internationalization functionality
 		 * of the plugin.
 		 */
-		require_once plugin_dir_path( __DIR__ ) . 'includes/class-floorball-api-for-swiss-unihockey-i18n.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-i18n.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-migrator.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
-		require_once plugin_dir_path( __DIR__ ) . 'admin/class-floorball-api-for-swiss-unihockey-admin.php';
-		require_once plugin_dir_path( __DIR__ ) . 'admin/class-floorball-api-for-swiss-unihockey-admin-settings.php';
+		require_once plugin_dir_path( __DIR__ ) . 'admin/class-swfl-admin.php';
+		require_once plugin_dir_path( __DIR__ ) . 'admin/class-swfl-admin-settings.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site.
 		 */
-		require_once plugin_dir_path( __DIR__ ) . 'public/class-floorball-api-for-swiss-unihockey-public.php';
-		require_once plugin_dir_path( __DIR__ ) . 'public/class-floorball-api-for-swiss-unihockey-public-assets.php';
+		require_once plugin_dir_path( __DIR__ ) . 'public/class-swfl-public.php';
+		require_once plugin_dir_path( __DIR__ ) . 'public/class-swfl-public-assets.php';
 
-		require_once plugin_dir_path( __DIR__ ) . 'includes/class-floorball-api-for-swiss-unihockey-client.php';
-		require_once plugin_dir_path( __DIR__ ) . 'includes/class-floorball-api-for-swiss-unihockey-display.php';
-		require_once plugin_dir_path( __DIR__ ) . 'includes/class-floorball-api-for-swiss-unihockey-theme.php';
-		require_once plugin_dir_path( __DIR__ ) . 'includes/class-floorball-api-for-swiss-unihockey-display-stats.php';
-		require_once plugin_dir_path( __DIR__ ) . 'includes/class-floorball-api-for-swiss-unihockey-widgets.php';
-		require_once plugin_dir_path( __DIR__ ) . 'includes/class-floorball-api-for-swiss-unihockey-calendar.php';
-		require_once plugin_dir_path( __DIR__ ) . 'includes/class-floorball-api-for-swiss-unihockey-table-data.php';
-		require_once plugin_dir_path( __DIR__ ) . 'includes/class-floorball-api-for-swiss-unihockey-icons.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-client.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-display.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-theme.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-display-stats.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-widgets.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-calendar.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-table-data.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-icons.php';
 
-		$this->loader = new Swiss_Floorball_Api_Loader();
+		$this->loader = new SWFL_Loader();
 	}
 
 	/**
 	 * Define the locale for this plugin for internationalization.
 	 *
-	 * Uses the Swiss_Floorball_Api_i18n class in order to set the domain and to register the hook
+	 * Uses the SWFL_I18n class in order to set the domain and to register the hook
 	 * with WordPress.
 	 *
 	 * @since    1.0.0
@@ -149,9 +150,11 @@ class Swiss_Floorball_Api {
 	 */
 	private function set_locale() {
 
-		$plugin_i18n = new Swiss_Floorball_Api_i18n();
+		$plugin_i18n = new SWFL_I18n();
 
 		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
+		// Runs first so no code reads the settings before the legacy options have been moved.
+		$this->loader->add_action( 'plugins_loaded', 'SWFL_Migrator', 'maybe_migrate', 1 );
 	}
 
 	/**
@@ -163,7 +166,7 @@ class Swiss_Floorball_Api {
 	 */
 	private function define_admin_hooks() {
 
-		$plugin_admin = new Swiss_Floorball_Api_Admin( $this->get_plugin_name(), $this->get_version() );
+		$plugin_admin = new SWFL_Admin( $this->get_plugin_name(), $this->get_version() );
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
@@ -178,13 +181,13 @@ class Swiss_Floorball_Api {
 	 */
 	private function define_public_hooks() {
 
-		$plugin_public = new Swiss_Floorball_Api_Public( $this->get_plugin_name(), $this->get_version() );
+		$plugin_public = new SWFL_Public( $this->get_plugin_name(), $this->get_version() );
 		$plugin_public->register_shortcodes();
-		$plugin_assets = new Swiss_Floorball_Api_Public_Assets( $this->get_plugin_name(), $this->get_version() );
+		$plugin_assets = new SWFL_Public_Assets( $this->get_plugin_name(), $this->get_version() );
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_assets, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_assets, 'enqueue_scripts' );
-		$this->loader->add_action( 'rest_api_init', 'Swiss_Floorball_API_Widgets', 'register_routes' );
+		$this->loader->add_action( 'rest_api_init', 'SWFL_Widgets', 'register_routes' );
 	}
 
 	/**
@@ -211,7 +214,7 @@ class Swiss_Floorball_Api {
 	 * The reference to the class that orchestrates the hooks with the plugin.
 	 *
 	 * @since     1.0.0
-	 * @return    Swiss_Floorball_Api_Loader    Orchestrates the hooks of the plugin.
+	 * @return    SWFL_Loader    Orchestrates the hooks of the plugin.
 	 */
 	public function get_loader() {
 		return $this->loader;

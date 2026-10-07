@@ -55,7 +55,7 @@ jobs:
 
       - name: Verify version in main file
         run: |
-          PLUGIN_VERSION=$(grep "Version:" floorball-api-for-swiss-unihockey.php | awk '{print $NF}')
+          PLUGIN_VERSION=$(grep "Version:" swiss-floorball-api.php | awk '{print $NF}')
           TAG_VERSION="${{ steps.get_version.outputs.VERSION }}"
 
           if [ "$PLUGIN_VERSION" != "$TAG_VERSION" ]; then

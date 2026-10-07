@@ -1,83 +1,55 @@
 <?php
 /**
- * The plugin bootstrap file
+ * Compatibility loader for installations that activated the plugin under its old main file name.
  *
- * This file is read by WordPress to generate the plugin information in the plugin
- * admin area. This file also includes all of the dependencies used by the plugin,
- * registers the activation and deactivation functions, and defines a function
- * that starts the plugin.
+ * The main file is now swiss-floorball-api.php. WordPress stores the path of the main file of every
+ * active plugin, so without this file those sites would lose the activation when they update. The
+ * file has no plugin header on purpose, so it is not listed as a second plugin.
  *
- * @link              https://flaviowaser.ch
- * @since             1.0.0
- * @package           Swiss_Floorball_Api
+ * @link       https://flaviowaser.ch
+ * @since      2.0.2
  *
- * @wordpress-plugin
- * Plugin Name:       Swiss Floorball API
- * Plugin URI:        https://flaviowaser.ch
- * Description:       Ein kleines Plugin, welches ermöglicht, die aktuellen Daten der Swiss Floorball API abzufragen und auf der Webseite darzustellen.
- * Version:           2.0.1
- * Author:            Flavio Waser
- * Author URI:        https://flaviowaser.ch/
- * License:           GPLv2 or later
- * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
- * Text Domain:       swiss-floorball-api
- * Domain Path:       /languages
+ * @package    SWFL
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// If this file is called directly, abort.
-if ( ! defined( 'WPINC' ) ) {
-	die;
-}
-
 /**
- * Currently plugin version.
- * Start at version 1.0.1 and use SemVer - https://semver.org
- * Rename this for your plugin and update it as you release new versions.
- */
-define( 'SWISS_FLOORBALL_API_VERSION', '2.0.1' );
-
-/**
- * The code that runs during plugin activation.
- * This action is documented in includes/class-floorball-api-for-swiss-unihockey-activator.php
- */
-function swfl_activate() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-floorball-api-for-swiss-unihockey-activator.php';
-	Swiss_Floorball_Api_Activator::activate();
-}
-
-/**
- * The code that runs during plugin deactivation.
- * This action is documented in includes/class-floorball-api-for-swiss-unihockey-deactivator.php
- */
-function swfl_deactivate() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-floorball-api-for-swiss-unihockey-deactivator.php';
-	Swiss_Floorball_Api_Deactivator::deactivate();
-}
-
-register_activation_hook( __FILE__, 'swfl_activate' );
-register_deactivation_hook( __FILE__, 'swfl_deactivate' );
-
-/**
- * The core plugin class that is used to define internationalization,
- * admin-specific hooks, and public-facing site hooks.
- */
-require_once plugin_dir_path( __FILE__ ) . 'includes/class-floorball-api-for-swiss-unihockey.php';
-
-/**
- * Begins execution of the plugin.
+ * Point the stored activation at the new main file.
  *
- * Since everything within the plugin is registered via hooks,
- * then kicking off the plugin from this point in the file does
- * not affect the page life cycle.
- *
- * @since    1.0.0
+ * @since 2.0.2
+ * @return void
  */
-function swfl_run() {
-	$plugin = new Swiss_Floorball_Api();
-	$plugin->run();
+function swfl_redirect_legacy_activation() {
+	$legacy = plugin_basename( __FILE__ );
+	$main   = dirname( $legacy ) . '/swiss-floorball-api.php';
+
+	$active = get_option( 'active_plugins', array() );
+	if ( is_array( $active ) && in_array( $legacy, $active, true ) ) {
+		$active = array_values( array_unique( str_replace( $legacy, $main, $active ) ) );
+		update_option( 'active_plugins', $active );
+	}
+
+	// The auto-update setting is stored per basename as well, so it would silently stop otherwise.
+	$auto_update = get_site_option( 'auto_update_plugins', array() );
+	if ( is_array( $auto_update ) && in_array( $legacy, $auto_update, true ) ) {
+		$auto_update = array_values( array_unique( str_replace( $legacy, $main, $auto_update ) ) );
+		update_site_option( 'auto_update_plugins', $auto_update );
+	}
+
+	if ( is_multisite() ) {
+		$network = get_site_option( 'active_sitewide_plugins', array() );
+		if ( is_array( $network ) && isset( $network[ $legacy ] ) ) {
+			$network[ $main ] = $network[ $legacy ];
+			unset( $network[ $legacy ] );
+			update_site_option( 'active_sitewide_plugins', $network );
+		}
+	}
 }
-swfl_run();
+
+if ( ! defined( 'SWFL_VERSION' ) ) {
+	swfl_redirect_legacy_activation();
+	require_once __DIR__ . '/swiss-floorball-api.php';
+}

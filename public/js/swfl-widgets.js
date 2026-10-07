@@ -5,7 +5,7 @@
  * navigation of the official web components: week paging (club games), page paging
  * (team games), team selection (club team games) and round navigation (league games).
  *
- * @package Swiss_Floorball_Api
+ * @package SWFL
  * @since   1.1.0
  */
 ( function () {

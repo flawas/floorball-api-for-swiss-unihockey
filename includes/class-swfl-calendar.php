@@ -5,8 +5,8 @@
  * @link       https://flaviowaser.ch
  * @since      2.0.1
  *
- * @package    Swiss_Floorball_Api
- * @subpackage Swiss_Floorball_Api/includes
+ * @package    SWFL
+ * @subpackage SWFL_Plugin/includes
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -16,14 +16,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Calendar feed of games (iCalendar REST route and ICS output).
  *
- * Split out of Swiss_Floorball_API_Widgets, which keeps the widget output and the REST routes.
+ * Split out of SWFL_Widgets, which keeps the widget output and the REST routes.
  *
  * @since      2.0.1
- * @package    Swiss_Floorball_Api
- * @subpackage Swiss_Floorball_Api/includes
+ * @package    SWFL
+ * @subpackage SWFL_Plugin/includes
  * @author     Flavio Waser <kontakt@flawas.ch>
  */
-class Swiss_Floorball_API_Calendar {
+class SWFL_Calendar {
 
 	/**
 	 * Date format of iCalendar UTC timestamps.
@@ -64,7 +64,7 @@ class Swiss_Floorball_API_Calendar {
 	public static function rest_calendar( $request ) {
 		$params = array( 'season' => absint( $request->get_param( 'season' ) ) );
 		if ( ! $params['season'] ) {
-			$params['season'] = Swiss_Floorball_API_Display::get_current_season();
+			$params['season'] = SWFL_Display::get_current_season();
 		}
 
 		if ( absint( $request->get_param( 'team_id' ) ) ) {
@@ -82,14 +82,14 @@ class Swiss_Floorball_API_Calendar {
 			return new WP_Error( 'swfl_missing_params', 'team_id, club_id or league and game_class are required', array( 'status' => 400 ) );
 		}
 
-		$result = Swiss_Floorball_API_Table_Data::fetch_all_pages( 'games', Swiss_Floorball_API_Table_Data::clean_params( $params ) );
+		$result = SWFL_Table_Data::fetch_all_pages( 'games', SWFL_Table_Data::clean_params( $params ) );
 		if ( is_wp_error( $result ) ) {
 			$result->add_data( array( 'status' => 502 ) );
 			return $result;
 		}
 
 		$title = isset( $result['data']['title'] ) && is_string( $result['data']['title'] ) ? $result['data']['title'] : 'Swiss Floorball';
-		return self::build_calendar( $title, isset( $result['data']['headers'] ) ? $result['data']['headers'] : array(), Swiss_Floorball_API_Table_Data::prepare_game_rows( $result['rows'] ) );
+		return self::build_calendar( $title, isset( $result['data']['headers'] ) ? $result['data']['headers'] : array(), SWFL_Table_Data::prepare_game_rows( $result['rows'] ) );
 	}
 
 	/**
@@ -168,7 +168,7 @@ class Swiss_Floorball_API_Calendar {
 		$indexes = isset( $columns[ $key ] ) ? $columns[ $key ] : array();
 		foreach ( $indexes as $index ) {
 			if ( isset( $cells[ $index ] ) ) {
-				$parts[] = Swiss_Floorball_API_Table_Data::get_cell_text( $cells[ $index ] );
+				$parts[] = SWFL_Table_Data::get_cell_text( $cells[ $index ] );
 			}
 		}
 
@@ -196,7 +196,7 @@ class Swiss_Floorball_API_Calendar {
 		$away    = self::column_text( $columns, $cells, 'away' );
 		$place   = self::column_text( $columns, $cells, 'place' );
 		$league  = self::column_text( $columns, $cells, 'league' );
-		$game_id = Swiss_Floorball_API_Table_Data::get_game_id( $row );
+		$game_id = SWFL_Table_Data::get_game_id( $row );
 
 		$lines   = array(
 			'BEGIN:VEVENT',
@@ -212,7 +212,7 @@ class Swiss_Floorball_API_Calendar {
 			$lines[] = 'DESCRIPTION:' . self::escape_ics_text( $league );
 		}
 		if ( $game_id ) {
-			$lines[] = 'URL:' . Swiss_Floorball_API_Widgets::GAME_LINK_BASE . $game_id;
+			$lines[] = 'URL:' . SWFL_Widgets::GAME_LINK_BASE . $game_id;
 		}
 		$lines[] = 'END:VEVENT';
 

@@ -47,13 +47,13 @@
 				return;
 			}
 			saving = true;
-			setStatus(sfaAutosave.saving);
+			setStatus(swflAutosave.saving);
 			$.post(settingsForm.attr('action'), settingsForm.serialize())
 				.done(function () {
-					setStatus(sfaAutosave.saved);
+					setStatus(swflAutosave.saved);
 				})
 				.fail(function () {
-					setStatus(sfaAutosave.error);
+					setStatus(swflAutosave.error);
 				})
 				.always(function () {
 					saving = false;
@@ -71,7 +71,7 @@
 
 		// Colour pickers for the seed and table colour settings.
 		if ($.fn.wpColorPicker) {
-			$('#swissfloorball_seed_color, input[id^="swissfloorball_table_"][id$="_color"]').wpColorPicker({
+			$('#swfl_seed_color, input[id^="swfl_table_"][id$="_color"]').wpColorPicker({
 				change: queueSave,
 				clear: function () {
 					setTimeout(queueSave, 0);
@@ -79,7 +79,7 @@
 			});
 		}
 
-		if (settingsForm.length && 'undefined' !== typeof sfaAutosave) {
+		if (settingsForm.length && 'undefined' !== typeof swflAutosave) {
 			settingsForm.on('change input', 'input, select, textarea', queueSave);
 			settingsForm.on('submit', function (event) {
 				event.preventDefault();
@@ -88,9 +88,9 @@
 		}
 
 		// Show the Partner API credentials only while the Partner API is selected.
-		const apiSource = $('#swissfloorball_api_source');
+		const apiSource = $('#swfl_api_source');
 		if (apiSource.length) {
-			const credentialRows = $('#swissfloorball_api_key, #swissfloorball_api_secret').closest('tr');
+			const credentialRows = $('#swfl_api_key, #swfl_api_secret').closest('tr');
 			const toggleCredentials = function () {
 				credentialRows.toggle('partner' === apiSource.val());
 			};

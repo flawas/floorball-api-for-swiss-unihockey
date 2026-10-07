@@ -15,13 +15,13 @@
     { "id": "game-events",      "title": "Game events",       "shortcode": "[swfl-game-events game_id=\"{{game_id}}\"]" }
   ],
   "admin": [
-    { "id": "admin-dashboard", "title": "Dashboard",  "page": "floorball-api-for-swiss-unihockey" },
-    { "id": "admin-settings",  "title": "Settings",   "page": "floorball-api-for-swiss-unihockey-settings" },
-    { "id": "admin-league",    "title": "Leagues",    "page": "floorball-api-for-swiss-unihockey-league" },
-    { "id": "admin-clubs",     "title": "Clubs",      "page": "floorball-api-for-swiss-unihockey-teams" },
-    { "id": "admin-matches",   "title": "Matches",    "page": "floorball-api-for-swiss-unihockey-matches" },
-    { "id": "admin-seasons",   "title": "Seasons",    "page": "floorball-api-for-swiss-unihockey-seasons" },
-    { "id": "admin-shortcodes","title": "Shortcodes", "page": "floorball-api-for-swiss-unihockey-shortcodes" }
+    { "id": "admin-dashboard", "title": "Dashboard",  "page": "swiss-floorball-api" },
+    { "id": "admin-settings",  "title": "Settings",   "page": "swiss-floorball-api-settings" },
+    { "id": "admin-league",    "title": "Leagues",    "page": "swiss-floorball-api-league" },
+    { "id": "admin-clubs",     "title": "Clubs",      "page": "swiss-floorball-api-teams" },
+    { "id": "admin-matches",   "title": "Matches",    "page": "swiss-floorball-api-matches" },
+    { "id": "admin-seasons",   "title": "Seasons",    "page": "swiss-floorball-api-seasons" },
+    { "id": "admin-shortcodes","title": "Shortcodes", "page": "swiss-floorball-api-shortcodes" }
   ],
   "viewports": {
     "desktop": { "width": 1280, "height": 800 },

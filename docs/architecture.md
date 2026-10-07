@@ -4,21 +4,22 @@
 
 | Datei | Klasse | Aufgabe |
 |---|---|---|
-| `floorball-api-for-swiss-unihockey.php` | – | Bootstrap, `Version:`-Header, Konstante `SWISS_FLOORBALL_API_VERSION`, Aktivierungs-/Deaktivierungs-Hooks |
-| `includes/class-floorball-api-for-swiss-unihockey.php` | `Swiss_Floorball_Api` | Orchestrator, lädt Klassen, registriert Hooks |
-| `includes/class-floorball-api-for-swiss-unihockey-loader.php` | Loader | Warteschlange für Actions/Filter (`run()`) |
-| `includes/class-floorball-api-for-swiss-unihockey-client.php` | `Swiss_Floorball_API_Client` | einziger Zugriff auf die externe API, Caching |
-| `includes/class-floorball-api-for-swiss-unihockey-display.php` | `Swiss_Floorball_API_Display` | gesamtes HTML-Rendering (statische `render_*`-Methoden) |
-| `includes/class-floorball-api-for-swiss-unihockey-widgets.php` | `Swiss_Floorball_API_Widgets` | interaktive Widgets nach den offiziellen Webcomponents (Spiele, Rangliste, Mobiliar-Topscorer), REST-Routen `swfl/v1/*`, iCalendar-Feed |
+| `swiss-floorball-api.php` | – | Bootstrap, `Version:`-Header, Konstante `SWFL_VERSION`, Aktivierungs-/Deaktivierungs-Hooks |
+| `includes/class-swfl-plugin.php` | `SWFL_Plugin` | Orchestrator, lädt Klassen, registriert Hooks |
+| `includes/class-swfl-loader.php` | Loader | Warteschlange für Actions/Filter (`run()`) |
+| `includes/class-swfl-migrator.php` | `SWFL_Migrator` | einmaliges Umbenennen der Optionen `swissfloorball_*` → `swfl_*` auf `plugins_loaded` |
+| `includes/class-swfl-client.php` | `SWFL_Client` | einziger Zugriff auf die externe API, Caching |
+| `includes/class-swfl-display.php` | `SWFL_Display` | gesamtes HTML-Rendering (statische `render_*`-Methoden) |
+| `includes/class-swfl-widgets.php` | `SWFL_Widgets` | interaktive Widgets nach den offiziellen Webcomponents (Spiele, Rangliste, Mobiliar-Topscorer), REST-Routen `swfl/v1/*`, iCalendar-Feed |
 | `public/js/swfl-widgets.js` | – | Navigation der Widgets (Woche, Seite, Runde, Team-Auswahl) über die REST-Routen |
-| `includes/class-floorball-api-for-swiss-unihockey-icons.php` | Icons | Inline-SVG-Icons (Option `swissfloorball_show_icons`) |
-| `includes/class-floorball-api-for-swiss-unihockey-i18n.php` | i18n | lädt die Textdomain `swiss-floorball-api` |
+| `includes/class-swfl-icons.php` | Icons | Inline-SVG-Icons (Option `swfl_show_icons`) |
+| `includes/class-swfl-i18n.php` | i18n | lädt die Textdomain `swiss-floorball-api` |
 | `…-activator.php`, `…-deactivator.php` | | Methoden sind leer (keine Aktion) |
-| `public/class-floorball-api-for-swiss-unihockey-public.php` | Public | Shortcodes, Assets |
-| `admin/class-floorball-api-for-swiss-unihockey-admin.php`, `admin/partials/` | Admin | Menü, Einstellungen, Helper-Seiten |
+| `public/class-swfl-public.php` | Public | Shortcodes, Assets |
+| `admin/class-swfl-admin.php`, `admin/partials/` | Admin | Menü, Einstellungen, Helper-Seiten |
 | `uninstall.php` | – | löscht Optionen und Transients (auch Multisite) |
 
-Die Dateinamen verwenden bewusst noch den alten Slug `floorball-api-for-swiss-unihockey`; Textdomain, Shortcode- und Options-Präfix sind `swiss-floorball-api`, `swfl-*`, `swissfloorball_*`.
+Alle Dateien, Klassen, Optionen, Transients, Hooks und Shortcodes verwenden den Präfix `swfl`; Text-Domain und Hauptdatei heissen wie der WordPress.org-Slug `swiss-floorball-api`. Die alte Hauptdatei `floorball-api-for-swiss-unihockey.php` bleibt als kleiner Weiterleiter bestehen, damit bereits aktivierte Installationen aktiv bleiben.
 
 ## Datenfluss
 
@@ -36,7 +37,7 @@ Die Shortcode-Callbacks bereinigen Attribute und rufen nur die Display-Methode a
 
 ### API-Quellen
 
-Die Quelle kommt aus der Option `swissfloorball_api_source` (`Swiss_Floorball_API_Client::get_source()`, unbekannte Werte fallen auf `free` zurück):
+Die Quelle kommt aus der Option `swfl_api_source` (`SWFL_Client::get_source()`, unbekannte Werte fallen auf `free` zurück):
 
 | Konstante | Basis-URL | Besonderheit |
 |---|---|---|
@@ -57,7 +58,7 @@ Die alte Kalender-URL `calendars` wird nicht mehr verwendet.
 
 ## REST-Routen
 
-Öffentlich, nur lesend (`GET`, Namespace `swfl/v1`, Registrierung in `Swiss_Floorball_API_Widgets::register_routes()`):
+Öffentlich, nur lesend (`GET`, Namespace `swfl/v1`, Registrierung in `SWFL_Widgets::register_routes()`):
 
 | Route | Parameter | Zweck |
 |---|---|---|
@@ -74,4 +75,4 @@ Vor einer neuen Render-Methode die Form des Endpunkts prüfen (`php verify_api.p
 
 ## Aktivierung, Deaktivierung, Deinstallation
 
-Aktivierung und Deaktivierung haben keine Wirkung. `uninstall.php` löscht alle Plugin-Optionen (u. a. `swissfloorball_api_source`, `_api_key`, `_api_secret`, `_club_number`, `_club_name`, `_actual_season`, `_request_timeout`, `_theme`, `_seed_color`, `_table_*`), den Token-Transient `swfl_partner_token` und alle Transients `swfl_*`. Die Option `swissfloorball_show_icons` wird dort nicht gelöscht.
+Aktivierung und Deaktivierung haben keine Wirkung. `uninstall.php` löscht alle Plugin-Optionen (u. a. `swfl_api_source`, `_api_key`, `_api_secret`, `_club_number`, `_club_name`, `_actual_season`, `_request_timeout`, `_theme`, `_seed_color`, `_table_*`), den Token-Transient `swfl_partner_token` und alle Transients `swfl_*`. Die Option `swfl_show_icons` wird dort nicht gelöscht.
