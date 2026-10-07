@@ -23,7 +23,7 @@
 **Requires at least:** 5.0  
 **Tested up to:** 7.1  
 **Requires PHP:** 7.4  
-**Stable tag:** 2.0.1  
+**Stable tag:** 2.0.2  
 **License:** GPLv2 or later  
 **License URI:** https://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -237,7 +237,11 @@ Version 2.0.0 contains breaking changes (API source, calendar feed, shortcode at
 4. Check custom CSS, or set *Table style* to `classic`.
 
 ## 📜 Changelog
-### Unreleased
+### 2.0.2 (2026-10-07)
+* Fix: WordPress.org plugin review: all PHP globals now use the single prefix `swfl`. Options `swissfloorball_*` became `swfl_*` (existing settings are copied automatically on the first request after the update, `uninstall.php` removes both), classes `Swiss_Floorball_Api*` became `SWFL_*`, the constant `SWISS_FLOORBALL_API_VERSION` became `SWFL_VERSION` and the JS global `sfaAutosave` became `swflAutosave`. Custom code that reads `swissfloorball_*` options or calls the old class names must be adjusted
+* Change: The main file is now `swiss-floorball-api.php` and all other files are named `class-swfl-*.php` / `swfl-*`. The old main file stays as a small loader that moves the activation to the new file; if the plugin shows as deactivated after a manual single update, activate it once. Admin page URLs changed to `admin.php?page=swiss-floorball-api…`
+* Fix: `uninstall.php` now also removes the *Show icons* option
+* Fix: Every registered setting has an explicit type and sanitize callback; the Partner API secret keeps all printable characters instead of going through `sanitize_text_field()`
 * Change: When data cannot be loaded, administrators now also see the reason returned by the API (e.g. `No such group with name "Gruppe 4".`); visitors still see the generic message
 ### 2.0.1 (2026-10-04)
 * Fix: Plugin Check error: `wp_unique_id()` needs WordPress 5.0.3 but the plugin supports 5.0, replaced by a local counter
