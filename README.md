@@ -237,6 +237,8 @@ Version 2.0.0 contains breaking changes (API source, calendar feed, shortcode at
 4. Check custom CSS, or set *Table style* to `classic`.
 
 ## 📜 Changelog
+### Unreleased
+* Change: When data cannot be loaded, administrators now also see the reason returned by the API (e.g. `No such group with name "Gruppe 4".`); visitors still see the generic message
 ### 2.0.1 (2026-10-04)
 * Fix: Plugin Check error: `wp_unique_id()` needs WordPress 5.0.3 but the plugin supports 5.0, replaced by a local counter
 * Fix: phpcs warnings for the unused `$is_backend` parameters, kept for backwards compatibility

@@ -62,7 +62,16 @@ class Swiss_Floorball_API_Display {
 			self::render_error_notice( __( 'Anmeldung an der Partner-API fehlgeschlagen. Bitte API Key und Secret in den Plugin-Einstellungen prüfen.', 'swiss-floorball-api' ) );
 			return;
 		}
-		self::render_error_notice( __( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' ) );
+		$message = __( 'Daten konnten nicht geladen werden.', 'swiss-floorball-api' );
+		// Visitors only see the generic message; the API's reason is for administrators.
+		if ( is_wp_error( $api_response ) && current_user_can( 'manage_options' ) ) {
+			$error_data = $api_response->get_error_data();
+			if ( is_array( $error_data ) && ! empty( $error_data['api_message'] ) ) {
+				/* translators: %s: error message returned by the Swiss Unihockey API. */
+				$message .= ' ' . sprintf( __( 'Antwort der API: %s', 'swiss-floorball-api' ), $error_data['api_message'] );
+			}
+		}
+		self::render_error_notice( $message );
 	}
 
 	/**
