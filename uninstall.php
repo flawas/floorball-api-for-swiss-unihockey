@@ -36,6 +36,20 @@ function swfl_uninstall_site() {
 		'actual_season',
 		'request_timeout',
 		'rest_rate_limit',
+		'cache_ttl_games',
+		'cache_ttl_rankings',
+		'cache_ttl_game_events',
+		'cache_ttl_topscorers',
+		'cache_ttl_leagues',
+		'cache_ttl_seasons',
+		'cache_ttl_clubs',
+		'cache_ttl_cups',
+		'cache_ttl_groups',
+		'cache_ttl_teams',
+		'cache_ttl_players',
+		'cache_ttl_national_players',
+		'cache_interval',
+		'warmup_after_clear',
 		'show_icons',
 		'theme',
 		'seed_color',
@@ -51,6 +65,10 @@ function swfl_uninstall_site() {
 		delete_option( 'swissfloorball_' . $suffix );
 	}
 	delete_option( 'swfl_options_migrated' );
+	// Saved settings of the sidebar widget.
+	delete_option( 'widget_swfl_game_widget' );
+	wp_clear_scheduled_hook( 'swfl_cache_warmup' );
+	wp_clear_scheduled_hook( 'swfl_cache_warmup_now' );
 	delete_transient( 'swfl_partner_token' );
 
 	// Delete all cached API data (transients with 'swfl_' prefix).

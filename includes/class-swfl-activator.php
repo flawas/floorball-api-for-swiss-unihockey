@@ -26,12 +26,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 class SWFL_Activator {
 
 	/**
-	 * Short Description. (use period)
-	 *
-	 * Long Description.
+	 * Schedule the cache warm-up.
 	 *
 	 * @since    1.0.0
 	 */
 	public static function activate() {
+		require_once plugin_dir_path( __FILE__ ) . 'class-swfl-warmup.php';
+		SWFL_Warmup::schedule();
 	}
 }

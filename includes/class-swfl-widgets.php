@@ -610,14 +610,75 @@ class SWFL_Widgets {
 	}
 
 	/**
+	 * Games as a static list that is trimmed by the list options of the shortcode.
+	 *
+	 * @since 2.0.4
+	 * @param array  $data      The `data` part of the API response.
+	 * @param array  $rows      Prepared game rows.
+	 * @param array  $list_args List options from SWFL_Table_Data::get_list_options(), optionally with a `title`.
+	 * @param bool   $show      Whether to show the title.
+	 * @param string $fallback  Title used when the response has none.
+	 * @param string $caption   Visually hidden table caption.
+	 * @return void
+	 */
+	private static function render_game_list( $data, $rows, $list_args, $show, $fallback, $caption ) {
+		if ( ! empty( $list_args['dated_only'] ) ) {
+			// Undated rows sort first and would otherwise take the place of the real next game.
+			$rows = array_values(
+				array_filter(
+					$rows,
+					static function ( $row ) {
+						return ! empty( $row['sfa_date'] );
+					}
+				)
+			);
+		}
+		if ( ! empty( $list_args['upcoming'] ) ) {
+			$rows = SWFL_Table_Data::filter_upcoming_rows( $rows );
+		}
+		if ( ! empty( $list_args['past'] ) ) {
+			$rows = SWFL_Table_Data::filter_past_rows( $rows );
+		}
+		if ( ! empty( $list_args['title'] ) ) {
+			// A fixed title replaces the API title, which names the whole club or team instead of the excerpt.
+			$data['title'] = $list_args['title'];
+			unset( $data['subtitle'] );
+		}
+		$paged = SWFL_Table_Data::paginate( $rows, $list_args['limit'], $list_args['offset'], ! empty( $list_args['pagination'] ) );
+
+		foreach ( $paged['rows'] as $index => $row ) {
+			$paged['rows'][ $index ]['highlight'] = false;
+		}
+
+		echo '<div class="sfa-widget">';
+		self::render_title( $data, $show, $fallback, 'hockey' );
+		if ( $paged['rows'] ) {
+			self::render_table(
+				isset( $data['headers'] ) ? $data['headers'] : array(),
+				$paged['rows'],
+				array( 'caption' => $caption )
+			);
+		} else {
+			echo '<p class="sfa-empty">' . esc_html__( 'Keine Spiele gefunden.', 'swiss-floorball-api' ) . '</p>';
+		}
+		// The links belong to `show_pagination`; a plain `limit` is an excerpt without navigation.
+		if ( ! empty( $list_args['pagination'] ) ) {
+			SWFL_Table_Data::render_pagination( $paged['page'], $paged['pages'] );
+		}
+		echo '</div>';
+	}
+
+	/**
 	 * Club games, shown week by week (uniho-club-games).
 	 *
 	 * @since 1.1.0
-	 * @param int $club_id Club id.
-	 * @param int $season  Season (start year).
+	 * @param int   $club_id   Club id.
+	 * @param int   $season    Season (start year).
+	 * @param array $list_args Optional. List options (limit, offset, upcoming, pagination); any of them
+	 *                         replaces the week navigation by a static, trimmed list.
 	 * @return void
 	 */
-	public static function render_club_games( $club_id, $season ) {
+	public static function render_club_games( $club_id, $season, $list_args = array() ) {
 		if ( ! $club_id ) {
 			self::render_missing( __( 'Attribut club_id fehlt.', 'swiss-floorball-api' ) );
 			return;
@@ -636,7 +697,12 @@ class SWFL_Widgets {
 			return;
 		}
 
-		$rows                          = SWFL_Table_Data::prepare_game_rows( $result['rows'] );
+		$rows = SWFL_Table_Data::prepare_game_rows( $result['rows'] );
+		if ( SWFL_Table_Data::is_list_mode( $list_args ) ) {
+			self::render_game_list( $result['data'], $rows, $list_args, true, __( 'Clubspiele', 'swiss-floorball-api' ), __( 'Spiele des Clubs', 'swiss-floorball-api' ) );
+			return;
+		}
+
 		list( $week_start, $week_end ) = self::get_week_bounds( strtotime( current_time( 'Y-m-d' ) . ' UTC' ) );
 
 		// Outside the playing weeks the current week is empty; jump to the next game, or the last one.
@@ -683,13 +749,15 @@ class SWFL_Widgets {
 	 * Games of one team, paged around the next game (uniho-team-games).
 	 *
 	 * @since 1.1.0
-	 * @param int  $team_id   Team id.
-	 * @param int  $season    Season (start year).
-	 * @param int  $page_size Games per page, 4 when 0.
-	 * @param bool $embedded  Whether the widget sits inside another one (no extra card styling).
+	 * @param int   $team_id   Team id.
+	 * @param int   $season    Season (start year).
+	 * @param int   $page_size Games per page, 4 when 0.
+	 * @param bool  $embedded  Whether the widget sits inside another one (no extra card styling).
+	 * @param array $list_args Optional. List options (limit, offset, upcoming, pagination); any of them
+	 *                         replaces the pager by a static, trimmed list.
 	 * @return void
 	 */
-	public static function render_team_games( $team_id, $season, $page_size = 0, $embedded = false ) {
+	public static function render_team_games( $team_id, $season, $page_size = 0, $embedded = false, $list_args = array() ) {
 		if ( ! $team_id ) {
 			self::render_missing( __( 'Attribut team_id fehlt.', 'swiss-floorball-api' ) );
 			return;
@@ -709,7 +777,12 @@ class SWFL_Widgets {
 			return;
 		}
 
-		$rows  = SWFL_Table_Data::prepare_game_rows( $result['rows'] );
+		$rows = SWFL_Table_Data::prepare_game_rows( $result['rows'] );
+		if ( SWFL_Table_Data::is_list_mode( $list_args ) ) {
+			self::render_game_list( $result['data'], $rows, $list_args, ! $embedded, __( 'Teamspiele', 'swiss-floorball-api' ), __( 'Spiele des Teams', 'swiss-floorball-api' ) );
+			return;
+		}
+
 		$total = count( $rows );
 		$today = current_time( 'Y-m-d' );
 
@@ -1134,7 +1207,7 @@ class SWFL_Widgets {
 	 * @param array $rows Grid rows (portraits, names, clubs, points).
 	 * @return array[] Players with image, name, club and points; players without any data are skipped.
 	 */
-	private static function collect_topscorers( $rows ) {
+	public static function collect_topscorers( $rows ) {
 		$count = 0;
 		foreach ( array_slice( $rows, 0, 4 ) as $row ) {
 			$count = max( $count, isset( $row['cells'] ) ? count( $row['cells'] ) : 0 );

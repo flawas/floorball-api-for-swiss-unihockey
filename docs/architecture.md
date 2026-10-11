@@ -10,6 +10,8 @@
 | `includes/class-swfl-migrator.php` | `SWFL_Migrator` | einmaliges Umbenennen der Optionen `swissfloorball_*` → `swfl_*` auf `plugins_loaded` |
 | `includes/class-swfl-client.php` | `SWFL_Client` | einziger Zugriff auf die externe API, Caching |
 | `includes/class-swfl-display.php` | `SWFL_Display` | gesamtes HTML-Rendering (statische `render_*`-Methoden) |
+| `includes/class-swfl-highlights.php` | `SWFL_Highlights` | nächstes Spiel und letztes Resultat (Shortcodes `swfl-next-game`, `swfl-last-result`) |
+| `includes/class-swfl-game-widget.php` | `SWFL_Game_Widget` | Sidebar-Widget mit nächstem Spiel und letztem Resultat |
 | `includes/class-swfl-widgets.php` | `SWFL_Widgets` | interaktive Widgets nach den offiziellen Webcomponents (Spiele, Rangliste, Mobiliar-Topscorer), REST-Routen `swfl/v1/*`, iCalendar-Feed |
 | `public/js/swfl-widgets.js` | – | Navigation der Widgets (Woche, Seite, Runde, Team-Auswahl) über die REST-Routen |
 | `includes/class-swfl-icons.php` | Icons | Inline-SVG-Icons (Option `swfl_show_icons`) |
@@ -65,6 +67,13 @@ Die alte Kalender-URL `calendars` wird nicht mehr verwendet.
 | `/team-games` | `team_id` (Pflicht), `season`, `page_size` | Seitenweise Spiele eines Teams |
 | `/league-games` | `game_class`, `league` (Pflicht), `season`, `group`, `round` | Spiele einer Liga/Gruppe pro Runde |
 | `/calendar` | `team_id` oder `club_id` oder `league` + `game_class` (+ `group`), `season` | iCalendar-Feed (`text/calendar`), aus den Spielen der API gebaut |
+| `/games` | `team_id` oder `club_id` oder `league` + `game_class` (+ `group`), `season` | JSON: Spiele (`game_id`, `date`, `time`, `place`, `home`, `away`, `result`, `league`, `link`, `cells`) |
+| `/next-game` | wie `/games` | JSON: nächstes Spiel ohne Resultat (`game`, `null` ohne Treffer) |
+| `/last-result` | wie `/games` | JSON: letztes Spiel mit Resultat (`game`, `null` ohne Treffer) |
+| `/rankings` | `league`, `game_class` (Pflicht), `season`, `group` | JSON: Rangliste (`headers`, `rows`) |
+| `/topscorers` | `league` + `game_class` (Partner-API) oder `club_id`, `season` (Mobiliar-Topscorer) | JSON: Topscorer-Tabelle bzw. `players` |
+
+Die JSON-Routen sind in `SWFL_Rest` umgesetzt, nutzen den Cache des API-Clients, das Rate-Limit der übrigen Routen und senden `Cache-Control: public, max-age=3600`.
 
 ## API-Antwortformen
 

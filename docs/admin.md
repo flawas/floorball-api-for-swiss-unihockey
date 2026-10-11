@@ -14,6 +14,13 @@ Untermenü «Einstellungen» (Gruppe `swfl_general_settings`). Gespeichert als W
 | `swfl_show_icons` | Icons anzeigen (Standard `1`) | `'1'` oder `'0'` |
 | `swfl_request_timeout` | API-Timeout in Sekunden (1–30, Standard `3`) | `absint`, begrenzt auf 1–30; 0/ungültig → `3` |
 | `swfl_rest_rate_limit` | Öffentliche REST-Anfragen pro Minute und Besucher (0–1000, Standard `60`, `0` = aus) | `absint`, begrenzt auf 0–1000; ungültig → `60` |
+| `swfl_cache_ttl_games` | Cache-Dauer der Spiele in Sekunden (30–86400, Standard `3600`) | `absint`, begrenzt auf 30–86400; ungültig → Standard |
+| `swfl_cache_ttl_rankings` | Cache-Dauer der Ranglisten (30–86400, Standard `7200`) | wie oben |
+| `swfl_cache_ttl_game_events` | Cache-Dauer der Spiel-Events (30–86400, Standard `120`, nahezu live) | wie oben |
+| `swfl_cache_ttl_topscorers` | Cache-Dauer der Topscorer (30–86400, Standard `7200`) | wie oben |
+| `swfl_cache_ttl_{leagues,seasons,clubs,cups,groups,teams,players,national_players}` | Cache-Dauer je weiterem Endpunkt (30–86400, Standard `3600`) | wie oben |
+| `swfl_cache_interval` | Cache-Warm-up: Intervall in Minuten (0–1440, Standard `30`, `0` = aus). Ein WP-Cron-Job (`swfl_cache_warmup`) lädt Spiele, Ranglisten und Topscorer des Clubs im Hintergrund neu | `absint`, begrenzt auf 0–1440; ungültig → `30`; plant das Cron-Ereignis neu |
+| `swfl_warmup_after_clear` | Nach dem manuellen «Cache leeren» sofort ein Warm-up im Hintergrund starten (Standard `0`) | `'1'` oder `'0'` |
 | `swfl_api_source` | API-Quelle: `free` (Standard) oder `partner` | nur diese zwei Werte, sonst `free`; leert das Auth-Token |
 | `swfl_api_key` | Partner-API: API-Key | `sanitize_text_field`; leert das Auth-Token |
 | `swfl_api_secret` | Partner-API: API-Secret (Passwortfeld) | nur Steuerzeichen und umgebende Leerzeichen entfernt (`sanitize_text_field` würde gültige Zeichen verändern); leert das Auth-Token |

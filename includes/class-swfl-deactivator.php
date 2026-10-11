@@ -26,12 +26,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 class SWFL_Deactivator {
 
 	/**
-	 * Short Description. (use period)
-	 *
-	 * Long Description.
+	 * Remove the scheduled cache warm-up.
 	 *
 	 * @since    1.0.0
 	 */
 	public static function deactivate() {
+		require_once plugin_dir_path( __FILE__ ) . 'class-swfl-warmup.php';
+		SWFL_Warmup::unschedule();
 	}
 }

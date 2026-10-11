@@ -9,9 +9,11 @@ Attribute mit Bindestrich (`game-class`, `club-id`, `page-size`) funktionieren w
 | Shortcode | Attribute | Quelle |
 |---|---|---|
 | `[swfl-club-teams]` | – | beide |
-| `[swfl-club-games]` | `season` | beide |
-| `[swfl-team-games]` | `team_id`, `season`, `page_size` | beide |
+| `[swfl-club-games]` | `season`, `limit`, `offset`, `show_upcoming`, `show_pagination` | beide |
+| `[swfl-team-games]` | `team_id`, `season`, `page_size`, `limit`, `offset`, `show_upcoming`, `show_pagination` | beide |
 | `[swfl-club-team-games]` | `season`, `page_size` | beide |
+| `[swfl-next-game]` | `team_id` (optional), `season`, `limit` | beide |
+| `[swfl-last-result]` | `team_id` (optional), `season`, `limit` | beide |
 | `[swfl-league-games]` | `game_class`, `league`, `season`, `group` | beide |
 | `[swfl-mobiliar-topscorer]` | `club_id` (optional), `season` | beide |
 | `[swfl-clubs]` | – | beide |
@@ -119,6 +121,23 @@ Auf dem Smartphone:
 [swfl-mobiliar-topscorer]
 [swfl-mobiliar-topscorer club_id="463845" season="2025"]
 ```
+
+## `swfl-next-game` und `swfl-last-result`
+
+Kompakte Auszüge für Sidebar oder Footer: das nächste Spiel bzw. das letzte Resultat des Clubs aus den Einstellungen, oder eines einzelnen Teams. Ausgabe als kleine Spieletabelle mit Titel «Nächstes Spiel» bzw. «Letztes Resultat». Ein Spiel zählt ab dem Folgetag als Resultat, Spiele von heute stehen noch unter «Nächstes Spiel». Mehrere Resultate erscheinen mit dem neuesten zuerst.
+
+| Attribut | Typ | Default | Pflicht |
+|---|---|---|---|
+| `team_id` | int | leer (ganzer Club) | nein |
+| `season` | int | aktuelle Saison | nein |
+| `limit` | int | 1 (maximal 10) | nein |
+
+```text
+[swfl-next-game]
+[swfl-last-result team_id="429757" limit="3"]
+```
+
+Dieselbe Ausgabe liefert das Widget **Swiss Floorball: Nächstes Spiel und letztes Resultat** (Design → Widgets) mit den Einstellungen Titel, Anzeige (beides / nur nächstes Spiel / nur letztes Resultat) und optionaler Team-ID.
 
 ## `swfl-team-games`
 

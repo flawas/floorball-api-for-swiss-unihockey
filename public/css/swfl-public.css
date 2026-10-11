@@ -1171,7 +1171,12 @@
     outline-offset: 2px;
 }
 
-.swiss-floorball-plugin .sfa-btn:disabled {
+.swiss-floorball-plugin a.sfa-btn {
+    text-decoration: none;
+}
+
+.swiss-floorball-plugin .sfa-btn:disabled,
+.swiss-floorball-plugin .sfa-btn--disabled {
     opacity: 0.45;
     cursor: not-allowed;
 }

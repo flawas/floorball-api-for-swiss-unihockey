@@ -59,6 +59,10 @@ class SWFL_Public_Assets {
 	 * @since    1.0.0
 	 */
 	private function page_has_shortcode() {
+		// A sidebar widget is outside of the post content, so it is looked up on its own.
+		if ( is_active_widget( false, false, SWFL_Game_Widget::ID_BASE, true ) ) {
+			return true;
+		}
 		$post = get_post();
 		if ( ! is_a( $post, 'WP_Post' ) ) {
 			return false;
@@ -80,6 +84,8 @@ class SWFL_Public_Assets {
 			'swfl-league-games',
 			'swfl-club-team-games',
 			'swfl-mobiliar-topscorer',
+			'swfl-next-game',
+			'swfl-last-result',
 		);
 		foreach ( $shortcodes as $shortcode ) {
 			if ( has_shortcode( $post->post_content, $shortcode ) ) {

@@ -93,9 +93,11 @@ Use these shortcodes in any Page or Post to display data. Attributes that are le
 | Shortcode | Description | Attributes |
 |-----------|-------------|------------|
 | `[swfl-club-teams]` | List all teams in your club. | None |
-| `[swfl-club-games]` | Club games, shown week by week with previous/next week buttons. | `season` |
-| `[swfl-team-games]` | Games of one team, paged around the next game. | `team_id`, `season`, `page_size` (default 4) |
+| `[swfl-club-games]` | Club games, shown week by week with previous/next week buttons. | `season`, `limit`, `offset`, `show_upcoming`, `show_pagination` |
+| `[swfl-team-games]` | Games of one team, paged around the next game. | `team_id`, `season`, `page_size` (default 4), `limit`, `offset`, `show_upcoming`, `show_pagination` |
 | `[swfl-club-team-games]` | All teams of a club with a team selector and their games. | `season`, `page_size` (default 4) |
+| `[swfl-next-game]` | The next upcoming game of the club, or of one team. | `team_id`, `season`, `limit` (default 1, max 10) |
+| `[swfl-last-result]` | The most recent result of the club, or of one team. | `team_id`, `season`, `limit` (default 1, max 10) |
 | `[swfl-teams]` | List teams. | None |
 | `[swfl-clubs]` | List all clubs. | None |
 | `[swfl-calendars]` | Show upcoming games + ICS link. | `team_id`, `club_id`, `season`, `league`, `game_class`, `group` |
@@ -118,7 +120,7 @@ The games, ranking and Mobiliar topscorer shortcodes mirror the official [Swiss 
 | `[swfl-league-games]` | Games of a league and group, navigable round by round; playoff series are grouped. | `game_class`, `league`, `season`, `group` |
 | `[swfl-rankings]` | Show the ranking table. | `season`, `league`, `game_class`, `group` (name, e.g. `Gruppe 1`) |
 | `[swfl-mobiliar-topscorer]` | The Mobiliar topscorers as cards: of the whole league, or of one club when `club_id` is set. | `club_id`, `season` |
-| `[swfl-topscorers]` | Show the topscorer list. | `season`, `league`, `game_class`, `group` |
+| `[swfl-topscorers]` | Show the topscorer list. | `season`, `league`, `game_class`, `group`, `limit`, `offset`, `show_pagination` |
 | `[swfl-groups]` | List available groups. | `season`, `league`, `game_class` |
 | `[swfl-cups]` | List available cups. | None |
 
@@ -238,6 +240,12 @@ Version 2.0.0 contains breaking changes (API source, calendar feed, shortcode at
 4. Check custom CSS, or set *Table style* to `classic`.
 
 ## 📜 Changelog
+### Unreleased
+* New: Shortcodes `[swfl-next-game]` and `[swfl-last-result]` (attributes `team_id`, `season`, `limit`) and the sidebar widget *Swiss Floorball: Nächstes Spiel und letztes Resultat* with the display mode next / last / both and an optional team ID. They read the club and season from the settings. A game counts as a result from the day after it was played. Internally the games list options got `show_past`, which keeps past games, newest first (Issue #18)
+* New: Scheduled cache warm-up. A WP-Cron job refreshes the games, rankings and topscorers of your club in the background (setting *Cache warm-up interval (minutes)*, default 30, 0 turns it off), so the first visitor after a cache expiry no longer waits for the API. The option *Warm up after clearing the cache* refills the cache right after a manual clear. `SWFL_Client::fetch_data()` got a `$force_refresh` argument that skips the cache read but still writes the response back.
+* New: List options `limit`, `offset`, `show_upcoming` and `show_pagination` for `[swfl-club-games]`, `[swfl-team-games]` (and `limit`, `offset`, `show_pagination` for `[swfl-topscorers]`). Any of them shows a static, trimmed list instead of the week/pager navigation; pagination uses the `swfl_page` query argument. Example: `[swfl-team-games team_id="12345" limit="5" show_upcoming="true"]`
+* New: Configurable cache lifetime per API endpoint (games, rankings, game events, topscorers, leagues, seasons, clubs, cups, groups, teams, players, national players) on the settings page. Game events default to 120 seconds for near-live updates, rankings and topscorers to 2 hours. `SWFL_Client::fetch_data()` keeps its signature; without an explicit lifetime it uses the setting of the endpoint
+
 ### 2.0.3 (2026-10-11)
 * Security: Values sent to the Swiss Unihockey API are URL-encoded, so a request value such as a group name can no longer add query parameters of its own (parameter injection through the public REST routes and shortcode attributes)
 * Security: The public REST routes `swfl/v1/*` are rate limited per visitor (setting *REST requests per minute and visitor*, default 60, 0 turns it off, filter `swfl_rest_rate_limit`), and the `group` value accepts only letters, digits, spaces and `. _ / -` up to 40 characters. This stops anonymous visitors from filling the options table with cached responses

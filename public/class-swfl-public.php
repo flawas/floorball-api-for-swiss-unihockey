@@ -93,6 +93,8 @@ class SWFL_Public {
 		add_shortcode( 'swfl-league-games', array( $this, 'get_league_games_func' ) );
 		add_shortcode( 'swfl-club-team-games', array( $this, 'get_club_team_games_func' ) );
 		add_shortcode( 'swfl-mobiliar-topscorer', array( $this, 'get_mobiliar_topscorer_func' ) );
+		add_shortcode( 'swfl-next-game', array( $this, 'get_next_game_func' ) );
+		add_shortcode( 'swfl-last-result', array( $this, 'get_last_result_func' ) );
 	}
 
 	/**
@@ -114,7 +116,7 @@ class SWFL_Public {
 	/**
 	 * Render the club games shortcode (week by week).
 	 *
-	 * Attributes: season (default: current season).
+	 * Attributes: season (default: current season), limit, offset, show_upcoming, show_pagination.
 	 *
 	 * @since    1.0.0
 	 * @param    array $atts Shortcode attributes.
@@ -123,14 +125,18 @@ class SWFL_Public {
 	public function get_club_games_func( $atts ) {
 		$a = shortcode_atts(
 			array(
-				'season' => SWFL_Display::get_current_season(),
+				'season'          => SWFL_Display::get_current_season(),
+				'limit'           => 0,
+				'offset'          => 0,
+				'show_upcoming'   => 'false',
+				'show_pagination' => 'false',
 			),
 			$this->normalize_atts( $atts )
 		);
 
 		ob_start();
 		$this->open_wrapper();
-		SWFL_Widgets::render_club_games( absint( get_option( 'swfl_club_number' ) ), absint( $a['season'] ) );
+		SWFL_Widgets::render_club_games( absint( get_option( 'swfl_club_number' ) ), absint( $a['season'] ), SWFL_Table_Data::get_list_options( $a ) );
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();
@@ -140,7 +146,8 @@ class SWFL_Public {
 	/**
 	 * Render the team games shortcode (paged around the next game).
 	 *
-	 * Attributes: team_id, season (default: current season), page_size (default 4).
+	 * Attributes: team_id, season (default: current season), page_size (default 4), limit, offset,
+	 * show_upcoming, show_pagination. Any of the last four turns the pager into a static list.
 	 *
 	 * @since    1.0.0
 	 * @param    array $atts Shortcode attributes.
@@ -149,16 +156,20 @@ class SWFL_Public {
 	public function get_team_games_func( $atts ) {
 		$a = shortcode_atts(
 			array(
-				'team_id'   => '',
-				'season'    => SWFL_Display::get_current_season(),
-				'page_size' => 4,
+				'team_id'         => '',
+				'season'          => SWFL_Display::get_current_season(),
+				'page_size'       => 4,
+				'limit'           => 0,
+				'offset'          => 0,
+				'show_upcoming'   => 'false',
+				'show_pagination' => 'false',
 			),
 			$this->normalize_atts( $atts )
 		);
 
 		ob_start();
 		$this->open_wrapper();
-		SWFL_Widgets::render_team_games( absint( $a['team_id'] ), absint( $a['season'] ), absint( $a['page_size'] ) );
+		SWFL_Widgets::render_team_games( absint( $a['team_id'] ), absint( $a['season'] ), absint( $a['page_size'] ), false, SWFL_Table_Data::get_list_options( $a ) );
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();
@@ -348,6 +359,8 @@ class SWFL_Public {
 	/**
 	 * Render the topscorers shortcode.
 	 *
+	 * Attributes: season (default: current season), league, game_class, limit, offset, show_pagination.
+	 *
 	 * @since    1.0.0
 	 * @param    array $atts Shortcode attributes.
 	 * @return   string HTML output of the shortcode.
@@ -355,17 +368,21 @@ class SWFL_Public {
 	public function get_topscorers_func( $atts ) {
 		$a = shortcode_atts(
 			array(
-				'season'     => SWFL_Display::get_current_season(),
-				'league'     => '',
-				'game_class' => '',
-				'group'      => '',
+				'season'          => SWFL_Display::get_current_season(),
+				'league'          => '',
+				'game_class'      => '',
+				'group'           => '',
+				'limit'           => 0,
+				'offset'          => 0,
+				'show_upcoming'   => 'false',
+				'show_pagination' => 'false',
 			),
 			$atts
 		);
 
 		ob_start();
 		$this->open_wrapper();
-		SWFL_Display_Stats::render_topscorers( absint( $a['season'] ), absint( $a['league'] ), absint( $a['game_class'] ) );
+		SWFL_Display_Stats::render_topscorers( absint( $a['season'] ), absint( $a['league'] ), absint( $a['game_class'] ), SWFL_Table_Data::get_list_options( $a ) );
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();
@@ -488,6 +505,61 @@ class SWFL_Public {
 		ob_start();
 		$this->open_wrapper();
 		SWFL_Widgets::render_mobiliar_topscorers( absint( $a['club_id'] ), absint( $a['season'] ) );
+		echo '</div>';
+		$output = ob_get_contents();
+		ob_end_clean();
+		return $output;
+	}
+
+	/**
+	 * Render the next game shortcode.
+	 *
+	 * Attributes: team_id (default: the club of the settings), season (default: current season),
+	 * limit (default 1, at most 10).
+	 *
+	 * @since  2.0.4
+	 * @param  array $atts Shortcode attributes.
+	 * @return string HTML output of the shortcode.
+	 */
+	public function get_next_game_func( $atts ) {
+		return $this->render_highlight( $atts, array( 'SWFL_Highlights', 'render_next_game' ) );
+	}
+
+	/**
+	 * Render the latest result shortcode.
+	 *
+	 * Attributes: team_id (default: the club of the settings), season (default: current season),
+	 * limit (default 1, at most 10).
+	 *
+	 * @since  2.0.4
+	 * @param  array $atts Shortcode attributes.
+	 * @return string HTML output of the shortcode.
+	 */
+	public function get_last_result_func( $atts ) {
+		return $this->render_highlight( $atts, array( 'SWFL_Highlights', 'render_last_result' ) );
+	}
+
+	/**
+	 * Shared output of the next game and latest result shortcodes.
+	 *
+	 * @since  2.0.4
+	 * @param  array    $atts     Shortcode attributes.
+	 * @param  callable $renderer SWFL_Highlights render method.
+	 * @return string HTML output of the shortcode.
+	 */
+	private function render_highlight( $atts, $renderer ) {
+		$a = shortcode_atts(
+			array(
+				'team_id' => '',
+				'season'  => SWFL_Display::get_current_season(),
+				'limit'   => 1,
+			),
+			$this->normalize_atts( $atts )
+		);
+
+		ob_start();
+		$this->open_wrapper();
+		call_user_func( $renderer, absint( get_option( 'swfl_club_number' ) ), absint( $a['season'] ), absint( $a['team_id'] ), absint( $a['limit'] ) );
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();

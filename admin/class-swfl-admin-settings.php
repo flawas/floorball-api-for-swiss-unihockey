@@ -51,7 +51,9 @@ class SWFL_Admin_Settings {
 			$this->get_connection_fields(),
 			$this->get_appearance_fields(),
 			$this->get_table_fields(),
-			$this->get_request_fields()
+			$this->get_request_fields(),
+			$this->get_cache_fields(),
+			$this->get_warmup_fields()
 		);
 		foreach ( $fields as $field ) {
 			add_settings_field(
@@ -349,6 +351,134 @@ class SWFL_Admin_Settings {
 				),
 			),
 		);
+	}
+
+	/**
+	 * Fields for the cache lifetime per API endpoint.
+	 *
+	 * @since 2.1.0
+	 * @return array[] Field definitions with label, args and sanitize settings.
+	 */
+	private function get_cache_fields() {
+		$labels = array(
+			'games'            => __( 'Cache lifetime: games (seconds)', 'swiss-floorball-api' ),
+			'rankings'         => __( 'Cache lifetime: rankings (seconds)', 'swiss-floorball-api' ),
+			'game_events'      => __( 'Cache lifetime: game events (seconds)', 'swiss-floorball-api' ),
+			'topscorers'       => __( 'Cache lifetime: topscorers (seconds)', 'swiss-floorball-api' ),
+			'leagues'          => __( 'Cache lifetime: leagues (seconds)', 'swiss-floorball-api' ),
+			'seasons'          => __( 'Cache lifetime: seasons (seconds)', 'swiss-floorball-api' ),
+			'clubs'            => __( 'Cache lifetime: clubs and club statistics (seconds)', 'swiss-floorball-api' ),
+			'cups'             => __( 'Cache lifetime: cups (seconds)', 'swiss-floorball-api' ),
+			'groups'           => __( 'Cache lifetime: groups (seconds)', 'swiss-floorball-api' ),
+			'teams'            => __( 'Cache lifetime: teams (seconds)', 'swiss-floorball-api' ),
+			'players'          => __( 'Cache lifetime: player profiles (seconds)', 'swiss-floorball-api' ),
+			'national_players' => __( 'Cache lifetime: national players (seconds)', 'swiss-floorball-api' ),
+		);
+
+		$fields = array();
+		foreach ( $labels as $category => $label ) {
+			$default  = SWFL_Client::CACHE_TTL_DEFAULTS[ $category ];
+			$fields[] = array(
+				'label'    => $label,
+				'args'     => $this->input_args(
+					'swfl_cache_ttl_' . $category,
+					'number',
+					array(
+						'min'         => '30',
+						'max'         => '86400',
+						'step'        => '1',
+						'default'     => (string) $default,
+						'description' => sprintf(
+							/* translators: %d: default cache lifetime in seconds. */
+							__( 'How long API responses are cached (30-86400 seconds, default %d). Use a low value such as 120 for near-live updates during a match.', 'swiss-floorball-api' ),
+							$default
+						),
+					)
+				),
+				'sanitize' => array(
+					'type'              => 'integer',
+					'sanitize_callback' => static function ( $value ) use ( $default ) {
+						return SWFL_Admin_Settings::sanitize_cache_ttl( $value, $default );
+					},
+					'default'           => $default,
+				),
+			);
+		}
+
+		return $fields;
+	}
+
+	/**
+	 * Fields for the scheduled cache warm-up.
+	 *
+	 * @since 2.1.0
+	 * @return array[] Field definitions with label, args and sanitize settings.
+	 */
+	private function get_warmup_fields() {
+		return array(
+			array(
+				'label'    => __( 'Cache warm-up interval (minutes)', 'swiss-floorball-api' ),
+				'args'     => $this->input_args(
+					'swfl_cache_interval',
+					'number',
+					array(
+						'min'         => '0',
+						'max'         => (string) SWFL_Warmup::MAX_INTERVAL,
+						'step'        => '1',
+						'default'     => (string) SWFL_Warmup::DEFAULT_INTERVAL,
+						'description' => __( 'A background job (WP-Cron) refreshes the games, rankings and topscorers of your club in this interval, so visitors never wait for the API (0-1440 minutes, default 30, 0 turns the warm-up off). It needs the club number and a site that triggers WP-Cron regularly.', 'swiss-floorball-api' ),
+					)
+				),
+				'sanitize' => array(
+					'type'              => 'integer',
+					'sanitize_callback' => array( $this, 'sanitize_cache_interval' ),
+					'default'           => SWFL_Warmup::DEFAULT_INTERVAL,
+				),
+			),
+			array(
+				'label'    => __( 'Warm up after clearing the cache', 'swiss-floorball-api' ),
+				'args'     => $this->input_args(
+					'swfl_warmup_after_clear',
+					'checkbox',
+					array(
+						'default'     => '0',
+						'description' => __( 'Refill the cache in the background right after you clear it manually, instead of waiting for the next scheduled run.', 'swiss-floorball-api' ),
+					)
+				),
+				'sanitize' => array( $this, 'sanitize_show_icons' ),
+			),
+		);
+	}
+
+	/**
+	 * Sanitize the warm-up interval: integer 0-1440 minutes, where 0 turns it off and an invalid value falls back to 30.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param mixed $value Raw submitted value.
+	 * @return int Minutes.
+	 */
+	public function sanitize_cache_interval( $value ) {
+		if ( ! is_scalar( $value ) || ! is_numeric( $value ) ) {
+			return SWFL_Warmup::DEFAULT_INTERVAL;
+		}
+		return min( SWFL_Warmup::MAX_INTERVAL, absint( $value ) );
+	}
+
+	/**
+	 * Sanitize a cache lifetime: integer 30-86400 seconds, an invalid value falls back to the default.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param mixed $value         Raw submitted value.
+	 * @param int   $default_value Default lifetime of the endpoint in seconds.
+	 * @return int Lifetime in seconds.
+	 */
+	public static function sanitize_cache_ttl( $value, $default_value ) {
+		if ( ! is_scalar( $value ) || ! is_numeric( $value ) || absint( $value ) < 1 ) {
+			return $default_value;
+		}
+		return max( 30, min( 86400, absint( $value ) ) );
 	}
 
 	/**
