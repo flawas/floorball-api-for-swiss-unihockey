@@ -93,7 +93,12 @@ function add_query_arg( $key, $value = false, $url = false ) {
 	} else {
 		$args = array( $key => $value );
 	}
-	return $url . ( false === strpos( $url, '?' ) ? '?' : '&' ) . http_build_query( $args );
+	// Like WordPress, do not encode the values: callers have to encode them themselves.
+	$pairs = array();
+	foreach ( $args as $name => $arg_value ) {
+		$pairs[] = $name . '=' . $arg_value;
+	}
+	return $url . ( false === strpos( $url, '?' ) ? '?' : '&' ) . implode( '&', $pairs );
 }
 function get_transient( $transient ) {
 	return $GLOBALS['sfa_transients'][ $transient ] ?? false;
@@ -183,6 +188,7 @@ require_once __DIR__ . '/includes/class-swfl-display-stats.php';
 require_once __DIR__ . '/includes/class-swfl-widgets.php';
 require_once __DIR__ . '/includes/class-swfl-calendar.php';
 require_once __DIR__ . '/includes/class-swfl-table-data.php';
+require_once __DIR__ . '/includes/class-swfl-request-guard.php';
 require_once __DIR__ . '/includes/class-swfl-icons.php';
 
 // ---------------------------------------------------------------------------

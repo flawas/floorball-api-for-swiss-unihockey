@@ -13,6 +13,7 @@ Untermenü «Einstellungen» (Gruppe `swfl_general_settings`). Gespeichert als W
 | `swfl_actual_season` | Aktuelle Saison als Jahreszahl, z. B. `2025` | `absint` |
 | `swfl_show_icons` | Icons anzeigen (Standard `1`) | `'1'` oder `'0'` |
 | `swfl_request_timeout` | API-Timeout in Sekunden (1–30, Standard `3`) | `absint`, begrenzt auf 1–30; 0/ungültig → `3` |
+| `swfl_rest_rate_limit` | Öffentliche REST-Anfragen pro Minute und Besucher (0–1000, Standard `60`, `0` = aus) | `absint`, begrenzt auf 0–1000; ungültig → `60` |
 | `swfl_api_source` | API-Quelle: `free` (Standard) oder `partner` | nur diese zwei Werte, sonst `free`; leert das Auth-Token |
 | `swfl_api_key` | Partner-API: API-Key | `sanitize_text_field`; leert das Auth-Token |
 | `swfl_api_secret` | Partner-API: API-Secret (Passwortfeld) | nur Steuerzeichen und umgebende Leerzeichen entfernt (`sanitize_text_field` würde gültige Zeichen verändern); leert das Auth-Token |

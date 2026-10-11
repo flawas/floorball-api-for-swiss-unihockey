@@ -124,10 +124,9 @@ Legacy names that still exist on purpose, all handled for upgrades:
 - Options were called `swissfloorball_*` up to 2.0.1. `SWFL_Migrator` copies them to `swfl_*` once on
   `plugins_loaded`; `uninstall.php` removes both generations. New options start as `swfl_*` and need
   no migration, but must be added to the list in `uninstall.php`.
-- The main file was called `floorball-api-for-swiss-unihockey.php`. That file is now a header-less
-  stub that points `active_plugins` / `active_sitewide_plugins` to `swiss-floorball-api.php` and loads
-  it, so sites that updated do not lose their activation (the stub has no plugin header on purpose, which means the legacy single-update path can still leave the plugin deactivated once). Don't delete it before most sites have
-  loaded it once.
+- The main file was called `floorball-api-for-swiss-unihockey.php` up to 2.0.1. There is deliberately no
+  stub or code that rewrites `active_plugins` (WordPress.org forbids plugins changing the active
+  plugin list): sites that update may show the plugin as deactivated once and the user reactivates it.
 
 ## Conventions
 

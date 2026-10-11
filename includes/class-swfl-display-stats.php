@@ -127,7 +127,7 @@ class SWFL_Display_Stats {
 				self::render_details_region( $region, $headers );
 			}
 		} else {
-			echo '<pre>' . esc_html( print_r( $api_response, true ) ) . '</pre>'; // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- Fallback dump of an unknown response shape.
+			echo '<pre>' . esc_html( wp_json_encode( $api_response, JSON_PRETTY_PRINT ) ) . '</pre>';
 		}
 
 		echo '</div>';

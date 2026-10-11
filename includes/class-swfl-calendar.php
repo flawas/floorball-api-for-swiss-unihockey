@@ -77,15 +77,19 @@ class SWFL_Calendar {
 			$params['mode']       = 'list';
 			$params['league']     = absint( $request->get_param( 'league' ) );
 			$params['game_class'] = absint( $request->get_param( 'game_class' ) );
-			$params['group']      = sanitize_text_field( (string) $request->get_param( 'group' ) );
+			$params['group']      = SWFL_Request_Guard::sanitize_group( $request->get_param( 'group' ) );
 		} else {
 			return new WP_Error( 'swfl_missing_params', 'team_id, club_id or league and game_class are required', array( 'status' => 400 ) );
 		}
 
 		$result = SWFL_Table_Data::fetch_all_pages( 'games', SWFL_Table_Data::clean_params( $params ) );
 		if ( is_wp_error( $result ) ) {
-			$result->add_data( array( 'status' => 502 ) );
-			return $result;
+			if ( current_user_can( 'manage_options' ) ) {
+				$result->add_data( array( 'status' => 502 ) );
+				return $result;
+			}
+			// Visitors get no detail of the upstream error; the reason is for administrators.
+			return new WP_Error( 'api_error', 'The calendar could not be loaded', array( 'status' => 502 ) );
 		}
 
 		$title = isset( $result['data']['title'] ) && is_string( $result['data']['title'] ) ? $result['data']['title'] : 'Swiss Floorball';

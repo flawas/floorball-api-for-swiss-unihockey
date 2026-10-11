@@ -98,11 +98,11 @@ class SWFL_Admin {
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/swfl-admin.css', array(), $this->version, 'all' );
 		$seed_css = SWFL_Theme::get_seed_css();
 		if ( '' !== $seed_css ) {
-			wp_add_inline_style( $this->plugin_name, $seed_css );
+			wp_add_inline_style( $this->plugin_name, wp_strip_all_tags( $seed_css ) );
 		}
 		$table_css = SWFL_Theme::get_table_css();
 		if ( '' !== $table_css ) {
-			wp_add_inline_style( $this->plugin_name, $table_css );
+			wp_add_inline_style( $this->plugin_name, wp_strip_all_tags( $table_css ) );
 		}
 	}
 
@@ -302,15 +302,7 @@ class SWFL_Admin {
 		}
 
 		// Clear all cached API data.
-		global $wpdb;
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transient cleanup; query is already prepared.
-		$deleted = $wpdb->query(
-			$wpdb->prepare(
-				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
-				$wpdb->esc_like( '_transient_swfl_' ) . '%',
-				$wpdb->esc_like( '_transient_timeout_swfl_' ) . '%'
-			)
-		);
+		$deleted = SWFL_Client::clear_cache();
 
 		// Pass the result via a short-lived per-user transient instead of URL parameters.
 		set_transient( 'swfl_cache_cleared_' . get_current_user_id(), (int) $deleted, 30 );

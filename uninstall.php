@@ -35,6 +35,7 @@ function swfl_uninstall_site() {
 		'club_name',
 		'actual_season',
 		'request_timeout',
+		'rest_rate_limit',
 		'show_icons',
 		'theme',
 		'seed_color',

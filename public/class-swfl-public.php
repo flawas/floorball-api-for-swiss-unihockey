@@ -298,7 +298,7 @@ class SWFL_Public {
 
 		ob_start();
 		$this->open_wrapper();
-		SWFL_Widgets::render_ranking( absint( $a['season'] ), absint( $a['league'] ), absint( $a['game_class'] ), sanitize_text_field( $a['group'] ), sanitize_key( $a['view'] ) );
+		SWFL_Widgets::render_ranking( absint( $a['season'] ), absint( $a['league'] ), absint( $a['game_class'] ), SWFL_Request_Guard::sanitize_group( $a['group'] ), sanitize_key( $a['view'] ) );
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();
@@ -433,7 +433,7 @@ class SWFL_Public {
 
 		ob_start();
 		$this->open_wrapper();
-		SWFL_Widgets::render_league_games( absint( $a['game_class'] ), absint( $a['league'] ), absint( $a['season'] ), sanitize_text_field( $a['group'] ) );
+		SWFL_Widgets::render_league_games( absint( $a['game_class'] ), absint( $a['league'] ), absint( $a['season'] ), SWFL_Request_Guard::sanitize_group( $a['group'] ) );
 		echo '</div>';
 		$output = ob_get_contents();
 		ob_end_clean();

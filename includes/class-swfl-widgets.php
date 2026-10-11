@@ -88,7 +88,7 @@ class SWFL_Widgets {
 			array(
 				'methods'             => 'GET',
 				'callback'            => array( 'SWFL_Widgets', 'rest_team_games' ),
-				'permission_callback' => '__return_true',
+				'permission_callback' => array( 'SWFL_Request_Guard', 'check_rate_limit' ),
 				'args'                => array(
 					'team_id'   => array(
 						'type'              => 'integer',
@@ -113,7 +113,7 @@ class SWFL_Widgets {
 			array(
 				'methods'             => 'GET',
 				'callback'            => array( 'SWFL_Widgets', 'rest_league_games' ),
-				'permission_callback' => '__return_true',
+				'permission_callback' => array( 'SWFL_Request_Guard', 'check_rate_limit' ),
 				'args'                => array(
 					'game_class' => array(
 						'type'              => 'integer',
@@ -131,7 +131,7 @@ class SWFL_Widgets {
 					),
 					'group'      => array(
 						'type'              => 'string',
-						'sanitize_callback' => 'sanitize_text_field',
+						'sanitize_callback' => array( 'SWFL_Request_Guard', 'sanitize_group' ),
 					),
 					'round'      => array(
 						'type'              => 'integer',
@@ -147,7 +147,7 @@ class SWFL_Widgets {
 			array(
 				'methods'             => 'GET',
 				'callback'            => array( 'SWFL_Calendar', 'rest_calendar' ),
-				'permission_callback' => '__return_true',
+				'permission_callback' => array( 'SWFL_Request_Guard', 'check_rate_limit' ),
 				'args'                => array(
 					'team_id'    => array(
 						'type'              => 'integer',
@@ -171,7 +171,7 @@ class SWFL_Widgets {
 					),
 					'group'      => array(
 						'type'              => 'string',
-						'sanitize_callback' => 'sanitize_text_field',
+						'sanitize_callback' => array( 'SWFL_Request_Guard', 'sanitize_group' ),
 					),
 				),
 			)
@@ -314,7 +314,7 @@ class SWFL_Widgets {
 				<thead>
 					<tr>
 						<?php foreach ( $columns['labels'] as $i => $label ) : ?>
-							<th scope="col"<?php echo self::get_header_class_attr( $columns, $i ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built from constants and escaped classes. ?>><?php echo esc_html( $label ); ?></th>
+							<th scope="col"<?php self::render_header_class_attr( $columns, $i ); ?>><?php echo esc_html( $label ); ?></th>
 						<?php endforeach; ?>
 						<?php if ( $args['admin_links'] ) : ?>
 							<th scope="col"><?php esc_html_e( 'Aktionen', 'swiss-floorball-api' ); ?></th>
@@ -334,14 +334,14 @@ class SWFL_Widgets {
 	}
 
 	/**
-	 * Class attribute of a header cell: right alignment and the hidden-when-narrow class.
+	 * Print the class attribute of a header cell: right alignment and the hidden-when-narrow class.
 	 *
 	 * @since 2.0.1
 	 * @param array $columns Column data, see render_table_element().
 	 * @param int   $i       Column index.
-	 * @return string ` class="..."` or an empty string.
+	 * @return void
 	 */
-	private static function get_header_class_attr( $columns, $i ) {
+	private static function render_header_class_attr( $columns, $i ) {
 		$classes = array();
 		if ( isset( $columns['headers'][ $i ]['align'] ) && 'r' === $columns['headers'][ $i ]['align'] ) {
 			$classes[] = 'sfa-align-right';
@@ -350,27 +350,32 @@ class SWFL_Widgets {
 			$classes[] = $columns['minor'][ $i ];
 		}
 
-		return $classes ? ' class="' . esc_attr( implode( ' ', $classes ) ) . '"' : '';
+		if ( $classes ) {
+			echo ' class="' . esc_attr( implode( ' ', $classes ) ) . '"';
+		}
 	}
 
 	/**
-	 * Extra attributes of a table row: the configured attributes, the highlight class and the hidden state.
+	 * Print the extra attributes of a table row: the configured attributes, the highlight class and the hidden state.
 	 *
 	 * @since 2.0.1
 	 * @param array      $row   Row.
 	 * @param int|string $index Row index.
 	 * @param array      $args  Table arguments of render_table().
-	 * @return string Attribute string with a leading space per attribute.
+	 * @return void
 	 */
-	private static function get_row_attributes( $row, $index, $args ) {
-		$attrs = ! empty( $row['highlight'] ) ? ' class="is-highlight"' : '';
+	private static function render_row_attributes( $row, $index, $args ) {
+		if ( ! empty( $row['highlight'] ) ) {
+			echo ' class="is-highlight"';
+		}
 		if ( isset( $args['row_attrs'][ $index ] ) ) {
 			foreach ( $args['row_attrs'][ $index ] as $name => $value ) {
-				$attrs .= ' ' . esc_attr( $name ) . '="' . esc_attr( $value ) . '"';
+				echo ' ' . esc_attr( $name ) . '="' . esc_attr( $value ) . '"';
 			}
 		}
-
-		return $attrs . ( in_array( $index, $args['hidden'], true ) ? ' hidden' : '' );
+		if ( in_array( $index, $args['hidden'], true ) ) {
+			echo ' hidden';
+		}
 	}
 
 	/**
@@ -387,7 +392,7 @@ class SWFL_Widgets {
 		$game_id = SWFL_Table_Data::get_game_id( $row );
 		$cells   = isset( $row['cells'] ) && is_array( $row['cells'] ) ? $row['cells'] : array();
 		?>
-		<tr<?php echo self::get_row_attributes( $row, $index, $args ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built from constants and escaped attributes. ?>>
+		<tr<?php self::render_row_attributes( $row, $index, $args ); ?>>
 			<?php
 			foreach ( $cells as $i => $cell ) {
 				if ( $i >= $columns['count'] && $columns['count'] > 0 ) {
@@ -469,20 +474,21 @@ class SWFL_Widgets {
 				),
 				'https://www.openstreetmap.org/'
 			) . '#map=16/' . (float) $cell['link']['y'] . '/' . (float) $cell['link']['x'];
-			echo '<a class="sfa-map-link" href="' . esc_url( $map_url ) . '" target="_blank" rel="noopener noreferrer">' . SWFL_Icons::get( 'place' ) . ' ' . esc_html( $text ) . '</a></td>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Icon markup sanitized via wp_kses() in SWFL_Icons::get().
+			echo '<a class="sfa-map-link" href="' . esc_url( $map_url ) . '" target="_blank" rel="noopener noreferrer">' . wp_kses( SWFL_Icons::get( 'place' ), SWFL_Icons::allowed_html() ) . ' ' . esc_html( $text ) . '</a></td>';
 			return;
 		}
 
-		if ( '' !== $image ) {
-			$content = '<span class="sfa-logo-cell"><img class="sfa-club-logo" src="' . esc_url( $image ) . '" alt="" loading="lazy" width="28" height="28" /></span>';
-		} else {
-			$content = esc_html( $text );
+		$is_link = $game_id > 0 && '' === $image && SWFL_Table_Data::is_game_link_cell( $text );
+		if ( $is_link ) {
+			echo '<a href="' . esc_url( self::GAME_LINK_BASE . $game_id ) . '" target="_blank" rel="noopener noreferrer">';
 		}
-
-		if ( $game_id > 0 && '' === $image && SWFL_Table_Data::is_game_link_cell( $text ) ) {
-			echo '<a href="' . esc_url( self::GAME_LINK_BASE . $game_id ) . '" target="_blank" rel="noopener noreferrer">' . $content . '</a>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $content is escaped above.
+		if ( '' !== $image ) {
+			echo '<span class="sfa-logo-cell"><img class="sfa-club-logo" src="' . esc_url( $image ) . '" alt="" loading="lazy" width="28" height="28" /></span>';
 		} else {
-			echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $content is escaped above.
+			echo esc_html( $text );
+		}
+		if ( $is_link ) {
+			echo '</a>';
 		}
 
 		echo '</td>';
@@ -504,7 +510,7 @@ class SWFL_Widgets {
 		}
 		$title = isset( $data['title'] ) && is_string( $data['title'] ) && '' !== $data['title'] ? $data['title'] : $fallback;
 		if ( '' !== $title ) {
-			echo '<h3 class="sfa-section-title">' . ( '' !== $icon ? SWFL_Icons::get( $icon ) . ' ' : '' ) . esc_html( $title ) . '</h3>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Icon markup sanitized via wp_kses() in SWFL_Icons::get().
+			echo '<h3 class="sfa-section-title">' . ( '' !== $icon ? wp_kses( SWFL_Icons::get( $icon ), SWFL_Icons::allowed_html() ) . ' ' : '' ) . esc_html( $title ) . '</h3>';
 		}
 		if ( isset( $data['subtitle'] ) && is_string( $data['subtitle'] ) && '' !== $data['subtitle'] ) {
 			echo '<p class="sfa-widget__subtitle">' . esc_html( $data['subtitle'] ) . '</p>';

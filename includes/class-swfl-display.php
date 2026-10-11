@@ -39,7 +39,7 @@ class SWFL_Display {
 	 * @return void
 	 */
 	private static function render_error_notice( $message ) {
-		echo '<div class="sfa-info-box sfa-info-box--danger" role="alert"><p>' . SWFL_Icons::get( 'error' ) . ' ' . esc_html( $message ) . '</p></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Icon markup sanitized via wp_kses() in SWFL_Icons::get().
+		echo '<div class="sfa-info-box sfa-info-box--danger" role="alert"><p>' . wp_kses( SWFL_Icons::get( 'error' ), SWFL_Icons::allowed_html() ) . ' ' . esc_html( $message ) . '</p></div>';
 	}
 
 	/**

@@ -50,7 +50,7 @@ $swfl_match_id = isset( $_GET['match_id'] ) ? absint( $_GET['match_id'] ) : null
 
 		// Back button.
 		$swfl_back_url = remove_query_arg( 'match_id' );
-		echo '<p><a href="' . esc_url( $swfl_back_url ) . '" class="button button-primary">' . SWFL_Icons::get( 'back' ) . ' ' . esc_html__( 'Zurück zur Übersicht', 'swiss-floorball-api' ) . '</a></p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Icon markup sanitized via wp_kses() in SWFL_Icons::get().
+		echo '<p><a href="' . esc_url( $swfl_back_url ) . '" class="button button-primary">' . wp_kses( SWFL_Icons::get( 'back' ), SWFL_Icons::allowed_html() ) . ' ' . esc_html__( 'Zurück zur Übersicht', 'swiss-floorball-api' ) . '</a></p>';
 
 		// Render Match Details.
 		SWFL_Display_Stats::render_game_details_table( $swfl_match_id );
