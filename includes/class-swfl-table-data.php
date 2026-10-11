@@ -81,8 +81,8 @@ class SWFL_Table_Data {
 	 * The API pages games (10 per page); the official components merge all pages client-side.
 	 *
 	 * @since 1.1.0
-	 * @param string $endpoint API endpoint.
-	 * @param array  $params   Query parameters of the first request.
+	 * @param string $endpoint      API endpoint.
+	 * @param array  $params        Query parameters of the first request.
 	 * @param bool   $force_refresh Optional. Skip reading the cache for every page (cache warm-up). Default false.
 	 * @return array|WP_Error Array with `data` (first page) and `rows` (all pages), or WP_Error.
 	 */
@@ -113,13 +113,13 @@ class SWFL_Table_Data {
 	 * Follow the slider in one direction and merge the rows of every page into the collected rows.
 	 *
 	 * @since 2.0.1
-	 * @param SWFL_Client $client    API client.
-	 * @param string      $endpoint  API endpoint.
-	 * @param array       $params    Query parameters of the first request.
-	 * @param array       $data      Data of the first page.
-	 * @param string      $direction `prev` or `next`.
-	 * @param array       $rows      Rows collected so far.
-	 * @param array       $seen      Contexts already requested, shared between both directions.
+	 * @param SWFL_Client $client        API client.
+	 * @param string      $endpoint      API endpoint.
+	 * @param array       $params        Query parameters of the first request.
+	 * @param array       $data          Data of the first page.
+	 * @param string      $direction     `prev` or `next`.
+	 * @param array       $rows          Rows collected so far.
+	 * @param array       $seen          Contexts already requested, shared between both directions.
 	 * @param bool        $force_refresh Optional. Skip reading the cache for every page. Default false.
 	 * @return array Rows including the pages of this direction.
 	 */
@@ -295,11 +295,11 @@ class SWFL_Table_Data {
 	 * Whether any list option asks for a trimmed, static list instead of the navigable widget.
 	 *
 	 * @since 2.0.4
-	 * @param array $list Options from get_list_options().
+	 * @param array $list_args Options from get_list_options().
 	 * @return bool
 	 */
-	public static function is_list_mode( $list ) {
-		return ! empty( $list ) && ( ! empty( $list['limit'] ) || ! empty( $list['offset'] ) || ! empty( $list['upcoming'] ) || ! empty( $list['past'] ) );
+	public static function is_list_mode( $list_args ) {
+		return ! empty( $list_args ) && ( ! empty( $list_args['limit'] ) || ! empty( $list_args['offset'] ) || ! empty( $list_args['upcoming'] ) || ! empty( $list_args['past'] ) );
 	}
 
 	/**

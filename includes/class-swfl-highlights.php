@@ -107,18 +107,18 @@ class SWFL_Highlights {
 	 * Render a trimmed game list of a team, or of the club without a team.
 	 *
 	 * @since 2.0.4
-	 * @param int   $club_id Club id.
-	 * @param int   $season  Season (start year).
-	 * @param int   $team_id Team id, 0 for the club.
-	 * @param array $list    List options of SWFL_Table_Data::get_list_options(), plus a `title`.
+	 * @param int   $club_id   Club id.
+	 * @param int   $season    Season (start year).
+	 * @param int   $team_id   Team id, 0 for the club.
+	 * @param array $list_args List options of SWFL_Table_Data::get_list_options(), plus a `title`.
 	 * @return void
 	 */
-	private static function render( $club_id, $season, $team_id, $list ) {
+	private static function render( $club_id, $season, $team_id, $list_args ) {
 		if ( $team_id > 0 ) {
-			SWFL_Widgets::render_team_games( $team_id, $season, 0, false, $list );
+			SWFL_Widgets::render_team_games( $team_id, $season, 0, false, $list_args );
 			return;
 		}
 
-		SWFL_Widgets::render_club_games( $club_id, $season, $list );
+		SWFL_Widgets::render_club_games( $club_id, $season, $list_args );
 	}
 }

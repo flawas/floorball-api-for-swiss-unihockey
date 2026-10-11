@@ -115,6 +115,8 @@ class SWFL_Warmup {
 	public static function add_schedule( $schedules ) {
 		$minutes = max( 1, self::get_interval() );
 
+		// The interval is the configured number of minutes, so it is not a literal.
+		// phpcs:ignore WordPress.WP.CronInterval.ChangeDetected
 		$schedules[ self::SCHEDULE ] = array(
 			'interval' => $minutes * MINUTE_IN_SECONDS,
 			/* translators: %d: number of minutes between two cache warm-ups. */

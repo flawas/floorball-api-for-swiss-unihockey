@@ -470,7 +470,7 @@ class SWFL_Admin_Settings {
 	 *
 	 * @since 2.1.0
 	 *
-	 * @param mixed $value   Raw submitted value.
+	 * @param mixed $value         Raw submitted value.
 	 * @param int   $default_value Default lifetime of the endpoint in seconds.
 	 * @return int Lifetime in seconds.
 	 */

@@ -69,17 +69,17 @@ class SWFL_Client {
 	 * @var   int[]
 	 */
 	const CACHE_TTL_DEFAULTS = array(
-		'games'           => 3600,
-		'rankings'        => 7200,
-		'game_events'     => 120,
-		'topscorers'      => 7200,
-		'leagues'         => 3600,
-		'seasons'         => 3600,
-		'clubs'           => 3600,
-		'cups'            => 3600,
-		'groups'          => 3600,
-		'teams'           => 3600,
-		'players'         => 3600,
+		'games'            => 3600,
+		'rankings'         => 7200,
+		'game_events'      => 120,
+		'topscorers'       => 7200,
+		'leagues'          => 3600,
+		'seasons'          => 3600,
+		'clubs'            => 3600,
+		'cups'             => 3600,
+		'groups'           => 3600,
+		'teams'            => 3600,
+		'players'          => 3600,
 		'national_players' => 3600,
 	);
 
@@ -218,13 +218,14 @@ class SWFL_Client {
 	 * Fetch data from the API.
 	 *
 	 * @since    1.0.0
-	 * @param    string $endpoint    The API endpoint to fetch.
-	 * @param    array  $args        Optional. Arguments for the API request.
-	 * @param    int|null $cache_time Optional. Time in seconds to cache the response. Default null: the lifetime
-	 *                                configured for the endpoint category in the settings (1 hour for other endpoints).
+	 * @param    string   $endpoint      The API endpoint to fetch.
+	 * @param    array    $args          Optional. Arguments for the API request.
+	 * @param    int|null $cache_time    Optional. Time in seconds to cache the response. Default null: the lifetime
+	 *                                   configured for the endpoint category in the settings (1 hour for other
+	 *                                   endpoints).
 	 * @param    bool     $force_refresh Optional. Skip reading the cache but still write the response back,
-	 *                                used by the scheduled cache warm-up. Default false.
-	 * @return   array|WP_Error         The decoded JSON response or WP_Error on failure.
+	 *                                   used by the scheduled cache warm-up. Default false.
+	 * @return   array|WP_Error           The decoded JSON response or WP_Error on failure.
 	 */
 	public function fetch_data( $endpoint, $args = array(), $cache_time = null, $force_refresh = false ) {
 		if ( null === $cache_time ) {

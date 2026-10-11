@@ -460,13 +460,13 @@ class SWFL_Display_Stats {
 	/**
 	 * Get topscorers.
 	 *
-	 * @param int|string $season Season ID.
-	 * @param int|string $league League ID.
+	 * @param int|string $season     Season ID.
+	 * @param int|string $league     League ID.
 	 * @param int|string $game_class Game Class ID.
-	 * @param array      $list       Optional. List options (limit, offset, pagination) from SWFL_Table_Data::get_list_options().
+	 * @param array      $list_args  Optional. List options (limit, offset, pagination) from SWFL_Table_Data::get_list_options().
 	 * @return void
 	 */
-	public static function render_topscorers( $season, $league, $game_class, $list = array() ) {
+	public static function render_topscorers( $season, $league, $game_class, $list_args = array() ) {
 		$client       = SWFL_Display::get_client();
 		$api_response = $client->fetch_data(
 			'topscorers/su',
@@ -484,9 +484,9 @@ class SWFL_Display_Stats {
 
 		$paged = SWFL_Table_Data::paginate(
 			$api_response['data']['regions'][0]['rows'],
-			isset( $list['limit'] ) ? $list['limit'] : 0,
-			isset( $list['offset'] ) ? $list['offset'] : 0,
-			! empty( $list['pagination'] )
+			isset( $list_args['limit'] ) ? $list_args['limit'] : 0,
+			isset( $list_args['offset'] ) ? $list_args['offset'] : 0,
+			! empty( $list_args['pagination'] )
 		);
 		$rows  = $paged['rows'];
 		$title = isset( $api_response['data']['title'] ) ? $api_response['data']['title'] : 'Topscorer';
@@ -514,7 +514,7 @@ class SWFL_Display_Stats {
 			</tbody>
 		</table></div>
 		<?php
-		if ( ! empty( $list['pagination'] ) ) {
+		if ( ! empty( $list_args['pagination'] ) ) {
 			SWFL_Table_Data::render_pagination( $paged['page'], $paged['pages'] );
 		}
 	}
