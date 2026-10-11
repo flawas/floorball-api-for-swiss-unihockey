@@ -23,7 +23,7 @@
 **Requires at least:** 5.0  
 **Tested up to:** 7.1  
 **Requires PHP:** 7.4  
-**Stable tag:** 2.0.2  
+**Stable tag:** 2.0.3  
 **License:** GPLv2 or later  
 **License URI:** https://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -165,6 +165,7 @@ add_filter( 'swfl_icon_svg', function ( $svg, $name, $args ) {
 |------|------|-------------|
 | `swfl_icon_svg` | Filter | Replace the SVG markup of an icon. |
 | `swfl_request_timeout` | Filter | Override the API request timeout (seconds). Takes precedence over the setting. |
+| `swfl_rest_rate_limit` | Filter | Override the REST requests per minute and visitor (0 = off). Takes precedence over the setting. |
 
 ## ❓ FAQ
 
@@ -237,6 +238,13 @@ Version 2.0.0 contains breaking changes (API source, calendar feed, shortcode at
 4. Check custom CSS, or set *Table style* to `classic`.
 
 ## 📜 Changelog
+### 2.0.3 (2026-10-11)
+* Security: Values sent to the Swiss Unihockey API are URL-encoded, so a request value such as a group name can no longer add query parameters of its own (parameter injection through the public REST routes and shortcode attributes)
+* Security: The public REST routes `swfl/v1/*` are rate limited per visitor (setting *REST requests per minute and visitor*, default 60, 0 turns it off, filter `swfl_rest_rate_limit`), and the `group` value accepts only letters, digits, spaces and `. _ / -` up to 40 characters. This stops anonymous visitors from filling the options table with cached responses
+* Security: The calendar feed no longer returns the upstream API's error text to visitors; administrators still get it
+* Fix: WordPress.org plugin review: escape late. Icon markup is passed through `wp_kses()` where it is printed, inline CSS goes through `wp_strip_all_tags()`, and table cells, row attributes, settings inputs and the unknown-response fallback are escaped at the point of output
+* Remove: The compatibility loader `floorball-api-for-swiss-unihockey.php` is gone, because a plugin must not change the list of active plugins itself. Sites that update from 2.0.1 or older may show the plugin as deactivated once; activate it again, the settings are kept
+* Change: The cache is cleared through `SWFL_Client::clear_cache()` (one shared implementation instead of two copies)
 ### 2.0.2 (2026-10-07)
 * Fix: WordPress.org plugin review: all PHP globals now use the single prefix `swfl`. Options `swissfloorball_*` became `swfl_*` (existing settings are copied automatically on the first request after the update, `uninstall.php` removes both), classes `Swiss_Floorball_Api*` became `SWFL_*`, the constant `SWISS_FLOORBALL_API_VERSION` became `SWFL_VERSION` and the JS global `sfaAutosave` became `swflAutosave`. Custom code that reads `swissfloorball_*` options or calls the old class names must be adjusted
 * Change: The main file is now `swiss-floorball-api.php` and all other files are named `class-swfl-*.php` / `swfl-*`. The old main file stays as a small loader that moves the activation to the new file; if the plugin shows as deactivated after a manual single update, activate it once. Admin page URLs changed to `admin.php?page=swiss-floorball-api…`

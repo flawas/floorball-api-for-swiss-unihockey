@@ -110,7 +110,7 @@ Alle Einstellungen heissen nicht mehr `swissfloorball_*`, sondern `swfl_*` (Word
 
 ## Hauptdatei heisst jetzt `swiss-floorball-api.php`
 
-Die Hauptdatei und alle internen Dateien tragen jetzt den Namen des WordPress.org-Slugs bzw. den Präfix `swfl` (`class-swfl-*.php`, `swfl-*.css|js|php`). Die alte Datei `floorball-api-for-swiss-unihockey.php` bleibt als kleiner Weiterleiter bestehen: Beim ersten Laden trägt sie die neue Hauptdatei bei den aktiven Plugins und bei den automatischen Updates ein. Die Admin-Seiten heissen jetzt `admin.php?page=swiss-floorball-api…` (statt `…floorball-api-for-swiss-unihockey…`); alte Lesezeichen müssen einmal angepasst werden.
+Die Hauptdatei und alle internen Dateien tragen jetzt den Namen des WordPress.org-Slugs bzw. den Präfix `swfl` (`class-swfl-*.php`, `swfl-*.css|js|php`). Die alte Datei `floorball-api-for-swiss-unihockey.php` gibt es nicht mehr; das Plugin ändert die Liste der aktiven Plugins nicht selbst. Die Admin-Seiten heissen jetzt `admin.php?page=swiss-floorball-api…` (statt `…floorball-api-for-swiss-unihockey…`); alte Lesezeichen müssen einmal angepasst werden.
 
-Wird das Plugin nach einem manuellen Einzel-Update (Plugin-Seite ohne JavaScript) als deaktiviert angezeigt, genügt einmal «Aktivieren»; die Einstellungen bleiben erhalten.
+Nach dem Update kann das Plugin als deaktiviert angezeigt werden, weil WordPress die Aktivierung unter dem Namen der alten Hauptdatei speichert. Dann genügt einmal «Aktivieren»; die Einstellungen bleiben erhalten.
 

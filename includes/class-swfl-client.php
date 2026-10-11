@@ -169,7 +169,12 @@ class SWFL_Client {
 
 		// Add query args if present.
 		if ( ! empty( $args ) ) {
-			$url = add_query_arg( $args, $url );
+			// add_query_arg() does not encode values, so a value containing & or = would add parameters of its own.
+			$encoded = array();
+			foreach ( $args as $name => $value ) {
+				$encoded[ $name ] = is_scalar( $value ) ? rawurlencode( (string) $value ) : '';
+			}
+			$url = add_query_arg( $encoded, $url );
 		}
 
 		// Generate a unique cache key for this request.
@@ -269,5 +274,27 @@ class SWFL_Client {
 		$data = json_decode( wp_remote_retrieve_body( $response ), true );
 
 		return JSON_ERROR_NONE === json_last_error() ? $data : new WP_Error( 'json_error', 'Failed to decode JSON response' );
+	}
+
+	/**
+	 * Delete every cached API response.
+	 *
+	 * The transient API cannot delete by prefix, so the rows are removed with one prepared query.
+	 *
+	 * @since 2.0.3
+	 * @return int Number of deleted option rows.
+	 */
+	public static function clear_cache() {
+		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Prefix-based transient cleanup is not possible via the transient API.
+		$deleted = $wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
+				$wpdb->esc_like( '_transient_swfl_' ) . '%',
+				$wpdb->esc_like( '_transient_timeout_swfl_' ) . '%'
+			)
+		);
+
+		return (int) $deleted;
 	}
 }

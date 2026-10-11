@@ -329,7 +329,41 @@ class SWFL_Admin_Settings {
 					'default'           => 3,
 				),
 			),
+			array(
+				'label'    => __( 'REST requests per minute and visitor', 'swiss-floorball-api' ),
+				'args'     => $this->input_args(
+					'swfl_rest_rate_limit',
+					'number',
+					array(
+						'min'         => '0',
+						'max'         => '1000',
+						'step'        => '1',
+						'default'     => '60',
+						'description' => __( 'Maximum requests per minute that one visitor may send to the public REST routes of the plugin (0-1000, default 60, 0 turns the limit off). Behind a reverse proxy all visitors share the proxy address, so raise the value there. Can be overridden with the swfl_rest_rate_limit filter.', 'swiss-floorball-api' ),
+					)
+				),
+				'sanitize' => array(
+					'type'              => 'integer',
+					'sanitize_callback' => array( $this, 'sanitize_rest_rate_limit' ),
+					'default'           => 60,
+				),
+			),
 		);
+	}
+
+	/**
+	 * Sanitize the REST rate limit: integer 0-1000, where 0 turns the limit off and an invalid value falls back to 60.
+	 *
+	 * @since 2.0.3
+	 *
+	 * @param mixed $value Raw submitted value.
+	 * @return int Requests per minute.
+	 */
+	public function sanitize_rest_rate_limit( $value ) {
+		if ( ! is_scalar( $value ) || ! is_numeric( $value ) ) {
+			return SWFL_Request_Guard::DEFAULT_RATE_LIMIT;
+		}
+		return min( 1000, absint( $value ) );
 	}
 
 	/**
@@ -465,15 +499,7 @@ class SWFL_Admin_Settings {
 
 		// If club number changed, clear all cached API data.
 		if ( $club_changed && ! empty( $club_number ) ) {
-			global $wpdb;
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transient cleanup; query is already prepared.
-			$wpdb->query(
-				$wpdb->prepare(
-					"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
-					$wpdb->esc_like( '_transient_swfl_' ) . '%',
-					$wpdb->esc_like( '_transient_timeout_swfl_' ) . '%'
-				)
-			);
+			SWFL_Client::clear_cache();
 		}
 
 		// If club number is empty, return it as is.
@@ -573,8 +599,7 @@ class SWFL_Admin_Settings {
 	 */
 	private function render_input_field( $args, $value ) {
 		if ( 'serialized' === $args['value_type'] ) {
-			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize -- Display only; never unserialized.
-			$value = serialize( $value );
+			$value = maybe_serialize( $value );
 		}
 
 		if ( 'checkbox' === $args['subtype'] ) {
@@ -636,7 +661,27 @@ class SWFL_Admin_Settings {
 		if ( isset( $args['prepend_value'] ) ) {
 			$input = '<div class="input-prepend"> <span class="add-on">' . esc_html( $args['prepend_value'] ) . '</span>' . $input . '</div>';
 		}
-		echo $input; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Every dynamic part is escaped above.
+		echo wp_kses(
+			$input,
+			array(
+				'div'   => array( 'class' => true ),
+				'span'  => array( 'class' => true ),
+				'input' => array(
+					'type'        => true,
+					'id'          => true,
+					'name'        => true,
+					'size'        => true,
+					'value'       => true,
+					'disabled'    => true,
+					'required'    => true,
+					'checked'     => true,
+					'step'        => true,
+					'max'         => true,
+					'min'         => true,
+					'placeholder' => true,
+				),
+			)
+		);
 	}
 
 	/**
@@ -649,7 +694,9 @@ class SWFL_Admin_Settings {
 	private function render_select_field( $args, $value ) {
 		echo '<select id="' . esc_attr( $args['id'] ) . '" name="' . esc_attr( $args['name'] ) . '">';
 		foreach ( $args['options'] as $option_value => $option_label ) {
-			echo '<option value="' . esc_attr( $option_value ) . '"' . selected( $value, $option_value, false ) . '>' . esc_html( $option_label ) . '</option>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '<option value="' . esc_attr( $option_value ) . '" ';
+			selected( $value, $option_value );
+			echo '>' . esc_html( $option_label ) . '</option>';
 		}
 		echo '</select>';
 		if ( ! empty( $args['description'] ) ) {

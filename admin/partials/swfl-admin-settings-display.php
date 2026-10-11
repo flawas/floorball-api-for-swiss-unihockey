@@ -33,7 +33,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 	if ( false !== $swfl_deleted_count ) {
 		delete_transient( 'swfl_cache_cleared_' . get_current_user_id() );
 		echo '<div class="notice notice-success is-dismissible">';
-		echo '<p><strong>' . SWFL_Icons::get( 'check' ) . ' Cache erfolgreich geleert!</strong> ' . esc_html( (int) $swfl_deleted_count ) . ' zwischengespeicherte Einträge wurden gelöscht.</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Icon markup sanitized via wp_kses() in SWFL_Icons::get().
+		echo '<p><strong>' . wp_kses( SWFL_Icons::get( 'check' ), SWFL_Icons::allowed_html() ) . ' Cache erfolgreich geleert!</strong> ' . esc_html( (int) $swfl_deleted_count ) . ' zwischengespeicherte Einträge wurden gelöscht.</p>';
 		echo '</div>';
 	}
 	?>

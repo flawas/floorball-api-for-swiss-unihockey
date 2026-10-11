@@ -134,6 +134,7 @@ class SWFL_Plugin {
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-widgets.php';
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-calendar.php';
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-table-data.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-request-guard.php';
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-icons.php';
 
 		$this->loader = new SWFL_Loader();

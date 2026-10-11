@@ -5,6 +5,7 @@
 | Filter | Datei | Parameter | Zweck |
 |---|---|---|---|
 | `swfl_request_timeout` | `includes/class-swfl-client.php` | `$timeout` (Standard: Option `swfl_request_timeout`, Standard `3`, Sekunden), `$url` | Timeout der API-Anfrage; Minimum 1 |
+| `swfl_rest_rate_limit` | `includes/class-swfl-request-guard.php` | `$limit` (Standard: Option `swfl_rest_rate_limit`, Standard `60`, Anfragen pro Minute und Besucher) | Rate-Limit der öffentlichen REST-Routen; `0` schaltet es aus |
 | `swfl_icon_svg` | `includes/class-swfl-icons.php` | `$svg`, `$name`, `$args` | SVG-Markup eines Icons ändern; Ergebnis wird erneut mit `wp_kses()` gefiltert |
 
 ```php

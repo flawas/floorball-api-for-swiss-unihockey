@@ -101,11 +101,11 @@ class SWFL_Public_Assets {
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/swfl-public.css', array(), $this->version, 'all' );
 		$seed_css = SWFL_Theme::get_seed_css();
 		if ( '' !== $seed_css ) {
-			wp_add_inline_style( $this->plugin_name, $seed_css );
+			wp_add_inline_style( $this->plugin_name, wp_strip_all_tags( $seed_css ) );
 		}
 		$table_css = SWFL_Theme::get_table_css();
 		if ( '' !== $table_css ) {
-			wp_add_inline_style( $this->plugin_name, $table_css );
+			wp_add_inline_style( $this->plugin_name, wp_strip_all_tags( $table_css ) );
 		}
 	}
 

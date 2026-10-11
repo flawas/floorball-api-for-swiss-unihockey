@@ -19,7 +19,7 @@
 | `admin/class-swfl-admin.php`, `admin/partials/` | Admin | Menü, Einstellungen, Helper-Seiten |
 | `uninstall.php` | – | löscht Optionen und Transients (auch Multisite) |
 
-Alle Dateien, Klassen, Optionen, Transients, Hooks und Shortcodes verwenden den Präfix `swfl`; Text-Domain und Hauptdatei heissen wie der WordPress.org-Slug `swiss-floorball-api`. Die alte Hauptdatei `floorball-api-for-swiss-unihockey.php` bleibt als kleiner Weiterleiter bestehen, damit bereits aktivierte Installationen aktiv bleiben.
+Alle Dateien, Klassen, Optionen, Transients, Hooks und Shortcodes verwenden den Präfix `swfl`; Text-Domain und Hauptdatei heissen wie der WordPress.org-Slug `swiss-floorball-api`.
 
 ## Datenfluss
 

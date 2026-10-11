@@ -114,7 +114,7 @@ class SWFL_Icons {
 		 */
 		$svg = apply_filters( 'swfl_icon_svg', $svg, $name, $args );
 
-		return wp_kses( (string) $svg, self::allowed_svg_html() );
+		return wp_kses( (string) $svg, self::allowed_html() );
 	}
 
 	/**
@@ -126,7 +126,7 @@ class SWFL_Icons {
 	 * @return void
 	 */
 	public static function render( $name, $args = '' ) {
-		echo self::get( $name, $args ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Sanitized via wp_kses() in self::get().
+		echo wp_kses( self::get( $name, $args ), self::allowed_html() );
 	}
 
 	/**
@@ -166,7 +166,7 @@ class SWFL_Icons {
 	 * @since 1.0.6
 	 * @return array
 	 */
-	private static function allowed_svg_html() {
+	public static function allowed_html() {
 		return array(
 			'svg'  => array(
 				'class'       => true,
