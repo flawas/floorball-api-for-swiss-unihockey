@@ -83,11 +83,12 @@ class SWFL_Table_Data {
 	 * @since 1.1.0
 	 * @param string $endpoint API endpoint.
 	 * @param array  $params   Query parameters of the first request.
+	 * @param bool   $force_refresh Optional. Skip reading the cache for every page (cache warm-up). Default false.
 	 * @return array|WP_Error Array with `data` (first page) and `rows` (all pages), or WP_Error.
 	 */
-	public static function fetch_all_pages( $endpoint, $params ) {
+	public static function fetch_all_pages( $endpoint, $params, $force_refresh = false ) {
 		$client = SWFL_Widgets::get_client();
-		$first  = $client->fetch_data( $endpoint, $params );
+		$first  = $client->fetch_data( $endpoint, $params, null, $force_refresh );
 		if ( is_wp_error( $first ) ) {
 			return $first;
 		}
@@ -99,7 +100,7 @@ class SWFL_Table_Data {
 		$seen = array();
 
 		foreach ( array( 'prev', 'next' ) as $direction ) {
-			$rows = self::follow_slider( $client, $endpoint, $params, $first['data'], $direction, $rows, $seen );
+			$rows = self::follow_slider( $client, $endpoint, $params, $first['data'], $direction, $rows, $seen, $force_refresh );
 		}
 
 		return array(
@@ -119,9 +120,10 @@ class SWFL_Table_Data {
 	 * @param string      $direction `prev` or `next`.
 	 * @param array       $rows      Rows collected so far.
 	 * @param array       $seen      Contexts already requested, shared between both directions.
+	 * @param bool        $force_refresh Optional. Skip reading the cache for every page. Default false.
 	 * @return array Rows including the pages of this direction.
 	 */
-	private static function follow_slider( $client, $endpoint, $params, $data, $direction, $rows, &$seen ) {
+	private static function follow_slider( $client, $endpoint, $params, $data, $direction, $rows, &$seen, $force_refresh = false ) {
 		$context = self::get_slider_context( $data, $direction );
 		for ( $i = 0; $i < SWFL_Widgets::MAX_PAGES && ! empty( $context ); $i++ ) {
 			$key = wp_json_encode( $context );
@@ -130,7 +132,7 @@ class SWFL_Table_Data {
 			}
 			$seen[ $key ] = true;
 
-			$page = $client->fetch_data( $endpoint, array_merge( $params, $context ) );
+			$page = $client->fetch_data( $endpoint, array_merge( $params, $context ), null, $force_refresh );
 			if ( is_wp_error( $page ) || ! isset( $page['data'] ) ) {
 				break;
 			}
@@ -270,6 +272,167 @@ class SWFL_Table_Data {
 			}
 		);
 		return $prepared;
+	}
+
+	/**
+	 * Normalise the list attributes of a shortcode (limit, offset, show_upcoming, show_past, show_pagination).
+	 *
+	 * @since 2.0.4
+	 * @param array $atts Shortcode attributes, already merged with their defaults.
+	 * @return array Keys `limit`, `offset`, `upcoming`, `past` and `pagination`.
+	 */
+	public static function get_list_options( $atts ) {
+		return array(
+			'limit'      => isset( $atts['limit'] ) ? min( absint( $atts['limit'] ), 200 ) : 0,
+			'offset'     => isset( $atts['offset'] ) ? absint( $atts['offset'] ) : 0,
+			'upcoming'   => isset( $atts['show_upcoming'] ) && rest_sanitize_boolean( $atts['show_upcoming'] ),
+			'past'       => isset( $atts['show_past'] ) && rest_sanitize_boolean( $atts['show_past'] ),
+			'pagination' => isset( $atts['show_pagination'] ) && rest_sanitize_boolean( $atts['show_pagination'] ),
+		);
+	}
+
+	/**
+	 * Whether any list option asks for a trimmed, static list instead of the navigable widget.
+	 *
+	 * @since 2.0.4
+	 * @param array $list Options from get_list_options().
+	 * @return bool
+	 */
+	public static function is_list_mode( $list ) {
+		return ! empty( $list ) && ( ! empty( $list['limit'] ) || ! empty( $list['offset'] ) || ! empty( $list['upcoming'] ) || ! empty( $list['past'] ) );
+	}
+
+	/**
+	 * Keep the game rows that have not been played yet.
+	 *
+	 * Rows without a parseable date are kept instead of silently dropped.
+	 *
+	 * @since 2.0.4
+	 * @param array $rows Game rows with an `sfa_date`.
+	 * @return array Upcoming rows.
+	 */
+	public static function filter_upcoming_rows( $rows ) {
+		$today = current_time( 'Y-m-d' );
+
+		return array_values(
+			array_filter(
+				$rows,
+				static function ( $row ) use ( $today ) {
+					return empty( $row['sfa_date'] ) || $row['sfa_date'] >= $today;
+				}
+			)
+		);
+	}
+
+	/**
+	 * Keep the game rows of days before today, most recent first.
+	 *
+	 * Rows without a parseable date are dropped, as they cannot be told from a game that is still to come.
+	 *
+	 * @since 2.0.4
+	 * @param array $rows Game rows with an `sfa_date`.
+	 * @return array Past rows, newest first.
+	 */
+	public static function filter_past_rows( $rows ) {
+		$today = current_time( 'Y-m-d' );
+
+		return array_reverse(
+			array_values(
+				array_filter(
+					$rows,
+					static function ( $row ) use ( $today ) {
+						return ! empty( $row['sfa_date'] ) && $row['sfa_date'] < $today;
+					}
+				)
+			)
+		);
+	}
+
+	/**
+	 * Page requested through the `swfl_page` query argument.
+	 *
+	 * Read-only navigation, so no nonce is needed.
+	 *
+	 * @since 2.0.4
+	 * @return int Page number, at least 1.
+	 */
+	public static function get_requested_page() {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only pagination.
+		return isset( $_GET['swfl_page'] ) ? max( 1, absint( wp_unslash( $_GET['swfl_page'] ) ) ) : 1;
+	}
+
+	/**
+	 * Cut a row list down to the requested slice. The full response stays cached, slicing is local.
+	 *
+	 * @since 2.0.4
+	 * @param array $rows       Rows.
+	 * @param int   $limit      Rows per page, 0 for all remaining rows.
+	 * @param int   $offset     Rows to skip at the start.
+	 * @param bool  $pagination Whether to honour the `swfl_page` query argument.
+	 * @return array Keys `rows`, `page` and `pages`.
+	 */
+	public static function paginate( $rows, $limit, $offset, $pagination ) {
+		$rows  = array_slice( array_values( $rows ), $offset );
+		$limit = absint( $limit );
+		if ( 0 === $limit ) {
+			return array(
+				'rows'  => $rows,
+				'page'  => 1,
+				'pages' => 1,
+			);
+		}
+
+		$pages = max( 1, (int) ceil( count( $rows ) / $limit ) );
+		$page  = $pagination ? min( self::get_requested_page(), $pages ) : 1;
+
+		return array(
+			'rows'  => array_slice( $rows, ( $page - 1 ) * $limit, $limit ),
+			'page'  => $page,
+			'pages' => $pages,
+		);
+	}
+
+	/**
+	 * Print previous/next links for a paginated list; nothing for a single page.
+	 *
+	 * @since 2.0.4
+	 * @param int $page  Current page.
+	 * @param int $pages Number of pages.
+	 * @return void
+	 */
+	public static function render_pagination( $page, $pages ) {
+		if ( $pages < 2 ) {
+			return;
+		}
+
+		$prev_url = $page > 2 ? add_query_arg( 'swfl_page', $page - 1 ) : remove_query_arg( 'swfl_page' );
+		$next_url = add_query_arg( 'swfl_page', $page + 1 );
+		?>
+		<nav class="sfa-widget__controls sfa-pagination" aria-label="<?php esc_attr_e( 'Seitennavigation', 'swiss-floorball-api' ); ?>">
+			<?php if ( $page > 1 ) : ?>
+				<a class="sfa-btn" rel="prev" href="<?php echo esc_url( $prev_url ); ?>"><?php esc_html_e( 'Zurück', 'swiss-floorball-api' ); ?></a>
+			<?php else : ?>
+				<span class="sfa-btn sfa-btn--disabled" aria-disabled="true"><?php esc_html_e( 'Zurück', 'swiss-floorball-api' ); ?></span>
+			<?php endif; ?>
+			<span class="sfa-widget__label">
+				<?php
+				echo esc_html(
+					sprintf(
+						/* translators: 1: current page, 2: number of pages. */
+						__( 'Seite %1$d von %2$d', 'swiss-floorball-api' ),
+						$page,
+						$pages
+					)
+				);
+				?>
+			</span>
+			<?php if ( $page < $pages ) : ?>
+				<a class="sfa-btn" rel="next" href="<?php echo esc_url( $next_url ); ?>"><?php esc_html_e( 'Weiter', 'swiss-floorball-api' ); ?></a>
+			<?php else : ?>
+				<span class="sfa-btn sfa-btn--disabled" aria-disabled="true"><?php esc_html_e( 'Weiter', 'swiss-floorball-api' ); ?></span>
+			<?php endif; ?>
+		</nav>
+		<?php
 	}
 
 	/**

@@ -49,9 +49,13 @@ if ( ! current_user_can( 'manage_options' ) ) {
 					<td>Zeigt die Spiele eines Vereins wochenweise, mit Wechsel zwischen den Wochen.</td>
 					<td>
 						Der Verein stammt immer aus den Plugin-Einstellungen.<br>
-						<strong>season</strong>: Startjahr der Saison (Standard: aktuelle Saison).
+						<strong>season</strong>: Startjahr der Saison (Standard: aktuelle Saison).<br>
+						<strong>limit</strong>: Maximale Anzahl Zeilen (0 = alle).<br>
+						<strong>offset</strong>: Anzahl Zeilen, die übersprungen werden.<br>
+						<strong>show_upcoming</strong>: <code>true</code> zeigt nur kommende Spiele.<br>
+						<strong>show_pagination</strong>: <code>true</code> blendet Vor-/Zurück-Links ein (nur mit <code>limit</code>).
 					</td>
-					<td><code>[swfl-club-games season="2025"]</code></td>
+					<td><code>[swfl-club-games season="2025" limit="5" show_upcoming="true"]</code></td>
 				</tr>
 				<tr>
 					<td><code>[swfl-team-games]</code></td>
@@ -60,9 +64,13 @@ if ( ! current_user_can( 'manage_options' ) ) {
 						<strong>team_id</strong> (erforderlich): Die ID des Teams.<br>
 						<strong>season</strong>: Startjahr der Saison (Standard: aktuelle Saison).<br>
 						<strong>page_size</strong>: Spiele pro Seite (Standard: 4).<br>
+						<strong>limit</strong>: Maximale Anzahl Zeilen (0 = alle).<br>
+						<strong>offset</strong>: Anzahl Zeilen, die übersprungen werden.<br>
+						<strong>show_upcoming</strong>: <code>true</code> zeigt nur kommende Spiele.<br>
+						<strong>show_pagination</strong>: <code>true</code> blendet Vor-/Zurück-Links ein (nur mit <code>limit</code>).<br>
 						<em>Zu finden auf der <a href="<?php echo esc_url( admin_url( 'admin.php?page=swiss-floorball-api-teams' ) ); ?>">Teams Übersicht</a> oder im <a href="<?php echo esc_url( admin_url( 'admin.php?page=swiss-floorball-api' ) ); ?>">Dashboard</a>.</em>
 					</td>
-					<td><code>[swfl-team-games team_id="429626" season="2025" page_size="5"]</code></td>
+					<td><code>[swfl-team-games team_id="429626" season="2025" limit="5" show_upcoming="true"]</code></td>
 				</tr>
 				<tr>
 					<td><code>[swfl-club-team-games]</code></td>
@@ -73,6 +81,28 @@ if ( ! current_user_can( 'manage_options' ) ) {
 						<strong>page_size</strong>: Spiele pro Seite (Standard: 4).
 					</td>
 					<td><code>[swfl-club-team-games season="2025" page_size="6"]</code></td>
+				</tr>
+				<tr>
+					<td><code>[swfl-next-game]</code></td>
+					<td>Zeigt das nächste Spiel des Vereins oder eines Teams. Dasselbe liefert das Widget «Nächstes Spiel und letztes Resultat» unter Design &rarr; Widgets.</td>
+					<td>
+						Der Verein stammt aus den Plugin-Einstellungen.<br>
+						<strong>team_id</strong>: Team-ID, um statt des Vereins ein Team zu zeigen.<br>
+						<strong>season</strong>: Startjahr der Saison (Standard: aktuelle Saison).<br>
+						<strong>limit</strong>: Anzahl Spiele (Standard: 1, maximal 10).
+					</td>
+					<td><code>[swfl-next-game team_id="429626"]</code></td>
+				</tr>
+				<tr>
+					<td><code>[swfl-last-result]</code></td>
+					<td>Zeigt das letzte Resultat des Vereins oder eines Teams, das neueste zuerst.</td>
+					<td>
+						Der Verein stammt aus den Plugin-Einstellungen.<br>
+						<strong>team_id</strong>: Team-ID, um statt des Vereins ein Team zu zeigen.<br>
+						<strong>season</strong>: Startjahr der Saison (Standard: aktuelle Saison).<br>
+						<strong>limit</strong>: Anzahl Spiele (Standard: 1, maximal 10).
+					</td>
+					<td><code>[swfl-last-result limit="3"]</code></td>
 				</tr>
 				<tr>
 					<td><code>[swfl-league-games]</code></td>
@@ -174,7 +204,10 @@ if ( ! current_user_can( 'manage_options' ) ) {
 						<strong>season</strong>: Saison (Standard: aktuelle Saison).<br>
 						<strong>league</strong>: Liga ID.<br>
 						<strong>game_class</strong>: Spielklasse ID.<br>
-						<strong>group</strong>: Gruppen ID.
+						<strong>group</strong>: Gruppen ID.<br>
+						<strong>limit</strong>: Maximale Anzahl Zeilen (0 = alle).<br>
+						<strong>offset</strong>: Anzahl Zeilen, die übersprungen werden.<br>
+						<strong>show_pagination</strong>: <code>true</code> blendet Vor-/Zurück-Links ein (nur mit <code>limit</code>).
 					</td>
 					<td><code>[swfl-topscorers league="1"]</code></td>
 				</tr>

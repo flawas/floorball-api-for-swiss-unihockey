@@ -132,11 +132,14 @@ class SWFL_Plugin {
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-theme.php';
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-display-stats.php';
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-widgets.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-highlights.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-game-widget.php';
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-calendar.php';
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-rest.php';
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-table-data.php';
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-request-guard.php';
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-icons.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-warmup.php';
 
 		$this->loader = new SWFL_Loader();
 	}
@@ -191,6 +194,10 @@ class SWFL_Plugin {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_assets, 'enqueue_scripts' );
 		$this->loader->add_action( 'rest_api_init', 'SWFL_Widgets', 'register_routes' );
 		$this->loader->add_action( 'rest_api_init', 'SWFL_Rest', 'register_routes' );
+		$this->loader->add_action( 'widgets_init', 'SWFL_Game_Widget', 'register' );
+
+		// The warm-up is a WP-Cron job, so it is registered for every request and not only in the admin area.
+		SWFL_Warmup::register_hooks( $this->loader );
 	}
 
 	/**

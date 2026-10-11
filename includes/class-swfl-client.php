@@ -61,6 +61,65 @@ class SWFL_Client {
 	const TOKEN_TRANSIENT = 'swfl_partner_token';
 
 	/**
+	 * Cache lifetime in seconds per endpoint (first path segment), used when no TTL is passed and no option is set.
+	 *
+	 * The keys are the suffixes of the options `swfl_cache_ttl_{category}`.
+	 *
+	 * @since 2.1.0
+	 * @var   int[]
+	 */
+	const CACHE_TTL_DEFAULTS = array(
+		'games'           => 3600,
+		'rankings'        => 7200,
+		'game_events'     => 120,
+		'topscorers'      => 7200,
+		'leagues'         => 3600,
+		'seasons'         => 3600,
+		'clubs'           => 3600,
+		'cups'            => 3600,
+		'groups'          => 3600,
+		'teams'           => 3600,
+		'players'         => 3600,
+		'national_players' => 3600,
+	);
+
+	/**
+	 * Cache lifetime in seconds for endpoints that belong to no configurable category.
+	 *
+	 * @since 2.1.0
+	 * @var   int
+	 */
+	const CACHE_TTL_FALLBACK = 3600;
+
+	/**
+	 * Get the configurable cache category of an endpoint: its first path segment, if it is configurable.
+	 *
+	 * @since 2.1.0
+	 * @param string $endpoint API endpoint, e.g. `rankings` or `game_events/123`.
+	 * @return string Key of CACHE_TTL_DEFAULTS, or '' when the endpoint has no category.
+	 */
+	public static function get_cache_category( $endpoint ) {
+		$base = strtok( (string) $endpoint, '/' );
+		return array_key_exists( $base, self::CACHE_TTL_DEFAULTS ) ? $base : '';
+	}
+
+	/**
+	 * Get the cache lifetime for an endpoint from the settings.
+	 *
+	 * @since 2.1.0
+	 * @param string $endpoint API endpoint.
+	 * @return int Lifetime in seconds, always greater than 0 (0 would cache a transient forever).
+	 */
+	public static function get_cache_ttl( $endpoint ) {
+		$category = self::get_cache_category( $endpoint );
+		if ( '' === $category ) {
+			return self::CACHE_TTL_FALLBACK;
+		}
+		$ttl = absint( get_option( 'swfl_cache_ttl_' . $category, self::CACHE_TTL_DEFAULTS[ $category ] ) );
+		return $ttl > 0 ? $ttl : self::CACHE_TTL_DEFAULTS[ $category ];
+	}
+
+	/**
 	 * Get the configured API source, falling back to the free API.
 	 *
 	 * @since 1.1.0
@@ -161,10 +220,17 @@ class SWFL_Client {
 	 * @since    1.0.0
 	 * @param    string $endpoint    The API endpoint to fetch.
 	 * @param    array  $args        Optional. Arguments for the API request.
-	 * @param    int    $cache_time  Optional. Time in seconds to cache the response. Default 3600 (1 hour).
+	 * @param    int|null $cache_time Optional. Time in seconds to cache the response. Default null: the lifetime
+	 *                                configured for the endpoint category in the settings (1 hour for other endpoints).
+	 * @param    bool     $force_refresh Optional. Skip reading the cache but still write the response back,
+	 *                                used by the scheduled cache warm-up. Default false.
 	 * @return   array|WP_Error         The decoded JSON response or WP_Error on failure.
 	 */
-	public function fetch_data( $endpoint, $args = array(), $cache_time = 3600 ) {
+	public function fetch_data( $endpoint, $args = array(), $cache_time = null, $force_refresh = false ) {
+		if ( null === $cache_time ) {
+			$cache_time = self::get_cache_ttl( $endpoint );
+		}
+
 		$url = $this->get_base_url() . $endpoint;
 
 		// Add query args if present.
@@ -179,7 +245,7 @@ class SWFL_Client {
 
 		// Generate a unique cache key for this request.
 		$cache_key   = 'swfl_' . hash( 'sha256', $url );
-		$cached_data = get_transient( $cache_key );
+		$cached_data = $force_refresh ? false : get_transient( $cache_key );
 
 		if ( false !== $cached_data ) {
 			return $cached_data;

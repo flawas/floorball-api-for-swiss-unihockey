@@ -40,7 +40,7 @@ Der Name wird beim Speichern der Club-Nummer aus der Clubliste (`clubs`) ermitte
 
 ## Styles fehlen
 
-CSS/JS werden nur geladen, wenn der Beitragsinhalt einen `swfl-*`-Shortcode enthält. Shortcodes in Widgets, Templates oder Page-Buildern lösen das nicht aus.
+CSS/JS werden nur geladen, wenn der Beitragsinhalt einen `swfl-*`-Shortcode enthält, oder wenn das Widget «Nächstes Spiel und letztes Resultat» aktiv ist. Shortcodes in Widgets, Templates oder Page-Buildern lösen das nicht aus.
 
 ## Kalender zeigt «Fehlende Parameter für Kalender.»
 

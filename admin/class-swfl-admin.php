@@ -304,6 +304,11 @@ class SWFL_Admin {
 		// Clear all cached API data.
 		$deleted = SWFL_Client::clear_cache();
 
+		// Refill the cache in the background so the next visitors do not all hit a cold cache at once.
+		if ( '1' === (string) get_option( 'swfl_warmup_after_clear', '0' ) ) {
+			SWFL_Warmup::queue_now();
+		}
+
 		// Pass the result via a short-lived per-user transient instead of URL parameters.
 		set_transient( 'swfl_cache_cleared_' . get_current_user_id(), (int) $deleted, 30 );
 

@@ -10,6 +10,8 @@
 | `includes/class-swfl-migrator.php` | `SWFL_Migrator` | einmaliges Umbenennen der Optionen `swissfloorball_*` → `swfl_*` auf `plugins_loaded` |
 | `includes/class-swfl-client.php` | `SWFL_Client` | einziger Zugriff auf die externe API, Caching |
 | `includes/class-swfl-display.php` | `SWFL_Display` | gesamtes HTML-Rendering (statische `render_*`-Methoden) |
+| `includes/class-swfl-highlights.php` | `SWFL_Highlights` | nächstes Spiel und letztes Resultat (Shortcodes `swfl-next-game`, `swfl-last-result`) |
+| `includes/class-swfl-game-widget.php` | `SWFL_Game_Widget` | Sidebar-Widget mit nächstem Spiel und letztem Resultat |
 | `includes/class-swfl-widgets.php` | `SWFL_Widgets` | interaktive Widgets nach den offiziellen Webcomponents (Spiele, Rangliste, Mobiliar-Topscorer), REST-Routen `swfl/v1/*`, iCalendar-Feed |
 | `public/js/swfl-widgets.js` | – | Navigation der Widgets (Woche, Seite, Runde, Team-Auswahl) über die REST-Routen |
 | `includes/class-swfl-icons.php` | Icons | Inline-SVG-Icons (Option `swfl_show_icons`) |

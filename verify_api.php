@@ -207,6 +207,7 @@ require_once __DIR__ . '/includes/class-swfl-display.php';
 require_once __DIR__ . '/includes/class-swfl-theme.php';
 require_once __DIR__ . '/includes/class-swfl-display-stats.php';
 require_once __DIR__ . '/includes/class-swfl-widgets.php';
+require_once __DIR__ . '/includes/class-swfl-highlights.php';
 require_once __DIR__ . '/includes/class-swfl-calendar.php';
 require_once __DIR__ . '/includes/class-swfl-rest.php';
 require_once __DIR__ . '/includes/class-swfl-table-data.php';
@@ -401,6 +402,9 @@ $widgets = array(
 	'widget club-team-games' => array( function () use ( $W, $season ) { $W::render_club_team_games( 372, $season, 6 ); }, 'data-sfa-widget="team-select"', '<option' ),
 	'widget team-games'    => array( function () use ( $W, $season ) { $W::render_team_games( 429626, $season, 5 ); }, 'data-sfa-widget="pager"', '<table' ),
 	'widget club-games'    => array( function () use ( $W, $season, $club_id ) { $W::render_club_games( $club_id, $season ); }, 'data-sfa-widget="week"', '<table' ),
+	'highlight next-game (Club)'   => array( function () use ( $season, $club_id ) { SWFL_Highlights::render_next_game( $club_id, $season ); }, 'class="sfa-widget"', 'Nächstes Spiel' ),
+	'highlight last-result (Club)' => array( function () use ( $season, $club_id ) { SWFL_Highlights::render_last_result( $club_id, $season ); }, 'class="sfa-widget"', 'Letztes Resultat' ),
+	'highlight last-result (Team)' => array( function () use ( $season ) { SWFL_Highlights::render_last_result( 0, $season, 429626, 3 ); }, 'class="sfa-widget"', 'Letzte Resultate' ),
 	'widget ranking'       => array( function () use ( $W, $season, $league, $game_class, $group ) { $W::render_ranking( $season, $league, $game_class, $group ); }, 'data-sfa-widget="ranking"', '<table' ),
 	'widget mobiliar-topscorer' => array( function () use ( $W, $season ) { $W::render_mobiliar_topscorers( 463845, $season ); }, 'data-sfa-widget="topscorers"', 'sfa-topscorers' ),
 );
