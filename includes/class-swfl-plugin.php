@@ -133,6 +133,7 @@ class SWFL_Plugin {
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-display-stats.php';
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-widgets.php';
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-calendar.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-rest.php';
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-table-data.php';
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-request-guard.php';
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-icons.php';
@@ -189,6 +190,7 @@ class SWFL_Plugin {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_assets, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_assets, 'enqueue_scripts' );
 		$this->loader->add_action( 'rest_api_init', 'SWFL_Widgets', 'register_routes' );
+		$this->loader->add_action( 'rest_api_init', 'SWFL_Rest', 'register_routes' );
 	}
 
 	/**

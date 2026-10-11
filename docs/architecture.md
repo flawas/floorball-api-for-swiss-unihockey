@@ -65,6 +65,13 @@ Die alte Kalender-URL `calendars` wird nicht mehr verwendet.
 | `/team-games` | `team_id` (Pflicht), `season`, `page_size` | Seitenweise Spiele eines Teams |
 | `/league-games` | `game_class`, `league` (Pflicht), `season`, `group`, `round` | Spiele einer Liga/Gruppe pro Runde |
 | `/calendar` | `team_id` oder `club_id` oder `league` + `game_class` (+ `group`), `season` | iCalendar-Feed (`text/calendar`), aus den Spielen der API gebaut |
+| `/games` | `team_id` oder `club_id` oder `league` + `game_class` (+ `group`), `season` | JSON: Spiele (`game_id`, `date`, `time`, `place`, `home`, `away`, `result`, `league`, `link`, `cells`) |
+| `/next-game` | wie `/games` | JSON: nächstes Spiel ohne Resultat (`game`, `null` ohne Treffer) |
+| `/last-result` | wie `/games` | JSON: letztes Spiel mit Resultat (`game`, `null` ohne Treffer) |
+| `/rankings` | `league`, `game_class` (Pflicht), `season`, `group` | JSON: Rangliste (`headers`, `rows`) |
+| `/topscorers` | `league` + `game_class` (Partner-API) oder `club_id`, `season` (Mobiliar-Topscorer) | JSON: Topscorer-Tabelle bzw. `players` |
+
+Die JSON-Routen sind in `SWFL_Rest` umgesetzt, nutzen den Cache des API-Clients, das Rate-Limit der übrigen Routen und senden `Cache-Control: public, max-age=3600`.
 
 ## API-Antwortformen
 

@@ -45,6 +45,27 @@ class WP_Error {
 		return $this->code;
 	}
 }
+class WP_REST_Request {
+	private $params;
+	public function __construct( $params = array() ) {
+		$this->params = $params;
+	}
+	public function get_param( $key ) {
+		return $this->params[ $key ] ?? null;
+	}
+}
+class WP_REST_Response {
+	public $data;
+	public $status;
+	public $headers = array();
+	public function __construct( $data = null, $status = 200 ) {
+		$this->data   = $data;
+		$this->status = $status;
+	}
+	public function header( $key, $value ) {
+		$this->headers[ $key ] = $value;
+	}
+}
 function wp_parse_args( $args, $defaults = array() ) {
 	return array_merge( $defaults, (array) $args );
 }
@@ -187,6 +208,7 @@ require_once __DIR__ . '/includes/class-swfl-theme.php';
 require_once __DIR__ . '/includes/class-swfl-display-stats.php';
 require_once __DIR__ . '/includes/class-swfl-widgets.php';
 require_once __DIR__ . '/includes/class-swfl-calendar.php';
+require_once __DIR__ . '/includes/class-swfl-rest.php';
 require_once __DIR__ . '/includes/class-swfl-table-data.php';
 require_once __DIR__ . '/includes/class-swfl-request-guard.php';
 require_once __DIR__ . '/includes/class-swfl-icons.php';
@@ -389,6 +411,46 @@ foreach ( $widgets as $name => $def ) {
 		ensure( false !== strpos( $html, $def[2] ), 'erwartetes Markup fehlt: ' . $def[2] );
 	} );
 }
+
+// JSON REST routes (callbacks called directly, with the real client behind them).
+echo "REST-Routen\n";
+$R = 'SWFL_Rest';
+check( 'rest games', function () use ( $R ) {
+	$r = $R::rest_games( new WP_REST_Request( array( 'team_id' => 429626, 'season' => 2025 ) ) );
+	ensure( ! is_wp_error( $r ), is_wp_error( $r ) ? $r->get_error_message() : '' );
+	ensure( ! empty( $r->data['games'] ), 'keine Spiele' );
+	$g = $r->data['games'][0];
+	foreach ( array( 'game_id', 'date', 'home', 'away', 'result', 'link' ) as $key ) {
+		ensure( array_key_exists( $key, $g ), "Feld $key fehlt" );
+	}
+	ensure( preg_match( '/^\d{4}-\d{2}-\d{2}$/', $g['date'] ), 'Datum nicht als Y-m-d' );
+	ensure( '' !== $g['home'] && '' !== $g['away'], 'Teams fehlen' );
+	ensure( 'public, max-age=3600' === $r->headers['Cache-Control'], 'Cache-Control fehlt' );
+} );
+check( 'rest games ohne Filter -> 400', function () use ( $R ) {
+	$r = $R::rest_games( new WP_REST_Request() );
+	ensure( is_wp_error( $r ) && 'swfl_missing_params' === $r->get_error_code(), 'erwartet swfl_missing_params' );
+} );
+check( 'rest last-result hat ein Resultat', function () use ( $R ) {
+	$r = $R::rest_last_result( new WP_REST_Request( array( 'team_id' => 429626, 'season' => 2025 ) ) );
+	ensure( ! is_wp_error( $r ), is_wp_error( $r ) ? $r->get_error_message() : '' );
+	ensure( is_array( $r->data['game'] ) && preg_match( '/\d+\s*:\s*\d+/', $r->data['game']['result'] ), 'kein letztes Resultat' );
+} );
+check( 'rest next-game hat keines ohne Resultat', function () use ( $R ) {
+	$r = $R::rest_next_game( new WP_REST_Request( array( 'team_id' => 429626, 'season' => 2025 ) ) );
+	ensure( ! is_wp_error( $r ), is_wp_error( $r ) ? $r->get_error_message() : '' );
+	ensure( null === $r->data['game'] || '' === $r->data['game']['result'], 'next-game darf kein Resultat haben' );
+} );
+check( 'rest rankings', function () use ( $R, $season, $league, $game_class, $group ) {
+	$r = $R::rest_rankings( new WP_REST_Request( array( 'season' => $season, 'league' => $league, 'game_class' => $game_class, 'group' => $group ) ) );
+	ensure( ! is_wp_error( $r ), is_wp_error( $r ) ? $r->get_error_message() : '' );
+	ensure( ! empty( $r->data['headers'] ) && ! empty( $r->data['rows'] ), 'headers/rows fehlen' );
+} );
+check( 'rest topscorers (Mobiliar)', function () use ( $R, $season ) {
+	$r = $R::rest_topscorers( new WP_REST_Request( array( 'club_id' => 463845, 'season' => $season ) ) );
+	ensure( ! is_wp_error( $r ), is_wp_error( $r ) ? $r->get_error_message() : '' );
+	ensure( isset( $r->data['players'] ) && is_array( $r->data['players'] ), 'players fehlt' );
+} );
 
 // render_club_games_callout is intentionally not asserted:
 // the callout renders nothing when no game is upcoming.

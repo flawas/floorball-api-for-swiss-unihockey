@@ -1134,7 +1134,7 @@ class SWFL_Widgets {
 	 * @param array $rows Grid rows (portraits, names, clubs, points).
 	 * @return array[] Players with image, name, club and points; players without any data are skipped.
 	 */
-	private static function collect_topscorers( $rows ) {
+	public static function collect_topscorers( $rows ) {
 		$count = 0;
 		foreach ( array_slice( $rows, 0, 4 ) as $row ) {
 			$count = max( $count, isset( $row['cells'] ) ? count( $row['cells'] ) : 0 );
