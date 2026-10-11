@@ -115,8 +115,6 @@ class SWFL_Warmup {
 	public static function add_schedule( $schedules ) {
 		$minutes = max( 1, self::get_interval() );
 
-		// The interval is the configured number of minutes, so it is not a literal.
-		// phpcs:ignore WordPress.WP.CronInterval.ChangeDetected
 		$schedules[ self::SCHEDULE ] = array(
 			'interval' => $minutes * MINUTE_IN_SECONDS,
 			/* translators: %d: number of minutes between two cache warm-ups. */
@@ -141,7 +139,8 @@ class SWFL_Warmup {
 
 		// The activation request may run before the plugin hooks, and an unknown schedule is rejected.
 		if ( ! has_filter( 'cron_schedules', array( __CLASS__, 'add_schedule' ) ) ) {
-			add_filter( 'cron_schedules', array( __CLASS__, 'add_schedule' ) );
+			// The interval is the configured number of minutes, so the sniff cannot read it.
+			add_filter( 'cron_schedules', array( __CLASS__, 'add_schedule' ) ); // phpcs:ignore WordPress.WP.CronInterval.ChangeDetected
 		}
 
 		wp_schedule_event( time(), self::SCHEDULE, self::HOOK );
