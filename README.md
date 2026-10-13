@@ -23,11 +23,13 @@
 **Requires at least:** 5.0  
 **Tested up to:** 7.1  
 **Requires PHP:** 7.4  
-**Stable tag:** 2.1.0  
+**Stable tag:** 2.1.1  
 **License:** GPLv2 or later  
 **License URI:** https://www.gnu.org/licenses/gpl-2.0.html  
 
-Display Swiss Floorball games, rankings, topscorers, team rosters and player stats from the Swiss Unihockey API using simple shortcodes.
+Unofficial plugin: show Swiss floorball games, rankings, topscorers, rosters and player stats from the public Swiss Unihockey API via shortcodes.
+
+**Independent project:** This plugin is developed and maintained by Flavio Waser as a personal open-source project. It is not affiliated with, endorsed by or sponsored by Swiss Unihockey (swissunihockey.ch). It only reads data from their public API.
 
 ## 🚀 Features
 
@@ -172,7 +174,7 @@ add_filter( 'swfl_icon_svg', function ( $svg, $name, $args ) {
 ## ❓ FAQ
 
 **Q: Where do I find the IDs?**  
-A: You can find Team, Club, and League IDs in the URL on the [Swiss Floorball website](https://www.swissunihockey.ch) or by using the plugin backend to explore and copy the IDs.
+A: You can find Team, Club, and League IDs in the URL on the [Swiss Unihockey website](https://www.swissunihockey.ch) or by using the plugin backend to explore and copy the IDs.
 
 **Q: Why does my data not update right away?**  
 A: API responses are cached for one hour. Use the **Cache leeren** button on the settings page to refresh immediately.
@@ -180,11 +182,11 @@ A: API responses are cached for one hour. Use the **Cache leeren** button on the
 **Q: Is this plugin free?**  
 A: Yep! It's open-source and completely free to use.
 
-**Q: Is this an official Swiss Floorball plugin?**  
-A: Nope. This plugin isn't official and has no connection to Swiss Floorball.
+**Q: Is this an official Swiss Unihockey plugin?**  
+A: No. This is an independent, unofficial plugin by Flavio Waser. It has no connection to Swiss Unihockey (swissunihockey.ch) other than reading their public API.
 
 **Q: Can I use this plugin for commercial purposes?**  
-A: Yes. As GPLv2-or-later licensed software, it can be used on any site, including commercial ones. It was built for Swiss Floorball clubs and teams to show their data on their websites, but nothing stops other use.
+A: Yes. As GPLv2-or-later licensed software, it can be used on any site, including commercial ones. It was built for floorball clubs and teams in Switzerland to show their data on their websites, but nothing stops other use.
 
 **Q: Any further questions?**  
 A: Just drop me a message on [GitHub](https://github.com/flawas), [LinkedIn](https://www.linkedin.com/in/flawas/), or via my [homepage](https://flaviowaser.ch/contact/).
@@ -207,7 +209,7 @@ Service provider: Cloudinary Ltd. | [Terms of Service](https://cloudinary.com/to
 
 **Links to other services:** Venue cells link to [OpenStreetMap](https://www.openstreetmap.org/) (built from the venue coordinates) and game links point to `myapp.swissunihockey.ch`. No data is sent to these sites unless a visitor clicks the link.
 
-**Disclaimer:** This is an independent plugin. It is not affiliated with, endorsed by or sponsored by Swiss Unihockey or Floorball Schweiz. "Swiss Unihockey" and "Swiss Floorball" are names of their respective owners and are used only to describe the data source.
+**Disclaimer:** This is an independent plugin. It is not affiliated with, endorsed by or sponsored by Swiss Unihockey (Floorball Schweiz). "Swiss Unihockey" is the name of its respective owner and is used only to describe the data source. "Swiss floorball" in the plugin name describes the sport in Switzerland and does not refer to any organisation.
 
 ## 📸 Screenshots
 
@@ -240,6 +242,9 @@ Version 2.0.0 contains breaking changes (API source, calendar feed, shortcode at
 4. Check custom CSS, or set *Table style* to `classic`.
 
 ## 📜 Changelog
+### 2.1.1 (2026-10-13)
+* Change: Readme: the short description, FAQ and disclaimer now state clearly that this is an independent, unofficial plugin that is not affiliated with Swiss Unihockey and only reads their public API. No code changes
+
 ### 2.1.0 (2026-10-11)
 * New: Read-only JSON REST routes under `swfl/v1`: `/games`, `/next-game`, `/last-result`, `/rankings`, `/topscorers`. They use the shared cache and the existing rate limit; visitors get a neutral 502 on upstream errors (Issue #22)
 * New: Shortcodes `[swfl-next-game]` and `[swfl-last-result]` (attributes `team_id`, `season`, `limit`) and the sidebar widget *Swiss Floorball: Nächstes Spiel und letztes Resultat* with the display mode next / last / both and an optional team ID. They read the club and season from the settings. A game counts as a result from the day after it was played. Internally the games list options got `show_past`, which keeps past games, newest first (Issue #18)
