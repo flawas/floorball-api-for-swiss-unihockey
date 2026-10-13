@@ -23,7 +23,7 @@
 **Requires at least:** 5.0  
 **Tested up to:** 7.1  
 **Requires PHP:** 7.4  
-**Stable tag:** 2.1.0  
+**Stable tag:** 2.1.1  
 **License:** GPLv2 or later  
 **License URI:** https://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -242,6 +242,9 @@ Version 2.0.0 contains breaking changes (API source, calendar feed, shortcode at
 4. Check custom CSS, or set *Table style* to `classic`.
 
 ## 📜 Changelog
+### 2.1.1 (2026-10-13)
+* Change: Readme: the short description, FAQ and disclaimer now state clearly that this is an independent, unofficial plugin that is not affiliated with Swiss Unihockey and only reads their public API. No code changes
+
 ### 2.1.0 (2026-10-11)
 * New: Read-only JSON REST routes under `swfl/v1`: `/games`, `/next-game`, `/last-result`, `/rankings`, `/topscorers`. They use the shared cache and the existing rate limit; visitors get a neutral 502 on upstream errors (Issue #22)
 * New: Shortcodes `[swfl-next-game]` and `[swfl-last-result]` (attributes `team_id`, `season`, `limit`) and the sidebar widget *Swiss Floorball: Nächstes Spiel und letztes Resultat* with the display mode next / last / both and an optional team ID. They read the club and season from the settings. A game counts as a result from the day after it was played. Internally the games list options got `show_past`, which keeps past games, newest first (Issue #18)
