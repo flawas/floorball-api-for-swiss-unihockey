@@ -23,7 +23,7 @@
 **Requires at least:** 5.0  
 **Tested up to:** 7.1  
 **Requires PHP:** 7.4  
-**Stable tag:** 2.1.1  
+**Stable tag:** 2.1.2  
 **License:** GPLv2 or later  
 **License URI:** https://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -71,7 +71,7 @@ The free API is a read-only whitelist. Shortcodes that need an endpoint it does 
 
 | Setting | Description |
 |---------|-------------|
-| API source | Where the data comes from (`swfl_api_source`). **Free API** (default, `wc.swissunihockey.ch`) or **Partner API** (`office.swissunihockey.ch`, needs credentials). See the table below for what each source provides. |
+| API source | Where the data comes from (`swfl_api_source`). **Free API** (default, `wc.swissunihockey.ch`) or **Partner API** (`office.swissunihockey.ch`, needs credentials). See *API sources* above for what each source provides. |
 | Partner API key / secret | Credentials for the Partner API (`swfl_api_key`, `swfl_api_secret`). Only used when the source is *Partner API*; the plugin exchanges them for a short-lived auth token. |
 | Swiss Floorball Club Number | Your club's ID (`swfl_club_number`), used by the club shortcodes. |
 | Swiss Floorball Club Name | Filled in automatically from the API when you save a new Club ID (`swfl_club_name`). |
@@ -153,6 +153,8 @@ The plugin ships inline SVG icons from [Material Symbols](https://github.com/goo
 * **Setting:** Show or hide all icons under **Settings > Swiss Floorball API > Show icons** (option `swfl_show_icons`, on by default).
 * **Styling:** Use the CSS variables `--swfl-icon-size` and `--swfl-icon-color` on `.swiss-floorball-plugin`.
 * **Filter:** `swfl_icon_svg` lets you replace an icon. The result is sanitized with `wp_kses()` (only `svg`, `path` and `span` with a fixed set of attributes are kept).
+
+Example:
 
 ```php
 add_filter( 'swfl_icon_svg', function ( $svg, $name, $args ) {
@@ -242,6 +244,8 @@ Version 2.0.0 contains breaking changes (API source, calendar feed, shortcode at
 4. Check custom CSS, or set *Table style* to `classic`.
 
 ## 📜 Changelog
+### 2.1.2 (2026-10-18)
+* Change: The WordPress.org plugin page is easier to read. `readme.txt` is generated with the sections WordPress.org knows (Description, Installation, FAQ, Screenshots, Changelog, Upgrade Notice); tables became lists, code examples are indented blocks and emoji are gone. The nine screenshots are now published, and the release deploys `assets/` (banner, icon, screenshots). The icon and the 772x250 banner now have their correct sizes. No code changes
 ### 2.1.1 (2026-10-13)
 * Change: Readme: the short description, FAQ and disclaimer now state clearly that this is an independent, unofficial plugin that is not affiliated with Swiss Unihockey and only reads their public API. No code changes
 
