@@ -127,4 +127,5 @@ jobs:
           SVN_USERNAME: ${{ secrets.WPORG_SVN_USERNAME }}
           SVN_PASSWORD: ${{ secrets.WPORG_SVN_PASSWORD }}
           SLUG: swiss-floorball-api
+          ASSETS_DIR: assets
           VERSION: ${{ needs.build.outputs.version }}
