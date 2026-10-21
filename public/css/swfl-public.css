@@ -1236,6 +1236,12 @@
     color: var(--sfa-sys-color-on-surface-variant);
 }
 
+/* Shown by the widget script when a reload was refused (rate limit, upstream budget) or failed. */
+.swiss-floorball-plugin .sfa-widget-notice {
+    margin: 0 0 8px;
+    color: var(--sfa-sys-color-on-surface-variant);
+}
+
 /* Playoff series of the league games widget. */
 .swiss-floorball-plugin .sfa-playoff-group {
     margin-bottom: 12px;

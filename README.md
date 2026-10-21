@@ -83,8 +83,12 @@ The free API is a read-only whitelist. Shortcodes that need an endpoint it does 
 | Table colours | Optional hex colours picked with the WordPress colour picker: accent (header line), header text, row divider and row highlight (`swfl_table_{accent,header,divider,highlight}_color`). Accent and header text are adjusted to keep AA contrast in light and dark mode. Empty uses the defaults derived from the seed colour. |
 | Striped table rows | Subtle zebra striping for table rows (`swfl_table_striped`, off by default). |
 | API request timeout (seconds) | Seconds to wait for the API, 1-30 (default 3). |
+| REST requests per minute and visitor | Rate limit of the public REST routes per visitor, 0-1000 (default 60, 0 = off) (`swfl_rest_rate_limit`). Visitors are told apart by IP address, IPv6 by their /64 prefix. |
+| Upstream requests per minute | Site-wide limit for the uncached API requests that the public REST routes may cause per clock minute, 0-10000 (default 120, 0 = off) (`swfl_upstream_budget`). When it is used up, the routes serve an expired cached copy or answer `503` with `Retry-After`. Shortcode page views, the admin area, administrators and the cache warm-up are not limited. |
+| Upstream requests per minute and visitor | Share of that limit one visitor (IP address, IPv6 /64 prefix) may use per minute, 0-10000 (default 20, 0 = off) (`swfl_upstream_visitor_budget`), so one or two addresses cannot use it up for everybody. Beyond it a visitor gets an expired cached copy or `429` with `Retry-After`. |
+| Trusted proxies | Only behind a reverse proxy or CDN that does not pass the real visitor address on: one IP address or CIDR range per line (IPv4 from /8, IPv6 from /16) (`swfl_trusted_proxies`). For requests from these addresses the rate limit reads the visitor from `X-Forwarded-For`; otherwise the header is ignored. Restoring the real address in the web server (`mod_remoteip`, `real_ip_header`) is the better way. |
 
-The admin interface is currently in German. Under **Cache Verwaltung** the button **Cache leeren** removes all cached API responses. Changing the Club Number clears the cache automatically.
+The settings page also lists the visitors the REST rate limit blocked during the last hour (kept for one hour, then removed). The admin interface is currently in German. Under **Cache Verwaltung** the button **Cache leeren** removes all cached API responses. Changing the Club Number clears the cache automatically.
 
 ## 📝 Shortcodes
 
@@ -172,6 +176,13 @@ add_filter( 'swfl_icon_svg', function ( $svg, $name, $args ) {
 | `swfl_icon_svg` | Filter | Replace the SVG markup of an icon. |
 | `swfl_request_timeout` | Filter | Override the API request timeout (seconds). Takes precedence over the setting. |
 | `swfl_rest_rate_limit` | Filter | Override the REST requests per minute and visitor (0 = off). Takes precedence over the setting. |
+| `swfl_upstream_budget` | Filter | Override the site-wide uncached upstream requests per minute (0 = off). Takes precedence over the setting. |
+| `swfl_upstream_visitor_budget` | Filter | Override the share of the upstream budget per visitor and minute (0 = off). Takes precedence over the setting. |
+| `swfl_trusted_proxies` | Filter | Change the list of trusted proxy addresses and CIDR ranges. |
+| `swfl_client_ip` | Filter | Replace the address that identifies a visitor for the rate limit. |
+| `swfl_error_cache_ttl` | Filter | Seconds a failed or empty API answer is remembered (default 300, transient failures at most 60, 0 = off). |
+| `swfl_stale_ttl` | Filter | Seconds an answer is kept as an expired copy after its cache lifetime (default 3600, 0 = none). |
+| `swfl_upstream_budget_exceeded` | Action | Fires at most once per minute while the site-wide upstream budget is used up. |
 
 ## ❓ FAQ
 
@@ -244,6 +255,16 @@ Version 2.0.0 contains breaking changes (API source, calendar feed, shortcode at
 4. Check custom CSS, or set *Table style* to `classic`.
 
 ## 📜 Changelog
+### Unreleased
+* Security: Failed API requests are cached briefly, so repeating a request with an unknown ID no longer reaches the Swiss Unihockey API every time. Permanent failures (such as 404 for an unknown ID) are remembered for 5 minutes, transient ones (timeouts, 5xx, 429) for at most 60 seconds, never longer than the cache lifetime of the endpoint (filter `swfl_error_cache_ttl`, 0 turns it off). Answers without any rows are cached just as briefly. Missing or rejected Partner API credentials are never cached, a forced refresh (cache warm-up) never writes a failure, and a failure never replaces cached data (Issue #112)
+* Security: Every argument of the public REST routes is validated before any upstream request: IDs are digits only from 1 to 10,000,000, `season` is empty, 0 or a start year from 1996 to next year, and `group` is up to 40 letters, digits, spaces or `. _ / -`. Invalid values get `400 rest_invalid_param` (Issue #113)
+* Security: New setting *Upstream requests per minute* (default 120, filter `swfl_upstream_budget`): a site-wide budget for the uncached API requests that the public REST routes may cause, counted per page of a long list and exact also without a persistent object cache. When it is used up, the routes serve an expired cached copy (kept up to an hour longer, filter `swfl_stale_ttl`) with a short `max-age`, otherwise `503` with `Retry-After`; the settings page shows a notice and the action `swfl_upstream_budget_exceeded` fires once per minute. Shortcode page views, the admin area, administrators and the cache warm-up are not limited. Every visitor may only use a share of it (setting *Upstream requests per minute and visitor*, default 20, filter `swfl_upstream_visitor_budget`; beyond it `429`), so one or two addresses can no longer use the budget up for everybody (Issue #114)
+* Security: The REST rate limit groups IPv6 visitors by their /64 prefix and counts atomically, also without a persistent object cache (one option row per visitor and minute, increased by a single SQL statement; rows of ended windows are removed, refused requests only read). A new opt-in setting *Trusted proxies* reads the visitor from `X-Forwarded-For` only for requests from listed proxy ranges (filters `swfl_trusted_proxies` and `swfl_client_ip`). Forwarded headers are still ignored by default. A rate-limit rule for `/wp-json/swfl/` in your CDN or WAF remains the recommended first line of defence (Issue #115)
+* New: The settings page lists the visitors the REST rate limit or their upstream share blocked during the last hour (IPv4 address or IPv6 /64 prefix, whether the block is still running, blocked minutes, first block). Entries are kept for one hour after their last block, at most 50, written at most once per visitor and minute
+* Change: The settings page shows the problems its automatic saving found (for example ignored trusted proxy entries or a club number without a name) instead of only "Saved."
+* Change: Refused (429, 503) and failed widget reloads show a short notice instead of failing silently, and the team select returns to the team whose games are shown
+* Fix: The club name in the "Club name automatically set" notice is escaped
+
 ### 2.1.2 (2026-10-18)
 * Change: The WordPress.org plugin page is easier to read. `readme.txt` is generated with the sections WordPress.org knows (Description, Installation, FAQ, Screenshots, Changelog, Upgrade Notice); tables became lists, code examples are indented blocks and emoji are gone. The nine screenshots are now published, and the release deploys `assets/` (banner, icon, screenshots). The icon and the 772x250 banner now have their correct sizes. No code changes
 ### 2.1.1 (2026-10-13)

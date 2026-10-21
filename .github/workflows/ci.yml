@@ -42,6 +42,23 @@ jobs:
           ! find . -name '*.php' -not -path './.git/*' -not -path './graphify-out/*' -print0 \
             | xargs -0 -n1 php -l 2>&1 | grep -q '^\(Parse\|Fatal\) error'
 
+  tests:
+    name: Offline tests (PHP ${{ matrix.php }})
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['7.4', '8.1', '8.3', '8.4']
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref }}
+      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: none
+      - run: php -d error_reporting=-1 -d display_errors=1 scripts/tests/run.php
+
   consistency:
     name: Version, ABSPATH, Textdomain, readme
     runs-on: ubuntu-24.04

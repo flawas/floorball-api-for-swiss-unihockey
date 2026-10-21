@@ -89,6 +89,8 @@ function _n( $single, $plural, $number, $domain = '' ) {
 function sanitize_text_field( $t ) {
 	return trim( strip_tags( (string) $t ) );
 }
+define( 'MINUTE_IN_SECONDS', 60 );
+define( 'HOUR_IN_SECONDS', 3600 );
 define( 'DAY_IN_SECONDS', 86400 );
 function current_time( $type ) {
 	return gmdate( 'mysql' === $type ? 'Y-m-d H:i:s' : $type );
@@ -128,7 +130,16 @@ function set_transient( $transient, $value, $expiration = 0 ) {
 	$GLOBALS['sfa_transients'][ $transient ] = $value;
 	return true;
 }
+// No persistent object cache, and nothing an in-process copy would have to drop.
+function wp_using_ext_object_cache() {
+	return null;
+}
+function wp_cache_delete( $key, $group = '' ) {
+	return true;
+}
 function wp_remote_get( $url, $args = array() ) {
+	// Counted so the checks can tell a cached answer from a new upstream request.
+	$GLOBALS['sfa_http_calls'] = ( $GLOBALS['sfa_http_calls'] ?? 0 ) + 1;
 	$ctx  = stream_context_create( array(
 		'http' => array(
 			'method'        => 'GET',
@@ -212,6 +223,10 @@ require_once __DIR__ . '/includes/class-swfl-calendar.php';
 require_once __DIR__ . '/includes/class-swfl-rest.php';
 require_once __DIR__ . '/includes/class-swfl-table-data.php';
 require_once __DIR__ . '/includes/class-swfl-request-guard.php';
+require_once __DIR__ . '/includes/class-swfl-counter.php';
+require_once __DIR__ . '/includes/class-swfl-client-ip.php';
+require_once __DIR__ . '/includes/class-swfl-cache-entry.php';
+require_once __DIR__ . '/includes/class-swfl-upstream-budget.php';
 require_once __DIR__ . '/includes/class-swfl-icons.php';
 
 // ---------------------------------------------------------------------------
@@ -358,6 +373,24 @@ check( 'Client: zweiter Aufruf kommt aus dem Cache', function () use ( $client )
 	ensure( count( $GLOBALS['sfa_transients'] ?? array() ) === $before, 'Cache-Eintrag wurde neu angelegt' );
 } );
 
+check( 'Client: eine fehlgeschlagene Anfrage wird kurz gecacht (keine zweite API-Anfrage)', function () use ( $client ) {
+	$params = array( 'season' => 2025, 'league' => 2, 'game_class' => 11, 'group' => 'Gibt es auch nicht' );
+	$before = $GLOBALS['sfa_http_calls'] ?? 0;
+	$first  = $client->fetch_data( 'rankings', $params );
+	$second = $client->fetch_data( 'rankings', $params );
+	ensure( is_wp_error( $first ) && is_wp_error( $second ), 'WP_Error erwartet' );
+	ensure( 1 === ( $GLOBALS['sfa_http_calls'] ?? 0 ) - $before, 'die zweite Anfrage hat die API erneut gefragt' );
+	ensure( $first->get_error_code() === $second->get_error_code() && $first->get_error_data() === $second->get_error_data(), 'der gecachte Fehler weicht vom echten ab' );
+	ensure( false !== strpos( (string) ( $second->get_error_data()['api_message'] ?? '' ), 'auch nicht' ), 'API-Meldung fehlt im gecachten Fehler' );
+} );
+
+check( 'Client: force_refresh fragt die API trotz gecachtem Fehler erneut', function () use ( $client ) {
+	$params = array( 'season' => 2025, 'league' => 2, 'game_class' => 11, 'group' => 'Gibt es auch nicht' );
+	$before = $GLOBALS['sfa_http_calls'] ?? 0;
+	$client->fetch_data( 'rankings', $params, null, true );
+	ensure( 1 === ( $GLOBALS['sfa_http_calls'] ?? 0 ) - $before, 'force_refresh hat die API nicht gefragt' );
+} );
+
 // ---------------------------------------------------------------------------
 // 2. Render methods (same code as shortcodes and admin pages)
 // ---------------------------------------------------------------------------
@@ -454,6 +487,27 @@ check( 'rest topscorers (Mobiliar)', function () use ( $R, $season ) {
 	$r = $R::rest_topscorers( new WP_REST_Request( array( 'club_id' => 463845, 'season' => $season ) ) );
 	ensure( ! is_wp_error( $r ), is_wp_error( $r ) ? $r->get_error_message() : '' );
 	ensure( isset( $r->data['players'] ) && is_array( $r->data['players'] ), 'players fehlt' );
+} );
+
+check( 'REST: die Validatoren lehnen ungueltige Werte ab', function () {
+	foreach ( array(
+		array( 'validate_season', '1' ),
+		array( 'validate_season', '99999' ),
+		array( 'validate_required_id', '-5' ),
+		array( 'validate_required_id', 'abc' ),
+		array( 'validate_optional_id', '10000001' ),
+		array( 'validate_group', '<script>' ),
+	) as $case ) {
+		ensure( is_wp_error( SWFL_Request_Guard::{$case[0]}( $case[1] ) ), $case[0] . '(' . $case[1] . ') muss abgelehnt werden' );
+	}
+	foreach ( array(
+		array( 'validate_season', (string) SWFL_Display::get_current_season() ),
+		array( 'validate_season', '0' ),
+		array( 'validate_required_id', '429626' ),
+		array( 'validate_group', 'Gruppe 1' ),
+	) as $case ) {
+		ensure( true === SWFL_Request_Guard::{$case[0]}( $case[1] ), $case[0] . '(' . $case[1] . ') muss gelten' );
+	}
 } );
 
 // render_club_games_callout is intentionally not asserted:

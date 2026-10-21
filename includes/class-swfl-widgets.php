@@ -90,19 +90,9 @@ class SWFL_Widgets {
 				'callback'            => array( 'SWFL_Widgets', 'rest_team_games' ),
 				'permission_callback' => array( 'SWFL_Request_Guard', 'check_rate_limit' ),
 				'args'                => array(
-					'team_id'   => array(
-						'type'              => 'integer',
-						'required'          => true,
-						'sanitize_callback' => 'absint',
-					),
-					'season'    => array(
-						'type'              => 'integer',
-						'sanitize_callback' => 'absint',
-					),
-					'page_size' => array(
-						'type'              => 'integer',
-						'sanitize_callback' => 'absint',
-					),
+					'team_id'   => SWFL_Request_Guard::int_arg( true ),
+					'season'    => SWFL_Request_Guard::season_arg(),
+					'page_size' => SWFL_Request_Guard::int_arg(),
 				),
 			)
 		);
@@ -115,28 +105,11 @@ class SWFL_Widgets {
 				'callback'            => array( 'SWFL_Widgets', 'rest_league_games' ),
 				'permission_callback' => array( 'SWFL_Request_Guard', 'check_rate_limit' ),
 				'args'                => array(
-					'game_class' => array(
-						'type'              => 'integer',
-						'required'          => true,
-						'sanitize_callback' => 'absint',
-					),
-					'league'     => array(
-						'type'              => 'integer',
-						'required'          => true,
-						'sanitize_callback' => 'absint',
-					),
-					'season'     => array(
-						'type'              => 'integer',
-						'sanitize_callback' => 'absint',
-					),
-					'group'      => array(
-						'type'              => 'string',
-						'sanitize_callback' => array( 'SWFL_Request_Guard', 'sanitize_group' ),
-					),
-					'round'      => array(
-						'type'              => 'integer',
-						'sanitize_callback' => 'absint',
-					),
+					'game_class' => SWFL_Request_Guard::int_arg( true ),
+					'league'     => SWFL_Request_Guard::int_arg( true ),
+					'season'     => SWFL_Request_Guard::season_arg(),
+					'group'      => SWFL_Request_Guard::group_arg(),
+					'round'      => SWFL_Request_Guard::int_arg(),
 				),
 			)
 		);
@@ -149,30 +122,12 @@ class SWFL_Widgets {
 				'callback'            => array( 'SWFL_Calendar', 'rest_calendar' ),
 				'permission_callback' => array( 'SWFL_Request_Guard', 'check_rate_limit' ),
 				'args'                => array(
-					'team_id'    => array(
-						'type'              => 'integer',
-						'sanitize_callback' => 'absint',
-					),
-					'club_id'    => array(
-						'type'              => 'integer',
-						'sanitize_callback' => 'absint',
-					),
-					'season'     => array(
-						'type'              => 'integer',
-						'sanitize_callback' => 'absint',
-					),
-					'league'     => array(
-						'type'              => 'integer',
-						'sanitize_callback' => 'absint',
-					),
-					'game_class' => array(
-						'type'              => 'integer',
-						'sanitize_callback' => 'absint',
-					),
-					'group'      => array(
-						'type'              => 'string',
-						'sanitize_callback' => array( 'SWFL_Request_Guard', 'sanitize_group' ),
-					),
+					'team_id'    => SWFL_Request_Guard::int_arg(),
+					'club_id'    => SWFL_Request_Guard::int_arg(),
+					'season'     => SWFL_Request_Guard::season_arg(),
+					'league'     => SWFL_Request_Guard::int_arg(),
+					'game_class' => SWFL_Request_Guard::int_arg(),
+					'group'      => SWFL_Request_Guard::group_arg(),
 				),
 			)
 		);
@@ -186,7 +141,7 @@ class SWFL_Widgets {
 	 *
 	 * @since 1.1.0
 	 * @param WP_REST_Request $request Request.
-	 * @return array Rendered HTML.
+	 * @return array|WP_Error Rendered HTML, or a 503 error when the upstream budget refused a request.
 	 */
 	public static function rest_team_games( $request ) {
 		ob_start();
@@ -196,7 +151,7 @@ class SWFL_Widgets {
 			absint( $request->get_param( 'page_size' ) ),
 			true
 		);
-		return array( 'html' => ob_get_clean() );
+		return self::html_response( ob_get_clean() );
 	}
 
 	/**
@@ -204,7 +159,7 @@ class SWFL_Widgets {
 	 *
 	 * @since 1.1.0
 	 * @param WP_REST_Request $request Request.
-	 * @return array Rendered HTML.
+	 * @return array|WP_Error Rendered HTML, or a 503 error when the upstream budget refused a request.
 	 */
 	public static function rest_league_games( $request ) {
 		$context = array();
@@ -221,7 +176,20 @@ class SWFL_Widgets {
 			sanitize_text_field( (string) $request->get_param( 'group' ) ),
 			$context
 		);
-		return array( 'html' => ob_get_clean() );
+		return self::html_response( ob_get_clean() );
+	}
+
+	/**
+	 * Answer of the HTML routes: the markup, or the 503 error instead of a notice when the upstream budget refused a request.
+	 *
+	 * @since 2.2.0
+	 * @param string $html Rendered markup.
+	 * @return array|WP_Error Array with the `html` key, or the error.
+	 */
+	private static function html_response( $html ) {
+		$busy = SWFL_Upstream_Budget::get_denial();
+
+		return null !== $busy ? $busy : array( 'html' => $html );
 	}
 
 	/**

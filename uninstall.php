@@ -36,6 +36,9 @@ function swfl_uninstall_site() {
 		'actual_season',
 		'request_timeout',
 		'rest_rate_limit',
+		'upstream_budget',
+		'upstream_visitor_budget',
+		'trusted_proxies',
 		'cache_ttl_games',
 		'cache_ttl_rankings',
 		'cache_ttl_game_events',
@@ -82,6 +85,10 @@ function swfl_uninstall_site() {
 			$wpdb->esc_like( '_transient_timeout_swfl_' ) . '%'
 		)
 	);
+
+	// The counter rows of the rate limit and the upstream budget (see SWFL_Counter).
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Prefix-based cleanup of the plugin's own rows.
+	$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", $wpdb->esc_like( 'swfl_count_' ) . '%' ) );
 }
 
 /**

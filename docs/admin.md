@@ -13,7 +13,10 @@ Untermenü «Einstellungen» (Gruppe `swfl_general_settings`). Gespeichert als W
 | `swfl_actual_season` | Aktuelle Saison als Jahreszahl, z. B. `2025` | `absint` |
 | `swfl_show_icons` | Icons anzeigen (Standard `1`) | `'1'` oder `'0'` |
 | `swfl_request_timeout` | API-Timeout in Sekunden (1–30, Standard `3`) | `absint`, begrenzt auf 1–30; 0/ungültig → `3` |
-| `swfl_rest_rate_limit` | Öffentliche REST-Anfragen pro Minute und Besucher (0–1000, Standard `60`, `0` = aus) | `absint`, begrenzt auf 0–1000; ungültig → `60` |
+| `swfl_rest_rate_limit` | Öffentliche REST-Anfragen pro Minute und Besucher (0–1000, Standard `60`, `0` = aus). Besucher werden nach IP-Adresse unterschieden, IPv6 nach dem /64-Präfix | `absint`, begrenzt auf 0–1000; ungültig → `60` |
+| `swfl_upstream_budget` | Seitenweites Limit für ungecachte API-Anfragen, die öffentliche REST-Routen pro Minute auslösen dürfen (0–10000, Standard `120`, `0` = aus); jede Seite einer langen Liste zählt. Ist es aufgebraucht, antworten die Routen mit einer abgelaufenen Kopie oder mit `503` und `Retry-After`. Shortcode-Seiten, Admin, Administratoren und Warm-up zählen nicht | `absint`, begrenzt auf 0–10000; ungültig → `120` |
+| `swfl_upstream_visitor_budget` | Anteil dieses Limits, den ein Besucher (IP-Adresse, IPv6-/64-Präfix) pro Minute nutzen darf (0–10000, Standard `20`, `0` = aus). So können ein oder zwei Adressen das Limit nicht für alle aufbrauchen; darüber gibt es eine abgelaufene Kopie oder `429` mit `Retry-After` | `absint`, begrenzt auf 0–10000; ungültig → `20` |
+| `swfl_trusted_proxies` | Vertrauenswürdige Proxys: eine IP-Adresse oder ein CIDR-Bereich pro Zeile (IPv4 ab /8, IPv6 ab /16). Nur für Anfragen von diesen Adressen liest das Rate-Limit den Besucher aus `X-Forwarded-For`; leer = Header werden ignoriert | Normalisiert, Duplikate entfernt, höchstens 100 Einträge; ungültige Einträge werden verworfen und gemeldet |
 | `swfl_cache_ttl_games` | Cache-Dauer der Spiele in Sekunden (30–86400, Standard `3600`) | `absint`, begrenzt auf 30–86400; ungültig → Standard |
 | `swfl_cache_ttl_rankings` | Cache-Dauer der Ranglisten (30–86400, Standard `7200`) | wie oben |
 | `swfl_cache_ttl_game_events` | Cache-Dauer der Spiel-Events (30–86400, Standard `120`, nahezu live) | wie oben |
@@ -40,7 +43,19 @@ Die Felder «Partner API: API key» und «Partner API: API secret» sind nur sic
 
 ### Cache leeren
 
-Auf der Einstellungsseite löst ein Formular `admin_post_swfl_clear_cache` aus (Nonce `swfl_clear_cache_action`, Capability `manage_options`). Es löscht alle Transients `swfl_*` und leitet mit Hinweis zurück.
+Auf der Einstellungsseite löst ein Formular `admin_post_swfl_clear_cache` aus (Nonce `swfl_clear_cache_action`, Capability `manage_options`). Es löscht alle Transients `swfl_*` und leitet mit Hinweis zurück. Dazu gehören auch die kurz gemerkten Fehler, die abgelaufenen Kopien und die Liste der blockierten Besucher. Die Zähler von Rate-Limit und Budget (`swfl_count_*`) bleiben und laufen mit ihrer Minute ab.
+
+### Hinweis «Limit … erreicht»
+
+Ist das seitenweite Limit «Upstream requests per minute» aufgebraucht, zeigt die Einstellungsseite 24 Stunden lang einen Hinweis, wann das war. Nach einer Änderung des Limits verschwindet er. Wer protokollieren oder alarmieren will, hängt sich an die Action `swfl_upstream_budget_exceeded` ([Entwicklung](developer.md)). War es normaler Besucherverkehr, den Wert erhöhen.
+
+### Blockierte Besucher
+
+Die Einstellungsseite listet, welche Besucher das REST-Rate-Limit oder ihr Anteil am Upstream-Limit in der letzten Stunde blockiert hat (`SWFL_Rate_Limit_Log`, Transient `swfl_rate_limited`): IPv4-Adresse bzw. IPv6-/64-Präfix, ob die Sperre noch läuft (sie endet mit der laufenden Minute), wie viele Minuten der Besucher gesperrt war und wann zum ersten Mal. Pro Besucher wird höchstens einmal pro Minute geschrieben, die Liste fasst höchstens 50 Einträge, und ein Eintrag verschwindet eine Stunde nach seiner letzten Sperre. «Cache leeren» leert auch diese Liste. Steht dort eine einzige Adresse mit vielen Minuten, die zu einem Proxy, CDN oder Firmennetz gehört, teilen sich wahrscheinlich viele Besucher diese Adresse: Proxy unter «Trusted proxies» eintragen oder das Limit erhöhen.
+
+### Vertrauenswürdige Proxys
+
+Hinter einem Reverse-Proxy oder CDN (z. B. Cloudflare), das die echte Besucheradresse nicht an den Webserver weitergibt, teilen sich alle Besucher die Adresse des Proxys und damit ein Rate-Limit. Besser ist, die echte Adresse im Webserver wiederherzustellen (`mod_remoteip`, nginx `real_ip_header`). Geht das nicht, die Adressbereiche des Proxys unter «Trusted proxies» eintragen, z. B. die [IP-Bereiche von Cloudflare](https://www.cloudflare.com/ips/). Das Plugin liest dann für Anfragen von diesen Adressen den Besucher aus `X-Forwarded-For` (von rechts, vertrauenswürdige Hops werden übersprungen). `CF-Connecting-IP` wird absichtlich nicht gelesen. Ungültige Einträge werden beim automatischen Speichern verworfen und im Status unter dem Formular gemeldet.
 
 ## Helper-Seiten
 

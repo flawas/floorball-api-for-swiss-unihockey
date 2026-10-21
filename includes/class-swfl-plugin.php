@@ -138,6 +138,11 @@ class SWFL_Plugin {
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-rest.php';
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-table-data.php';
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-request-guard.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-counter.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-client-ip.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-cache-entry.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-upstream-budget.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-rate-limit-log.php';
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-icons.php';
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-swfl-warmup.php';
 
@@ -195,6 +200,11 @@ class SWFL_Plugin {
 		$this->loader->add_action( 'rest_api_init', 'SWFL_Widgets', 'register_routes' );
 		$this->loader->add_action( 'rest_api_init', 'SWFL_Rest', 'register_routes' );
 		$this->loader->add_action( 'widgets_init', 'SWFL_Game_Widget', 'register' );
+		// Retry-After for the 429 and 503 answers, and the end of the upstream budget state once a route has run.
+		$this->loader->add_filter( 'rest_post_dispatch', 'SWFL_Request_Guard', 'add_retry_after' );
+		$this->loader->add_filter( 'rest_request_after_callbacks', 'SWFL_Upstream_Budget', 'leave_public_request' );
+		// Core runs the permission callback again for the Allow header (rest_post_dispatch, priority 10), also for requests that never reached their callback.
+		$this->loader->add_filter( 'rest_post_dispatch', 'SWFL_Upstream_Budget', 'leave_public_request', 99 );
 
 		// The warm-up is a WP-Cron job, so it is registered for every request and not only in the admin area.
 		SWFL_Warmup::register_hooks( $this->loader );

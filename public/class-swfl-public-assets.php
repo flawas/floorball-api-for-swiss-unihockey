@@ -131,6 +131,7 @@ class SWFL_Public_Assets {
 			'swflWidgets',
 			array(
 				'restUrl' => esc_url_raw( rest_url( 'swfl/v1/' ) ),
+				'retry'   => __( 'Die Daten konnten gerade nicht geladen werden. Bitte in einem Moment erneut versuchen.', 'swiss-floorball-api' ),
 			)
 		);
 	}

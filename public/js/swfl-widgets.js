@@ -40,9 +40,32 @@
 	}
 
 	/**
-	 * Fetch rendered widget HTML from a REST route and swap it in for the given element.
+	 * Show (or hide, with an empty text) a short notice at the top of a widget.
 	 */
-	function reload( route, params, target, replaceSelf ) {
+	function setNotice( widget, text ) {
+		var notice = widget.querySelector( ':scope > .sfa-widget-notice' );
+		if ( ! text ) {
+			if ( notice ) {
+				notice.remove();
+			}
+			return;
+		}
+		if ( ! notice ) {
+			notice = document.createElement( 'p' );
+			notice.className = 'sfa-widget-notice';
+			notice.setAttribute( 'role', 'status' );
+			widget.insertBefore( notice, widget.firstChild );
+		}
+		notice.textContent = text;
+	}
+
+	/**
+	 * Fetch rendered widget HTML from a REST route and swap it in for the given element.
+	 *
+	 * A refused request (429, 503) or a failure leaves the content as it is and calls onFail, so the widget
+	 * can tell the visitor and undo the change that asked for the new content.
+	 */
+	function reload( route, params, target, replaceSelf, onFail ) {
 		var query = new URLSearchParams();
 		Object.keys( params ).forEach( function ( key ) {
 			if ( params[ key ] !== undefined && params[ key ] !== null && params[ key ] !== '' ) {
@@ -77,6 +100,9 @@
 			} )
 			.catch( function () {
 				target.removeAttribute( 'aria-busy' );
+				if ( onFail ) {
+					onFail();
+				}
 			} );
 	}
 
@@ -149,17 +175,27 @@
 	function initTeamSelect( widget ) {
 		var select = widget.querySelector( '[data-sfa-select]' );
 		var slot = widget.querySelector( '[data-sfa-slot]' );
+		var shown = select.value;
 
 		select.addEventListener( 'change', function () {
+			var previous = shown;
+			shown = select.value;
+			setNotice( widget, '' );
 			reload(
 				'team-games',
 				{
-					team_id: select.value,
+					team_id: shown,
 					season: widget.dataset.sfaSeason,
 					page_size: widget.dataset.sfaPageSize
 				},
 				slot,
-				false
+				false,
+				function () {
+					// The table still shows the previous team, so the select has to as well.
+					shown = previous;
+					select.value = previous;
+					setNotice( widget, config.retry );
+				}
 			);
 		} );
 	}
@@ -174,7 +210,10 @@
 					return;
 				}
 				var request = { ...params, round: context.round };
-				reload( 'league-games', request, widget, true );
+				setNotice( widget, '' );
+				reload( 'league-games', request, widget, true, function () {
+					setNotice( widget, config.retry );
+				} );
 			} );
 		} );
 	}

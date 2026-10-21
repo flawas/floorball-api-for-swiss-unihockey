@@ -22,9 +22,13 @@ This auto-installs WordPress at `http://localhost:8000`, activates the plugin, a
 "Shortcuts" page pre-populated with every shortcode for manual testing. WP-CLI is available via the
 `wp-cli` service.
 
-Automated checks live in `.github/workflows/ci.yml` (PHP lint on 7.4–8.4, `scripts/check_release.php`
-for version/ABSPATH/text-domain consistency, WordPress Plugin Check). Run the consistency check locally with
-`php scripts/check_release.php`. Beyond that, verification is manual (through the Docker site). Note:
+Automated checks live in `.github/workflows/ci.yml` (PHP lint on 7.4–8.4, offline tests
+`php scripts/tests/run.php` on 7.4/8.1/8.3/8.4, `scripts/check_release.php` for version/ABSPATH/text-domain
+consistency, WordPress Plugin Check). Run the consistency check locally with `php scripts/check_release.php`.
+The offline tests stub the few WordPress functions the classes use (no WordPress, no network); add a
+`scripts/tests/test-*.php` case when changing the client cache, the budget, the counter, the REST arguments
+or the visitor detection. `scripts/tests/integration.php` runs inside the Docker site against the real REST
+server. Beyond that, verification is manual (through the Docker site). Note:
 `verify_api.php` is the live smoke test: it loads the real client and display classes with stubbed
 WordPress functions, discovers season/league/group/club/game/team IDs from the API itself, and fails on API
 errors, changed response shapes, PHP warnings or "data could not be loaded" output. It runs in CI as an
@@ -79,10 +83,18 @@ centralized outside that split:
 - `includes/class-swfl-loader.php` — generic action/filter registration
   queue, run in `SWFL_Plugin::run()`.
 - `includes/class-swfl-client.php` (`SWFL_Client`) — the
-  **only** place that talks to the external API. `fetch_data($endpoint, $args, $cache_time)` builds the
-  URL, caches responses as WordPress transients keyed `swfl_<sha256(url)>` (default 1 hour), and returns
-  the decoded JSON array or a `WP_Error`. Any new API call should go through this client, not a direct
-  `wp_remote_get`.
+  **only** place that talks to the external API. `fetch_data($endpoint, $args, $cache_time, $force_refresh)`
+  builds the URL, caches responses as WordPress transients keyed `swfl_<sha256(url)>` (lifetime per endpoint,
+  default 1 hour), and returns the decoded JSON array or a `WP_Error`. Any new API call should go through
+  this client, not a direct `wp_remote_get`. The transient holds an envelope (`SWFL_Cache_Entry`): a payload
+  with `fresh_until` that is kept as an expired copy for a while longer, or a short-lived failure marker
+  (failed and empty answers are remembered briefly, never over data). While a public REST route runs, every
+  cache miss takes a unit of the site-wide budget (`SWFL_Upstream_Budget`, counted by `SWFL_Counter`); a
+  refused miss serves the expired copy or a 503 `swfl_budget_exceeded`.
+- REST input and rate limit: `SWFL_Request_Guard` holds the strict argument validators of all `swfl/v1`
+  routes (`int_arg()`, `season_arg()`, `group_arg()`) and the per-visitor rate limit (permission callback);
+  `SWFL_Client_Ip` turns a request into the rate-limit bucket (IPv6 /64, opt-in trusted proxies via
+  `X-Forwarded-For`).
 - `includes/class-swfl-display.php` (`SWFL_Display`) — all
   HTML rendering. Every `render_*` method fetches via the shared client and echoes a `.sfa-data-table`
   (or similar) directly — these are **not** templates, they're static methods called from both admin
@@ -109,8 +121,8 @@ centralized outside that split:
   shortcode attributes. Also handles cache-busting via `admin_post_swfl_clear_cache`. The Settings API
   part (field definitions, sanitizers, field output) lives in
   `admin/class-swfl-admin-settings.php`.
-- Settings are stored as plain WordPress options: `swfl_club_number`,
-  `swfl_actual_season`.
+- Settings are stored as plain WordPress options, e.g. `swfl_club_number`, `swfl_actual_season`,
+  `swfl_rest_rate_limit`, `swfl_upstream_budget`, `swfl_trusted_proxies`.
 
 ### Naming
 

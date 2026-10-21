@@ -217,6 +217,10 @@ class SWFL_Client {
 	/**
 	 * Fetch data from the API.
 	 *
+	 * Answers come from the cache when they can. A failed request is remembered for a short time, and a request
+	 * that a public REST route causes has to fit into the site-wide upstream budget (see SWFL_Cache_Entry and
+	 * SWFL_Upstream_Budget).
+	 *
 	 * @since    1.0.0
 	 * @param    string   $endpoint      The API endpoint to fetch.
 	 * @param    array    $args          Optional. Arguments for the API request.
@@ -232,6 +236,38 @@ class SWFL_Client {
 			$cache_time = self::get_cache_ttl( $endpoint );
 		}
 
+		$url = $this->build_url( $endpoint, $args );
+
+		// Generate a unique cache key for this request.
+		$cache_key = 'swfl_' . hash( 'sha256', $url );
+
+		$entry = $force_refresh ? null : SWFL_Cache_Entry::read( get_transient( $cache_key ) );
+		if ( null !== $entry && ( 'error' === $entry['type'] || $entry['fresh'] ) ) {
+			// A fresh payload, or a recent failure for the same request: answer without asking the API again.
+			return 'error' === $entry['type'] ? SWFL_Cache_Entry::to_error( $entry['error'] ) : $entry['data'];
+		}
+
+		// Only the upstream budget of a public REST request can refuse to refresh an expired payload (the $entry left).
+		$allowed = SWFL_Upstream_Budget::acquire();
+		if ( true !== $allowed ) {
+			return null !== $entry ? SWFL_Upstream_Budget::serve_stale( $entry['data'] ) : SWFL_Upstream_Budget::refuse( $allowed );
+		}
+
+		$data = $this->request_data( $url );
+		$this->remember( $cache_key, $url, $data, $cache_time, $force_refresh || null !== $entry );
+
+		return $data;
+	}
+
+	/**
+	 * Build the request URL of an endpoint: the base URL of the API source plus the URL-encoded query arguments.
+	 *
+	 * @since 2.2.0
+	 * @param string $endpoint API endpoint.
+	 * @param array  $args     Query arguments.
+	 * @return string URL without auth token.
+	 */
+	private function build_url( $endpoint, $args ) {
 		$url = $this->get_base_url() . $endpoint;
 
 		// Add query args if present.
@@ -244,21 +280,44 @@ class SWFL_Client {
 			$url = add_query_arg( $encoded, $url );
 		}
 
-		// Generate a unique cache key for this request.
-		$cache_key   = 'swfl_' . hash( 'sha256', $url );
-		$cached_data = $force_refresh ? false : get_transient( $cache_key );
+		return $url;
+	}
 
-		if ( false !== $cached_data ) {
-			return $cached_data;
-		}
-
-		$data = $this->request_data( $url );
+	/**
+	 * Cache the outcome of an upstream request.
+	 *
+	 * An answer is fresh for the cache lifetime and stays as an expired copy for a while longer, for the case the
+	 * site-wide upstream budget is used up. An answer without any rows is what an unknown or out-of-range request
+	 * gets, so it is only remembered briefly, like a failure, and no copy is kept. A failure is remembered briefly
+	 * (never longer than the cache lifetime of the endpoint, and never over a row that a parallel request stored
+	 * meanwhile) so that repeating a request with an invalid ID does not reach the API again; see SWFL_Cache_Entry.
+	 *
+	 * @since 2.2.0
+	 * @param string         $cache_key     Transient name.
+	 * @param string         $url           Request URL without auth token.
+	 * @param array|WP_Error $data          Decoded response, or the error of the request.
+	 * @param int            $cache_time    Seconds a response is fresh.
+	 * @param bool           $keep_existing Whether the transient may already hold data that a failure must not replace
+	 *                                      (a forced refresh, or the refresh of an expired payload).
+	 * @return void
+	 */
+	private function remember( $cache_key, $url, $data, $cache_time, $keep_existing ) {
 		if ( ! is_wp_error( $data ) ) {
-			// Cache the successful response.
-			set_transient( $cache_key, $data, $cache_time );
+			$fresh = (int) $cache_time;
+			$keep  = $fresh + SWFL_Cache_Entry::get_stale_ttl( $url );
+			$short = SWFL_Cache_Entry::is_empty_payload( $data ) ? SWFL_Cache_Entry::get_empty_ttl( $url ) : 0;
+			if ( $short > 0 ) {
+				$fresh = min( $fresh, $short );
+				$keep  = $fresh;
+			}
+			set_transient( $cache_key, SWFL_Cache_Entry::wrap( $data, $fresh ), $keep );
+		} elseif ( ! $keep_existing ) {
+			// Not longer than the answers of the endpoint live, and not over a row that another request stored while this one waited for the API.
+			$ttl = min( SWFL_Cache_Entry::get_error_ttl( $data, $url ), max( 1, (int) $cache_time ) );
+			if ( $ttl > 0 && false === SWFL_Cache_Entry::get_shared( $cache_key ) ) {
+				set_transient( $cache_key, SWFL_Cache_Entry::wrap_error( $data ), $ttl );
+			}
 		}
-
-		return $data;
 	}
 
 	/**
@@ -335,7 +394,14 @@ class SWFL_Client {
 			// Keep the API's own message (e.g. unknown group) so administrators can see why a request failed.
 			$body    = json_decode( wp_remote_retrieve_body( $response ), true );
 			$details = is_array( $body ) && isset( $body['error'] ) && is_string( $body['error'] ) ? $body['error'] : '';
-			return new WP_Error( 'api_error', 'API returned status code ' . $code, array( 'api_message' => $details ) );
+			return new WP_Error(
+				'api_error',
+				'API returned status code ' . $code,
+				array(
+					'api_message'     => $details,
+					'upstream_status' => (int) $code,
+				)
+			);
 		}
 
 		$data = json_decode( wp_remote_retrieve_body( $response ), true );
