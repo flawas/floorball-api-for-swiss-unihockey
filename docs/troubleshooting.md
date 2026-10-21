@@ -1,5 +1,9 @@
 # Fehlerbehebung
 
+## «Swiss Floorball API is paused: PHP … has critical security vulnerabilities»
+
+Das Plugin braucht PHP 8.2.35, 8.3.36, 8.4.27, 8.5.12 oder neuer (auch neuere Branches). Diese Versionen beheben die kritischen RCE-Lücken CVE-2026-109618 und CVE-2026-109619; ältere Releases und PHP 8.1 und älter sind verwundbar. Auf einer zu alten Version lädt das Plugin nichts (Shortcodes und Widgets bleiben leer) und lässt sich nicht aktivieren. PHP beim Hoster aktualisieren, danach läuft das Plugin von selbst wieder. Hat der Hoster die Fixes eingespielt, ohne die Versionsnummer zu ändern (Backports von Debian, Ubuntu, RHEL), in `wp-config.php` `define( 'SWFL_ALLOW_OTHER_PHP', true );` setzen.
+
 ## Ausgabe ist leer oder «Daten konnten nicht geladen werden»
 
 - Fehlen IDs (`league`, `game_class`, `group`, `team_id`, …)? Werte in den [Helper-Seiten](admin.md) prüfen. Fehlende Attribute werden zu `0`.

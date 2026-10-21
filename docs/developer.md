@@ -62,7 +62,7 @@ docker exec swiss-floorball-api-wordpress-1 php /var/www/html/wp-content/plugins
 
 Mit `SWFL_API_SOURCE=partner php verify_api.php` wird die Partner-API getestet (gespeicherter Key und Secret nötig); Standard ist `free`.
 
-`verify_api.php` lädt Client und Display mit gestubbten WordPress-Funktionen, ermittelt IDs aus der API und schlägt bei API-Fehlern, geänderten Antwortformen, PHP-Warnungen oder «Daten konnten nicht geladen werden» fehl. CI (`.github/workflows/ci.yml`): PHP-Lint 7.4–8.4, Offline-Tests auf 7.4/8.1/8.3/8.4, Release-Check, WordPress Plugin Check, phpcs (blockierend).
+`verify_api.php` lädt Client und Display mit gestubbten WordPress-Funktionen, ermittelt IDs aus der API und schlägt bei API-Fehlern, geänderten Antwortformen, PHP-Warnungen oder «Daten konnten nicht geladen werden» fehl. CI (`.github/workflows/ci.yml`): PHP-Lint 7.4–8.5, Offline-Tests in den Images `php:<version>-cli` der tiefsten erlaubten Versionen 8.2.35, 8.3.36, 8.4.27 und 8.5.12 (siehe `SWFL_Php_Requirement::MINIMUMS`), Release-Check, WordPress Plugin Check, phpcs (blockierend).
 
 ## Konventionen
 

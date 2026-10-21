@@ -16,6 +16,7 @@
  * Plugin URI:        https://flaviowaser.ch
  * Description:       Ein kleines Plugin, welches ermöglicht, die aktuellen Daten der Swiss Floorball API abzufragen und auf der Webseite darzustellen.
  * Version:           2.1.2
+ * Requires PHP:      8.2
  * Author:            Flavio Waser
  * Author URI:        https://flaviowaser.ch/
  * License:           GPLv2 or later
@@ -45,6 +46,7 @@ define( 'SWFL_VERSION', '2.1.2' );
  * This action is documented in includes/class-swfl-activator.php
  */
 function swfl_activate() {
+	SWFL_Php_Requirement::refuse_activation();
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-swfl-activator.php';
 	SWFL_Activator::activate();
 }
@@ -60,6 +62,16 @@ function swfl_deactivate() {
 
 register_activation_hook( __FILE__, 'swfl_activate' );
 register_deactivation_hook( __FILE__, 'swfl_deactivate' );
+
+/*
+ * The plugin needs PHP 8.2.35, 8.3.36, 8.4.27, 8.5.12 or newer (see SWFL_Php_Requirement). On an older version
+ * it loads nothing and tells administrators which version they need.
+ */
+require_once plugin_dir_path( __FILE__ ) . 'includes/class-swfl-php-requirement.php';
+if ( ! SWFL_Php_Requirement::is_met() ) {
+	add_action( 'admin_notices', array( 'SWFL_Php_Requirement', 'render_notice' ) );
+	return;
+}
 
 /**
  * The core plugin class that is used to define internationalization,

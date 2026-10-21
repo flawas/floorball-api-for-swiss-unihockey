@@ -148,12 +148,16 @@ function wp_remote_get( $url, $args = array() ) {
 			'header'        => "User-Agent: SwissFloorballApiSmokeTest/2.0\r\n",
 		),
 	) );
-	$body = @file_get_contents( $url, false, $ctx );
-	if ( false === $body ) {
+	// The headers come from the stream: PHP 8.5 deprecates the magic $http_response_header.
+	$stream = @fopen( $url, 'r', false, $ctx );
+	if ( false === $stream ) {
 		return new WP_Error( 'http_request_failed', 'Request failed: ' . $url );
 	}
+	$headers = stream_get_meta_data( $stream )['wrapper_data'] ?? array();
+	$body    = (string) stream_get_contents( $stream );
+	fclose( $stream );
 	$code = 0;
-	if ( ! empty( $http_response_header[0] ) && preg_match( '#\s(\d{3})\s#', $http_response_header[0], $m ) ) {
+	if ( ! empty( $headers[0] ) && preg_match( '#\s(\d{3})\s#', $headers[0], $m ) ) {
 		$code = (int) $m[1];
 	}
 	return array( 'code' => $code, 'body' => $body );

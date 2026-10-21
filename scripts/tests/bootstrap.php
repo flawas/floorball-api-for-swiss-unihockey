@@ -396,7 +396,7 @@ function admin_url( $path = '' ) {
 // ---------------------------------------------------------------------------
 // Plugin classes
 // ---------------------------------------------------------------------------
-foreach ( array( 'client', 'display', 'icons', 'widgets', 'calendar', 'rest', 'table-data', 'request-guard', 'counter', 'client-ip', 'cache-entry', 'upstream-budget', 'warmup', 'rate-limit-log' ) as $swfl_class_file ) {
+foreach ( array( 'client', 'display', 'icons', 'widgets', 'calendar', 'rest', 'table-data', 'request-guard', 'counter', 'client-ip', 'cache-entry', 'upstream-budget', 'warmup', 'rate-limit-log', 'php-requirement' ) as $swfl_class_file ) {
 	require_once ABSPATH . 'includes/class-swfl-' . $swfl_class_file . '.php';
 }
 require_once ABSPATH . 'admin/class-swfl-admin-settings.php';

@@ -22,7 +22,7 @@
 **Tags:** floorball, api, swiss floorball, unihockey, sports  
 **Requires at least:** 5.0  
 **Tested up to:** 7.1  
-**Requires PHP:** 7.4  
+**Requires PHP:** 8.2  
 **Stable tag:** 2.1.2  
 **License:** GPLv2 or later  
 **License URI:** https://www.gnu.org/licenses/gpl-2.0.html  
@@ -195,6 +195,9 @@ A: API responses are cached for one hour. Use the **Cache leeren** button on the
 **Q: Is this plugin free?**  
 A: Yep! It's open-source and completely free to use.
 
+**Q: Why does the plugin say it is paused because of the PHP version?**  
+A: The plugin needs PHP 8.2.35, 8.3.36, 8.4.27, 8.5.12 or newer. These releases fix two critical remote code execution vulnerabilities (CVE-2026-109618, CVE-2026-109619); older releases and PHP 8.1 and older are vulnerable. Ask your host to update PHP; the plugin starts again by itself. If your host has applied the fixes without changing the version number (backports), add `define( 'SWFL_ALLOW_OTHER_PHP', true );` to `wp-config.php`.
+
 **Q: Is this an official Swiss Unihockey plugin?**  
 A: No. This is an independent, unofficial plugin by Flavio Waser. It has no connection to Swiss Unihockey (swissunihockey.ch) other than reading their public API.
 
@@ -256,6 +259,7 @@ Version 2.0.0 contains breaking changes (API source, calendar feed, shortcode at
 
 ## 📜 Changelog
 ### Unreleased
+* Security: The plugin needs PHP 8.2.35, 8.3.36, 8.4.27, 8.5.12 or newer (also newer branches), the releases that fix the critical remote code execution vulnerabilities CVE-2026-109618 and CVE-2026-109619 (`Requires PHP` is now 8.2). On an older release, and on PHP 8.1 and older, the plugin loads nothing, shows administrators the version they need and refuses to be activated. `define( 'SWFL_ALLOW_OTHER_PHP', true );` in `wp-config.php` runs it anyway, e.g. on distribution builds with backported fixes
 * Security: Failed API requests are cached briefly, so repeating a request with an unknown ID no longer reaches the Swiss Unihockey API every time. Permanent failures (such as 404 for an unknown ID) are remembered for 5 minutes, transient ones (timeouts, 5xx, 429) for at most 60 seconds, never longer than the cache lifetime of the endpoint (filter `swfl_error_cache_ttl`, 0 turns it off). Answers without any rows are cached just as briefly. Missing or rejected Partner API credentials are never cached, a forced refresh (cache warm-up) never writes a failure, and a failure never replaces cached data (Issue #112)
 * Security: Every argument of the public REST routes is validated before any upstream request: IDs are digits only from 1 to 10,000,000, `season` is empty, 0 or a start year from 1996 to next year, and `group` is up to 40 letters, digits, spaces or `. _ / -`. Invalid values get `400 rest_invalid_param` (Issue #113)
 * Security: New setting *Upstream requests per minute* (default 120, filter `swfl_upstream_budget`): a site-wide budget for the uncached API requests that the public REST routes may cause, counted per page of a long list and exact also without a persistent object cache. When it is used up, the routes serve an expired cached copy (kept up to an hour longer, filter `swfl_stale_ttl`) with a short `max-age`, otherwise `503` with `Retry-After`; the settings page shows a notice and the action `swfl_upstream_budget_exceeded` fires once per minute. Shortcode page views, the admin area, administrators and the cache warm-up are not limited. Every visitor may only use a share of it (setting *Upstream requests per minute and visitor*, default 20, filter `swfl_upstream_visitor_budget`; beyond it `429`), so one or two addresses can no longer use the budget up for everybody (Issue #114)

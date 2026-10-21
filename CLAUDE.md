@@ -22,8 +22,9 @@ This auto-installs WordPress at `http://localhost:8000`, activates the plugin, a
 "Shortcuts" page pre-populated with every shortcode for manual testing. WP-CLI is available via the
 `wp-cli` service.
 
-Automated checks live in `.github/workflows/ci.yml` (PHP lint on 7.4–8.4, offline tests
-`php scripts/tests/run.php` on 7.4/8.1/8.3/8.4, `scripts/check_release.php` for version/ABSPATH/text-domain
+Automated checks live in `.github/workflows/ci.yml` (PHP lint on 7.4–8.5, offline tests
+`php scripts/tests/run.php` in the `php:<version>-cli` images of the lowest allowed PHP versions
+(8.2.35, 8.3.36, 8.4.27, 8.5.12), `scripts/check_release.php` for version/ABSPATH/text-domain
 consistency, WordPress Plugin Check). Run the consistency check locally with `php scripts/check_release.php`.
 The offline tests stub the few WordPress functions the classes use (no WordPress, no network); add a
 `scripts/tests/test-*.php` case when changing the client cache, the budget, the counter, the REST arguments
@@ -77,7 +78,12 @@ Standard WordPress plugin boilerplate (loader/i18n/admin/public split), with all
 centralized outside that split:
 
 - `swiss-floorball-api.php` — plugin bootstrap; defines `SWFL_VERSION`,
-  registers activation/deactivation hooks, instantiates `SWFL_Plugin`.
+  registers activation/deactivation hooks, instantiates `SWFL_Plugin`. Before that,
+  `SWFL_Php_Requirement` checks the minimum PHP release per branch (8.2.35, 8.3.36, 8.4.27, 8.5.12, which fix
+  CVE-2026-109618/-109619; newer releases and branches are allowed, 8.1 and older never); below it the plugin
+  loads nothing, shows an admin notice and refuses activation (override: constant `SWFL_ALLOW_OTHER_PHP`).
+  Raise `SWFL_Php_Requirement::MINIMUMS` and the `tests` matrix of `ci.yml` when PHP ships the next critical
+  security release. Keep both files free of syntax newer than PHP 7.4.
 - `includes/class-swfl-plugin.php` — core orchestrator. Loads every other class
   and wires admin/public hooks through the loader.
 - `includes/class-swfl-loader.php` — generic action/filter registration
