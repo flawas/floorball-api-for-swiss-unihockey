@@ -15,7 +15,7 @@
  * Plugin Name:       Swiss Floorball API
  * Plugin URI:        https://flaviowaser.ch
  * Description:       Shows the current data of the Swiss Floorball API (games, rankings, topscorers, players and calendars) on your website.
- * Version:           2.1.2
+ * Version:           2.2.0
  * Requires PHP:      8.2
  * Author:            Flavio Waser
  * Author URI:        https://flaviowaser.ch/
@@ -39,7 +39,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.1 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'SWFL_VERSION', '2.1.2' );
+define( 'SWFL_VERSION', '2.2.0' );
 
 /**
  * The code that runs during plugin activation.
