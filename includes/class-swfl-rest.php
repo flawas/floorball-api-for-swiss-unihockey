@@ -35,6 +35,14 @@ class SWFL_Rest {
 	const CACHE_MAX_AGE = 3600;
 
 	/**
+	 * Max-age of the Cache-Control header while an expired copy is served because the upstream budget is used up.
+	 *
+	 * @since 2.2.0
+	 * @var   int
+	 */
+	const STALE_MAX_AGE = 60;
+
+	/**
 	 * Register the JSON routes.
 	 *
 	 * @since 2.1.0
@@ -42,12 +50,12 @@ class SWFL_Rest {
 	 */
 	public static function register_routes() {
 		$game_args = array(
-			'team_id'    => self::int_arg(),
-			'club_id'    => self::int_arg(),
-			'season'     => self::int_arg(),
-			'league'     => self::int_arg(),
-			'game_class' => self::int_arg(),
-			'group'      => self::group_arg(),
+			'team_id'    => SWFL_Request_Guard::int_arg(),
+			'club_id'    => SWFL_Request_Guard::int_arg(),
+			'season'     => SWFL_Request_Guard::season_arg(),
+			'league'     => SWFL_Request_Guard::int_arg(),
+			'game_class' => SWFL_Request_Guard::int_arg(),
+			'group'      => SWFL_Request_Guard::group_arg(),
 		);
 
 		self::add_route( '/games', 'rest_games', $game_args );
@@ -57,20 +65,20 @@ class SWFL_Rest {
 			'/rankings',
 			'rest_rankings',
 			array(
-				'league'     => self::int_arg( true ),
-				'game_class' => self::int_arg( true ),
-				'season'     => self::int_arg(),
-				'group'      => self::group_arg(),
+				'league'     => SWFL_Request_Guard::int_arg( true ),
+				'game_class' => SWFL_Request_Guard::int_arg( true ),
+				'season'     => SWFL_Request_Guard::season_arg(),
+				'group'      => SWFL_Request_Guard::group_arg(),
 			)
 		);
 		self::add_route(
 			'/topscorers',
 			'rest_topscorers',
 			array(
-				'club_id'    => self::int_arg(),
-				'season'     => self::int_arg(),
-				'league'     => self::int_arg(),
-				'game_class' => self::int_arg(),
+				'club_id'    => SWFL_Request_Guard::int_arg(),
+				'season'     => SWFL_Request_Guard::season_arg(),
+				'league'     => SWFL_Request_Guard::int_arg(),
+				'game_class' => SWFL_Request_Guard::int_arg(),
 			)
 		);
 	}
@@ -94,34 +102,6 @@ class SWFL_Rest {
 				'permission_callback' => array( 'SWFL_Request_Guard', 'check_rate_limit' ),
 				'args'                => $args,
 			)
-		);
-	}
-
-	/**
-	 * Definition of an integer argument.
-	 *
-	 * @since 2.1.0
-	 * @param bool $required Whether the argument is required.
-	 * @return array Argument definition.
-	 */
-	private static function int_arg( $required = false ) {
-		return array(
-			'type'              => 'integer',
-			'required'          => $required,
-			'sanitize_callback' => 'absint',
-		);
-	}
-
-	/**
-	 * Definition of the group name argument.
-	 *
-	 * @since 2.1.0
-	 * @return array Argument definition.
-	 */
-	private static function group_arg() {
-		return array(
-			'type'              => 'string',
-			'sanitize_callback' => array( 'SWFL_Request_Guard', 'sanitize_group' ),
 		);
 	}
 
@@ -272,7 +252,7 @@ class SWFL_Rest {
 
 		return self::respond(
 			array(
-				'title'   => self::get_title( $response['data'], 'Topscorer' ),
+				'title'   => self::get_title( $response['data'], __( 'Topscorers', 'swiss-floorball-api' ) ),
 				'players' => SWFL_Widgets::collect_topscorers( SWFL_Table_Data::get_rows( $response['data'] ) ),
 			)
 		);
@@ -334,7 +314,7 @@ class SWFL_Rest {
 			$params['game_class'] = $game_class;
 			$params['group']      = SWFL_Request_Guard::sanitize_group( $request->get_param( 'group' ) );
 		} else {
-			return new WP_Error( 'swfl_missing_params', 'team_id, club_id or league and game_class are required', array( 'status' => 400 ) );
+			return new WP_Error( 'swfl_missing_params', __( 'team_id, club_id or league and game_class are required.', 'swiss-floorball-api' ), array( 'status' => 400 ) );
 		}
 
 		return $params;
@@ -464,11 +444,11 @@ class SWFL_Rest {
 	 *
 	 * @since 2.1.0
 	 * @param array $payload Response data.
-	 * @return WP_REST_Response Response with a public Cache-Control header.
+	 * @return WP_REST_Response Response with a public Cache-Control header, a short one for an expired copy.
 	 */
 	private static function respond( $payload ) {
 		$response = new WP_REST_Response( $payload, 200 );
-		$response->header( 'Cache-Control', 'public, max-age=' . self::CACHE_MAX_AGE );
+		$response->header( 'Cache-Control', 'public, max-age=' . ( SWFL_Upstream_Budget::was_stale_served() ? self::STALE_MAX_AGE : self::CACHE_MAX_AGE ) );
 
 		return $response;
 	}
@@ -478,14 +458,17 @@ class SWFL_Rest {
 	 *
 	 * @since 2.1.0
 	 * @param array|WP_Error $response Response returned by the client.
-	 * @return WP_Error 502 error.
+	 * @return WP_Error 502 error, or the 503 error of a request the upstream budget refused.
 	 */
 	private static function upstream_error( $response ) {
+		if ( SWFL_Upstream_Budget::is_budget_error( $response ) ) {
+			return $response;
+		}
 		if ( is_wp_error( $response ) && current_user_can( 'manage_options' ) ) {
 			$response->add_data( array( 'status' => 502 ) );
 			return $response;
 		}
 
-		return new WP_Error( 'api_error', 'The data could not be loaded', array( 'status' => 502 ) );
+		return new WP_Error( 'api_error', __( 'The data could not be loaded.', 'swiss-floorball-api' ), array( 'status' => 502 ) );
 	}
 }

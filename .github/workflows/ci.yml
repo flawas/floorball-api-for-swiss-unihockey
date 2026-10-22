@@ -26,7 +26,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: ['7.4', '8.1', '8.3', '8.4']
+        # 7.4 and 8.1 stay: on an old PHP the plugin has to load far enough to show its "update PHP" notice (SWFL_Php_Requirement) instead of a fatal error.
+        php: ['7.4', '8.1', '8.2', '8.3', '8.4', '8.5']
     steps:
       - uses: actions/checkout@v6
         with:
@@ -41,6 +42,25 @@ jobs:
             | xargs -0 -n1 php -l | grep -v '^No syntax errors' || true
           ! find . -name '*.php' -not -path './.git/*' -not -path './graphify-out/*' -print0 \
             | xargs -0 -n1 php -l 2>&1 | grep -q '^\(Parse\|Fatal\) error'
+
+  tests:
+    name: Offline tests (PHP ${{ matrix.php }})
+    runs-on: ubuntu-24.04
+    # The lowest releases SWFL_Php_Requirement::MINIMUMS allows, exactly: setup-php would install the newest patch instead.
+    container:
+      image: php:${{ matrix.php }}-cli
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2.35', '8.3.36', '8.4.27', '8.5.12']
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref }}
+      - name: PHP version
+        run: |
+          php -r 'echo PHP_VERSION, PHP_EOL; exit( "${{ matrix.php }}" === PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION . "." . PHP_RELEASE_VERSION ? 0 : 1 );'
+      - run: php -d error_reporting=-1 -d display_errors=1 scripts/tests/run.php
 
   consistency:
     name: Version, ABSPATH, Textdomain, readme

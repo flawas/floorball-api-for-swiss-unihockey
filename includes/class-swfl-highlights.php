@@ -70,7 +70,7 @@ class SWFL_Highlights {
 				'dated_only' => true,
 				'past'       => false,
 				'pagination' => false,
-				'title'      => _n( 'Nächstes Spiel', 'Nächste Spiele', $limit, 'swiss-floorball-api' ),
+				'title'      => _n( 'Next game', 'Next games', $limit, 'swiss-floorball-api' ),
 			)
 		);
 	}
@@ -98,7 +98,7 @@ class SWFL_Highlights {
 				'upcoming'   => false,
 				'past'       => true,
 				'pagination' => false,
-				'title'      => _n( 'Letztes Resultat', 'Letzte Resultate', $limit, 'swiss-floorball-api' ),
+				'title'      => _n( 'Last result', 'Last results', $limit, 'swiss-floorball-api' ),
 			)
 		);
 	}

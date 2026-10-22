@@ -1,0 +1,1513 @@
+# Copyright (C) 2026 Flavio Waser
+# This file is distributed under the GPLv2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Swiss Floorball API 2.1.2\n"
+"Report-Msgid-Bugs-To: https://github.com/flawas/floorball-api-for-swiss-unihockey/issues\n"
+"Last-Translator: Flavio Waser\n"
+"Language-Team: Italian\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: it_IT\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"POT-Creation-Date: 2026-10-21T19:36:26+00:00\n"
+"PO-Revision-Date: 2026-10-21 22:30+0200\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: swiss-floorball-api\n"
+
+#. Plugin Name of the plugin
+#: swiss-floorball-api.php
+msgid "Swiss Floorball API"
+msgstr "Swiss Floorball API"
+
+#. Plugin URI of the plugin
+#: swiss-floorball-api.php
+msgid "https://flaviowaser.ch"
+msgstr "https://flaviowaser.ch"
+
+#. Description of the plugin
+#: swiss-floorball-api.php
+msgid "Shows the current data of the Swiss Floorball API (games, rankings, topscorers, players and calendars) on your website."
+msgstr "Mostra i dati attuali dell’API Swiss Floorball (partite, classifiche, topscorer, giocatori e calendari) sul tuo sito."
+
+#. Author of the plugin
+#: swiss-floorball-api.php
+msgid "Flavio Waser"
+msgstr "Flavio Waser"
+
+#. Author URI of the plugin
+#: swiss-floorball-api.php
+msgid "https://flaviowaser.ch/"
+msgstr "https://flaviowaser.ch/"
+
+#: admin/class-swfl-admin-settings.php:43
+#: admin/class-swfl-admin.php:167
+#: admin/partials/swfl-admin-display.php:44
+#: admin/partials/swfl-admin-display.php:57
+#: admin/partials/swfl-admin-overview-display.php:44
+#: admin/partials/swfl-admin-settings-display.php:25
+msgid "Settings"
+msgstr "Impostazioni"
+
+#: admin/class-swfl-admin-settings.php:139
+#: admin/partials/swfl-admin-display.php:34
+msgid "API source"
+msgstr "Fonte dell’API"
+
+#: admin/class-swfl-admin-settings.php:143
+msgid "Free API (wc.swissunihockey.ch)"
+msgstr "API gratuita (wc.swissunihockey.ch)"
+
+#: admin/class-swfl-admin-settings.php:144
+msgid "Partner API (API key and secret required)"
+msgstr "API partner (chiave e segreto API richiesti)"
+
+#: admin/class-swfl-admin-settings.php:147
+msgid "The free API needs no credentials but does not provide leagues, groups, topscorers, player profiles, national players and game events. Those shortcodes need the Partner API; the API key and secret fields appear once you select it."
+msgstr "L’API gratuita non richiede credenziali, ma non fornisce leghe, gruppi, topscorer, profili dei giocatori, giocatori della nazionale ed eventi delle partite. Questi shortcode richiedono l’API partner; i campi per la chiave e il segreto API compaiono non appena la si seleziona."
+
+#: admin/class-swfl-admin-settings.php:152
+msgid "Partner API: API key"
+msgstr "API partner: chiave API"
+
+#: admin/class-swfl-admin-settings.php:156
+msgid "The API key issued to you by Swiss Unihockey for the Partner API. Used together with the API secret to request a short-lived access token."
+msgstr "La chiave API che Swiss Unihockey ha rilasciato per l’API partner. Insieme al segreto API serve a richiedere un token di accesso di breve durata."
+
+#: admin/class-swfl-admin-settings.php:161
+msgid "Partner API: API secret"
+msgstr "API partner: segreto API"
+
+#: admin/class-swfl-admin-settings.php:165
+msgid "The API secret that belongs to the API key above. Both are required; it is stored in the database and never shown on the website."
+msgstr "Il segreto API che appartiene alla chiave qui sopra. Sono richiesti entrambi; viene salvato nel database e non viene mai mostrato sul sito."
+
+#: admin/class-swfl-admin-settings.php:170
+msgid "Club number"
+msgstr "Numero del club"
+
+#: admin/class-swfl-admin-settings.php:178
+#: includes/class-swfl-display.php:350
+#: includes/class-swfl-display.php:361
+#: includes/class-swfl-display.php:396
+#: includes/class-swfl-display.php:407
+msgid "Club name"
+msgstr "Nome del club"
+
+#: admin/class-swfl-admin-settings.php:189
+msgid "Current season (start year, e.g. 2025)"
+msgstr "Stagione attuale (anno di inizio, ad es. 2025)"
+
+#: admin/class-swfl-admin-settings.php:208
+msgid "Show icons"
+msgstr "Mostra le icone"
+
+#: admin/class-swfl-admin-settings.php:213
+msgid "Theme"
+msgstr "Tema"
+
+#: admin/class-swfl-admin-settings.php:217
+msgid "Auto (follow system)"
+msgstr "Automatico (come il sistema)"
+
+#: admin/class-swfl-admin-settings.php:218
+msgid "Light"
+msgstr "Chiaro"
+
+#: admin/class-swfl-admin-settings.php:219
+msgid "Dark"
+msgstr "Scuro"
+
+#: admin/class-swfl-admin-settings.php:222
+msgid "Controls the colour scheme of shortcodes and admin pages. Auto follows the visitor's system setting."
+msgstr "Definisce i colori degli shortcode e delle pagine di amministrazione. «Automatico» segue l’impostazione del sistema del visitatore."
+
+#: admin/class-swfl-admin-settings.php:227
+msgid "Seed colour"
+msgstr "Colore di base"
+
+#: admin/class-swfl-admin-settings.php:234
+msgid "Optional brand colour (hex, e.g. #0066cc). The plugin derives its colour palette from it. Leave empty to use the default colours."
+msgstr "Colore del marchio facoltativo (esadecimale, ad es. #0066cc). Il plugin ne ricava la sua tavolozza di colori. Lasciare vuoto per i colori predefiniti."
+
+#: admin/class-swfl-admin-settings.php:251
+msgid "Table style"
+msgstr "Stile delle tabelle"
+
+#: admin/class-swfl-admin-settings.php:255
+msgid "Flat"
+msgstr "Piatto"
+
+#: admin/class-swfl-admin-settings.php:256
+msgid "Classic (boxed, rounded)"
+msgstr "Classico (con bordo, arrotondato)"
+
+#: admin/class-swfl-admin-settings.php:259
+msgid "Flat tables have no border or shadow, thin row dividers and an accent line under the header."
+msgstr "Le tabelle piatte non hanno né bordo né ombra, hanno sottili linee di separazione e una linea d’accento sotto l’intestazione."
+
+#: admin/class-swfl-admin-settings.php:267
+msgid "Table accent colour"
+msgstr "Colore d’accento delle tabelle"
+
+#: admin/class-swfl-admin-settings.php:268
+msgid "Line under the table header. Empty uses the seed or primary colour."
+msgstr "Linea sotto l’intestazione della tabella. Vuoto usa il colore di base o il colore principale."
+
+#: admin/class-swfl-admin-settings.php:271
+msgid "Table header text colour"
+msgstr "Colore del testo dell’intestazione"
+
+#: admin/class-swfl-admin-settings.php:272
+msgid "Empty uses the normal text colour."
+msgstr "Vuoto usa il colore normale del testo."
+
+#: admin/class-swfl-admin-settings.php:275
+msgid "Table row divider colour"
+msgstr "Colore dei separatori di riga"
+
+#: admin/class-swfl-admin-settings.php:276
+msgid "Thin line between rows. Empty uses the default outline colour."
+msgstr "Linea sottile tra le righe. Vuoto usa il colore di contorno predefinito."
+
+#: admin/class-swfl-admin-settings.php:279
+msgid "Table row highlight colour"
+msgstr "Colore di evidenziazione delle righe"
+
+#: admin/class-swfl-admin-settings.php:280
+msgid "Background of the hovered row. Empty is derived from the accent colour."
+msgstr "Sfondo della riga sotto il puntatore. Vuoto viene ricavato dal colore d’accento."
+
+#: admin/class-swfl-admin-settings.php:299
+msgid "Striped table rows"
+msgstr "Righe della tabella alternate"
+
+#: admin/class-swfl-admin-settings.php:316
+msgid "API request timeout (seconds)"
+msgstr "Timeout delle richieste API (secondi)"
+
+#: admin/class-swfl-admin-settings.php:325
+msgid "Maximum wait time for the Swiss Unihockey API in seconds (1-30, default 3). Can be overridden with the swfl_request_timeout filter."
+msgstr "Tempo massimo di attesa per l’API Swiss Unihockey in secondi (da 1 a 30, predefinito 3). Può essere sovrascritto con il filtro swfl_request_timeout."
+
+#: admin/class-swfl-admin-settings.php:335
+msgid "REST requests per minute and visitor"
+msgstr "Richieste REST al minuto per visitatore"
+
+#: admin/class-swfl-admin-settings.php:344
+msgid "Maximum requests per minute that one visitor may send to the public REST routes of the plugin (0-1000, default 60, 0 turns the limit off). Visitors are told apart by IP address, IPv6 addresses by their /64 prefix. Behind a reverse proxy or CDN that does not pass the real address on to the web server, enter the proxy under \"Trusted proxies\" or raise the value. Can be overridden with the swfl_rest_rate_limit filter."
+msgstr "Numero massimo di richieste al minuto che un visitatore può inviare alle route REST pubbliche del plugin (da 0 a 1000, predefinito 60, 0 disattiva il limite). I visitatori sono distinti per indirizzo IP, gli indirizzi IPv6 per il loro prefisso /64. Dietro un reverse proxy o una CDN che non trasmette l’indirizzo reale al server web, inserire il proxy in «Proxy affidabili» o aumentare il valore. Può essere sovrascritto con il filtro swfl_rest_rate_limit."
+
+#: admin/class-swfl-admin-settings.php:354
+msgid "Upstream requests per minute"
+msgstr "Richieste API al minuto"
+
+#: admin/class-swfl-admin-settings.php:363
+msgid "Site-wide limit for the uncached requests to the Swiss Unihockey API that the public REST routes may cause per clock minute (0-10000, default 120, 0 turns the limit off); every page of a long list counts. When it is used up, the routes answer from an expired cached copy if there is one, otherwise with 503 and Retry-After. Shortcode page views, the admin area, administrators and the cache warm-up are not limited. Parallel requests never exceed the limit; under heavy load a few may be refused just before it is reached. Can be overridden with the swfl_upstream_budget filter."
+msgstr "Limite per l’intero sito delle richieste non in cache all’API Swiss Unihockey che le route REST pubbliche possono causare al minuto (da 0 a 10000, predefinito 120, 0 disattiva il limite); conta ogni pagina di un elenco lungo. Quando è esaurito, le route rispondono con una copia scaduta dalla cache, se esiste, altrimenti con 503 e Retry-After. Le pagine con shortcode, l’area di amministrazione, gli amministratori e il preriscaldamento della cache non sono limitati. Le richieste parallele non superano mai il limite; sotto carico elevato alcune possono essere respinte poco prima di raggiungerlo. Può essere sovrascritto con il filtro swfl_upstream_budget."
+
+#: admin/class-swfl-admin-settings.php:373
+msgid "Upstream requests per minute and visitor"
+msgstr "Richieste API al minuto per visitatore"
+
+#: admin/class-swfl-admin-settings.php:382
+msgid "Share of the site-wide limit above that one visitor (IP address, IPv6 /64 prefix) may use per minute (0-10000, default 20, 0 turns the share off). One or two addresses can then no longer use the limit up for all visitors. A visitor beyond the share gets an expired cached copy or 429 with Retry-After, and appears under \"Blocked visitors\". Can be overridden with the swfl_upstream_visitor_budget filter."
+msgstr "Quota del limite qui sopra che un visitatore (indirizzo IP, prefisso IPv6 /64) può usare al minuto (da 0 a 10000, predefinito 20, 0 disattiva la quota). Così uno o due indirizzi non possono più esaurire il limite per tutti i visitatori. Un visitatore che supera la sua quota riceve una copia scaduta dalla cache o 429 con Retry-After e compare in «Visitatori bloccati». Può essere sovrascritto con il filtro swfl_upstream_visitor_budget."
+
+#: admin/class-swfl-admin-settings.php:394
+msgid "Trusted proxies"
+msgstr "Proxy affidabili"
+
+#: admin/class-swfl-admin-settings.php:402
+msgid "Only if the site sits behind a reverse proxy or CDN that does not pass the real visitor address on to the web server: one IP address or range per line (CIDR notation, IPv4 from /8 and IPv6 from /16). For requests from these addresses the plugin reads the visitor from the X-Forwarded-For header for the REST rate limit; for all other requests the header is ignored. Leave empty to ignore forwarded headers. Better: restore the real address in the web server (mod_remoteip, real_ip_header). Can be extended with the swfl_trusted_proxies filter."
+msgstr "Solo se il sito si trova dietro un reverse proxy o una CDN che non trasmette l’indirizzo reale del visitatore al server web: un indirizzo IP o un intervallo per riga (notazione CIDR, IPv4 da /8 e IPv6 da /16). Per le richieste provenienti da questi indirizzi il plugin legge il visitatore dall’intestazione X-Forwarded-For per il limite di richieste REST; per tutte le altre richieste l’intestazione viene ignorata. Lasciare vuoto per ignorare le intestazioni inoltrate. Meglio: ripristinare l’indirizzo reale nel server web (mod_remoteip, real_ip_header). Può essere esteso con il filtro swfl_trusted_proxies."
+
+#: admin/class-swfl-admin-settings.php:421
+msgid "Cache lifetime: games (seconds)"
+msgstr "Durata della cache: partite (secondi)"
+
+#: admin/class-swfl-admin-settings.php:422
+msgid "Cache lifetime: rankings (seconds)"
+msgstr "Durata della cache: classifiche (secondi)"
+
+#: admin/class-swfl-admin-settings.php:423
+msgid "Cache lifetime: game events (seconds)"
+msgstr "Durata della cache: eventi delle partite (secondi)"
+
+#: admin/class-swfl-admin-settings.php:424
+msgid "Cache lifetime: topscorers (seconds)"
+msgstr "Durata della cache: topscorer (secondi)"
+
+#: admin/class-swfl-admin-settings.php:425
+msgid "Cache lifetime: leagues (seconds)"
+msgstr "Durata della cache: leghe (secondi)"
+
+#: admin/class-swfl-admin-settings.php:426
+msgid "Cache lifetime: seasons (seconds)"
+msgstr "Durata della cache: stagioni (secondi)"
+
+#: admin/class-swfl-admin-settings.php:427
+msgid "Cache lifetime: clubs and club statistics (seconds)"
+msgstr "Durata della cache: club e statistiche dei club (secondi)"
+
+#: admin/class-swfl-admin-settings.php:428
+msgid "Cache lifetime: cups (seconds)"
+msgstr "Durata della cache: coppe (secondi)"
+
+#: admin/class-swfl-admin-settings.php:429
+msgid "Cache lifetime: groups (seconds)"
+msgstr "Durata della cache: gruppi (secondi)"
+
+#: admin/class-swfl-admin-settings.php:430
+msgid "Cache lifetime: teams (seconds)"
+msgstr "Durata della cache: squadre (secondi)"
+
+#: admin/class-swfl-admin-settings.php:431
+msgid "Cache lifetime: player profiles (seconds)"
+msgstr "Durata della cache: profili dei giocatori (secondi)"
+
+#: admin/class-swfl-admin-settings.php:432
+msgid "Cache lifetime: national players (seconds)"
+msgstr "Durata della cache: giocatori della nazionale (secondi)"
+
+#. translators: %d: default cache lifetime in seconds.
+#: admin/class-swfl-admin-settings.php:450
+#, php-format
+msgid "How long API responses are cached (30-86400 seconds, default %d). Use a low value such as 120 for near-live updates during a match."
+msgstr "Per quanto tempo le risposte dell’API restano in cache (da 30 a 86400 secondi, predefinito %d). Un valore basso come 120 dà dati quasi in diretta durante una partita."
+
+#: admin/class-swfl-admin-settings.php:477
+msgid "Cache warm-up interval (minutes)"
+msgstr "Intervallo di preriscaldamento della cache (minuti)"
+
+#: admin/class-swfl-admin-settings.php:486
+msgid "A background job (WP-Cron) refreshes the games, rankings and topscorers of your club in this interval, so visitors never wait for the API (0-1440 minutes, default 30, 0 turns the warm-up off). It needs the club number and a site that triggers WP-Cron regularly."
+msgstr "Un processo in background (WP-Cron) aggiorna a questo intervallo le partite, le classifiche e i topscorer del tuo club, così i visitatori non aspettano mai l’API (da 0 a 1440 minuti, predefinito 30, 0 disattiva il preriscaldamento). Richiede il numero del club e un sito che avvii WP-Cron regolarmente."
+
+#: admin/class-swfl-admin-settings.php:496
+msgid "Warm up after clearing the cache"
+msgstr "Preriscaldare dopo aver svuotato la cache"
+
+#: admin/class-swfl-admin-settings.php:502
+msgid "Refill the cache in the background right after you clear it manually, instead of waiting for the next scheduled run."
+msgstr "Riempire la cache in background subito dopo averla svuotata manualmente, invece di attendere la prossima esecuzione pianificata."
+
+#. translators: %s: list of entries that are neither an IP address nor a CIDR range.
+#: admin/class-swfl-admin-settings.php:605
+#, php-format
+msgid "Ignored invalid trusted proxy entries: %s"
+msgstr "Voci non valide dei proxy affidabili ignorate: %s"
+
+#. translators: %d: number of trusted proxy entries that are used.
+#: admin/class-swfl-admin-settings.php:614
+#, php-format
+msgid "Only the first %d trusted proxy entries are used."
+msgstr "Vengono usate solo le prime %d voci dei proxy affidabili."
+
+#. translators: %s: club name returned by the Swiss Unihockey API.
+#: admin/class-swfl-admin-settings.php:796
+#, php-format
+msgid "Club name automatically set to: %s"
+msgstr "Nome del club impostato automaticamente: %s"
+
+#. translators: %s: club ID that was entered in the settings.
+#: admin/class-swfl-admin-settings.php:807
+#, php-format
+msgid "Could not find club name for club ID: %s"
+msgstr "Nessun nome del club trovato per l’ID del club %s."
+
+#: admin/class-swfl-admin-settings.php:821
+msgid "The plugin needs the following information to work:"
+msgstr "Il plugin ha bisogno delle seguenti informazioni per funzionare:"
+
+#: admin/class-swfl-admin.php:96
+msgid "This website uses the plugin Swiss Floorball API to show floorball data of Swiss Unihockey (games, rankings, topscorers, players, calendars). The server of this website requests the data from the Swiss Unihockey API (wc.swissunihockey.ch, with the Partner API office.swissunihockey.ch). No data about visitors is sent to Swiss Unihockey."
+msgstr "Questo sito usa il plugin Swiss Floorball API per mostrare dati di unihockey di Swiss Unihockey (partite, classifiche, topscorer, giocatori, calendari). Il server di questo sito richiede i dati all’API Swiss Unihockey (wc.swissunihockey.ch, con l’API partner office.swissunihockey.ch). Nessun dato dei visitatori viene trasmesso a Swiss Unihockey."
+
+#: admin/class-swfl-admin.php:97
+msgid "Team logos and player pictures are loaded by the browser of the visitor directly from res.cloudinary.com, the image host of Swiss Unihockey. Cloudinary therefore receives the IP address and browser data of the visitor. Links to OpenStreetMap and to myapp.swissunihockey.ch only send data when a visitor clicks them."
+msgstr "I loghi delle squadre e le foto dei giocatori vengono caricati dal browser del visitatore direttamente da res.cloudinary.com, il servizio di hosting di immagini di Swiss Unihockey. Cloudinary riceve quindi l’indirizzo IP e i dati del browser del visitatore. I link a OpenStreetMap e a myapp.swissunihockey.ch trasmettono dati solo quando un visitatore li clicca."
+
+#: admin/class-swfl-admin.php:98
+msgid "To protect its public interfaces against abuse, the plugin counts the requests of every visitor per minute by IP address (IPv6 addresses by their first 64 bits). The counter keeps only a hash of the address and expires with the minute. When a visitor exceeds a limit, the address (or IPv6 prefix) is kept for one hour in a list that only administrators can see, and is then deleted automatically. The legal basis is the legitimate interest in a secure and available website."
+msgstr "Per proteggere le sue interfacce pubbliche dagli abusi, il plugin conta le richieste di ogni visitatore al minuto in base all’indirizzo IP (gli indirizzi IPv6 in base ai loro primi 64 bit). Il contatore conserva solo un hash dell’indirizzo e scade con il minuto. Se un visitatore supera un limite, l’indirizzo (o il prefisso IPv6) viene conservato per un’ora in un elenco visibile solo agli amministratori e poi eliminato automaticamente. La base giuridica è l’interesse legittimo a un sito sicuro e disponibile."
+
+#: admin/class-swfl-admin.php:146
+msgid "Saving…"
+msgstr "Salvataggio…"
+
+#: admin/class-swfl-admin.php:147
+msgid "Saved."
+msgstr "Salvato."
+
+#: admin/class-swfl-admin.php:148
+msgid "Saving failed. Please reload the page and try again."
+msgstr "Salvataggio non riuscito. Ricaricare la pagina e riprovare."
+
+#: admin/class-swfl-admin.php:166
+#: admin/partials/swfl-admin-display.php:38
+#: admin/partials/swfl-admin-overview-display.php:29
+#: admin/partials/swfl-admin-shortcodes-display.php:44
+msgid "Club overview"
+msgstr "Panoramica del club"
+
+#: admin/class-swfl-admin.php:168
+#: admin/partials/swfl-admin-display.php:40
+#: admin/partials/swfl-admin-helper-league-display.php:25
+#: includes/class-swfl-display.php:298
+msgid "Leagues"
+msgstr "Leghe"
+
+#: admin/class-swfl-admin.php:169
+#: admin/partials/swfl-admin-display.php:41
+#: admin/partials/swfl-admin-helper-teams-display.php:25
+#: includes/class-swfl-display.php:393
+msgid "Clubs"
+msgstr "Club"
+
+#: admin/class-swfl-admin.php:170
+#: admin/partials/swfl-admin-display.php:39
+#: includes/class-swfl-display-stats.php:252
+#: includes/class-swfl-display-stats.php:269
+msgid "Games"
+msgstr "Partite"
+
+#: admin/class-swfl-admin.php:171
+#: admin/partials/swfl-admin-display.php:42
+#: admin/partials/swfl-admin-helper-seasons-display.php:25
+#: includes/class-swfl-display.php:347
+msgid "Seasons"
+msgstr "Stagioni"
+
+#: admin/class-swfl-admin.php:172
+#: admin/partials/swfl-admin-display.php:43
+msgid "Shortcodes"
+msgstr "Shortcode"
+
+#: admin/class-swfl-admin.php:300
+msgid "The setting could not be saved. Please try again."
+msgstr "Non è stato possibile salvare l’impostazione. Riprovare."
+
+#: admin/class-swfl-admin.php:313
+msgid "Security check failed"
+msgstr "Controllo di sicurezza non riuscito"
+
+#: admin/class-swfl-admin.php:318
+msgid "You do not have permission to perform this action"
+msgstr "Non hai i permessi per eseguire questa azione"
+
+#: admin/partials/swfl-admin-display.php:19
+#: admin/partials/swfl-admin-helper-league-display.php:19
+#: admin/partials/swfl-admin-helper-seasons-display.php:19
+#: admin/partials/swfl-admin-helper-teams-display.php:19
+#: admin/partials/swfl-admin-matches-display.php:19
+#: admin/partials/swfl-admin-overview-display.php:19
+#: admin/partials/swfl-admin-settings-display.php:19
+#: admin/partials/swfl-admin-shortcodes-display.php:17
+msgid "You do not have permission to access this page."
+msgstr "Non hai i permessi per accedere a questa pagina."
+
+#: admin/partials/swfl-admin-display.php:31
+msgid "Club"
+msgstr "Club"
+
+#: admin/partials/swfl-admin-display.php:32
+#: includes/class-swfl-display.php:397
+#: includes/class-swfl-display.php:408
+msgid "Club ID"
+msgstr "ID del club"
+
+#: admin/partials/swfl-admin-display.php:33
+msgid "Season"
+msgstr "Stagione"
+
+#: admin/partials/swfl-admin-display.php:34
+msgid "Partner API"
+msgstr "API partner"
+
+#: admin/partials/swfl-admin-display.php:34
+msgid "Free API"
+msgstr "API gratuita"
+
+#: admin/partials/swfl-admin-display.php:38
+msgid "Teams and all games of the club"
+msgstr "Squadre e tutte le partite del club"
+
+#: admin/partials/swfl-admin-display.php:39
+msgid "Games per team with details and game events"
+msgstr "Partite per squadra con dettagli ed eventi"
+
+#: admin/partials/swfl-admin-display.php:40
+msgid "Look up league, game class and group IDs"
+msgstr "Cercare gli ID di leghe, classi di gioco e gruppi"
+
+#: admin/partials/swfl-admin-display.php:41
+msgid "Club IDs of all clubs"
+msgstr "ID di tutti i club"
+
+#: admin/partials/swfl-admin-display.php:42
+msgid "Available seasons"
+msgstr "Stagioni disponibili"
+
+#: admin/partials/swfl-admin-display.php:43
+msgid "All shortcodes with their attributes"
+msgstr "Tutti gli shortcode con i loro attributi"
+
+#: admin/partials/swfl-admin-display.php:44
+msgid "API, club, design and cache"
+msgstr "API, club, design e cache"
+
+#: admin/partials/swfl-admin-display.php:50
+msgid "Overview and management of your Swiss Floorball data"
+msgstr "Panoramica e gestione dei tuoi dati Swiss Floorball"
+
+#: admin/partials/swfl-admin-display.php:56
+#: admin/partials/swfl-admin-overview-display.php:43
+msgid "Please configure the settings first (club ID and season)."
+msgstr "Configurare prima le impostazioni (ID del club e stagione)."
+
+#: admin/partials/swfl-admin-helper-league-display.php:26
+msgid "All available leagues"
+msgstr "Tutte le leghe disponibili"
+
+#: admin/partials/swfl-admin-helper-seasons-display.php:26
+msgid "All available seasons"
+msgstr "Tutte le stagioni disponibili"
+
+#: admin/partials/swfl-admin-helper-teams-display.php:26
+msgid "All available clubs"
+msgstr "Tutti i club disponibili"
+
+#: admin/partials/swfl-admin-helper-teams-display.php:31
+msgid "Search clubs (name or ID)…"
+msgstr "Cerca un club (nome o ID)…"
+
+#: admin/partials/swfl-admin-helper-teams-display.php:31
+msgid "Search clubs"
+msgstr "Cerca un club"
+
+#: admin/partials/swfl-admin-matches-display.php:40
+#: admin/partials/swfl-admin-matches-display.php:76
+msgid "Recent games and their details"
+msgstr "Ultime partite e i loro dettagli"
+
+#: admin/partials/swfl-admin-matches-display.php:45
+msgid "Please set a club number in the settings first."
+msgstr "Inserire prima un numero del club nelle impostazioni."
+
+#: admin/partials/swfl-admin-matches-display.php:53
+msgid "Back to the overview"
+msgstr "Torna alla panoramica"
+
+#: admin/partials/swfl-admin-matches-display.php:75
+msgid "Games per team"
+msgstr "Partite per squadra"
+
+#: admin/partials/swfl-admin-matches-display.php:84
+msgid "The teams could not be loaded."
+msgstr "Non è stato possibile caricare le squadre."
+
+#. translators: %d: team ID.
+#: admin/partials/swfl-admin-matches-display.php:92
+#, php-format
+msgid "Team %d"
+msgstr "Squadra %d"
+
+#: admin/partials/swfl-admin-overview-display.php:30
+msgid "Teams and games of the configured club"
+msgstr "Squadre e partite del club configurato"
+
+#: admin/partials/swfl-admin-settings-display.php:26
+msgid "Configure the connection to the Swiss Floorball API"
+msgstr "Configurare la connessione all’API Swiss Floorball"
+
+#: admin/partials/swfl-admin-settings-display.php:36
+msgid "Cache cleared."
+msgstr "Cache svuotata."
+
+#. translators: %d: number of deleted cache entries.
+#: admin/partials/swfl-admin-settings-display.php:39
+#, php-format
+msgid "%d cached entry was deleted."
+msgid_plural "%d cached entries were deleted."
+msgstr[0] "%d voce in cache è stata eliminata."
+msgstr[1] "%d voci in cache sono state eliminate."
+
+#. translators: 1: how long ago, e.g. "5 minutes", 2: requests per minute.
+#: admin/partials/swfl-admin-settings-display.php:54
+#, php-format
+msgid "The site-wide limit of %2$d upstream requests per minute was reached %1$s ago. Visitors received cached data or a \"temporarily unavailable\" answer. If this was normal traffic, raise \"Upstream requests per minute\" below."
+msgstr "Il limite di %2$d richieste API al minuto per l’intero sito è stato raggiunto %1$s fa. I visitatori hanno ricevuto dati dalla cache o una risposta «temporaneamente non disponibile». Se si trattava di traffico normale, aumentare «Richieste API al minuto» qui sotto."
+
+#: admin/partials/swfl-admin-settings-display.php:63
+msgid "Plugin settings"
+msgstr "Impostazioni del plugin"
+
+#: admin/partials/swfl-admin-settings-display.php:65
+msgid "Enter the information the plugin needs to connect to the Swiss Floorball API."
+msgstr "Inserire le informazioni di cui il plugin ha bisogno per connettersi all’API Swiss Floorball."
+
+#: admin/partials/swfl-admin-settings-display.php:72
+msgid "Changes are saved automatically."
+msgstr "Le modifiche vengono salvate automaticamente."
+
+#: admin/partials/swfl-admin-settings-display.php:73
+msgid "Save settings"
+msgstr "Salva le impostazioni"
+
+#: admin/partials/swfl-admin-settings-display.php:78
+msgid "Blocked visitors"
+msgstr "Visitatori bloccati"
+
+#: admin/partials/swfl-admin-settings-display.php:79
+msgid "Visitors the REST rate limit blocked during the last hour (IPv4 addresses, IPv6 /64 prefixes). A block lasts until the end of the minute. If many visitors share one address (a reverse proxy, CDN or company network), enter the proxy under \"Trusted proxies\" or raise \"REST requests per minute and visitor\". Entries are removed an hour after their last block."
+msgstr "Visitatori che il limite di richieste REST ha bloccato nell’ultima ora (indirizzi IPv4, prefissi IPv6 /64). Un blocco dura fino alla fine del minuto. Se molti visitatori condividono un indirizzo (reverse proxy, CDN o rete aziendale), inserire il proxy in «Proxy affidabili» o aumentare «Richieste REST al minuto per visitatore». Le voci vengono rimosse un’ora dopo il loro ultimo blocco."
+
+#: admin/partials/swfl-admin-settings-display.php:84
+msgid "No visitor was blocked during the last hour."
+msgstr "Nessun visitatore è stato bloccato nell’ultima ora."
+
+#: admin/partials/swfl-admin-settings-display.php:90
+msgid "Address"
+msgstr "Indirizzo"
+
+#: admin/partials/swfl-admin-settings-display.php:91
+msgid "Status"
+msgstr "Stato"
+
+#: admin/partials/swfl-admin-settings-display.php:92
+msgid "Blocked minutes"
+msgstr "Minuti bloccati"
+
+#: admin/partials/swfl-admin-settings-display.php:93
+msgid "First block"
+msgstr "Primo blocco"
+
+#: admin/partials/swfl-admin-settings-display.php:100
+msgid "unknown address"
+msgstr "indirizzo sconosciuto"
+
+#. translators: %s: time left, e.g. "42 seconds".
+#: admin/partials/swfl-admin-settings-display.php:105
+#, php-format
+msgid "Blocked, %s left"
+msgstr "Bloccato, ancora %s"
+
+#. translators: %s: how long ago, e.g. "12 minutes".
+#: admin/partials/swfl-admin-settings-display.php:108
+#, php-format
+msgid "Released %s ago"
+msgstr "Sbloccato %s fa"
+
+#. translators: %s: how long ago, e.g. "40 minutes".
+#: admin/partials/swfl-admin-settings-display.php:116
+#, php-format
+msgid "%s ago"
+msgstr "%s fa"
+
+#: admin/partials/swfl-admin-settings-display.php:129
+msgid "Cache"
+msgstr "Cache"
+
+#: admin/partials/swfl-admin-settings-display.php:130
+msgid "Delete all cached API data to load fresh data from the server."
+msgstr "Eliminare tutti i dati API in cache per caricare dati aggiornati dal server."
+
+#: admin/partials/swfl-admin-settings-display.php:134
+msgid "Do you really want to clear the whole cache?"
+msgstr "Svuotare davvero tutta la cache?"
+
+#: admin/partials/swfl-admin-settings-display.php:135
+msgid "Clear cache"
+msgstr "Svuota la cache"
+
+#: admin/partials/swfl-admin-settings-display.php:141
+msgid "Help"
+msgstr "Aiuto"
+
+#: admin/partials/swfl-admin-settings-display.php:142
+msgid "Club number:"
+msgstr "Numero del club:"
+
+#: admin/partials/swfl-admin-settings-display.php:142
+msgid "The unique ID of your club at Swiss Floorball."
+msgstr "L’ID univoco del tuo club presso Swiss Floorball."
+
+#: admin/partials/swfl-admin-settings-display.php:143
+msgid "Club name:"
+msgstr "Nome del club:"
+
+#: admin/partials/swfl-admin-settings-display.php:143
+msgid "The official name of your club (loaded automatically)."
+msgstr "Il nome ufficiale del tuo club (caricato automaticamente)."
+
+#: admin/partials/swfl-admin-settings-display.php:144
+msgid "Current season:"
+msgstr "Stagione attuale:"
+
+#: admin/partials/swfl-admin-settings-display.php:144
+msgid "The start year of the current season (e.g. 2025)."
+msgstr "L’anno di inizio della stagione attuale (ad es. 2025)."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:28
+msgid "The club always comes from the plugin settings."
+msgstr "Il club proviene sempre dalle impostazioni del plugin."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:29
+msgid "Start year of the season (default: current season)."
+msgstr "Anno di inizio della stagione (predefinito: stagione attuale)."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:30
+msgid "Maximum number of rows (0 = all)."
+msgstr "Numero massimo di righe (0 = tutte)."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:31
+msgid "Number of rows to skip."
+msgstr "Numero di righe da saltare."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:32
+msgid "<code>true</code> shows upcoming games only."
+msgstr "<code>true</code> mostra solo le partite future."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:33
+msgid "<code>true</code> adds previous/next links (only with <code>limit</code>)."
+msgstr "<code>true</code> aggiunge i link precedente/successivo (solo con <code>limit</code>)."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:34
+msgid "Games per page (default: 4)."
+msgstr "Partite per pagina (predefinito: 4)."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:35
+msgid "Team ID, to show a team instead of the club."
+msgstr "ID della squadra, per mostrare una squadra invece del club."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:36
+msgid "Number of games (default: 1, at most 10)."
+msgstr "Numero di partite (predefinito: 1, al massimo 10)."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:37
+msgid "League ID."
+msgstr "ID della lega."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:38
+msgid "Game class ID."
+msgstr "ID della classe di gioco."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:39
+msgid "Group name, e.g. \"Gruppe 1\"."
+msgstr "Nome del gruppo, ad es. «Gruppe 1»."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:40
+msgid "None"
+msgstr "Nessuno"
+
+#. translators: %s: link to the admin page "Club overview".
+#: admin/partials/swfl-admin-shortcodes-display.php:43
+#, php-format
+msgid "Team IDs are listed on the %s page."
+msgstr "Gli ID delle squadre si trovano nella pagina %s."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:53
+msgid "Lists all teams of the configured club."
+msgstr "Elenca tutte le squadre del club configurato."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:54
+msgid "None (uses the plugin settings)"
+msgstr "Nessuno (usa le impostazioni del plugin)"
+
+#: admin/partials/swfl-admin-shortcodes-display.php:58
+msgid "Shows the games of the club week by week, with buttons to change the week."
+msgstr "Mostra le partite del club settimana per settimana, con i pulsanti per cambiare settimana."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:70
+msgid "Shows the games of a team page by page, starting around the next game."
+msgstr "Mostra le partite di una squadra pagina per pagina, a partire dalla prossima partita."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:72
+msgid "(required) The ID of the team."
+msgstr "(obbligatorio) L’ID della squadra."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:83
+msgid "Shows all teams of the club in a select list and the games of the selected team."
+msgstr "Mostra tutte le squadre del club in un elenco di selezione e le partite della squadra scelta."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:92
+msgid "Shows the next game of the club or of a team. The widget \"Next game and last result\" under Appearance → Widgets shows the same."
+msgstr "Mostra la prossima partita del club o di una squadra. Il widget «Prossima partita e ultimo risultato» in Aspetto → Widget mostra lo stesso."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:102
+msgid "Shows the last result of the club or of a team, the latest first."
+msgstr "Mostra l’ultimo risultato del club o di una squadra, il più recente per primo."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:112
+msgid "Shows the games of a league and group, round by round. Playoff series are grouped."
+msgstr "Mostra le partite di una lega e di un gruppo, turno per turno. Le serie dei playoff sono raggruppate."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:114
+msgid "(required) Game class ID."
+msgstr "(obbligatorio) ID della classe di gioco."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:115
+msgid "(required) League ID."
+msgstr "(obbligatorio) ID della lega."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:122
+msgid "Shows the Mobiliar topscorers of a club as cards."
+msgstr "Mostra i topscorer La Mobiliare di un club come schede."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:124
+msgid "Club ID (default: plugin setting)."
+msgstr "ID del club (predefinito: impostazione del plugin)."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:130
+msgid "Lists all clubs."
+msgstr "Elenca tutti i club."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:135
+msgid "Creates a calendar link (webcal) for a team, a club or a league."
+msgstr "Crea un link al calendario (webcal) per una squadra, un club o una lega."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:137
+msgid "(required for a team calendar) The ID of the team."
+msgstr "(obbligatorio per un calendario della squadra) L’ID della squadra."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:138
+msgid "The ID of the club."
+msgstr "L’ID del club."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:139
+msgid "The season (e.g. 2025)."
+msgstr "La stagione (ad es. 2025)."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:140
+msgid "The league."
+msgstr "La lega."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:141
+msgid "The game class."
+msgstr "La classe di gioco."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:142
+msgid "The group."
+msgstr "Il gruppo."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:145
+msgid "Team calendar:"
+msgstr "Calendario della squadra:"
+
+#: admin/partials/swfl-admin-shortcodes-display.php:146
+msgid "Club calendar:"
+msgstr "Calendario del club:"
+
+#: admin/partials/swfl-admin-shortcodes-display.php:150
+msgid "Lists all cup competitions."
+msgstr "Elenca tutte le competizioni di coppa."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:155
+msgid "Lists the groups of a season, league and game class."
+msgstr "Elenca i gruppi di una stagione, una lega e una classe di gioco."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:157
+msgid "Season (default: current season from the settings)."
+msgstr "Stagione (predefinito: stagione attuale dalle impostazioni)."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:164
+msgid "Lists all teams."
+msgstr "Elenca tutte le squadre."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:169
+msgid "Shows the ranking of a group."
+msgstr "Mostra la classifica di un gruppo."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:171
+#: admin/partials/swfl-admin-shortcodes-display.php:191
+msgid "Season (default: current season)."
+msgstr "Stagione (predefinito: stagione attuale)."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:179
+msgid "Shows information about a player."
+msgstr "Mostra informazioni su un giocatore."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:180
+msgid "(required) The ID of the player."
+msgstr "(obbligatorio) L’ID del giocatore."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:184
+msgid "Lists the national players."
+msgstr "Elenca i giocatori della nazionale."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:189
+msgid "Shows the topscorers of a league or group."
+msgstr "Mostra i topscorer di una lega o di un gruppo."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:194
+msgid "Group ID."
+msgstr "ID del gruppo."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:202
+msgid "Shows the events (goals, penalties) of a game."
+msgstr "Mostra gli eventi (reti, penalità) di una partita."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:203
+msgid "(required) The ID of the game."
+msgstr "(obbligatorio) L’ID della partita."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:209
+msgid "Shows a list of all available leagues."
+msgstr "Mostra un elenco di tutte le leghe disponibili."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:209
+#: admin/partials/swfl-admin-shortcodes-display.php:210
+msgid "Admin only, there is no public shortcode."
+msgstr "Solo amministrazione, non esiste uno shortcode pubblico."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:210
+msgid "Shows a list of all available seasons."
+msgstr "Mostra un elenco di tutte le stagioni disponibili."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:211
+msgid "Shows a callout box with the games of the club in the admin style."
+msgstr "Mostra un riquadro con le partite del club nello stile dell’amministrazione."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:211
+#: admin/partials/swfl-admin-shortcodes-display.php:212
+msgid "Admin only, a special view for the dashboard."
+msgstr "Solo amministrazione, una vista speciale per la bacheca."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:212
+msgid "Shows a table with the games of the club in the admin style."
+msgstr "Mostra una tabella con le partite del club nello stile dell’amministrazione."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:213
+msgid "Gets the logo or picture of a team from the API."
+msgstr "Recupera il logo o la foto di una squadra dall’API."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:213
+#: admin/partials/swfl-admin-shortcodes-display.php:214
+msgid "Helper, used by other functions."
+msgstr "Funzione ausiliaria, usata da altre funzioni."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:214
+msgid "Gets the details of a game."
+msgstr "Recupera i dettagli di una partita."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:220
+msgid "Shortcodes overview"
+msgstr "Panoramica degli shortcode"
+
+#: admin/partials/swfl-admin-shortcodes-display.php:221
+msgid "All available shortcodes with their attributes and examples."
+msgstr "Tutti gli shortcode disponibili con i loro attributi ed esempi."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:225
+msgid "Available shortcodes"
+msgstr "Shortcode disponibili"
+
+#: admin/partials/swfl-admin-shortcodes-display.php:229
+msgid "Shortcode"
+msgstr "Shortcode"
+
+#: admin/partials/swfl-admin-shortcodes-display.php:230
+#: admin/partials/swfl-admin-shortcodes-display.php:271
+msgid "Description"
+msgstr "Descrizione"
+
+#: admin/partials/swfl-admin-shortcodes-display.php:231
+msgid "Attributes"
+msgstr "Attributi"
+
+#: admin/partials/swfl-admin-shortcodes-display.php:232
+msgid "Example"
+msgstr "Esempio"
+
+#: admin/partials/swfl-admin-shortcodes-display.php:264
+msgid "Admin-only functions"
+msgstr "Funzioni solo per l’amministrazione"
+
+#: admin/partials/swfl-admin-shortcodes-display.php:265
+msgid "The following functions are only used in the admin area and have no public shortcode."
+msgstr "Le seguenti funzioni sono usate solo nell’area di amministrazione e non hanno uno shortcode pubblico."
+
+#: admin/partials/swfl-admin-shortcodes-display.php:270
+msgid "Function"
+msgstr "Funzione"
+
+#: admin/partials/swfl-admin-shortcodes-display.php:272
+msgid "Use"
+msgstr "Uso"
+
+#: admin/partials/swfl-admin-shortcodes-display.php:287
+msgid "Note"
+msgstr "Nota"
+
+#: admin/partials/swfl-admin-shortcodes-display.php:289
+msgid "If you need one of these functions as a public shortcode, please open a feature request. They already exist in the plugin and could be made available as shortcodes."
+msgstr "Se serve una di queste funzioni come shortcode pubblico, aprire una richiesta di funzionalità. Esistono già nel plugin e potrebbero essere rese disponibili come shortcode."
+
+#: includes/class-swfl-calendar.php:104
+#: includes/class-swfl-rest.php:317
+msgid "team_id, club_id or league and game_class are required."
+msgstr "team_id, club_id oppure league e game_class sono obbligatori."
+
+#: includes/class-swfl-calendar.php:119
+msgid "The calendar could not be loaded."
+msgstr "Non è stato possibile caricare il calendario."
+
+#: includes/class-swfl-client.php:178
+msgid "The API key or secret is missing."
+msgstr "Manca la chiave o il segreto API."
+
+#: includes/class-swfl-client.php:214
+msgid "Signing in to the Partner API failed."
+msgstr "L’accesso all’API partner non è riuscito."
+
+#: includes/class-swfl-client.php:391
+msgid "This endpoint is not available in the free API."
+msgstr "Questo endpoint non è disponibile nell’API gratuita."
+
+#. translators: %d: HTTP status code.
+#: includes/class-swfl-client.php:400
+#, php-format
+msgid "API returned status code %d"
+msgstr "L’API ha risposto con il codice di stato %d"
+
+#: includes/class-swfl-client.php:410
+msgid "The answer of the API is not valid JSON."
+msgstr "La risposta dell’API non è un JSON valido."
+
+#: includes/class-swfl-display-stats.php:102
+msgid "No details available."
+msgstr "Nessun dettaglio disponibile."
+
+#: includes/class-swfl-display-stats.php:118
+#: includes/class-swfl-display-stats.php:153
+msgid "Game details"
+msgstr "Dettagli della partita"
+
+#: includes/class-swfl-display-stats.php:242
+#: includes/class-swfl-display-stats.php:247
+#: includes/class-swfl-widgets.php:1095
+#: includes/class-swfl-widgets.php:1101
+msgid "Ranking"
+msgstr "Classifica"
+
+#: includes/class-swfl-display-stats.php:250
+#: includes/class-swfl-display-stats.php:267
+#: includes/class-swfl-display-stats.php:500
+#: includes/class-swfl-display-stats.php:536
+msgid "Rank"
+msgstr "Posizione"
+
+#: includes/class-swfl-display-stats.php:251
+#: includes/class-swfl-display-stats.php:268
+#: includes/class-swfl-display-stats.php:502
+#: includes/class-swfl-display-stats.php:538
+#: includes/class-swfl-display-stats.php:572
+#: includes/class-swfl-display-stats.php:595
+msgid "Team"
+msgstr "Squadra"
+
+#: includes/class-swfl-display-stats.php:253
+#: includes/class-swfl-display-stats.php:270
+msgid "Goal difference"
+msgstr "Differenza reti"
+
+#: includes/class-swfl-display-stats.php:254
+#: includes/class-swfl-display-stats.php:271
+#: includes/class-swfl-display-stats.php:505
+#: includes/class-swfl-display-stats.php:541
+#: includes/class-swfl-widgets.php:1223
+msgid "Points"
+msgstr "Punti"
+
+#: includes/class-swfl-display-stats.php:321
+msgid "No player data available."
+msgstr "Nessun dato del giocatore disponibile."
+
+#: includes/class-swfl-display-stats.php:332
+msgid "Player profile"
+msgstr "Profilo del giocatore"
+
+#: includes/class-swfl-display-stats.php:427
+#: includes/class-swfl-display-stats.php:432
+msgid "National players"
+msgstr "Giocatori della nazionale"
+
+#: includes/class-swfl-display-stats.php:435
+#: includes/class-swfl-display-stats.php:448
+msgid "No."
+msgstr "N."
+
+#: includes/class-swfl-display-stats.php:436
+#: includes/class-swfl-display-stats.php:449
+msgid "Position"
+msgstr "Ruolo"
+
+#: includes/class-swfl-display-stats.php:437
+#: includes/class-swfl-display-stats.php:450
+#: includes/class-swfl-display.php:301
+#: includes/class-swfl-display.php:314
+#: includes/class-swfl-display.php:686
+#: includes/class-swfl-display.php:697
+msgid "Name"
+msgstr "Nome"
+
+#: includes/class-swfl-display-stats.php:492
+#: includes/class-swfl-rest.php:255
+msgid "Topscorers"
+msgstr "Topscorer"
+
+#: includes/class-swfl-display-stats.php:497
+msgid "Topscorer"
+msgstr "Topscorer"
+
+#: includes/class-swfl-display-stats.php:501
+#: includes/class-swfl-display-stats.php:537
+msgid "Player"
+msgstr "Giocatore"
+
+#: includes/class-swfl-display-stats.php:503
+#: includes/class-swfl-display-stats.php:539
+msgid "Goals"
+msgstr "Reti"
+
+#: includes/class-swfl-display-stats.php:504
+#: includes/class-swfl-display-stats.php:540
+msgid "Assists"
+msgstr "Assist"
+
+#: includes/class-swfl-display-stats.php:564
+msgid "Match report"
+msgstr "Cronaca della partita"
+
+#: includes/class-swfl-display-stats.php:566
+msgid "Game events"
+msgstr "Eventi della partita"
+
+#: includes/class-swfl-display-stats.php:569
+#: includes/class-swfl-display-stats.php:592
+msgid "Time"
+msgstr "Tempo"
+
+#: includes/class-swfl-display-stats.php:570
+#: includes/class-swfl-display-stats.php:593
+msgid "Event"
+msgstr "Evento"
+
+#: includes/class-swfl-display-stats.php:571
+#: includes/class-swfl-display-stats.php:594
+msgid "Goal"
+msgstr "Rete"
+
+#: includes/class-swfl-display.php:58
+msgid "This data is not available in the free API. It is only available through the Partner API, which can be enabled in the plugin settings."
+msgstr "Questi dati non sono disponibili nell’API gratuita. Sono disponibili solo tramite l’API partner, che si può attivare nelle impostazioni del plugin."
+
+#: includes/class-swfl-display.php:62
+msgid "Signing in to the Partner API failed. Please check the API key and secret in the plugin settings."
+msgstr "L’accesso all’API partner non è riuscito. Verificare la chiave e il segreto API nelle impostazioni del plugin."
+
+#: includes/class-swfl-display.php:65
+#: includes/class-swfl-rest.php:472
+msgid "The data could not be loaded."
+msgstr "Non è stato possibile caricare i dati."
+
+#. translators: %s: error message returned by the Swiss Unihockey API.
+#: includes/class-swfl-display.php:71
+#, php-format
+msgid "Answer of the API: %s"
+msgstr "Risposta dell’API: %s"
+
+#. translators: %d: number of teams registered with Swiss Floorball.
+#: includes/class-swfl-display.php:153
+#, php-format
+msgid "Teams registered with Swiss Floorball: %d"
+msgstr "Squadre iscritte presso Swiss Floorball: %d"
+
+#: includes/class-swfl-display.php:156
+msgid "Teams of the club"
+msgstr "Squadre del club"
+
+#: includes/class-swfl-display.php:159
+#: includes/class-swfl-display.php:197
+msgid "Team ID"
+msgstr "ID della squadra"
+
+#: includes/class-swfl-display.php:160
+#: includes/class-swfl-display.php:198
+#: includes/class-swfl-display.php:239
+#: includes/class-swfl-display.php:246
+msgid "Team name"
+msgstr "Nome della squadra"
+
+#: includes/class-swfl-display.php:161
+#: includes/class-swfl-display.php:199
+msgid "Championship"
+msgstr "Campionato"
+
+#: includes/class-swfl-display.php:162
+#: includes/class-swfl-display.php:200
+msgid "League ID"
+msgstr "ID della lega"
+
+#: includes/class-swfl-display.php:163
+#: includes/class-swfl-display.php:201
+msgid "Game Class ID"
+msgstr "ID della classe di gioco"
+
+#: includes/class-swfl-display.php:164
+#: includes/class-swfl-display.php:202
+msgid "Group ID"
+msgstr "ID del gruppo"
+
+#: includes/class-swfl-display.php:165
+#: includes/class-swfl-display.php:203
+msgid "Cup"
+msgstr "Coppa"
+
+#: includes/class-swfl-display.php:236
+msgid "Standings of the club teams"
+msgstr "Classifiche delle squadre del club"
+
+#: includes/class-swfl-display.php:240
+#: includes/class-swfl-display.php:247
+msgid "Championship standing"
+msgstr "Posizione in campionato"
+
+#: includes/class-swfl-display.php:263
+#: includes/class-swfl-widgets.php:670
+#: includes/class-swfl-widgets.php:694
+msgid "Club games"
+msgstr "Partite del club"
+
+#: includes/class-swfl-display.php:263
+#: includes/class-swfl-widgets.php:670
+#: includes/class-swfl-widgets.php:707
+msgid "Games of the club"
+msgstr "Partite del club"
+
+#: includes/class-swfl-display.php:274
+#: includes/class-swfl-widgets.php:750
+#: includes/class-swfl-widgets.php:777
+msgid "Team games"
+msgstr "Partite della squadra"
+
+#: includes/class-swfl-display.php:274
+#: includes/class-swfl-widgets.php:750
+#: includes/class-swfl-widgets.php:801
+msgid "Games of the team"
+msgstr "Partite della squadra"
+
+#: includes/class-swfl-display.php:302
+#: includes/class-swfl-display.php:315
+msgid "League number"
+msgstr "Numero della lega"
+
+#: includes/class-swfl-display.php:303
+#: includes/class-swfl-display.php:316
+msgid "Game class"
+msgstr "Classe di gioco"
+
+#: includes/class-swfl-display.php:351
+#: includes/class-swfl-display.php:362
+msgid "Season ID"
+msgstr "ID della stagione"
+
+#: includes/class-swfl-display.php:432
+msgid "Missing parameters for the calendar."
+msgstr "Parametri mancanti per il calendario."
+
+#: includes/class-swfl-display.php:451
+msgid "Subscribe to the calendar"
+msgstr "Abbonati al calendario"
+
+#: includes/class-swfl-display.php:542
+msgid "No upcoming games found."
+msgstr "Nessuna partita futura trovata."
+
+#: includes/class-swfl-display.php:549
+msgid "Upcoming games"
+msgstr "Prossime partite"
+
+#: includes/class-swfl-display.php:551
+msgid "Game calendar"
+msgstr "Calendario delle partite"
+
+#: includes/class-swfl-display.php:554
+#: includes/class-swfl-display.php:563
+msgid "Date"
+msgstr "Data"
+
+#: includes/class-swfl-display.php:555
+#: includes/class-swfl-display.php:564
+msgid "Home"
+msgstr "Casa"
+
+#: includes/class-swfl-display.php:556
+#: includes/class-swfl-display.php:567
+msgid "Away"
+msgstr "Ospiti"
+
+#: includes/class-swfl-display.php:557
+#: includes/class-swfl-display.php:570
+msgid "Venue"
+msgstr "Luogo"
+
+#: includes/class-swfl-display.php:593
+#: includes/class-swfl-display.php:598
+msgid "Cups"
+msgstr "Coppe"
+
+#: includes/class-swfl-display.php:601
+#: includes/class-swfl-display.php:607
+msgid "Round"
+msgstr "Turno"
+
+#: includes/class-swfl-display.php:641
+#: includes/class-swfl-display.php:646
+msgid "Groups"
+msgstr "Gruppi"
+
+#: includes/class-swfl-display.php:649
+#: includes/class-swfl-display.php:655
+msgid "Group"
+msgstr "Gruppo"
+
+#: includes/class-swfl-display.php:678
+#: includes/class-swfl-display.php:683
+msgid "Teams"
+msgstr "Squadre"
+
+#: includes/class-swfl-display.php:687
+#: includes/class-swfl-display.php:698
+msgid "Website"
+msgstr "Sito web"
+
+#: includes/class-swfl-display.php:754
+#: includes/class-swfl-display.php:765
+#: includes/class-swfl-display.php:827
+#: includes/class-swfl-display.php:832
+msgid "Club logo"
+msgstr "Logo del club"
+
+#: includes/class-swfl-display.php:824
+msgid "Match-up"
+msgstr "Incontro"
+
+#: includes/class-swfl-game-widget.php:51
+msgid "Swiss Floorball: Next game and last result"
+msgstr "Swiss Floorball: prossima partita e ultimo risultato"
+
+#: includes/class-swfl-game-widget.php:53
+msgid "Shows the next game and the last result of the club or of a team."
+msgstr "Mostra la prossima partita e l’ultimo risultato del club o di una squadra."
+
+#: includes/class-swfl-game-widget.php:118
+msgid "Next game and last result"
+msgstr "Prossima partita e ultimo risultato"
+
+#: includes/class-swfl-game-widget.php:119
+msgid "Next game only"
+msgstr "Solo la prossima partita"
+
+#: includes/class-swfl-game-widget.php:120
+msgid "Last result only"
+msgstr "Solo l’ultimo risultato"
+
+#: includes/class-swfl-game-widget.php:124
+msgid "Title:"
+msgstr "Titolo:"
+
+#: includes/class-swfl-game-widget.php:128
+msgid "Display:"
+msgstr "Visualizzazione:"
+
+#: includes/class-swfl-game-widget.php:136
+msgid "Team ID (optional, otherwise the whole club):"
+msgstr "ID della squadra (facoltativo, altrimenti tutto il club):"
+
+#: includes/class-swfl-highlights.php:73
+msgid "Next game"
+msgid_plural "Next games"
+msgstr[0] "Prossima partita"
+msgstr[1] "Prossime partite"
+
+#: includes/class-swfl-highlights.php:101
+msgid "Last result"
+msgid_plural "Last results"
+msgstr[0] "Ultimo risultato"
+msgstr[1] "Ultimi risultati"
+
+#: includes/class-swfl-php-requirement.php:121
+msgid "Plugin could not be activated"
+msgstr "Non è stato possibile attivare il plugin"
+
+#. translators: 1: running PHP version, 2: version to update to, 3: list of the first allowed versions, 4: name of the wp-config.php constant.
+#: includes/class-swfl-php-requirement.php:134
+#, php-format
+msgid "Swiss Floorball API is paused: PHP %1$s has critical security vulnerabilities (CVE-2026-109618, CVE-2026-109619). Update PHP to %2$s or newer; the plugin runs on %3$s and on every newer version. If your host has applied the fixes without changing the version number, define %4$s in wp-config.php."
+msgstr "Swiss Floorball API è in pausa: PHP %1$s ha vulnerabilità di sicurezza critiche (CVE-2026-109618, CVE-2026-109619). Aggiornare PHP alla versione %2$s o più recente; il plugin funziona con %3$s e con tutte le versioni più recenti. Se il tuo hosting ha applicato le correzioni senza cambiare il numero di versione, definire %4$s in wp-config.php."
+
+#. translators: %d: highest allowed ID.
+#: includes/class-swfl-request-guard.php:156
+#, php-format
+msgid "Must be a whole number from 1 to %d."
+msgstr "Deve essere un numero intero da 1 a %d."
+
+#. translators: %d: highest allowed ID.
+#: includes/class-swfl-request-guard.php:175
+#, php-format
+msgid "Must be empty, 0 or a whole number from 1 to %d."
+msgstr "Deve essere vuoto, 0 o un numero intero da 1 a %d."
+
+#. translators: 1: first allowed season, 2: last allowed season.
+#: includes/class-swfl-request-guard.php:195
+#, php-format
+msgid "Must be empty, 0 or a season start year from %1$d to %2$d."
+msgstr "Deve essere vuoto, 0 o un anno di inizio stagione da %1$d a %2$d."
+
+#. translators: %d: longest allowed group name.
+#: includes/class-swfl-request-guard.php:214
+#, php-format
+msgid "Must be up to %d letters, digits, spaces or . _ / -."
+msgstr "Può contenere al massimo %d lettere, cifre, spazi o . _ / -."
+
+#: includes/class-swfl-request-guard.php:263
+#: includes/class-swfl-upstream-budget.php:309
+msgid "Too many requests."
+msgstr "Troppe richieste."
+
+#: includes/class-swfl-table-data.php:96
+msgid "The answer of the API has an unexpected shape."
+msgstr "La risposta dell’API ha una forma inattesa."
+
+#: includes/class-swfl-table-data.php:418
+msgid "Page navigation"
+msgstr "Navigazione tra le pagine"
+
+#: includes/class-swfl-table-data.php:420
+#: includes/class-swfl-table-data.php:422
+msgid "Previous"
+msgstr "Precedente"
+
+#. translators: 1: current page, 2: number of pages.
+#: includes/class-swfl-table-data.php:429
+#, php-format
+msgid "Page %1$d of %2$d"
+msgstr "Pagina %1$d di %2$d"
+
+#: includes/class-swfl-table-data.php:437
+#: includes/class-swfl-table-data.php:439
+msgid "Next"
+msgstr "Successiva"
+
+#: includes/class-swfl-upstream-budget.php:309
+msgid "The service is busy, please try again later."
+msgstr "Il servizio è sovraccarico, riprovare più tardi."
+
+#. translators: %d: number of minutes between two cache warm-ups.
+#: includes/class-swfl-warmup.php:121
+#, php-format
+msgid "Swiss Floorball API cache warm-up (every %d minutes)"
+msgstr "Swiss Floorball API: preriscaldamento della cache (ogni %d minuti)"
+
+#: includes/class-swfl-widgets.php:288
+msgid "Actions"
+msgstr "Azioni"
+
+#: includes/class-swfl-widgets.php:399
+msgid "Details"
+msgstr "Dettagli"
+
+#: includes/class-swfl-widgets.php:529
+#: includes/class-swfl-widgets.php:630
+#: includes/class-swfl-widgets.php:957
+msgid "No games found."
+msgstr "Nessuna partita trovata."
+
+#: includes/class-swfl-widgets.php:651
+#: includes/class-swfl-widgets.php:823
+msgid "The attribute club_id is missing."
+msgstr "Manca l’attributo club_id."
+
+#: includes/class-swfl-widgets.php:696
+msgid "Previous week"
+msgstr "Settimana precedente"
+
+#: includes/class-swfl-widgets.php:698
+msgid "Next week"
+msgstr "Settimana successiva"
+
+#: includes/class-swfl-widgets.php:711
+msgid "No games found this week."
+msgstr "Nessuna partita trovata in questa settimana."
+
+#: includes/class-swfl-widgets.php:730
+msgid "The attribute team_id is missing."
+msgstr "Manca l’attributo team_id."
+
+#: includes/class-swfl-widgets.php:779
+#: includes/class-swfl-widgets.php:919
+msgid "Earlier games"
+msgstr "Partite precedenti"
+
+#. translators: 1: first game number, 2: last game number, 3: total number of games.
+#: includes/class-swfl-widgets.php:785
+#: public/class-swfl-public-assets.php:136
+#, php-format
+msgid "%1$d–%2$d of %3$d"
+msgstr "%1$d–%2$d di %3$d"
+
+#: includes/class-swfl-widgets.php:793
+#: includes/class-swfl-widgets.php:921
+msgid "More games"
+msgstr "Altre partite"
+
+#: includes/class-swfl-widgets.php:805
+msgid "No team games found."
+msgstr "Nessuna partita della squadra trovata."
+
+#: includes/class-swfl-widgets.php:858
+msgid "Team games by club"
+msgstr "Partite delle squadre per club"
+
+#: includes/class-swfl-widgets.php:860
+msgid "Select a team"
+msgstr "Scegliere una squadra"
+
+#: includes/class-swfl-widgets.php:890
+msgid "The attributes game_class and league are missing."
+msgstr "Mancano gli attributi game_class e league."
+
+#: includes/class-swfl-widgets.php:920
+msgid "Current round"
+msgstr "Turno attuale"
+
+#. translators: %d: number of games in the series.
+#: includes/class-swfl-widgets.php:986
+#, php-format
+msgid "%d game"
+msgid_plural "%d games"
+msgstr[0] "%d partita"
+msgstr[1] "%d partite"
+
+#: includes/class-swfl-widgets.php:1074
+msgid "The attributes league and game_class are missing."
+msgstr "Mancano gli attributi league e game_class."
+
+#: includes/class-swfl-widgets.php:1104
+msgid "No data found."
+msgstr "Nessun dato trovato."
+
+#: includes/class-swfl-widgets.php:1143
+msgid "No Mobiliar topscorers found."
+msgstr "Nessun topscorer La Mobiliare trovato."
+
+#: includes/class-swfl-widgets.php:1145
+msgid "die Mobiliar topscorers"
+msgstr "Topscorer La Mobiliare"
+
+#: public/class-swfl-public-assets.php:134
+msgid "The data could not be loaded just now. Please try again in a moment."
+msgstr "Al momento non è stato possibile caricare i dati. Riprovare tra un attimo."

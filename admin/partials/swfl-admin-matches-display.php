@@ -37,12 +37,12 @@ $swfl_match_id = isset( $_GET['match_id'] ) ? absint( $_GET['match_id'] ) : null
 <div class="wrap sfa-admin-wrap" data-sfa-theme="<?php echo esc_attr( SWFL_Theme::get_theme() ); ?>">
 	<div class="sfa-admin-header">
 		<h1><?php SWFL_Icons::render( 'hockey' ); ?> <?php echo esc_html( get_admin_page_title() ); ?></h1>
-		<p><?php esc_html_e( 'Übersicht der letzten Spiele und Details', 'swiss-floorball-api' ); ?></p>
+		<p><?php esc_html_e( 'Recent games and their details', 'swiss-floorball-api' ); ?></p>
 	</div>
 
 	<?php if ( empty( $swfl_club_id ) ) : ?>
 		<div class="notice notice-error">
-			<p><?php esc_html_e( 'Bitte konfigurieren Sie zuerst eine Club-Nummer in den Einstellungen.', 'swiss-floorball-api' ); ?></p>
+			<p><?php esc_html_e( 'Please set a club number in the settings first.', 'swiss-floorball-api' ); ?></p>
 		</div>
 	<?php elseif ( $swfl_match_id ) : ?>
 		<?php
@@ -50,7 +50,7 @@ $swfl_match_id = isset( $_GET['match_id'] ) ? absint( $_GET['match_id'] ) : null
 
 		// Back button.
 		$swfl_back_url = remove_query_arg( 'match_id' );
-		echo '<p><a href="' . esc_url( $swfl_back_url ) . '" class="button button-primary">' . wp_kses( SWFL_Icons::get( 'back' ), SWFL_Icons::allowed_html() ) . ' ' . esc_html__( 'Zurück zur Übersicht', 'swiss-floorball-api' ) . '</a></p>';
+		echo '<p><a href="' . esc_url( $swfl_back_url ) . '" class="button button-primary">' . wp_kses( SWFL_Icons::get( 'back' ), SWFL_Icons::allowed_html() ) . ' ' . esc_html__( 'Back to the overview', 'swiss-floorball-api' ) . '</a></p>';
 
 		// Render Match Details.
 		SWFL_Display_Stats::render_game_details_table( $swfl_match_id );
@@ -72,8 +72,8 @@ $swfl_match_id = isset( $_GET['match_id'] ) ? absint( $_GET['match_id'] ) : null
 		<hr class="sfa-divider">
 		
 		<div class="sfa-admin-header">
-			<h1><?php SWFL_Icons::render( 'hockey' ); ?> <?php esc_html_e( 'Spiele pro Team', 'swiss-floorball-api' ); ?></h1>
-			<p><?php esc_html_e( 'Übersicht der letzten Spiele und Details', 'swiss-floorball-api' ); ?></p>
+			<h1><?php SWFL_Icons::render( 'hockey' ); ?> <?php esc_html_e( 'Games per team', 'swiss-floorball-api' ); ?></h1>
+			<p><?php esc_html_e( 'Recent games and their details', 'swiss-floorball-api' ); ?></p>
 		</div>
 		
 		<?php
@@ -81,13 +81,17 @@ $swfl_match_id = isset( $_GET['match_id'] ) ? absint( $_GET['match_id'] ) : null
 		$swfl_teams_response = $swfl_client->fetch_data( 'clubs/' . $swfl_club_id . '/statistics' );
 
 		if ( is_wp_error( $swfl_teams_response ) || ! isset( $swfl_teams_response['data']['regions'][0]['rows'] ) ) {
-			echo '<div class="notice notice-warning"><p>' . esc_html__( 'Konnte Teams nicht laden.', 'swiss-floorball-api' ) . '</p></div>';
+			echo '<div class="notice notice-warning"><p>' . esc_html__( 'The teams could not be loaded.', 'swiss-floorball-api' ) . '</p></div>';
 		} else {
 			$swfl_teams = $swfl_teams_response['data']['regions'][0]['rows'];
 
 			foreach ( $swfl_teams as $swfl_team ) {
 				$swfl_team_id   = $swfl_team['team_id'];
-				$swfl_team_name = isset( $swfl_team['cells'][0]['text'][0] ) ? $swfl_team['cells'][0]['text'][0] : 'Team ' . $swfl_team_id;
+				$swfl_team_name = isset( $swfl_team['cells'][0]['text'][0] ) ? $swfl_team['cells'][0]['text'][0] : sprintf(
+					/* translators: %d: team ID. */
+					__( 'Team %d', 'swiss-floorball-api' ),
+					$swfl_team_id
+				);
 
 				echo '<div class="sfa-card sfa-card--spaced-bottom">';
 				echo '<h3>' . esc_html( $swfl_team_name ) . '</h3>';

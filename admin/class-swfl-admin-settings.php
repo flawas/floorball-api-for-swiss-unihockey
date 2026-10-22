@@ -40,7 +40,7 @@ class SWFL_Admin_Settings {
 			// ID used to identify this section and with which to register options.
 			'swfl_general_section',
 			// Title to be displayed on the administration page.
-			'Einstellungen',
+			__( 'Settings', 'swiss-floorball-api' ),
 			// Callback used to render the description of the section.
 			array( $this, 'settings_page_display_general_account' ),
 			// Page on which to add this section of options.
@@ -167,7 +167,7 @@ class SWFL_Admin_Settings {
 				'sanitize' => array( $this, 'sanitize_partner_secret' ),
 			),
 			array(
-				'label'    => 'Swiss Floorball Club Number',
+				'label'    => __( 'Club number', 'swiss-floorball-api' ),
 				'args'     => $this->input_args( 'swfl_club_number', 'number', array( 'required' => 'false' ) ),
 				'sanitize' => array(
 					'type'              => 'integer',
@@ -175,7 +175,7 @@ class SWFL_Admin_Settings {
 				),
 			),
 			array(
-				'label' => 'Swiss Floorball Club Name',
+				'label' => __( 'Club name', 'swiss-floorball-api' ),
 				'args'  => $this->input_args(
 					'swfl_club_name',
 					'text',
@@ -186,7 +186,7 @@ class SWFL_Admin_Settings {
 				),
 			),
 			array(
-				'label'    => 'Swiss Floorball Aktuelle Saison (Jahrzahl, z.B. 2023)',
+				'label'    => __( 'Current season (start year, e.g. 2025)', 'swiss-floorball-api' ),
 				'args'     => $this->input_args( 'swfl_actual_season', 'number', array( 'required' => 'false' ) ),
 				'sanitize' => array(
 					'type'              => 'integer',
@@ -341,13 +341,70 @@ class SWFL_Admin_Settings {
 						'max'         => '1000',
 						'step'        => '1',
 						'default'     => '60',
-						'description' => __( 'Maximum requests per minute that one visitor may send to the public REST routes of the plugin (0-1000, default 60, 0 turns the limit off). Behind a reverse proxy all visitors share the proxy address, so raise the value there. Can be overridden with the swfl_rest_rate_limit filter.', 'swiss-floorball-api' ),
+						'description' => __( 'Maximum requests per minute that one visitor may send to the public REST routes of the plugin (0-1000, default 60, 0 turns the limit off). Visitors are told apart by IP address, IPv6 addresses by their /64 prefix. Behind a reverse proxy or CDN that does not pass the real address on to the web server, enter the proxy under "Trusted proxies" or raise the value. Can be overridden with the swfl_rest_rate_limit filter.', 'swiss-floorball-api' ),
 					)
 				),
 				'sanitize' => array(
 					'type'              => 'integer',
 					'sanitize_callback' => array( $this, 'sanitize_rest_rate_limit' ),
 					'default'           => 60,
+				),
+			),
+			array(
+				'label'    => __( 'Upstream requests per minute', 'swiss-floorball-api' ),
+				'args'     => $this->input_args(
+					'swfl_upstream_budget',
+					'number',
+					array(
+						'min'         => '0',
+						'max'         => (string) SWFL_Upstream_Budget::MAX_LIMIT,
+						'step'        => '1',
+						'default'     => (string) SWFL_Upstream_Budget::DEFAULT_LIMIT,
+						'description' => __( 'Site-wide limit for the uncached requests to the Swiss Unihockey API that the public REST routes may cause per clock minute (0-10000, default 120, 0 turns the limit off); every page of a long list counts. When it is used up, the routes answer from an expired cached copy if there is one, otherwise with 503 and Retry-After. Shortcode page views, the admin area, administrators and the cache warm-up are not limited. Parallel requests never exceed the limit; under heavy load a few may be refused just before it is reached. Can be overridden with the swfl_upstream_budget filter.', 'swiss-floorball-api' ),
+					)
+				),
+				'sanitize' => array(
+					'type'              => 'integer',
+					'sanitize_callback' => array( $this, 'sanitize_upstream_budget' ),
+					'default'           => SWFL_Upstream_Budget::DEFAULT_LIMIT,
+				),
+			),
+			array(
+				'label'    => __( 'Upstream requests per minute and visitor', 'swiss-floorball-api' ),
+				'args'     => $this->input_args(
+					'swfl_upstream_visitor_budget',
+					'number',
+					array(
+						'min'         => '0',
+						'max'         => (string) SWFL_Upstream_Budget::MAX_LIMIT,
+						'step'        => '1',
+						'default'     => (string) SWFL_Upstream_Budget::DEFAULT_VISITOR_LIMIT,
+						'description' => __( 'Share of the site-wide limit above that one visitor (IP address, IPv6 /64 prefix) may use per minute (0-10000, default 20, 0 turns the share off). One or two addresses can then no longer use the limit up for all visitors. A visitor beyond the share gets an expired cached copy or 429 with Retry-After, and appears under "Blocked visitors". Can be overridden with the swfl_upstream_visitor_budget filter.', 'swiss-floorball-api' ),
+					)
+				),
+				'sanitize' => array(
+					'type'              => 'integer',
+					'sanitize_callback' => static function ( $value ) {
+						return is_scalar( $value ) && is_numeric( $value ) ? min( SWFL_Upstream_Budget::MAX_LIMIT, absint( $value ) ) : SWFL_Upstream_Budget::DEFAULT_VISITOR_LIMIT;
+					},
+					'default'           => SWFL_Upstream_Budget::DEFAULT_VISITOR_LIMIT,
+				),
+			),
+			array(
+				'label'    => __( 'Trusted proxies', 'swiss-floorball-api' ),
+				'args'     => array(
+					'type'        => 'textarea',
+					'id'          => 'swfl_trusted_proxies',
+					'name'        => 'swfl_trusted_proxies',
+					'wp_data'     => 'option',
+					'default'     => '',
+					'placeholder' => "173.245.48.0/20\n2400:cb00::/32",
+					'description' => __( 'Only if the site sits behind a reverse proxy or CDN that does not pass the real visitor address on to the web server: one IP address or range per line (CIDR notation, IPv4 from /8 and IPv6 from /16). For requests from these addresses the plugin reads the visitor from the X-Forwarded-For header for the REST rate limit; for all other requests the header is ignored. Leave empty to ignore forwarded headers. Better: restore the real address in the web server (mod_remoteip, real_ip_header). Can be extended with the swfl_trusted_proxies filter.', 'swiss-floorball-api' ),
+				),
+				'sanitize' => array(
+					'type'              => 'string',
+					'sanitize_callback' => array( $this, 'sanitize_trusted_proxies' ),
+					'default'           => '',
 				),
 			),
 		);
@@ -494,6 +551,72 @@ class SWFL_Admin_Settings {
 			return SWFL_Request_Guard::DEFAULT_RATE_LIMIT;
 		}
 		return min( 1000, absint( $value ) );
+	}
+
+	/**
+	 * Sanitize the upstream request budget: integer 0-10000, where 0 turns it off and an invalid value falls back to 120.
+	 *
+	 * @since 2.2.0
+	 *
+	 * @param mixed $value Raw submitted value.
+	 * @return int Requests per minute.
+	 */
+	public function sanitize_upstream_budget( $value ) {
+		if ( ! is_scalar( $value ) || ! is_numeric( $value ) ) {
+			return SWFL_Upstream_Budget::DEFAULT_LIMIT;
+		}
+		return min( SWFL_Upstream_Budget::MAX_LIMIT, absint( $value ) );
+	}
+
+	/**
+	 * Sanitize the trusted proxies: one valid address or CIDR range per line, written in a normalised form.
+	 *
+	 * Invalid entries are dropped and reported, as are the entries beyond the limit. A range that covers every
+	 * address (/0) is invalid, as it would make every visitor a trusted proxy.
+	 *
+	 * @since 2.2.0
+	 *
+	 * @param mixed $value Raw submitted value.
+	 * @return string Entries separated by line breaks.
+	 */
+	public function sanitize_trusted_proxies( $value ) {
+		$valid   = array();
+		$invalid = array();
+		foreach ( is_scalar( $value ) ? SWFL_Client_Ip::split_entries( (string) $value ) : array() as $entry ) {
+			$range = SWFL_Client_Ip::parse_range( $entry );
+			if ( null === $range ) {
+				$invalid[] = $entry;
+				continue;
+			}
+			$valid[ SWFL_Client_Ip::format_range( $range ) ] = true;
+		}
+		if ( $invalid ) {
+			// The entries are what the administrator typed. Cut and escape them: the message is printed as HTML.
+			$shown = array_map(
+				static function ( $entry ) {
+					return mb_substr( $entry, 0, 45 );
+				},
+				array_slice( $invalid, 0, 5 )
+			);
+			add_settings_error(
+				'swfl_trusted_proxies',
+				'swfl_trusted_proxies_invalid',
+				/* translators: %s: list of entries that are neither an IP address nor a CIDR range. */
+				esc_html( sprintf( __( 'Ignored invalid trusted proxy entries: %s', 'swiss-floorball-api' ), implode( ', ', $shown ) ) ),
+				'error'
+			);
+		}
+		if ( count( $valid ) > SWFL_Client_Ip::MAX_RANGES ) {
+			add_settings_error(
+				'swfl_trusted_proxies',
+				'swfl_trusted_proxies_too_many',
+				/* translators: %d: number of trusted proxy entries that are used. */
+				esc_html( sprintf( __( 'Only the first %d trusted proxy entries are used.', 'swiss-floorball-api' ), SWFL_Client_Ip::MAX_RANGES ) ),
+				'error'
+			);
+		}
+
+		return implode( "\n", array_slice( array_keys( $valid ), 0, SWFL_Client_Ip::MAX_RANGES ) );
 	}
 
 	/**
@@ -670,7 +793,7 @@ class SWFL_Admin_Settings {
 				'swfl_club_name',
 				'club_name_updated',
 				/* translators: %s: club name returned by the Swiss Unihockey API. */
-				sprintf( __( 'Club name automatically set to: %s', 'swiss-floorball-api' ), $club_name ),
+				esc_html( sprintf( __( 'Club name automatically set to: %s', 'swiss-floorball-api' ), $club_name ) ),
 				'success'
 			);
 		} else {
@@ -695,7 +818,7 @@ class SWFL_Admin_Settings {
 	 * @since    1.0.0
 	 */
 	public function settings_page_display_general_account() {
-		echo '<p>Damit die Funktionalität des Plugins gewährleistet werden kann, müssen folgende Informationen ausgefüllt werden:</p>';
+		echo '<p>' . esc_html__( 'The plugin needs the following information to work:', 'swiss-floorball-api' ) . '</p>';
 	}
 
 	/**
@@ -717,7 +840,30 @@ class SWFL_Admin_Settings {
 			$this->render_input_field( $args, $wp_data_value );
 		} elseif ( 'select' === $args['type'] ) {
 			$this->render_select_field( $args, $wp_data_value );
+		} elseif ( 'textarea' === $args['type'] ) {
+			$this->render_textarea_field( $args, $wp_data_value );
 		}
+
+		if ( ! empty( $args['description'] ) ) {
+			echo '<p class="description">' . esc_html( $args['description'] ) . '</p>';
+		}
+	}
+
+	/**
+	 * Render a multi-line text settings field.
+	 *
+	 * @since 2.2.0
+	 * @param array $args  Field definition.
+	 * @param mixed $value Stored value.
+	 */
+	private function render_textarea_field( $args, $value ) {
+		printf(
+			'<textarea id="%1$s" name="%2$s" rows="5" cols="50" class="large-text code" placeholder="%3$s">%4$s</textarea>',
+			esc_attr( $args['id'] ),
+			esc_attr( $args['name'] ),
+			esc_attr( isset( $args['placeholder'] ) ? $args['placeholder'] : '' ),
+			esc_textarea( (string) $value )
+		);
 	}
 
 	/**
@@ -743,10 +889,6 @@ class SWFL_Admin_Settings {
 			);
 		} else {
 			$this->render_text_input( $args, $value );
-		}
-
-		if ( ! empty( $args['description'] ) ) {
-			echo '<p class="description">' . esc_html( $args['description'] ) . '</p>';
 		}
 	}
 
@@ -829,8 +971,5 @@ class SWFL_Admin_Settings {
 			echo '>' . esc_html( $option_label ) . '</option>';
 		}
 		echo '</select>';
-		if ( ! empty( $args['description'] ) ) {
-			echo '<p class="description">' . esc_html( $args['description'] ) . '</p>';
-		}
 	}
 }

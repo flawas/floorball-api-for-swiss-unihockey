@@ -1,8 +1,6 @@
 <?php
 /**
- * Provide a admin area view for the plugin
- *
- * This file is used to markup the admin-facing aspects of the plugin.
+ * Admin page: overview of all shortcodes with their attributes and examples.
  *
  * @link       https://flaviowaser.ch
  * @since      1.0.0
@@ -18,262 +16,277 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! current_user_can( 'manage_options' ) ) {
 	wp_die( esc_html__( 'You do not have permission to access this page.', 'swiss-floorball-api' ) );
 }
+
+// Markup the descriptions may use.
+$swfl_inline_html = array(
+	'code'   => array(),
+	'strong' => array(),
+	'em'     => array(),
+	'a'      => array( 'href' => true ),
+);
+
+$swfl_club_setting = __( 'The club always comes from the plugin settings.', 'swiss-floorball-api' );
+$swfl_season       = __( 'Start year of the season (default: current season).', 'swiss-floorball-api' );
+$swfl_limit        = __( 'Maximum number of rows (0 = all).', 'swiss-floorball-api' );
+$swfl_offset       = __( 'Number of rows to skip.', 'swiss-floorball-api' );
+$swfl_upcoming     = __( '<code>true</code> shows upcoming games only.', 'swiss-floorball-api' );
+$swfl_pagination   = __( '<code>true</code> adds previous/next links (only with <code>limit</code>).', 'swiss-floorball-api' );
+$swfl_page_size    = __( 'Games per page (default: 4).', 'swiss-floorball-api' );
+$swfl_team_or_club = __( 'Team ID, to show a team instead of the club.', 'swiss-floorball-api' );
+$swfl_game_limit   = __( 'Number of games (default: 1, at most 10).', 'swiss-floorball-api' );
+$swfl_league       = __( 'League ID.', 'swiss-floorball-api' );
+$swfl_game_class   = __( 'Game class ID.', 'swiss-floorball-api' );
+$swfl_group_name   = __( 'Group name, e.g. "Gruppe 1".', 'swiss-floorball-api' );
+$swfl_none         = __( 'None', 'swiss-floorball-api' );
+$swfl_team_ids     = sprintf(
+	/* translators: %s: link to the admin page "Club overview". */
+	__( 'Team IDs are listed on the %s page.', 'swiss-floorball-api' ),
+	'<a href="' . esc_url( admin_url( 'admin.php?page=swiss-floorball-api-overview' ) ) . '">' . esc_html__( 'Club overview', 'swiss-floorball-api' ) . '</a>'
+);
+
+/*
+ * Each shortcode: description, attributes (name => text, an empty name for a plain line) and examples
+ * (label => shortcode, an empty label for an example without one).
+ */
+$swfl_shortcodes = array(
+	'swfl-club-teams'         => array(
+		__( 'Lists all teams of the configured club.', 'swiss-floorball-api' ),
+		array( '' => __( 'None (uses the plugin settings)', 'swiss-floorball-api' ) ),
+		array( '' => '[swfl-club-teams]' ),
+	),
+	'swfl-club-games'         => array(
+		__( 'Shows the games of the club week by week, with buttons to change the week.', 'swiss-floorball-api' ),
+		array(
+			''                => $swfl_club_setting,
+			'season'          => $swfl_season,
+			'limit'           => $swfl_limit,
+			'offset'          => $swfl_offset,
+			'show_upcoming'   => $swfl_upcoming,
+			'show_pagination' => $swfl_pagination,
+		),
+		array( '' => '[swfl-club-games season="2025" limit="5" show_upcoming="true"]' ),
+	),
+	'swfl-team-games'         => array(
+		__( 'Shows the games of a team page by page, starting around the next game.', 'swiss-floorball-api' ),
+		array(
+			'team_id'         => __( '(required) The ID of the team.', 'swiss-floorball-api' ) . ' <em>' . $swfl_team_ids . '</em>',
+			'season'          => $swfl_season,
+			'page_size'       => $swfl_page_size,
+			'limit'           => $swfl_limit,
+			'offset'          => $swfl_offset,
+			'show_upcoming'   => $swfl_upcoming,
+			'show_pagination' => $swfl_pagination,
+		),
+		array( '' => '[swfl-team-games team_id="429626" season="2025" limit="5" show_upcoming="true"]' ),
+	),
+	'swfl-club-team-games'    => array(
+		__( 'Shows all teams of the club in a select list and the games of the selected team.', 'swiss-floorball-api' ),
+		array(
+			''          => $swfl_club_setting,
+			'season'    => $swfl_season,
+			'page_size' => $swfl_page_size,
+		),
+		array( '' => '[swfl-club-team-games season="2025" page_size="6"]' ),
+	),
+	'swfl-next-game'          => array(
+		__( 'Shows the next game of the club or of a team. The widget "Next game and last result" under Appearance → Widgets shows the same.', 'swiss-floorball-api' ),
+		array(
+			''        => $swfl_club_setting,
+			'team_id' => $swfl_team_or_club,
+			'season'  => $swfl_season,
+			'limit'   => $swfl_game_limit,
+		),
+		array( '' => '[swfl-next-game team_id="429626"]' ),
+	),
+	'swfl-last-result'        => array(
+		__( 'Shows the last result of the club or of a team, the latest first.', 'swiss-floorball-api' ),
+		array(
+			''        => $swfl_club_setting,
+			'team_id' => $swfl_team_or_club,
+			'season'  => $swfl_season,
+			'limit'   => $swfl_game_limit,
+		),
+		array( '' => '[swfl-last-result limit="3"]' ),
+	),
+	'swfl-league-games'       => array(
+		__( 'Shows the games of a league and group, round by round. Playoff series are grouped.', 'swiss-floorball-api' ),
+		array(
+			'game_class' => __( '(required) Game class ID.', 'swiss-floorball-api' ),
+			'league'     => __( '(required) League ID.', 'swiss-floorball-api' ),
+			'season'     => $swfl_season,
+			'group'      => $swfl_group_name,
+		),
+		array( '' => '[swfl-league-games game_class="21" league="3" season="2025" group="Gruppe 1"]' ),
+	),
+	'swfl-mobiliar-topscorer' => array(
+		__( 'Shows the Mobiliar topscorers of a club as cards.', 'swiss-floorball-api' ),
+		array(
+			'club_id' => __( 'Club ID (default: plugin setting).', 'swiss-floorball-api' ),
+			'season'  => $swfl_season,
+		),
+		array( '' => '[swfl-mobiliar-topscorer club_id="463845" season="2025"]' ),
+	),
+	'swfl-clubs'              => array(
+		__( 'Lists all clubs.', 'swiss-floorball-api' ),
+		array( '' => $swfl_none ),
+		array( '' => '[swfl-clubs]' ),
+	),
+	'swfl-calendars'          => array(
+		__( 'Creates a calendar link (webcal) for a team, a club or a league.', 'swiss-floorball-api' ),
+		array(
+			'team_id'    => __( '(required for a team calendar) The ID of the team.', 'swiss-floorball-api' ) . ' <em>' . $swfl_team_ids . '</em>',
+			'club_id'    => __( 'The ID of the club.', 'swiss-floorball-api' ),
+			'season'     => __( 'The season (e.g. 2025).', 'swiss-floorball-api' ),
+			'league'     => __( 'The league.', 'swiss-floorball-api' ),
+			'game_class' => __( 'The game class.', 'swiss-floorball-api' ),
+			'group'      => __( 'The group.', 'swiss-floorball-api' ),
+		),
+		array(
+			__( 'Team calendar:', 'swiss-floorball-api' ) => '[swfl-calendars team_id="427892"]',
+			__( 'Club calendar:', 'swiss-floorball-api' ) => '[swfl-calendars club_id="637"]',
+		),
+	),
+	'swfl-cups'               => array(
+		__( 'Lists all cup competitions.', 'swiss-floorball-api' ),
+		array( '' => $swfl_none ),
+		array( '' => '[swfl-cups]' ),
+	),
+	'swfl-groups'             => array(
+		__( 'Lists the groups of a season, league and game class.', 'swiss-floorball-api' ),
+		array(
+			'season'     => __( 'Season (default: current season from the settings).', 'swiss-floorball-api' ),
+			'league'     => $swfl_league,
+			'game_class' => $swfl_game_class,
+		),
+		array( '' => '[swfl-groups league="1" game_class="11"]' ),
+	),
+	'swfl-teams'              => array(
+		__( 'Lists all teams.', 'swiss-floorball-api' ),
+		array( '' => $swfl_none ),
+		array( '' => '[swfl-teams]' ),
+	),
+	'swfl-rankings'           => array(
+		__( 'Shows the ranking of a group.', 'swiss-floorball-api' ),
+		array(
+			'season'     => __( 'Season (default: current season).', 'swiss-floorball-api' ),
+			'league'     => $swfl_league,
+			'game_class' => $swfl_game_class,
+			'group'      => $swfl_group_name,
+		),
+		array( '' => '[swfl-rankings season="2025" league="3" game_class="21" group="Gruppe 1"]' ),
+	),
+	'swfl-player'             => array(
+		__( 'Shows information about a player.', 'swiss-floorball-api' ),
+		array( 'player_id' => __( '(required) The ID of the player.', 'swiss-floorball-api' ) ),
+		array( '' => '[swfl-player player_id="99999"]' ),
+	),
+	'swfl-national-players'   => array(
+		__( 'Lists the national players.', 'swiss-floorball-api' ),
+		array( '' => $swfl_none ),
+		array( '' => '[swfl-national-players]' ),
+	),
+	'swfl-topscorers'         => array(
+		__( 'Shows the topscorers of a league or group.', 'swiss-floorball-api' ),
+		array(
+			'season'          => __( 'Season (default: current season).', 'swiss-floorball-api' ),
+			'league'          => $swfl_league,
+			'game_class'      => $swfl_game_class,
+			'group'           => __( 'Group ID.', 'swiss-floorball-api' ),
+			'limit'           => $swfl_limit,
+			'offset'          => $swfl_offset,
+			'show_pagination' => $swfl_pagination,
+		),
+		array( '' => '[swfl-topscorers league="1"]' ),
+	),
+	'swfl-game-events'        => array(
+		__( 'Shows the events (goals, penalties) of a game.', 'swiss-floorball-api' ),
+		array( 'game_id' => __( '(required) The ID of the game.', 'swiss-floorball-api' ) ),
+		array( '' => '[swfl-game-events game_id="1000"]' ),
+	),
+);
+
+$swfl_backend_functions = array(
+	'render_leagues()'            => array( __( 'Shows a list of all available leagues.', 'swiss-floorball-api' ), __( 'Admin only, there is no public shortcode.', 'swiss-floorball-api' ) ),
+	'render_seasons()'            => array( __( 'Shows a list of all available seasons.', 'swiss-floorball-api' ), __( 'Admin only, there is no public shortcode.', 'swiss-floorball-api' ) ),
+	'render_club_games_callout()' => array( __( 'Shows a callout box with the games of the club in the admin style.', 'swiss-floorball-api' ), __( 'Admin only, a special view for the dashboard.', 'swiss-floorball-api' ) ),
+	'render_club_games_table()'   => array( __( 'Shows a table with the games of the club in the admin style.', 'swiss-floorball-api' ), __( 'Admin only, a special view for the dashboard.', 'swiss-floorball-api' ) ),
+	'get_teamdetails_image()'     => array( __( 'Gets the logo or picture of a team from the API.', 'swiss-floorball-api' ), __( 'Helper, used by other functions.', 'swiss-floorball-api' ) ),
+	'get_gamedetails()'           => array( __( 'Gets the details of a game.', 'swiss-floorball-api' ), __( 'Helper, used by other functions.', 'swiss-floorball-api' ) ),
+);
 ?>
 
 <div class="wrap sfa-admin-wrap" data-sfa-theme="<?php echo esc_attr( SWFL_Theme::get_theme() ); ?>">
 	<div class="sfa-admin-header">
-		<h1><?php SWFL_Icons::render( 'description' ); ?> Shortcodes Übersicht</h1>
-		<p>Hier finden Sie eine Übersicht über alle verfügbaren Shortcodes, deren Parameter und Anwendungsbeispiele.</p>
+		<h1><?php SWFL_Icons::render( 'description' ); ?> <?php esc_html_e( 'Shortcodes overview', 'swiss-floorball-api' ); ?></h1>
+		<p><?php esc_html_e( 'All available shortcodes with their attributes and examples.', 'swiss-floorball-api' ); ?></p>
 	</div>
 
 	<div class="sfa-table-container">
-		<h2>Verfügbare Shortcodes</h2>
+		<h2><?php esc_html_e( 'Available shortcodes', 'swiss-floorball-api' ); ?></h2>
 		<table class="sfa-data-table">
 			<thead>
 				<tr>
-					<th class="sfa-col-shortcode">Shortcode</th>
-					<th class="sfa-col-description">Beschreibung</th>
-					<th class="sfa-col-params">Parameter</th>
-					<th class="sfa-col-example">Beispiel</th>
+					<th class="sfa-col-shortcode"><?php esc_html_e( 'Shortcode', 'swiss-floorball-api' ); ?></th>
+					<th class="sfa-col-description"><?php esc_html_e( 'Description', 'swiss-floorball-api' ); ?></th>
+					<th class="sfa-col-params"><?php esc_html_e( 'Attributes', 'swiss-floorball-api' ); ?></th>
+					<th class="sfa-col-example"><?php esc_html_e( 'Example', 'swiss-floorball-api' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
-				<tr>
-					<td><code>[swfl-club-teams]</code></td>
-					<td>Listet alle Teams des konfigurierten Vereins auf.</td>
-					<td>Keine (nutzt die Plugin-Einstellungen)</td>
-					<td><code>[swfl-club-teams]</code></td>
-				</tr>
-				<tr>
-					<td><code>[swfl-club-games]</code></td>
-					<td>Zeigt die Spiele eines Vereins wochenweise, mit Wechsel zwischen den Wochen.</td>
-					<td>
-						Der Verein stammt immer aus den Plugin-Einstellungen.<br>
-						<strong>season</strong>: Startjahr der Saison (Standard: aktuelle Saison).<br>
-						<strong>limit</strong>: Maximale Anzahl Zeilen (0 = alle).<br>
-						<strong>offset</strong>: Anzahl Zeilen, die übersprungen werden.<br>
-						<strong>show_upcoming</strong>: <code>true</code> zeigt nur kommende Spiele.<br>
-						<strong>show_pagination</strong>: <code>true</code> blendet Vor-/Zurück-Links ein (nur mit <code>limit</code>).
-					</td>
-					<td><code>[swfl-club-games season="2025" limit="5" show_upcoming="true"]</code></td>
-				</tr>
-				<tr>
-					<td><code>[swfl-team-games]</code></td>
-					<td>Zeigt die Spiele eines Teams seitenweise, beginnend rund um das nächste Spiel.</td>
-					<td>
-						<strong>team_id</strong> (erforderlich): Die ID des Teams.<br>
-						<strong>season</strong>: Startjahr der Saison (Standard: aktuelle Saison).<br>
-						<strong>page_size</strong>: Spiele pro Seite (Standard: 4).<br>
-						<strong>limit</strong>: Maximale Anzahl Zeilen (0 = alle).<br>
-						<strong>offset</strong>: Anzahl Zeilen, die übersprungen werden.<br>
-						<strong>show_upcoming</strong>: <code>true</code> zeigt nur kommende Spiele.<br>
-						<strong>show_pagination</strong>: <code>true</code> blendet Vor-/Zurück-Links ein (nur mit <code>limit</code>).<br>
-						<em>Zu finden auf der <a href="<?php echo esc_url( admin_url( 'admin.php?page=swiss-floorball-api-teams' ) ); ?>">Teams Übersicht</a> oder im <a href="<?php echo esc_url( admin_url( 'admin.php?page=swiss-floorball-api' ) ); ?>">Dashboard</a>.</em>
-					</td>
-					<td><code>[swfl-team-games team_id="429626" season="2025" limit="5" show_upcoming="true"]</code></td>
-				</tr>
-				<tr>
-					<td><code>[swfl-club-team-games]</code></td>
-					<td>Zeigt alle Teams eines Vereins mit Auswahlliste und den Spielen des gewählten Teams.</td>
-					<td>
-						Der Verein stammt immer aus den Plugin-Einstellungen.<br>
-						<strong>season</strong>: Startjahr der Saison (Standard: aktuelle Saison).<br>
-						<strong>page_size</strong>: Spiele pro Seite (Standard: 4).
-					</td>
-					<td><code>[swfl-club-team-games season="2025" page_size="6"]</code></td>
-				</tr>
-				<tr>
-					<td><code>[swfl-next-game]</code></td>
-					<td>Zeigt das nächste Spiel des Vereins oder eines Teams. Dasselbe liefert das Widget «Nächstes Spiel und letztes Resultat» unter Design &rarr; Widgets.</td>
-					<td>
-						Der Verein stammt aus den Plugin-Einstellungen.<br>
-						<strong>team_id</strong>: Team-ID, um statt des Vereins ein Team zu zeigen.<br>
-						<strong>season</strong>: Startjahr der Saison (Standard: aktuelle Saison).<br>
-						<strong>limit</strong>: Anzahl Spiele (Standard: 1, maximal 10).
-					</td>
-					<td><code>[swfl-next-game team_id="429626"]</code></td>
-				</tr>
-				<tr>
-					<td><code>[swfl-last-result]</code></td>
-					<td>Zeigt das letzte Resultat des Vereins oder eines Teams, das neueste zuerst.</td>
-					<td>
-						Der Verein stammt aus den Plugin-Einstellungen.<br>
-						<strong>team_id</strong>: Team-ID, um statt des Vereins ein Team zu zeigen.<br>
-						<strong>season</strong>: Startjahr der Saison (Standard: aktuelle Saison).<br>
-						<strong>limit</strong>: Anzahl Spiele (Standard: 1, maximal 10).
-					</td>
-					<td><code>[swfl-last-result limit="3"]</code></td>
-				</tr>
-				<tr>
-					<td><code>[swfl-league-games]</code></td>
-					<td>Zeigt die Spiele einer Liga und Gruppe, rundenweise blätterbar. Playoff-Serien werden gruppiert.</td>
-					<td>
-						<strong>game_class</strong> (erforderlich): Spielklasse ID.<br>
-						<strong>league</strong> (erforderlich): Liga ID.<br>
-						<strong>season</strong>: Startjahr der Saison (Standard: aktuelle Saison).<br>
-						<strong>group</strong>: Gruppenname, z. B. «Gruppe 1».
-					</td>
-					<td><code>[swfl-league-games game_class="21" league="3" season="2025" group="Gruppe 1"]</code></td>
-				</tr>
-				<tr>
-					<td><code>[swfl-mobiliar-topscorer]</code></td>
-					<td>Zeigt die Mobiliar Topscorer eines Vereins als Karten.</td>
-					<td>
-						<strong>club_id</strong>: Vereins-ID (Standard: Plugin-Einstellung).<br>
-						<strong>season</strong>: Startjahr der Saison (Standard: aktuelle Saison).
-					</td>
-					<td><code>[swfl-mobiliar-topscorer club_id="463845" season="2025"]</code></td>
-				</tr>
-				<tr>
-					<td><code>[swfl-clubs]</code></td>
-					<td>Listet alle Vereine auf.</td>
-					<td>Keine</td>
-					<td><code>[swfl-clubs]</code></td>
-				</tr>
-				<tr>
-					<td><code>[swfl-calendars]</code></td>
-					<td>Erstellt einen Kalender-Link (Webcal) für ein Team oder eine Liga.</td>
-					<td>
-						<strong>team_id</strong> (erforderlich für Team-Kalender): Die ID des Teams.<br>
-						<strong>club_id</strong>: Die ID des Vereins.<br>
-						<strong>season</strong>: Die Saison (z.B. 2023).<br>
-						<strong>league</strong>: Die Liga.<br>
-						<strong>game_class</strong>: Die Spielklasse.<br>
-						<strong>group</strong>: Die Gruppe.<br>
-						<em>Team IDs finden Sie auf der <a href="<?php echo esc_url( admin_url( 'admin.php?page=swiss-floorball-api-teams' ) ); ?>">Teams Übersicht</a>.</em>
-					</td>
-					<td>
-						<strong>Team Kalender:</strong><br>
-						<code>[swfl-calendars team_id="427892"]</code><br><br>
-						
-						<strong>Vereins Kalender:</strong><br>
-						<code>[swfl-calendars club_id="637"]</code>
-					</td>
-				</tr>
-				<tr>
-					<td><code>[swfl-cups]</code></td>
-					<td>Listet alle Cup-Wettbewerbe auf.</td>
-					<td>Keine</td>
-					<td><code>[swfl-cups]</code></td>
-				</tr>
-				<tr>
-					<td><code>[swfl-groups]</code></td>
-					<td>Listet Gruppen basierend auf Saison, Liga und Spielklasse auf.</td>
-					<td>
-						<strong>season</strong>: Saison (Standard: aktuelle Saison aus Einstellungen).<br>
-						<strong>league</strong>: Liga ID.<br>
-						<strong>game_class</strong>: Spielklasse ID.
-					</td>
-					<td><code>[swfl-groups league="1" game_class="11"]</code></td>
-				</tr>
-				<tr>
-					<td><code>[swfl-teams]</code></td>
-					<td>Listet alle Teams auf.</td>
-					<td>Keine</td>
-					<td><code>[swfl-teams]</code></td>
-				</tr>
-				<tr>
-					<td><code>[swfl-rankings]</code></td>
-					<td>Zeigt die Rangliste für eine bestimmte Gruppe.</td>
-					<td>
-						<strong>season</strong>: Saison (Standard: aktuelle Saison).<br>
-						<strong>league</strong>: Liga ID.<br>
-						<strong>game_class</strong>: Spielklasse ID.<br>
-						<strong>group</strong>: Gruppenname, z. B. «Gruppe 1».
-					</td>
-					<td><code>[swfl-rankings season="2025" league="3" game_class="21" group="Gruppe 1"]</code></td>
-				</tr>
-				<tr>
-					<td><code>[swfl-player]</code></td>
-					<td>Zeigt Informationen zu einem spezifischen Spieler.</td>
-					<td>
-						<strong>player_id</strong> (erforderlich): Die ID des Spielers.
-					</td>
-					<td><code>[swfl-player player_id="99999"]</code></td>
-				</tr>
-				<tr>
-					<td><code>[swfl-national-players]</code></td>
-					<td>Listet Nationalspieler auf.</td>
-					<td>Keine</td>
-					<td><code>[swfl-national-players]</code></td>
-				</tr>
-				<tr>
-					<td><code>[swfl-topscorers]</code></td>
-					<td>Zeigt die Topscorer einer Liga/Gruppe.</td>
-					<td>
-						<strong>season</strong>: Saison (Standard: aktuelle Saison).<br>
-						<strong>league</strong>: Liga ID.<br>
-						<strong>game_class</strong>: Spielklasse ID.<br>
-						<strong>group</strong>: Gruppen ID.<br>
-						<strong>limit</strong>: Maximale Anzahl Zeilen (0 = alle).<br>
-						<strong>offset</strong>: Anzahl Zeilen, die übersprungen werden.<br>
-						<strong>show_pagination</strong>: <code>true</code> blendet Vor-/Zurück-Links ein (nur mit <code>limit</code>).
-					</td>
-					<td><code>[swfl-topscorers league="1"]</code></td>
-				</tr>
-				<tr>
-					<td><code>[swfl-game-events]</code></td>
-					<td>Zeigt Ereignisse (Tore, Strafen) eines spezifischen Spiels.</td>
-					<td>
-						<strong>game_id</strong> (erforderlich): Die ID des Spiels.
-					</td>
-					<td><code>[swfl-game-events game_id="1000"]</code></td>
-				</tr>
+				<?php foreach ( $swfl_shortcodes as $swfl_tag => $swfl_shortcode ) : ?>
+					<tr>
+						<td><code>[<?php echo esc_html( $swfl_tag ); ?>]</code></td>
+						<td><?php echo esc_html( $swfl_shortcode[0] ); ?></td>
+						<td>
+							<?php
+							$swfl_lines = array();
+							foreach ( $swfl_shortcode[1] as $swfl_name => $swfl_text ) {
+								$swfl_lines[] = ( '' === $swfl_name ? '' : '<strong>' . esc_html( $swfl_name ) . '</strong>: ' ) . wp_kses( $swfl_text, $swfl_inline_html );
+							}
+							echo implode( '<br>', $swfl_lines ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Every line is escaped above.
+							?>
+						</td>
+						<td>
+							<?php foreach ( $swfl_shortcode[2] as $swfl_label => $swfl_example ) : ?>
+								<?php if ( '' !== $swfl_label ) : ?>
+									<strong><?php echo esc_html( $swfl_label ); ?></strong><br>
+								<?php endif; ?>
+								<code><?php echo esc_html( $swfl_example ); ?></code><br>
+							<?php endforeach; ?>
+						</td>
+					</tr>
+				<?php endforeach; ?>
 			</tbody>
 		</table>
 	</div>
 
 	<div class="sfa-table-container">
-		<h2><?php SWFL_Icons::render( 'settings' ); ?> Backend-Only Funktionen</h2>
-		<p>Die folgenden Funktionen sind nur im Backend verfügbar und haben keine öffentlichen Shortcodes. Sie werden hauptsächlich für administrative Zwecke verwendet.</p>
-		
+		<h2><?php SWFL_Icons::render( 'settings' ); ?> <?php esc_html_e( 'Admin-only functions', 'swiss-floorball-api' ); ?></h2>
+		<p><?php esc_html_e( 'The following functions are only used in the admin area and have no public shortcode.', 'swiss-floorball-api' ); ?></p>
+
 		<table class="sfa-data-table">
 			<thead>
 				<tr>
-					<th class="sfa-col-function">Funktion</th>
-					<th class="sfa-col-description-wide">Beschreibung</th>
-					<th class="sfa-col-usage">Verwendung</th>
+					<th class="sfa-col-function"><?php esc_html_e( 'Function', 'swiss-floorball-api' ); ?></th>
+					<th class="sfa-col-description-wide"><?php esc_html_e( 'Description', 'swiss-floorball-api' ); ?></th>
+					<th class="sfa-col-usage"><?php esc_html_e( 'Use', 'swiss-floorball-api' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
-				<tr>
-					<td><code>render_leagues()</code></td>
-					<td>Zeigt eine Liste aller verfügbaren Ligen an.</td>
-					<td>Nur Backend - Keine öffentliche Shortcode-Implementierung vorhanden.</td>
-				</tr>
-				<tr>
-					<td><code>render_seasons()</code></td>
-					<td>Zeigt eine Liste aller verfügbaren Saisons an.</td>
-					<td>Nur Backend - Keine öffentliche Shortcode-Implementierung vorhanden.</td>
-				</tr>
-				<tr>
-					<td><code>render_club_games_callout()</code></td>
-					<td>Zeigt eine Callout-Box mit Vereinsspielen im Backend-Stil.</td>
-					<td>Nur Backend - Spezielle Darstellung für Admin-Dashboard.</td>
-				</tr>
-				<tr>
-					<td><code>render_club_games_table()</code></td>
-					<td>Zeigt eine Tabelle mit Vereinsspielen im Backend-Stil.</td>
-					<td>Nur Backend - Spezielle Darstellung für Admin-Dashboard.</td>
-				</tr>
-				<tr>
-					<td><code>get_teamdetails_image()</code></td>
-					<td>Ruft das Team-Logo/Bild von der API ab.</td>
-					<td>Hilfsfunktion - Wird intern von anderen Funktionen verwendet.</td>
-				</tr>
-				<tr>
-					<td><code>get_gamedetails()</code></td>
-					<td>Ruft detaillierte Informationen zu einem spezifischen Spiel ab.</td>
-					<td>Hilfsfunktion - Wird intern von anderen Funktionen verwendet.</td>
-				</tr>
+				<?php foreach ( $swfl_backend_functions as $swfl_function => $swfl_texts ) : ?>
+					<tr>
+						<td><code><?php echo esc_html( $swfl_function ); ?></code></td>
+						<td><?php echo esc_html( $swfl_texts[0] ); ?></td>
+						<td><?php echo esc_html( $swfl_texts[1] ); ?></td>
+					</tr>
+				<?php endforeach; ?>
 			</tbody>
 		</table>
 
 		<div class="sfa-info-box">
-			<h3 class="sfa-info-box__title">ℹ️ Hinweis</h3>
-			<p style="margin-bottom: 0;">
-				Wenn Sie eine dieser Backend-Funktionen als öffentlichen Shortcode benötigen, können Sie dies als Feature-Request einreichen.
-				Die Funktionen sind bereits in der API-Client-Klasse implementiert und könnten bei Bedarf als Shortcodes verfügbar gemacht werden.
+			<h3 class="sfa-info-box__title">ℹ️ <?php esc_html_e( 'Note', 'swiss-floorball-api' ); ?></h3>
+			<p class="sfa-info-box__text">
+				<?php esc_html_e( 'If you need one of these functions as a public shortcode, please open a feature request. They already exist in the plugin and could be made available as shortcodes.', 'swiss-floorball-api' ); ?>
 			</p>
 		</div>
 	</div>

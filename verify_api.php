@@ -9,7 +9,7 @@
  * IDs (season, league, group, club, game, team, player) are discovered from the API itself,
  * so the test doesn't rot when a season ends. Fails (exit 1) on PHP warnings/notices,
  * API errors, unexpected response shapes, or render methods that print the
- * "data could not be loaded" message.
+ * "The data could not be loaded" message.
  *
  * Dev-only: not part of the release ZIP and needs network access.
  */
@@ -89,6 +89,8 @@ function _n( $single, $plural, $number, $domain = '' ) {
 function sanitize_text_field( $t ) {
 	return trim( strip_tags( (string) $t ) );
 }
+define( 'MINUTE_IN_SECONDS', 60 );
+define( 'HOUR_IN_SECONDS', 3600 );
 define( 'DAY_IN_SECONDS', 86400 );
 function current_time( $type ) {
 	return gmdate( 'mysql' === $type ? 'Y-m-d H:i:s' : $type );
@@ -128,7 +130,16 @@ function set_transient( $transient, $value, $expiration = 0 ) {
 	$GLOBALS['sfa_transients'][ $transient ] = $value;
 	return true;
 }
+// No persistent object cache, and nothing an in-process copy would have to drop.
+function wp_using_ext_object_cache() {
+	return null;
+}
+function wp_cache_delete( $key, $group = '' ) {
+	return true;
+}
 function wp_remote_get( $url, $args = array() ) {
+	// Counted so the checks can tell a cached answer from a new upstream request.
+	$GLOBALS['sfa_http_calls'] = ( $GLOBALS['sfa_http_calls'] ?? 0 ) + 1;
 	$ctx  = stream_context_create( array(
 		'http' => array(
 			'method'        => 'GET',
@@ -137,12 +148,16 @@ function wp_remote_get( $url, $args = array() ) {
 			'header'        => "User-Agent: SwissFloorballApiSmokeTest/2.0\r\n",
 		),
 	) );
-	$body = @file_get_contents( $url, false, $ctx );
-	if ( false === $body ) {
+	// The headers come from the stream: PHP 8.5 deprecates the magic $http_response_header.
+	$stream = @fopen( $url, 'r', false, $ctx );
+	if ( false === $stream ) {
 		return new WP_Error( 'http_request_failed', 'Request failed: ' . $url );
 	}
+	$headers = stream_get_meta_data( $stream )['wrapper_data'] ?? array();
+	$body    = (string) stream_get_contents( $stream );
+	fclose( $stream );
 	$code = 0;
-	if ( ! empty( $http_response_header[0] ) && preg_match( '#\s(\d{3})\s#', $http_response_header[0], $m ) ) {
+	if ( ! empty( $headers[0] ) && preg_match( '#\s(\d{3})\s#', $headers[0], $m ) ) {
 		$code = (int) $m[1];
 	}
 	return array( 'code' => $code, 'body' => $body );
@@ -212,6 +227,10 @@ require_once __DIR__ . '/includes/class-swfl-calendar.php';
 require_once __DIR__ . '/includes/class-swfl-rest.php';
 require_once __DIR__ . '/includes/class-swfl-table-data.php';
 require_once __DIR__ . '/includes/class-swfl-request-guard.php';
+require_once __DIR__ . '/includes/class-swfl-counter.php';
+require_once __DIR__ . '/includes/class-swfl-client-ip.php';
+require_once __DIR__ . '/includes/class-swfl-cache-entry.php';
+require_once __DIR__ . '/includes/class-swfl-upstream-budget.php';
 require_once __DIR__ . '/includes/class-swfl-icons.php';
 
 // ---------------------------------------------------------------------------
@@ -255,7 +274,8 @@ function render( callable $fn ) {
 		$html = ob_get_clean();
 	}
 	ensure( '' !== trim( $html ), 'leere Ausgabe' );
-	ensure( false === strpos( $html, 'Daten konnten nicht geladen werden' ), 'Render-Methode meldet "Daten konnten nicht geladen werden"' );
+	// The stubbed __() returns the English source text.
+	ensure( false === strpos( $html, 'The data could not be loaded' ), 'Render-Methode meldet "The data could not be loaded"' );
 	return $html;
 }
 
@@ -349,13 +369,31 @@ check( 'Client: API-Fehlermeldung wird für Admins angezeigt', function () use (
 	ob_start();
 	SWFL_Display::render_fetch_error( $r );
 	$html = ob_get_clean();
-	ensure( false !== strpos( $html, 'Antwort der API' ) && false !== strpos( $html, 'Gibt es nicht' ), 'API-Meldung fehlt in der Ausgabe: ' . $html );
+	ensure( false !== strpos( $html, 'Answer of the API' ) && false !== strpos( $html, 'Gibt es nicht' ), 'API-Meldung fehlt in der Ausgabe: ' . $html );
 } );
 
 check( 'Client: zweiter Aufruf kommt aus dem Cache', function () use ( $client ) {
 	$before = count( $GLOBALS['sfa_transients'] ?? array() );
 	$client->fetch_data( 'seasons' );
 	ensure( count( $GLOBALS['sfa_transients'] ?? array() ) === $before, 'Cache-Eintrag wurde neu angelegt' );
+} );
+
+check( 'Client: eine fehlgeschlagene Anfrage wird kurz gecacht (keine zweite API-Anfrage)', function () use ( $client ) {
+	$params = array( 'season' => 2025, 'league' => 2, 'game_class' => 11, 'group' => 'Gibt es auch nicht' );
+	$before = $GLOBALS['sfa_http_calls'] ?? 0;
+	$first  = $client->fetch_data( 'rankings', $params );
+	$second = $client->fetch_data( 'rankings', $params );
+	ensure( is_wp_error( $first ) && is_wp_error( $second ), 'WP_Error erwartet' );
+	ensure( 1 === ( $GLOBALS['sfa_http_calls'] ?? 0 ) - $before, 'die zweite Anfrage hat die API erneut gefragt' );
+	ensure( $first->get_error_code() === $second->get_error_code() && $first->get_error_data() === $second->get_error_data(), 'der gecachte Fehler weicht vom echten ab' );
+	ensure( false !== strpos( (string) ( $second->get_error_data()['api_message'] ?? '' ), 'auch nicht' ), 'API-Meldung fehlt im gecachten Fehler' );
+} );
+
+check( 'Client: force_refresh fragt die API trotz gecachtem Fehler erneut', function () use ( $client ) {
+	$params = array( 'season' => 2025, 'league' => 2, 'game_class' => 11, 'group' => 'Gibt es auch nicht' );
+	$before = $GLOBALS['sfa_http_calls'] ?? 0;
+	$client->fetch_data( 'rankings', $params, null, true );
+	ensure( 1 === ( $GLOBALS['sfa_http_calls'] ?? 0 ) - $before, 'force_refresh hat die API nicht gefragt' );
 } );
 
 // ---------------------------------------------------------------------------
@@ -402,9 +440,9 @@ $widgets = array(
 	'widget club-team-games' => array( function () use ( $W, $season ) { $W::render_club_team_games( 372, $season, 6 ); }, 'data-sfa-widget="team-select"', '<option' ),
 	'widget team-games'    => array( function () use ( $W, $season ) { $W::render_team_games( 429626, $season, 5 ); }, 'data-sfa-widget="pager"', '<table' ),
 	'widget club-games'    => array( function () use ( $W, $season, $club_id ) { $W::render_club_games( $club_id, $season ); }, 'data-sfa-widget="week"', '<table' ),
-	'highlight next-game (Club)'   => array( function () use ( $season, $club_id ) { SWFL_Highlights::render_next_game( $club_id, $season ); }, 'class="sfa-widget"', 'Nächstes Spiel' ),
-	'highlight last-result (Club)' => array( function () use ( $season, $club_id ) { SWFL_Highlights::render_last_result( $club_id, $season ); }, 'class="sfa-widget"', 'Letztes Resultat' ),
-	'highlight last-result (Team)' => array( function () use ( $season ) { SWFL_Highlights::render_last_result( 0, $season, 429626, 3 ); }, 'class="sfa-widget"', 'Letzte Resultate' ),
+	'highlight next-game (Club)'   => array( function () use ( $season, $club_id ) { SWFL_Highlights::render_next_game( $club_id, $season ); }, 'class="sfa-widget"', 'Next game' ),
+	'highlight last-result (Club)' => array( function () use ( $season, $club_id ) { SWFL_Highlights::render_last_result( $club_id, $season ); }, 'class="sfa-widget"', 'Last result' ),
+	'highlight last-result (Team)' => array( function () use ( $season ) { SWFL_Highlights::render_last_result( 0, $season, 429626, 3 ); }, 'class="sfa-widget"', 'Last results' ),
 	'widget ranking'       => array( function () use ( $W, $season, $league, $game_class, $group ) { $W::render_ranking( $season, $league, $game_class, $group ); }, 'data-sfa-widget="ranking"', '<table' ),
 	'widget mobiliar-topscorer' => array( function () use ( $W, $season ) { $W::render_mobiliar_topscorers( 463845, $season ); }, 'data-sfa-widget="topscorers"', 'sfa-topscorers' ),
 );
@@ -454,6 +492,27 @@ check( 'rest topscorers (Mobiliar)', function () use ( $R, $season ) {
 	$r = $R::rest_topscorers( new WP_REST_Request( array( 'club_id' => 463845, 'season' => $season ) ) );
 	ensure( ! is_wp_error( $r ), is_wp_error( $r ) ? $r->get_error_message() : '' );
 	ensure( isset( $r->data['players'] ) && is_array( $r->data['players'] ), 'players fehlt' );
+} );
+
+check( 'REST: die Validatoren lehnen ungueltige Werte ab', function () {
+	foreach ( array(
+		array( 'validate_season', '1' ),
+		array( 'validate_season', '99999' ),
+		array( 'validate_required_id', '-5' ),
+		array( 'validate_required_id', 'abc' ),
+		array( 'validate_optional_id', '10000001' ),
+		array( 'validate_group', '<script>' ),
+	) as $case ) {
+		ensure( is_wp_error( SWFL_Request_Guard::{$case[0]}( $case[1] ) ), $case[0] . '(' . $case[1] . ') muss abgelehnt werden' );
+	}
+	foreach ( array(
+		array( 'validate_season', (string) SWFL_Display::get_current_season() ),
+		array( 'validate_season', '0' ),
+		array( 'validate_required_id', '429626' ),
+		array( 'validate_group', 'Gruppe 1' ),
+	) as $case ) {
+		ensure( true === SWFL_Request_Guard::{$case[0]}( $case[1] ), $case[0] . '(' . $case[1] . ') muss gelten' );
+	}
 } );
 
 // render_club_games_callout is intentionally not asserted:

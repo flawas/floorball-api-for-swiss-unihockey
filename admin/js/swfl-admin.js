@@ -47,12 +47,27 @@
 				return;
 			}
 			saving = true;
+			statusEl.removeClass('sfa-autosave-status--error');
 			setStatus(swflAutosave.saving);
 			$.post(settingsForm.attr('action'), settingsForm.serialize())
-				.done(function () {
-					setStatus(swflAutosave.saved);
+				.done(function (html) {
+					// options.php redirects to the settings page, which carries the messages of the sanitizers
+					// (e.g. ignored trusted proxy entries). This request used them up, so show them here.
+					// An inert document: nothing in the response runs or loads.
+					const page = document.implementation.createHTMLDocument('');
+					page.body.innerHTML = String(html || '');
+					const problems = $(page.body)
+						.find('.settings-error.notice-error, .settings-error.error')
+						.map(function () {
+							return $(this).text().trim();
+						})
+						.get()
+						.filter(Boolean);
+					statusEl.toggleClass('sfa-autosave-status--error', problems.length > 0);
+					setStatus(problems.length ? problems.join(' ') : swflAutosave.saved);
 				})
 				.fail(function () {
+					statusEl.addClass('sfa-autosave-status--error');
 					setStatus(swflAutosave.error);
 				})
 				.always(function () {

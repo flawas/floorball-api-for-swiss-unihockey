@@ -6,6 +6,12 @@
 |---|---|---|---|
 | `swfl_request_timeout` | `includes/class-swfl-client.php` | `$timeout` (Standard: Option `swfl_request_timeout`, Standard `3`, Sekunden), `$url` | Timeout der API-Anfrage; Minimum 1 |
 | `swfl_rest_rate_limit` | `includes/class-swfl-request-guard.php` | `$limit` (Standard: Option `swfl_rest_rate_limit`, Standard `60`, Anfragen pro Minute und Besucher) | Rate-Limit der öffentlichen REST-Routen; `0` schaltet es aus |
+| `swfl_upstream_budget` | `includes/class-swfl-upstream-budget.php` | `$limit` (Standard: Option `swfl_upstream_budget`, Standard `120`) | Ungecachte API-Anfragen pro Minute, die öffentliche REST-Routen seitenweit auslösen dürfen; `0` schaltet das Budget aus |
+| `swfl_upstream_visitor_budget` | `includes/class-swfl-upstream-budget.php` | `$limit` (Standard: Option `swfl_upstream_visitor_budget`, Standard `20`) | Anteil des Budgets pro Besucher und Minute; `0` schaltet ihn aus |
+| `swfl_trusted_proxies` | `includes/class-swfl-client-ip.php` | `$entries` (Adressen und CIDR-Bereiche aus der Option `swfl_trusted_proxies`) | Proxys, deren `X-Forwarded-For` das Rate-Limit liest; IPv4 ab /8, IPv6 ab /16, höchstens 100 |
+| `swfl_client_ip` | `includes/class-swfl-client-ip.php` | `$ip` (ermittelte Adresse, leer wenn keine), `$remote_addr` | Adresse, die einen Besucher für das Rate-Limit ausmacht; IPv6 wird danach auf /64 gruppiert |
+| `swfl_error_cache_ttl` | `includes/class-swfl-cache-entry.php` | `$ttl` (300), `$error`, `$url` | Wie lange eine fehlgeschlagene oder leere Antwort gemerkt wird; vorübergehende Fehler höchstens 60 Sekunden, `0` = nicht merken |
+| `swfl_stale_ttl` | `includes/class-swfl-cache-entry.php` | `$ttl` (3600), `$url` | Wie lange eine Antwort nach ihrer Cache-Dauer als abgelaufene Kopie für das aufgebrauchte Budget bleibt; `0` = keine Kopie |
 | `swfl_icon_svg` | `includes/class-swfl-icons.php` | `$svg`, `$name`, `$args` | SVG-Markup eines Icons ändern; Ergebnis wird erneut mit `wp_kses()` gefiltert |
 
 ```php
@@ -19,7 +25,12 @@ add_filter(
 );
 ```
 
-Eigene `do_action`-Hooks gibt es nicht.
+## Actions
+
+| Action | Parameter | Zweck |
+|---|---|---|
+| `swfl_cache_warmup_done` | `$refreshed` | Nach einem Warm-up-Lauf |
+| `swfl_upstream_budget_exceeded` | `$limit` | Höchstens einmal pro Minute, solange das seitenweite Budget aufgebraucht ist; zum Protokollieren oder Alarmieren |
 
 ## Erweiterung
 
@@ -42,12 +53,29 @@ Standardmässig läuft die Free-API. Für Ligen, Topscorer & Co. in den Einstell
 
 ```bash
 php scripts/check_release.php   # Version, ABSPATH, Textdomain
+php scripts/tests/run.php       # Offline-Tests (ohne WordPress, ohne Netzwerk), optional mit Namensfilter
 php verify_api.php              # Live-Smoke-Test gegen die echte API (Netzwerk nötig)
+docker exec swiss-floorball-api-wordpress-1 php /var/www/html/wp-content/plugins/swiss-floorball-api/scripts/tests/integration.php
 ```
+
+`scripts/tests/` (nicht im Release-ZIP) stubbt die wenigen WordPress-Funktionen, die die Klassen nutzen, und testet Cache, Budget, Zähler, Argumente, Besucher-Erkennung und Warm-up. Mit `$GLOBALS['swfl_t']['process'] = true` bildet der Fake den In-Process-Cache der Optionen nach; `swfl_test_db_write()` simuliert eine parallele Anfrage. `integration.php` läuft im Docker-WordPress gegen den echten REST-Server mit vorgegebenen API-Antworten und stellt die Einstellungen danach wieder her.
 
 Mit `SWFL_API_SOURCE=partner php verify_api.php` wird die Partner-API getestet (gespeicherter Key und Secret nötig); Standard ist `free`.
 
-`verify_api.php` lädt Client und Display mit gestubbten WordPress-Funktionen, ermittelt IDs aus der API und schlägt bei API-Fehlern, geänderten Antwortformen, PHP-Warnungen oder «Daten konnten nicht geladen werden» fehl. CI (`.github/workflows/ci.yml`): PHP-Lint 7.4–8.4, Release-Check, WordPress Plugin Check, phpcs (blockierend).
+`verify_api.php` lädt Client und Display mit gestubbten WordPress-Funktionen, ermittelt IDs aus der API und schlägt bei API-Fehlern, geänderten Antwortformen, PHP-Warnungen oder «Daten konnten nicht geladen werden» fehl. CI (`.github/workflows/ci.yml`): PHP-Lint 7.4–8.5, Offline-Tests in den Images `php:<version>-cli` der tiefsten erlaubten Versionen 8.2.35, 8.3.36, 8.4.27 und 8.5.12 (siehe `SWFL_Php_Requirement::MINIMUMS`), Release-Check, WordPress Plugin Check, phpcs (blockierend).
+
+## Übersetzungen
+
+Alle Texte im Code sind englisch und laufen über `__()`, `esc_html__()` & Co. mit der Textdomain `swiss-floorball-api`; Texte für JavaScript werden per `wp_localize_script()` übergeben. Die Übersetzungen liegen in `languages/`: `swiss-floorball-api-de_CH.po` (Schweizer Rechtschreibung, gilt für alle `de_CH*`), `-de_DE.po` (alle übrigen deutschen Sprachen), `-fr_FR.po` (alle französischen) und `-it_IT.po` (alle italienischen). WordPress kennt kein `fr_CH` oder `it_CH`; die Texte verwenden trotzdem die Schweizer Unihockey-Begriffe («unihockey», «topscorer», «La Mobilière» bzw. «La Mobiliare»). Ein Sprachpaket von translate.wordpress.org hat Vorrang. Nach Textänderungen:
+
+```bash
+docker compose run --rm wp-cli wp i18n make-pot wp-content/plugins/swiss-floorball-api wp-content/plugins/swiss-floorball-api/languages/swiss-floorball-api.pot --exclude=scripts,verify_api.php,graphify-out,docs,assets
+docker compose run --rm wp-cli wp i18n update-po wp-content/plugins/swiss-floorball-api/languages/swiss-floorball-api.pot wp-content/plugins/swiss-floorball-api/languages/
+# neue msgstr in allen vier .po-Dateien übersetzen, dann:
+docker compose run --rm wp-cli wp i18n make-mo wp-content/plugins/swiss-floorball-api/languages
+```
+
+Daten aus der Swiss-Unihockey-API (Spaltentitel, Tabellennamen, Team- und Hallennamen) werden nicht übersetzt; die API liefert sie nur deutsch.
 
 ## Konventionen
 

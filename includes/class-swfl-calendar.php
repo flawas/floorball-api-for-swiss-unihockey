@@ -62,6 +62,28 @@ class SWFL_Calendar {
 	 * @return string|WP_Error iCalendar text, or an error.
 	 */
 	public static function rest_calendar( $request ) {
+		$params = self::get_game_params( $request );
+		if ( is_wp_error( $params ) ) {
+			return $params;
+		}
+
+		$result = SWFL_Table_Data::fetch_all_pages( 'games', SWFL_Table_Data::clean_params( $params ) );
+		if ( is_wp_error( $result ) ) {
+			return self::upstream_error( $result );
+		}
+
+		$title = isset( $result['data']['title'] ) && is_string( $result['data']['title'] ) ? $result['data']['title'] : 'Swiss Floorball';
+		return self::build_calendar( $title, isset( $result['data']['headers'] ) ? $result['data']['headers'] : array(), SWFL_Table_Data::prepare_game_rows( $result['rows'] ) );
+	}
+
+	/**
+	 * Build the games query from the request, in the order team, club, league group.
+	 *
+	 * @since 2.2.0
+	 * @param WP_REST_Request $request Request.
+	 * @return array|WP_Error Query parameters, or a 400 error when no filter is given.
+	 */
+	private static function get_game_params( $request ) {
 		$params = array( 'season' => absint( $request->get_param( 'season' ) ) );
 		if ( ! $params['season'] ) {
 			$params['season'] = SWFL_Display::get_current_season();
@@ -79,21 +101,30 @@ class SWFL_Calendar {
 			$params['game_class'] = absint( $request->get_param( 'game_class' ) );
 			$params['group']      = SWFL_Request_Guard::sanitize_group( $request->get_param( 'group' ) );
 		} else {
-			return new WP_Error( 'swfl_missing_params', 'team_id, club_id or league and game_class are required', array( 'status' => 400 ) );
+			$params = new WP_Error( 'swfl_missing_params', __( 'team_id, club_id or league and game_class are required.', 'swiss-floorball-api' ), array( 'status' => 400 ) );
 		}
 
-		$result = SWFL_Table_Data::fetch_all_pages( 'games', SWFL_Table_Data::clean_params( $params ) );
-		if ( is_wp_error( $result ) ) {
-			if ( current_user_can( 'manage_options' ) ) {
-				$result->add_data( array( 'status' => 502 ) );
-				return $result;
-			}
-			// Visitors get no detail of the upstream error; the reason is for administrators.
-			return new WP_Error( 'api_error', 'The calendar could not be loaded', array( 'status' => 502 ) );
+		return $params;
+	}
+
+	/**
+	 * Error for a failed upstream request: the 503 of a refused request as it is, details only for administrators.
+	 *
+	 * @since 2.2.0
+	 * @param WP_Error $error Error returned by the table loader.
+	 * @return WP_Error 503 error of the upstream budget, the upstream error for administrators, otherwise a neutral 502.
+	 */
+	private static function upstream_error( $error ) {
+		// Visitors get no detail of the upstream error; the reason is for administrators.
+		$mapped = new WP_Error( 'api_error', __( 'The calendar could not be loaded.', 'swiss-floorball-api' ), array( 'status' => 502 ) );
+		if ( SWFL_Upstream_Budget::is_budget_error( $error ) ) {
+			$mapped = $error;
+		} elseif ( current_user_can( 'manage_options' ) ) {
+			$error->add_data( array( 'status' => 502 ) );
+			$mapped = $error;
 		}
 
-		$title = isset( $result['data']['title'] ) && is_string( $result['data']['title'] ) ? $result['data']['title'] : 'Swiss Floorball';
-		return self::build_calendar( $title, isset( $result['data']['headers'] ) ? $result['data']['headers'] : array(), SWFL_Table_Data::prepare_game_rows( $result['rows'] ) );
+		return $mapped;
 	}
 
 	/**

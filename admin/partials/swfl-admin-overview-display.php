@@ -26,8 +26,8 @@ $swfl_season      = SWFL_Display::get_current_season();
 ?>
 <div class="wrap sfa-admin-wrap" data-sfa-theme="<?php echo esc_attr( SWFL_Theme::get_theme() ); ?>">
 	<div class="sfa-admin-header">
-		<h1><?php SWFL_Icons::render( 'chart' ); ?> <?php esc_html_e( 'Club-Übersicht', 'swiss-floorball-api' ); ?></h1>
-		<p><?php esc_html_e( 'Teams und Spiele des konfigurierten Clubs', 'swiss-floorball-api' ); ?></p>
+		<h1><?php SWFL_Icons::render( 'chart' ); ?> <?php esc_html_e( 'Club overview', 'swiss-floorball-api' ); ?></h1>
+		<p><?php esc_html_e( 'Teams and games of the configured club', 'swiss-floorball-api' ); ?></p>
 	</div>
 
 	<?php if ( $swfl_club_number && $swfl_season ) : ?>
@@ -40,8 +40,8 @@ $swfl_season      = SWFL_Display::get_current_season();
 	<?php else : ?>
 		<div class="sfa-callout">
 			<?php SWFL_Icons::render( 'warning' ); ?>
-			<span><?php esc_html_e( 'Bitte konfigurieren Sie zuerst die Einstellungen (Club ID und Saison).', 'swiss-floorball-api' ); ?></span>
-			<a href="<?php echo esc_url( admin_url( 'admin.php?page=swiss-floorball-api-settings' ) ); ?>" class="button button-primary"><?php esc_html_e( 'Einstellungen', 'swiss-floorball-api' ); ?></a>
+			<span><?php esc_html_e( 'Please configure the settings first (club ID and season).', 'swiss-floorball-api' ); ?></span>
+			<a href="<?php echo esc_url( admin_url( 'admin.php?page=swiss-floorball-api-settings' ) ); ?>" class="button button-primary"><?php esc_html_e( 'Settings', 'swiss-floorball-api' ); ?></a>
 		</div>
 	<?php endif; ?>
 </div>

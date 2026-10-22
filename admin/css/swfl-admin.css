@@ -243,6 +243,10 @@
     color: var(--sfa-primary);
 }
 
+.sfa-info-box__text {
+    margin-bottom: 0;
+}
+
 /* Shortcode table column widths */
 .sfa-col-shortcode  { width: 20%; }
 .sfa-col-description { width: 30%; }
@@ -1461,4 +1465,8 @@
 .sfa-admin-wrap .sfa-autosave-status {
     display: block;
     margin: 1em 0;
+}
+
+.sfa-admin-wrap .sfa-autosave-status--error {
+    color: #b32d2e;
 }
