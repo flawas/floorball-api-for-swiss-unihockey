@@ -1,6 +1,6 @@
 # Fehlerbehebung
 
-## «Swiss Floorball API is paused: PHP … has critical security vulnerabilities»
+## «Swiss Floorball API ist pausiert: PHP … hat kritische Sicherheitslücken»
 
 Das Plugin braucht PHP 8.2.35, 8.3.36, 8.4.27, 8.5.12 oder neuer (auch neuere Branches). Diese Versionen beheben die kritischen RCE-Lücken CVE-2026-109618 und CVE-2026-109619; ältere Releases und PHP 8.1 und älter sind verwundbar. Auf einer zu alten Version lädt das Plugin nichts (Shortcodes und Widgets bleiben leer) und lässt sich nicht aktivieren. PHP beim Hoster aktualisieren, danach läuft das Plugin von selbst wieder. Hat der Hoster die Fixes eingespielt, ohne die Versionsnummer zu ändern (Backports von Debian, Ubuntu, RHEL), in `wp-config.php` `define( 'SWFL_ALLOW_OTHER_PHP', true );` setzen.
 
@@ -12,15 +12,15 @@ Das Plugin braucht PHP 8.2.35, 8.3.36, 8.4.27, 8.5.12 oder neuer (auch neuere Br
 
 ## «Diese Daten sind in der kostenlosen API nicht verfügbar»
 
-Ligen, Gruppen, Topscorer, Spielerprofile, Nationalspieler und Spielereignisse liefert nur die Partner-API. In den Einstellungen «API source» auf **Partner API** stellen und API-Key und Secret eintragen ([Umstieg auf 2.0.0](migration.md#1-wechsel-der-api-quelle)).
+Ligen, Gruppen, Topscorer, Spielerprofile, Nationalspieler und Spielereignisse liefert nur die Partner-API. In den Einstellungen «API-Quelle» auf **Partner API** stellen und API-Key und Secret eintragen ([Umstieg auf 2.0.0](migration.md#1-wechsel-der-api-quelle)).
 
 ## «Anmeldung an der Partner-API fehlgeschlagen»
 
-Key oder Secret fehlen oder sind falsch. Beide Werte unter «Partner API: API key» und «Partner API: API secret» prüfen (Leerzeichen am Rand, richtiges Paar). Das Speichern verwirft das zwischengespeicherte Token. Der Server muss ausserdem `office.swissunihockey.ch` erreichen.
+Key oder Secret fehlen oder sind falsch. Beide Werte unter «Partner-API: API-Key» und «Partner-API: API-Secret» prüfen (Leerzeichen am Rand, richtiges Paar). Das Speichern verwirft das zwischengespeicherte Token. Der Server muss ausserdem `office.swissunihockey.ch` erreichen.
 
 ## Die Partner-Felder fehlen in den Einstellungen
 
-Sie erscheinen nur bei «API source» = **Partner API**. Erscheinen sie trotzdem nicht, Browser-Cache leeren (harter Reload) und prüfen, dass kein JavaScript-Fehler auf der Seite auftritt.
+Sie erscheinen nur bei «API-Quelle» = **Partner API**. Erscheinen sie trotzdem nicht, Browser-Cache leeren (harter Reload) und prüfen, dass kein JavaScript-Fehler auf der Seite auftritt.
 
 ## Woche, Seite oder Runde lässt sich nicht umschalten
 
@@ -29,9 +29,9 @@ Die Navigation der Widgets nutzt JavaScript und die REST-Routen `/wp-json/swfl/v
 ## REST-Routen antworten mit 400, 429 oder 503
 
 - **400 `rest_invalid_param`:** Ein Parameter ist ungültig, bevor die API gefragt wird. IDs sind ganze Zahlen von 1 bis 10 000 000 (optionale IDs dürfen leer oder `0` sein), `season` ist leer, `0` oder ein Startjahr von 1996 bis zum nächsten Jahr, `group` höchstens 40 Buchstaben, Ziffern, Leerzeichen und `. _ / -`.
-- **429 `swfl_rate_limited`:** Ein Besucher hat mehr als «REST requests per minute and visitor» Anfragen gesendet. Teilen sich alle Besucher eine Adresse (Reverse-Proxy, CDN, Docker), den Proxy unter «Trusted proxies» eintragen oder die echte Adresse im Webserver wiederherstellen ([Administration](admin.md#vertrauenswürdige-proxys)). Welche Adressen gerade blockiert sind, zeigt die Einstellungsseite unter «Blocked visitors» ([Administration](admin.md#blockierte-besucher)).
-- **429 `swfl_budget_exceeded`:** Ein Besucher hat seinen Anteil «Upstream requests per minute and visitor» an ungecachten API-Anfragen aufgebraucht (Standard 20 pro Minute). Gecachte Antworten und abgelaufene Kopien bekommt er weiter. Lädt ein normaler Besucher sehr lange Listen, den Wert erhöhen.
-- **503 `swfl_budget_exceeded`:** Das seitenweite Limit «Upstream requests per minute» ist für die laufende Minute aufgebraucht. Gecachte Antworten kommen weiter, abgelaufene Kopien werden kurz weiter ausgeliefert, sonst sagt `Retry-After`, wann es wieder geht. Bei normalem Verkehr das Limit erhöhen.
+- **429 `swfl_rate_limited`:** Ein Besucher hat mehr als «REST-Anfragen pro Minute und Besucher» Anfragen gesendet. Teilen sich alle Besucher eine Adresse (Reverse-Proxy, CDN, Docker), den Proxy unter «Vertrauenswürdige Proxys» eintragen oder die echte Adresse im Webserver wiederherstellen ([Administration](admin.md#vertrauenswürdige-proxys)). Welche Adressen gerade blockiert sind, zeigt die Einstellungsseite unter «Blockierte Besucher» ([Administration](admin.md#blockierte-besucher)).
+- **429 `swfl_budget_exceeded`:** Ein Besucher hat seinen Anteil «API-Anfragen pro Minute und Besucher» an ungecachten API-Anfragen aufgebraucht (Standard 20 pro Minute). Gecachte Antworten und abgelaufene Kopien bekommt er weiter. Lädt ein normaler Besucher sehr lange Listen, den Wert erhöhen.
+- **503 `swfl_budget_exceeded`:** Das seitenweite Limit «API-Anfragen pro Minute» ist für die laufende Minute aufgebraucht. Gecachte Antworten kommen weiter, abgelaufene Kopien werden kurz weiter ausgeliefert, sonst sagt `Retry-After`, wann es wieder geht. Bei normalem Verkehr das Limit erhöhen.
 
 Erste Verteidigungslinie gegen Fluten sollte eine Rate-Limit-Regel im CDN oder in der Web Application Firewall für `/wp-json/swfl/` sein (z. B. eine Cloudflare-Rate-Limiting-Regel); die Limits des Plugins greifen erst, wenn PHP schon läuft.
 
@@ -41,11 +41,11 @@ Der alte Kalenderexport der API entfällt. `[swfl-calendars]` zeigt die neue URL
 
 ## API nicht erreichbar
 
-Der Server muss `wc.swissunihockey.ch` (Partner-API: `office.swissunihockey.ch`) per HTTPS erreichen (Firewall, `WP_HTTP_BLOCK_EXTERNAL`). Der Standard-Timeout beträgt 3 Sekunden; bei langsamen Servern die Einstellung «API request timeout» erhöhen oder den Filter `swfl_request_timeout` nutzen ([Entwicklung](developer.md#filter)). Fehlgeschlagene Anfragen werden kurz gemerkt (dauerhafte Fehler wie unbekannte IDs 5 Minuten, vorübergehende wie Timeouts und 5xx höchstens 60 Sekunden, Filter `swfl_error_cache_ttl`), damit dieselbe Anfrage die API nicht sofort erneut trifft; «Cache leeren» verwirft sie. Mit `php verify_api.php` lässt sich die API unabhängig von WordPress testen.
+Der Server muss `wc.swissunihockey.ch` (Partner-API: `office.swissunihockey.ch`) per HTTPS erreichen (Firewall, `WP_HTTP_BLOCK_EXTERNAL`). Der Standard-Timeout beträgt 3 Sekunden; bei langsamen Servern die Einstellung «Zeitlimit für API-Anfragen» erhöhen oder den Filter `swfl_request_timeout` nutzen ([Entwicklung](developer.md#filter)). Fehlgeschlagene Anfragen werden kurz gemerkt (dauerhafte Fehler wie unbekannte IDs 5 Minuten, vorübergehende wie Timeouts und 5xx höchstens 60 Sekunden, Filter `swfl_error_cache_ttl`), damit dieselbe Anfrage die API nicht sofort erneut trifft; «Cache leeren» verwirft sie. Mit `php verify_api.php` lässt sich die API unabhängig von WordPress testen.
 
 ## Alte Daten werden angezeigt
 
-Antworten werden je nach Endpunkt gecacht (Standard 1 Stunde, einstellbar pro Endpunkt). Ist das Limit «Upstream requests per minute» aufgebraucht, liefern die REST-Routen bis zu einer Stunde lang eine abgelaufene Kopie aus. Unter «Swiss Floorball» → «Einstellungen» den Cache leeren ([Administration](admin.md#cache-leeren)). Eine Änderung der Club-Nummer leert ihn automatisch.
+Antworten werden je nach Endpunkt gecacht (Standard 1 Stunde, einstellbar pro Endpunkt). Ist das Limit «API-Anfragen pro Minute» aufgebraucht, liefern die REST-Routen bis zu einer Stunde lang eine abgelaufene Kopie aus. Unter «Swiss Floorball» → «Einstellungen» den Cache leeren ([Administration](admin.md#cache-leeren)). Eine Änderung der Club-Nummer leert ihn automatisch.
 
 ## Club-Name bleibt leer
 

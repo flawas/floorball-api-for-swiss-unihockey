@@ -220,6 +220,8 @@ It is used to retrieve floorball data such as club games, team rosters, league r
 **Service provider:** Swiss Unihockey (Floorball Schweiz)  
 [Terms of Service](https://www.swissunihockey.ch/index.php?cID=1186) | [Privacy Policy](https://swissunihockey.tlex.ch/app/de/texts_of_law/2-7)
 
+**Data stored on your site:** To protect the public REST routes, the plugin counts the requests of each visitor per minute by IP address (IPv6 by its /64 prefix); the counter keeps only a hash and expires with the minute. When a visitor exceeds a limit, the address or IPv6 prefix is kept for one hour in the *Blocked visitors* list on the settings page, visible to administrators only, and then deleted. The plugin adds a suggested text to *Settings → Privacy → Policy guide* that you can copy into your privacy policy.
+
 **Images from Cloudinary:** Team logos and player portraits come from the API as image URLs on `res.cloudinary.com` (Swiss Unihockey's image host). The visitor's browser loads these images directly from Cloudinary when a page with such a shortcode is shown, so the visitor's IP address and browser data are transmitted to Cloudinary. The plugin does not store or process this data.  
 Service provider: Cloudinary Ltd. | [Terms of Service](https://cloudinary.com/tou) | [Privacy Policy](https://cloudinary.com/privacy)
 
@@ -267,6 +269,8 @@ Version 2.0.0 contains breaking changes (API source, calendar feed, shortcode at
 * New: The settings page lists the visitors the REST rate limit or their upstream share blocked during the last hour (IPv4 address or IPv6 /64 prefix, whether the block is still running, blocked minutes, first block). Entries are kept for one hour after their last block, at most 50, written at most once per visitor and minute
 * Change: The settings page shows the problems its automatic saving found (for example ignored trusted proxy entries or a club number without a name) instead of only "Saved."
 * Change: Refused (429, 503) and failed widget reloads show a short notice instead of failing silently, and the team select returns to the team whose games are shown
+* New: The plugin is fully available in English, German, French and Italian. All texts in the code are English; translations ship in `languages/` and are used unless a language pack from translate.wordpress.org exists: German for Switzerland (`de_CH`, Swiss spelling) and for all other German locales (`de_DE`), French (`fr_FR`, also used for `fr_CA`, `fr_BE`, …) and Italian (`it_IT`), with the Swiss floorball terms ("unihockey", "topscorer", "La Mobilière" / "La Mobiliare"). Admin pages and texts that were hard-coded in German (the shortcode overview, settings help, menus, notices) are now translatable. Column titles and names delivered by the Swiss Unihockey API stay as the API sends them (German)
+* New: Suggested privacy policy text under *Settings → Privacy → Policy guide* (requests to the Swiss Unihockey API, images from Cloudinary, the IP-based rate limit and the one-hour list of blocked visitors)
 * Fix: The club name in the "Club name automatically set" notice is escaped
 
 ### 2.1.2 (2026-10-18)

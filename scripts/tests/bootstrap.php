@@ -111,6 +111,8 @@ function swfl_test_reset() {
 		'http_queue' => array(),   // Scripted wp_remote_get() answers.
 		'http_calls' => array(),   // URLs passed to wp_remote_get() and wp_remote_post().
 		'user_can'   => false,
+		'locale'     => 'en_US',   // What determine_locale() reports.
+		'textdomain' => array(),   // Files passed to load_textdomain().
 		'year'       => gmdate( 'Y' ),
 	);
 	unset( $_SERVER['REMOTE_ADDR'], $_SERVER['HTTP_X_FORWARDED_FOR'] );
@@ -358,6 +360,16 @@ function wp_remote_retrieve_body( $response ) {
 	return $response['body'];
 }
 
+// Translations: the language packs live in a scratch directory of the test run.
+define( 'WP_LANG_DIR', sys_get_temp_dir() . '/swfl-test-languages-' . getmypid() );
+function determine_locale() {
+	return $GLOBALS['swfl_t']['locale'];
+}
+function load_textdomain( $domain, $file ) {
+	$GLOBALS['swfl_t']['textdomain'][] = array( $domain, basename( $file ) );
+	return true;
+}
+
 // Output helpers used by the render methods.
 function esc_html( $text ) {
 	return htmlspecialchars( (string) $text, ENT_QUOTES, 'UTF-8' );
@@ -396,7 +408,7 @@ function admin_url( $path = '' ) {
 // ---------------------------------------------------------------------------
 // Plugin classes
 // ---------------------------------------------------------------------------
-foreach ( array( 'client', 'display', 'icons', 'widgets', 'calendar', 'rest', 'table-data', 'request-guard', 'counter', 'client-ip', 'cache-entry', 'upstream-budget', 'warmup', 'rate-limit-log', 'php-requirement' ) as $swfl_class_file ) {
+foreach ( array( 'client', 'display', 'icons', 'widgets', 'calendar', 'rest', 'table-data', 'request-guard', 'counter', 'client-ip', 'cache-entry', 'upstream-budget', 'warmup', 'rate-limit-log', 'php-requirement', 'i18n' ) as $swfl_class_file ) {
 	require_once ABSPATH . 'includes/class-swfl-' . $swfl_class_file . '.php';
 }
 require_once ABSPATH . 'admin/class-swfl-admin-settings.php';

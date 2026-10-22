@@ -150,7 +150,11 @@ class SWFL_Request_Guard {
 
 		return null !== $number && $number >= 1 && $number <= self::MAX_ID
 			? true
-			: new WP_Error( 'swfl_invalid_id', 'Must be a whole number from 1 to ' . self::MAX_ID . '.' );
+			: new WP_Error(
+				'swfl_invalid_id',
+				/* translators: %d: highest allowed ID. */
+				sprintf( __( 'Must be a whole number from 1 to %d.', 'swiss-floorball-api' ), self::MAX_ID )
+			);
 	}
 
 	/**
@@ -165,7 +169,11 @@ class SWFL_Request_Guard {
 
 		return null !== $number && $number <= self::MAX_ID
 			? true
-			: new WP_Error( 'swfl_invalid_id', 'Must be empty, 0 or a whole number from 1 to ' . self::MAX_ID . '.' );
+			: new WP_Error(
+				'swfl_invalid_id',
+				/* translators: %d: highest allowed ID. */
+				sprintf( __( 'Must be empty, 0 or a whole number from 1 to %d.', 'swiss-floorball-api' ), self::MAX_ID )
+			);
 	}
 
 	/**
@@ -181,7 +189,11 @@ class SWFL_Request_Guard {
 
 		return null !== $number && ( 0 === $number || ( $number >= self::MIN_SEASON && $number <= $max ) )
 			? true
-			: new WP_Error( 'swfl_invalid_season', 'Must be empty, 0 or a season start year from ' . self::MIN_SEASON . ' to ' . $max . '.' );
+			: new WP_Error(
+				'swfl_invalid_season',
+				/* translators: 1: first allowed season, 2: last allowed season. */
+				sprintf( __( 'Must be empty, 0 or a season start year from %1$d to %2$d.', 'swiss-floorball-api' ), self::MIN_SEASON, $max )
+			);
 	}
 
 	/**
@@ -196,7 +208,11 @@ class SWFL_Request_Guard {
 			return true;
 		}
 
-		return new WP_Error( 'swfl_invalid_group', 'Must be up to ' . self::MAX_GROUP_LENGTH . ' letters, digits, spaces or . _ / -.' );
+		return new WP_Error(
+			'swfl_invalid_group',
+			/* translators: %d: longest allowed group name. */
+			sprintf( __( 'Must be up to %d letters, digits, spaces or . _ / -.', 'swiss-floorball-api' ), self::MAX_GROUP_LENGTH )
+		);
 	}
 
 	/**
@@ -244,7 +260,7 @@ class SWFL_Request_Guard {
 			SWFL_Rate_Limit_Log::record( $bucket, time() + SWFL_Counter::seconds_left( MINUTE_IN_SECONDS ) );
 			$result = new WP_Error(
 				'swfl_rate_limited',
-				'Too many requests',
+				__( 'Too many requests.', 'swiss-floorball-api' ),
 				array(
 					'status'      => 429,
 					'retry_after' => SWFL_Counter::seconds_left( MINUTE_IN_SECONDS ),

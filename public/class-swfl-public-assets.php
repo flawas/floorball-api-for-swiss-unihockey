@@ -131,7 +131,9 @@ class SWFL_Public_Assets {
 			'swflWidgets',
 			array(
 				'restUrl' => esc_url_raw( rest_url( 'swfl/v1/' ) ),
-				'retry'   => __( 'Die Daten konnten gerade nicht geladen werden. Bitte in einem Moment erneut versuchen.', 'swiss-floorball-api' ),
+				'retry'   => __( 'The data could not be loaded just now. Please try again in a moment.', 'swiss-floorball-api' ),
+				/* translators: 1: first game number, 2: last game number, 3: total number of games. */
+				'range'   => __( '%1$d–%2$d of %3$d', 'swiss-floorball-api' ),
 			)
 		);
 	}

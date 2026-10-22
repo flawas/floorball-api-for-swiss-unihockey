@@ -4,7 +4,7 @@ Version 2.0.0 ist ein Major-Release. Bitte vor dem Update lesen, besonders wenn 
 
 ## 1. Wechsel der API-Quelle
 
-Die bisherige API (`https://api-v2.swissunihockey.ch/api/`) ist **keine API-Quelle mehr**. Das Plugin kennt jetzt zwei Quellen, einstellbar unter «Swiss Floorball» → «Einstellungen» → «API source» (Option `swfl_api_source`):
+Die bisherige API (`https://api-v2.swissunihockey.ch/api/`) ist **keine API-Quelle mehr**. Das Plugin kennt jetzt zwei Quellen, einstellbar unter «Swiss Floorball» → «Einstellungen» → «API-Quelle» (Option `swfl_api_source`):
 
 | Quelle | Basis-URL | Zugangsdaten | Standard |
 |---|---|---|---|
@@ -20,7 +20,7 @@ Diese Funktionen brauchen die **Partner API**:
 
 | Bereich | Betroffen |
 |---|---|
-| Ligen und Gruppen (ID-Finder) | Admin-Seite «Liga», Shortcode `[swfl-groups]` |
+| Ligen und Gruppen (ID-Finder) | Admin-Seite «Ligen», Shortcode `[swfl-groups]` |
 | Topscorer | `[swfl-topscorers]` |
 | Spielerprofile | `[swfl-player]` |
 | Nationalspieler | `[swfl-national-players]` |
@@ -30,13 +30,13 @@ Alles andere (Spiele, Ranglisten, Teams, Clubs, Saisons, Cups, Spieldetails, Kal
 
 ### Partner API einrichten
 
-1. «API source» auf **Partner API** stellen.
-2. Die Felder **Partner API: API key** und **Partner API: API secret** erscheinen (bei «Free API» sind sie ausgeblendet). Beide ausfüllen, beide sind Pflicht.
+1. «API-Quelle» auf **Partner API** stellen.
+2. Die Felder **Partner API: API key** und **Partner API: API secret** erscheinen (bei «Kostenlose API» sind sie ausgeblendet). Beide ausfüllen, beide sind Pflicht.
 3. Speichern. Das Plugin tauscht Key und Secret bei `bo/session/auth` gegen ein kurzlebiges Auth-Token (30 Minuten im Transient `swfl_partner_token`) und hängt es als `auth_token` an die Anfragen. Wird das Token abgelehnt (401/403), holt es einmal ein neues.
 
 ![Einstellungen mit gewählter Partner-API](media/admin-settings-partner.png)
 
-Hinweis: Die Option `swfl_api_key` existierte schon vorher, wurde aber nie für Anfragen verwendet. Ein dort gespeicherter Wert wird jetzt als Partner-Key interpretiert, aber nur, wenn die Quelle auf «Partner API» steht.
+Hinweis: Die Option `swfl_api_key` existierte schon vorher, wurde aber nie für Anfragen verwendet. Ein dort gespeicherter Wert wird jetzt als Partner-Key interpretiert, aber nur, wenn die Quelle auf «Partner-API» steht.
 
 ## 2. Kalender-Abos (ICS)
 
@@ -71,9 +71,9 @@ Die Navigation (Woche, Seite, Runde) braucht JavaScript und die REST-Routen `swf
 
 ## 4. Neues Aussehen und Markup
 
-- Tabellen erscheinen im **Flat-Stil** (Standard): keine Rahmen oder Schatten, dünne Trennlinien. Der bisherige Look ist mit «Table style» = `classic` weiter verfügbar.
+- Tabellen erscheinen im **Flat-Stil** (Standard): keine Rahmen oder Schatten, dünne Trennlinien. Der bisherige Look ist mit «Tabellenstil» = `classic` weiter verfügbar.
 - Tabellen stecken in `.sfa-table-wrap` und scrollen bei schmalem Platz horizontal statt in eine Kartenansicht zu wechseln. Das Layout richtet sich nach der Breite des Widgets (Container Queries), nicht nach dem Bildschirm.
-- Farben sind CSS-Variablen `--sfa-sys-*`, gültig nur innerhalb von `.swiss-floorball-plugin` und `.sfa-admin-wrap`. Eigene CSS-Overrides auf alte Klassen oder Variablen (`--sfa-primary`, `--sfa-secondary` wirken weiter, werden aber von «Seed colour» überschrieben) bitte prüfen.
+- Farben sind CSS-Variablen `--sfa-sys-*`, gültig nur innerhalb von `.swiss-floorball-plugin` und `.sfa-admin-wrap`. Eigene CSS-Overrides auf alte Klassen oder Variablen (`--sfa-primary`, `--sfa-secondary` wirken weiter, werden aber von «Markenfarbe» überschrieben) bitte prüfen.
 - Der Kalender zeigt die Spaltenköpfe «Heim/Gast».
 
 ## 5. Neue Einstellungen
@@ -94,14 +94,14 @@ Alle Optionen werden bei der Deinstallation gelöscht.
 
 - Neues Dashboard mit Kennzahlen (Club, Club-ID, Saison, API-Quelle) und Kachelnavigation.
 - Die Club-Übersicht (Teams) und die Clubspiele sind auf die eigene Seite «Club-Übersicht» umgezogen.
-- Die Seite «Liga» und andere Helfer, die Ligen oder Gruppen laden, zeigen mit der Free API den Partner-Hinweis.
+- Die Seite «Ligen» und andere Helfer, die Ligen oder Gruppen laden, zeigen mit der Free API den Partner-Hinweis.
 
 ## Checkliste vor dem Update
 
 1. Nutzt du `[swfl-topscorers]`, `[swfl-player]`, `[swfl-national-players]`, `[swfl-game-events]` oder `[swfl-groups]`? Dann Partner-API-Zugang bei Swiss Unihockey besorgen oder die Shortcodes entfernen.
 2. Sind in `[swfl-rankings]` numerische Gruppen eingetragen? Auf Gruppennamen umstellen (`Gruppe 1`).
 3. Gibt es abonnierte Kalender? Neu abonnieren.
-4. Eigenes CSS auf Plugin-Klassen? Nach dem Update prüfen, notfalls «Table style» = `classic`.
+4. Eigenes CSS auf Plugin-Klassen? Nach dem Update prüfen, notfalls «Tabellenstil» = `classic`.
 5. Nach dem Update den Cache leeren («Cache leeren» in den Einstellungen).
 
 ## Optionen heissen jetzt `swfl_*`

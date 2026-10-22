@@ -64,6 +64,19 @@ Mit `SWFL_API_SOURCE=partner php verify_api.php` wird die Partner-API getestet (
 
 `verify_api.php` lädt Client und Display mit gestubbten WordPress-Funktionen, ermittelt IDs aus der API und schlägt bei API-Fehlern, geänderten Antwortformen, PHP-Warnungen oder «Daten konnten nicht geladen werden» fehl. CI (`.github/workflows/ci.yml`): PHP-Lint 7.4–8.5, Offline-Tests in den Images `php:<version>-cli` der tiefsten erlaubten Versionen 8.2.35, 8.3.36, 8.4.27 und 8.5.12 (siehe `SWFL_Php_Requirement::MINIMUMS`), Release-Check, WordPress Plugin Check, phpcs (blockierend).
 
+## Übersetzungen
+
+Alle Texte im Code sind englisch und laufen über `__()`, `esc_html__()` & Co. mit der Textdomain `swiss-floorball-api`; Texte für JavaScript werden per `wp_localize_script()` übergeben. Die Übersetzungen liegen in `languages/`: `swiss-floorball-api-de_CH.po` (Schweizer Rechtschreibung, gilt für alle `de_CH*`), `-de_DE.po` (alle übrigen deutschen Sprachen), `-fr_FR.po` (alle französischen) und `-it_IT.po` (alle italienischen). WordPress kennt kein `fr_CH` oder `it_CH`; die Texte verwenden trotzdem die Schweizer Unihockey-Begriffe («unihockey», «topscorer», «La Mobilière» bzw. «La Mobiliare»). Ein Sprachpaket von translate.wordpress.org hat Vorrang. Nach Textänderungen:
+
+```bash
+docker compose run --rm wp-cli wp i18n make-pot wp-content/plugins/swiss-floorball-api wp-content/plugins/swiss-floorball-api/languages/swiss-floorball-api.pot --exclude=scripts,verify_api.php,graphify-out,docs,assets
+docker compose run --rm wp-cli wp i18n update-po wp-content/plugins/swiss-floorball-api/languages/swiss-floorball-api.pot wp-content/plugins/swiss-floorball-api/languages/
+# neue msgstr in allen vier .po-Dateien übersetzen, dann:
+docker compose run --rm wp-cli wp i18n make-mo wp-content/plugins/swiss-floorball-api/languages
+```
+
+Daten aus der Swiss-Unihockey-API (Spaltentitel, Tabellennamen, Team- und Hallennamen) werden nicht übersetzt; die API liefert sie nur deutsch.
+
 ## Konventionen
 
 WordPress Coding Standards (`.phpcs.xml.dist`), `ABSPATH`-Guard in jeder PHP-Datei, Escaping bei der Ausgabe, Nonce- und Capability-Prüfung bei Admin-Aktionen, CSS nur unter `.swiss-floorball-plugin` bzw. `.sfa-admin-wrap`. Releases laufen tag-getrieben (`vX.Y.Z`) über `.github/workflows/release.yml`.

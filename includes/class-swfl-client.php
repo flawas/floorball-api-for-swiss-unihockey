@@ -175,7 +175,7 @@ class SWFL_Client {
 		$api_key = get_option( 'swfl_api_key', '' );
 		$secret  = get_option( 'swfl_api_secret', '' );
 		if ( '' === $api_key || '' === $secret ) {
-			return new WP_Error( 'swfl_partner_credentials', 'API key or secret missing' );
+			return new WP_Error( 'swfl_partner_credentials', __( 'The API key or secret is missing.', 'swiss-floorball-api' ) );
 		}
 
 		$response = wp_remote_post(
@@ -211,7 +211,7 @@ class SWFL_Client {
 			return $token;
 		}
 
-		return new WP_Error( 'swfl_partner_auth', 'Partner API authentication failed' );
+		return new WP_Error( 'swfl_partner_auth', __( 'Signing in to the Partner API failed.', 'swiss-floorball-api' ) );
 	}
 
 	/**
@@ -388,7 +388,7 @@ class SWFL_Client {
 		$code = wp_remote_retrieve_response_code( $response );
 
 		if ( 403 === $code && self::SOURCE_FREE === self::get_source() ) {
-			return new WP_Error( 'swfl_endpoint_unavailable', 'Endpoint not available in the free API' );
+			return new WP_Error( 'swfl_endpoint_unavailable', __( 'This endpoint is not available in the free API.', 'swiss-floorball-api' ) );
 		}
 		if ( 200 !== $code ) {
 			// Keep the API's own message (e.g. unknown group) so administrators can see why a request failed.
@@ -396,7 +396,8 @@ class SWFL_Client {
 			$details = is_array( $body ) && isset( $body['error'] ) && is_string( $body['error'] ) ? $body['error'] : '';
 			return new WP_Error(
 				'api_error',
-				'API returned status code ' . $code,
+				/* translators: %d: HTTP status code. */
+				sprintf( __( 'API returned status code %d', 'swiss-floorball-api' ), $code ),
 				array(
 					'api_message'     => $details,
 					'upstream_status' => (int) $code,
@@ -406,7 +407,7 @@ class SWFL_Client {
 
 		$data = json_decode( wp_remote_retrieve_body( $response ), true );
 
-		return JSON_ERROR_NONE === json_last_error() ? $data : new WP_Error( 'json_error', 'Failed to decode JSON response' );
+		return JSON_ERROR_NONE === json_last_error() ? $data : new WP_Error( 'json_error', __( 'The answer of the API is not valid JSON.', 'swiss-floorball-api' ) );
 	}
 
 	/**

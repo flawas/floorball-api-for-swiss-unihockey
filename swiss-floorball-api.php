@@ -14,7 +14,7 @@
  * @wordpress-plugin
  * Plugin Name:       Swiss Floorball API
  * Plugin URI:        https://flaviowaser.ch
- * Description:       Ein kleines Plugin, welches ermöglicht, die aktuellen Daten der Swiss Floorball API abzufragen und auf der Webseite darzustellen.
+ * Description:       Shows the current data of the Swiss Floorball API (games, rankings, topscorers, players and calendars) on your website.
  * Version:           2.1.2
  * Requires PHP:      8.2
  * Author:            Flavio Waser

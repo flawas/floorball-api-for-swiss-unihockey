@@ -149,7 +149,10 @@ Legacy names that still exist on purpose, all handled for upgrades:
 ## Conventions
 
 - All output must be escaped (`esc_html`, `esc_attr`, `esc_url`) and all strings wrapped for
-  translation with text domain `swiss-floorball-api` — this plugin targets the WordPress.org
+  translation with text domain `swiss-floorball-api`. Source strings are English; the translations
+  live in `languages/swiss-floorball-api-{de_CH,de_DE,fr_FR,it_IT}.po` (regenerate the POT, run
+  `wp i18n update-po`, translate every new string in all four, `wp i18n make-mo`, see `docs/developer.md`).
+  Never hard-code text in any language — this plugin targets the WordPress.org
   directory and has previously failed automated plugin-check scans on exactly these issues (see
   README changelog for the history of security/compliance fixes already applied).
 - Every PHP file starts with an `ABSPATH` guard (`if ( ! defined( 'ABSPATH' ) ) { exit; }`).

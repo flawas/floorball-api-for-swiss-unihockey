@@ -1,6 +1,8 @@
 # Administration
 
-Das Menü «Swiss Floorball» (Capability `manage_options`, Menüposition 26) wird in `admin/class-swfl-admin.php` (`addPluginAdminMenu()`) angelegt.
+Das Menü «Swiss Floorball» (Capability `manage_options`, Menüposition 26) wird in `admin/class-swfl-admin.php` (`add_plugin_admin_menu()`) angelegt.
+
+Die Oberfläche ist auf Englisch geschrieben und vollständig ins Deutsche, Französische und Italienische übersetzt (`languages/`: `de_CH` für `de_CH*`, `de_DE` für alle übrigen deutschen Sprachen, `fr_FR` für alle französischen, `it_IT` für alle italienischen). Welche Sprache erscheint, bestimmt die Sprache der Website bzw. des Benutzerprofils. Spaltentitel, Tabellennamen und Namen, die von der Swiss-Unihockey-API kommen, sind Daten und bleiben deutsch.
 
 ## Einstellungen
 
@@ -37,7 +39,7 @@ Untermenü «Einstellungen» (Gruppe `swfl_general_settings`). Gespeichert als W
 
 ### API-Quelle und Partner-Zugangsdaten
 
-Die Felder «Partner API: API key» und «Partner API: API secret» sind nur sichtbar, solange «API source» auf **Partner API** steht (JavaScript, `admin/js/…-admin.js`). Beide Felder sind Pflicht und werden zusammen verwendet: Das Plugin tauscht sie gegen ein kurzlebiges Auth-Token. Bei der **Free API** werden sie nicht verwendet und bleiben beim Speichern erhalten. Welche Funktionen nur mit der Partner-API laufen, steht in [Umstieg auf 2.0.0](migration.md#1-wechsel-der-api-quelle).
+Die Felder «Partner-API: API-Key» und «Partner-API: API-Secret» sind nur sichtbar, solange «API-Quelle» auf **Partner API** steht (JavaScript, `admin/js/…-admin.js`). Beide Felder sind Pflicht und werden zusammen verwendet: Das Plugin tauscht sie gegen ein kurzlebiges Auth-Token. Bei der **Free API** werden sie nicht verwendet und bleiben beim Speichern erhalten. Welche Funktionen nur mit der Partner-API laufen, steht in [Umstieg auf 2.0.0](migration.md#1-wechsel-der-api-quelle).
 
 ![Einstellungen mit Partner-API: API key und API secret erscheinen](media/admin-settings-partner.png)
 
@@ -47,15 +49,19 @@ Auf der Einstellungsseite löst ein Formular `admin_post_swfl_clear_cache` aus (
 
 ### Hinweis «Limit … erreicht»
 
-Ist das seitenweite Limit «Upstream requests per minute» aufgebraucht, zeigt die Einstellungsseite 24 Stunden lang einen Hinweis, wann das war. Nach einer Änderung des Limits verschwindet er. Wer protokollieren oder alarmieren will, hängt sich an die Action `swfl_upstream_budget_exceeded` ([Entwicklung](developer.md)). War es normaler Besucherverkehr, den Wert erhöhen.
+Ist das seitenweite Limit «API-Anfragen pro Minute» aufgebraucht, zeigt die Einstellungsseite 24 Stunden lang einen Hinweis, wann das war. Nach einer Änderung des Limits verschwindet er. Wer protokollieren oder alarmieren will, hängt sich an die Action `swfl_upstream_budget_exceeded` ([Entwicklung](developer.md)). War es normaler Besucherverkehr, den Wert erhöhen.
 
 ### Blockierte Besucher
 
-Die Einstellungsseite listet, welche Besucher das REST-Rate-Limit oder ihr Anteil am Upstream-Limit in der letzten Stunde blockiert hat (`SWFL_Rate_Limit_Log`, Transient `swfl_rate_limited`): IPv4-Adresse bzw. IPv6-/64-Präfix, ob die Sperre noch läuft (sie endet mit der laufenden Minute), wie viele Minuten der Besucher gesperrt war und wann zum ersten Mal. Pro Besucher wird höchstens einmal pro Minute geschrieben, die Liste fasst höchstens 50 Einträge, und ein Eintrag verschwindet eine Stunde nach seiner letzten Sperre. «Cache leeren» leert auch diese Liste. Steht dort eine einzige Adresse mit vielen Minuten, die zu einem Proxy, CDN oder Firmennetz gehört, teilen sich wahrscheinlich viele Besucher diese Adresse: Proxy unter «Trusted proxies» eintragen oder das Limit erhöhen.
+Die Einstellungsseite listet, welche Besucher das REST-Rate-Limit oder ihr Anteil am Upstream-Limit in der letzten Stunde blockiert hat (`SWFL_Rate_Limit_Log`, Transient `swfl_rate_limited`): IPv4-Adresse bzw. IPv6-/64-Präfix, ob die Sperre noch läuft (sie endet mit der laufenden Minute), wie viele Minuten der Besucher gesperrt war und wann zum ersten Mal. Pro Besucher wird höchstens einmal pro Minute geschrieben, die Liste fasst höchstens 50 Einträge, und ein Eintrag verschwindet eine Stunde nach seiner letzten Sperre. «Cache leeren» leert auch diese Liste. Steht dort eine einzige Adresse mit vielen Minuten, die zu einem Proxy, CDN oder Firmennetz gehört, teilen sich wahrscheinlich viele Besucher diese Adresse: Proxy unter «Vertrauenswürdige Proxys» eintragen oder das Limit erhöhen.
+
+### Datenschutz
+
+Das Plugin speichert IP-Adressen nur für das Rate-Limit: Pro Minute zählt es die Anfragen jedes Besuchers anhand eines Hashwerts der Adresse (IPv6 nach dem /64-Präfix), der Zähler verfällt mit der Minute. Wer ein Limit überschreitet, steht mit Adresse bzw. Präfix eine Stunde lang in der Liste «Blockierte Besucher» und wird danach automatisch gelöscht. Unter «Einstellungen» → «Datenschutz» → «Anleitung» schlägt das Plugin einen Text für die Datenschutzerklärung vor (API-Abfragen durch den Server, Bilder von Cloudinary, Rate-Limit).
 
 ### Vertrauenswürdige Proxys
 
-Hinter einem Reverse-Proxy oder CDN (z. B. Cloudflare), das die echte Besucheradresse nicht an den Webserver weitergibt, teilen sich alle Besucher die Adresse des Proxys und damit ein Rate-Limit. Besser ist, die echte Adresse im Webserver wiederherzustellen (`mod_remoteip`, nginx `real_ip_header`). Geht das nicht, die Adressbereiche des Proxys unter «Trusted proxies» eintragen, z. B. die [IP-Bereiche von Cloudflare](https://www.cloudflare.com/ips/). Das Plugin liest dann für Anfragen von diesen Adressen den Besucher aus `X-Forwarded-For` (von rechts, vertrauenswürdige Hops werden übersprungen). `CF-Connecting-IP` wird absichtlich nicht gelesen. Ungültige Einträge werden beim automatischen Speichern verworfen und im Status unter dem Formular gemeldet.
+Hinter einem Reverse-Proxy oder CDN (z. B. Cloudflare), das die echte Besucheradresse nicht an den Webserver weitergibt, teilen sich alle Besucher die Adresse des Proxys und damit ein Rate-Limit. Besser ist, die echte Adresse im Webserver wiederherzustellen (`mod_remoteip`, nginx `real_ip_header`). Geht das nicht, die Adressbereiche des Proxys unter «Vertrauenswürdige Proxys» eintragen, z. B. die [IP-Bereiche von Cloudflare](https://www.cloudflare.com/ips/). Das Plugin liest dann für Anfragen von diesen Adressen den Besucher aus `X-Forwarded-For` (von rechts, vertrauenswürdige Hops werden übersprungen). `CF-Connecting-IP` wird absichtlich nicht gelesen. Ungültige Einträge werden beim automatischen Speichern verworfen und im Status unter dem Formular gemeldet.
 
 ## Helper-Seiten
 
@@ -65,10 +71,10 @@ Hinter einem Reverse-Proxy oder CDN (z. B. Cloudflare), das die echte Besucherad
 |---|---|
 | Dashboard | Kennzahlen (Club, Club-ID, Saison, API-Quelle) und Kachelnavigation |
 | Club-Übersicht | Teams des Clubs und Clubspiele |
-| Liga | Ligen (`leagues`) mit IDs für `league` und `game_class` (nur Partner-API) |
+| Ligen | Ligen (`leagues`) mit IDs für `league` und `game_class` (nur Partner-API) |
 | Clubs | Clubs (`clubs`) mit Club-IDs |
 | Spiele | Spiele des Clubs; Klick auf ein Spiel zeigt Details und Ereignisse (`match_id`) und liefert die Spiel-ID |
-| Saison | Saisons (`seasons`) für `season` |
+| Saisons | Saisons (`seasons`) für `season` |
 | Shortcodes | Übersicht der Shortcodes |
 
 Beispiele der Helper-Seiten:
@@ -90,10 +96,10 @@ Die Seiten nutzen dieselben `SWFL_Display::render_*`-Methoden wie die Shortcodes
 ## IDs finden
 
 - **Club-ID:** Seite «Clubs».
-- **Saison:** Seite «Saison» (Jahreszahl).
-- **Liga / Spielklasse (`league`, `game_class`):** Seite «Liga».
+- **Saison:** Seite «Saisons» (Jahreszahl).
+- **Liga / Spielklasse (`league`, `game_class`):** Seite «Ligen».
 - **Gruppe:** Shortcode [`swfl-groups`](shortcodes.md#swfl-groups) mit Liga und Spielklasse (nur Partner-API). Für `swfl-rankings` und `swfl-league-games` den Gruppennamen verwenden, z. B. `Gruppe 1`.
-- **Team-ID:** Shortcode `swfl-club-teams` bzw. Seite «Clubs».
+- **Team-ID:** Shortcode `swfl-club-teams` bzw. Seite «Club-Übersicht».
 - **Spiel-ID:** Seite «Spiele».
 
 Weiter: [Fehlerbehebung](troubleshooting.md).

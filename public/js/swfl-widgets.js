@@ -157,7 +157,11 @@
 			rows.forEach( function ( row, index ) {
 				row.hidden = index < start || index >= start + size;
 			} );
-			label.textContent = ( total ? start + 1 : 0 ) + '–' + Math.min( start + size, total ) + ' von ' + total;
+			// The same "%1$d–%2$d of %3$d" format as the server-rendered label.
+			label.textContent = ( config.range || '%1$d–%2$d of %3$d' )
+				.replace( '%1$d', String( total ? start + 1 : 0 ) )
+				.replace( '%2$d', String( Math.min( start + size, total ) ) )
+				.replace( '%3$d', String( total ) );
 			prev.disabled = start <= 0;
 			next.disabled = start + size >= total;
 		}

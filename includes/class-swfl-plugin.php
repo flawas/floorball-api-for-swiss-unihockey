@@ -162,7 +162,8 @@ class SWFL_Plugin {
 
 		$plugin_i18n = new SWFL_I18n();
 
-		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
+		// Early on init: WordPress wants no translations before it, and widgets_init (init, priority 1) needs them.
+		$this->loader->add_action( 'init', $plugin_i18n, 'load_plugin_textdomain', 0 );
 		// Runs first so no code reads the settings before the legacy options have been moved.
 		$this->loader->add_action( 'plugins_loaded', 'SWFL_Migrator', 'maybe_migrate', 1 );
 	}

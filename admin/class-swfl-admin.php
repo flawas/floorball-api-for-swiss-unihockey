@@ -82,6 +82,23 @@ class SWFL_Admin {
 		$this->settings = new SWFL_Admin_Settings();
 		add_action( 'admin_init', array( $this->settings, 'register_and_build_fields' ) );
 		add_action( 'admin_post_swfl_clear_cache', array( $this, 'handle_clear_cache' ) );
+		add_action( 'admin_init', array( $this, 'add_privacy_policy_content' ) );
+	}
+
+	/**
+	 * Suggest a text for the privacy policy of the site (Settings → Privacy → Policy guide).
+	 *
+	 * @since 2.2.0
+	 * @return void
+	 */
+	public function add_privacy_policy_content() {
+		$paragraphs = array(
+			__( 'This website uses the plugin Swiss Floorball API to show floorball data of Swiss Unihockey (games, rankings, topscorers, players, calendars). The server of this website requests the data from the Swiss Unihockey API (wc.swissunihockey.ch, with the Partner API office.swissunihockey.ch). No data about visitors is sent to Swiss Unihockey.', 'swiss-floorball-api' ),
+			__( 'Team logos and player pictures are loaded by the browser of the visitor directly from res.cloudinary.com, the image host of Swiss Unihockey. Cloudinary therefore receives the IP address and browser data of the visitor. Links to OpenStreetMap and to myapp.swissunihockey.ch only send data when a visitor clicks them.', 'swiss-floorball-api' ),
+			__( 'To protect its public interfaces against abuse, the plugin counts the requests of every visitor per minute by IP address (IPv6 addresses by their first 64 bits). The counter keeps only a hash of the address and expires with the minute. When a visitor exceeds a limit, the address (or IPv6 prefix) is kept for one hour in a list that only administrators can see, and is then deleted automatically. The legal basis is the legitimate interest in a secure and available website.', 'swiss-floorball-api' ),
+		);
+
+		wp_add_privacy_policy_content( 'Swiss Floorball API', wp_kses_post( '<p>' . implode( '</p><p>', array_map( 'esc_html', $paragraphs ) ) . '</p>' ) );
 	}
 
 	/**
@@ -146,13 +163,13 @@ class SWFL_Admin {
 		add_menu_page( $this->plugin_name, self::MENU_TITLE, 'manage_options', $this->plugin_name, array( $this, 'display_plugin_admin_dashboard' ), $menu_icon, 26 );
 
 		// Submenu entries share the parent slug and use the same capability.
-		add_submenu_page( $this->plugin_name, self::MENU_TITLE, 'Club-Übersicht', 'manage_options', $this->plugin_name . '-overview', array( $this, 'display_plugin_admin_overview' ) );
-		add_submenu_page( $this->plugin_name, self::MENU_TITLE, 'Einstellungen', 'manage_options', $this->plugin_name . '-settings', array( $this, 'display_plugin_admin_settings' ) );
-		add_submenu_page( $this->plugin_name, self::MENU_TITLE, 'Liga', 'manage_options', $this->plugin_name . '-league', array( $this, 'display_plugin_admin_helper_league' ) );
-		add_submenu_page( $this->plugin_name, self::MENU_TITLE, 'Clubs', 'manage_options', $this->plugin_name . '-teams', array( $this, 'display_plugin_admin_helper_teams' ) );
-		add_submenu_page( $this->plugin_name, self::MENU_TITLE, 'Spiele', 'manage_options', $this->plugin_name . '-matches', array( $this, 'display_plugin_admin_matches' ) );
-		add_submenu_page( $this->plugin_name, self::MENU_TITLE, 'Saison', 'manage_options', $this->plugin_name . '-seasons', array( $this, 'display_plugin_admin_helper_seasons' ) );
-		add_submenu_page( $this->plugin_name, self::MENU_TITLE, 'Shortcodes', 'manage_options', $this->plugin_name . '-shortcodes', array( $this, 'display_plugin_admin_shortcodes' ) );
+		add_submenu_page( $this->plugin_name, self::MENU_TITLE, __( 'Club overview', 'swiss-floorball-api' ), 'manage_options', $this->plugin_name . '-overview', array( $this, 'display_plugin_admin_overview' ) );
+		add_submenu_page( $this->plugin_name, self::MENU_TITLE, __( 'Settings', 'swiss-floorball-api' ), 'manage_options', $this->plugin_name . '-settings', array( $this, 'display_plugin_admin_settings' ) );
+		add_submenu_page( $this->plugin_name, self::MENU_TITLE, __( 'Leagues', 'swiss-floorball-api' ), 'manage_options', $this->plugin_name . '-league', array( $this, 'display_plugin_admin_helper_league' ) );
+		add_submenu_page( $this->plugin_name, self::MENU_TITLE, __( 'Clubs', 'swiss-floorball-api' ), 'manage_options', $this->plugin_name . '-teams', array( $this, 'display_plugin_admin_helper_teams' ) );
+		add_submenu_page( $this->plugin_name, self::MENU_TITLE, __( 'Games', 'swiss-floorball-api' ), 'manage_options', $this->plugin_name . '-matches', array( $this, 'display_plugin_admin_matches' ) );
+		add_submenu_page( $this->plugin_name, self::MENU_TITLE, __( 'Seasons', 'swiss-floorball-api' ), 'manage_options', $this->plugin_name . '-seasons', array( $this, 'display_plugin_admin_helper_seasons' ) );
+		add_submenu_page( $this->plugin_name, self::MENU_TITLE, __( 'Shortcodes', 'swiss-floorball-api' ), 'manage_options', $this->plugin_name . '-shortcodes', array( $this, 'display_plugin_admin_shortcodes' ) );
 	}
 
 	/**
@@ -280,7 +297,7 @@ class SWFL_Admin {
 		add_settings_error(
 			'swfl_api_key',
 			'swfl_api_key',
-			__( 'There was an error adding this setting. Please try again.  If this persists, shoot us an email.', 'swiss-floorball-api' ),
+			__( 'The setting could not be saved. Please try again.', 'swiss-floorball-api' ),
 			'error'
 		);
 	}

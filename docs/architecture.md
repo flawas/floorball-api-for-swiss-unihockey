@@ -51,7 +51,7 @@ Läuft eine öffentliche REST-Route (`SWFL_Request_Guard::check_rate_limit()` se
 
 ### Besucher-Erkennung
 
-`SWFL_Client_Ip` bestimmt den Bucket des Rate-Limits: IPv4 nach voller Adresse, IPv6 nach dem /64-Präfix, IPv4-mapped Adressen als IPv4. `X-Forwarded-For` wird nur gelesen, wenn `REMOTE_ADDR` in «Trusted proxies» (`swfl_trusted_proxies`, Filter `swfl_trusted_proxies`) liegt, von rechts, vertrauenswürdige Hops werden übersprungen (höchstens 32). Der Filter `swfl_client_ip` kann die Adresse ersetzen. Wird ein Bucket abgewiesen, merkt sich `SWFL_Rate_Limit_Log` ihn eine Stunde lang für die Liste «Blocked visitors» der Einstellungsseite (der Zähler selbst kennt nur einen Hash).
+`SWFL_Client_Ip` bestimmt den Bucket des Rate-Limits: IPv4 nach voller Adresse, IPv6 nach dem /64-Präfix, IPv4-mapped Adressen als IPv4. `X-Forwarded-For` wird nur gelesen, wenn `REMOTE_ADDR` in «Vertrauenswürdige Proxys» (`swfl_trusted_proxies`, Filter `swfl_trusted_proxies`) liegt, von rechts, vertrauenswürdige Hops werden übersprungen (höchstens 32). Der Filter `swfl_client_ip` kann die Adresse ersetzen. Wird ein Bucket abgewiesen, merkt sich `SWFL_Rate_Limit_Log` ihn eine Stunde lang für die Liste «Blockierte Besucher» der Einstellungsseite (der Zähler selbst kennt nur einen Hash).
 
 ### API-Quellen
 

@@ -285,7 +285,7 @@ class SWFL_Widgets {
 							<th scope="col"<?php self::render_header_class_attr( $columns, $i ); ?>><?php echo esc_html( $label ); ?></th>
 						<?php endforeach; ?>
 						<?php if ( $args['admin_links'] ) : ?>
-							<th scope="col"><?php esc_html_e( 'Aktionen', 'swiss-floorball-api' ); ?></th>
+							<th scope="col"><?php esc_html_e( 'Actions', 'swiss-floorball-api' ); ?></th>
 						<?php endif; ?>
 					</tr>
 				</thead>
@@ -526,7 +526,7 @@ class SWFL_Widgets {
 				)
 			);
 		} else {
-			echo '<p class="sfa-empty">' . esc_html__( 'Keine Spiele gefunden.', 'swiss-floorball-api' ) . '</p>';
+			echo '<p class="sfa-empty">' . esc_html__( 'No games found.', 'swiss-floorball-api' ) . '</p>';
 		}
 		echo '</div>';
 	}
@@ -627,7 +627,7 @@ class SWFL_Widgets {
 				array( 'caption' => $caption )
 			);
 		} else {
-			echo '<p class="sfa-empty">' . esc_html__( 'Keine Spiele gefunden.', 'swiss-floorball-api' ) . '</p>';
+			echo '<p class="sfa-empty">' . esc_html__( 'No games found.', 'swiss-floorball-api' ) . '</p>';
 		}
 		// The links belong to `show_pagination`; a plain `limit` is an excerpt without navigation.
 		if ( ! empty( $list_args['pagination'] ) ) {
@@ -648,7 +648,7 @@ class SWFL_Widgets {
 	 */
 	public static function render_club_games( $club_id, $season, $list_args = array() ) {
 		if ( ! $club_id ) {
-			self::render_missing( __( 'Attribut club_id fehlt.', 'swiss-floorball-api' ) );
+			self::render_missing( __( 'The attribute club_id is missing.', 'swiss-floorball-api' ) );
 			return;
 		}
 
@@ -667,7 +667,7 @@ class SWFL_Widgets {
 
 		$rows = SWFL_Table_Data::prepare_game_rows( $result['rows'] );
 		if ( SWFL_Table_Data::is_list_mode( $list_args ) ) {
-			self::render_game_list( $result['data'], $rows, $list_args, true, __( 'Clubspiele', 'swiss-floorball-api' ), __( 'Spiele des Clubs', 'swiss-floorball-api' ) );
+			self::render_game_list( $result['data'], $rows, $list_args, true, __( 'Club games', 'swiss-floorball-api' ), __( 'Games of the club', 'swiss-floorball-api' ) );
 			return;
 		}
 
@@ -691,11 +691,11 @@ class SWFL_Widgets {
 
 		?>
 		<div class="sfa-widget" data-sfa-widget="week" data-sfa-week-start="<?php echo esc_attr( $week_start ); ?>">
-			<?php self::render_title( $result['data'], true, __( 'Clubspiele', 'swiss-floorball-api' ), 'hockey' ); ?>
+			<?php self::render_title( $result['data'], true, __( 'Club games', 'swiss-floorball-api' ), 'hockey' ); ?>
 			<div class="sfa-widget__controls">
-				<button type="button" class="sfa-btn" data-sfa-action="prev"><?php SWFL_Icons::render( 'chevron_left' ); ?> <?php esc_html_e( 'Letzte Woche', 'swiss-floorball-api' ); ?></button>
+				<button type="button" class="sfa-btn" data-sfa-action="prev"><?php SWFL_Icons::render( 'chevron_left' ); ?> <?php esc_html_e( 'Previous week', 'swiss-floorball-api' ); ?></button>
 				<span class="sfa-widget__label" data-sfa-label><?php echo esc_html( self::format_date( $week_start ) . ' – ' . self::format_date( $week_end ) ); ?></span>
-				<button type="button" class="sfa-btn" data-sfa-action="next"><?php esc_html_e( 'Nächste Woche', 'swiss-floorball-api' ); ?> <?php SWFL_Icons::render( 'chevron_right' ); ?></button>
+				<button type="button" class="sfa-btn" data-sfa-action="next"><?php esc_html_e( 'Next week', 'swiss-floorball-api' ); ?> <?php SWFL_Icons::render( 'chevron_right' ); ?></button>
 			</div>
 			<?php
 			self::render_table(
@@ -704,11 +704,11 @@ class SWFL_Widgets {
 				array(
 					'row_attrs' => $row_attrs,
 					'hidden'    => $hidden,
-					'caption'   => __( 'Spiele des Clubs', 'swiss-floorball-api' ),
+					'caption'   => __( 'Games of the club', 'swiss-floorball-api' ),
 				)
 			);
 			?>
-			<p class="sfa-empty" data-sfa-empty<?php echo $visible > 0 ? ' hidden' : ''; ?>><?php esc_html_e( 'Keine Spiele in dieser Woche gefunden.', 'swiss-floorball-api' ); ?></p>
+			<p class="sfa-empty" data-sfa-empty<?php echo $visible > 0 ? ' hidden' : ''; ?>><?php esc_html_e( 'No games found this week.', 'swiss-floorball-api' ); ?></p>
 		</div>
 		<?php
 	}
@@ -727,7 +727,7 @@ class SWFL_Widgets {
 	 */
 	public static function render_team_games( $team_id, $season, $page_size = 0, $embedded = false, $list_args = array() ) {
 		if ( ! $team_id ) {
-			self::render_missing( __( 'Attribut team_id fehlt.', 'swiss-floorball-api' ) );
+			self::render_missing( __( 'The attribute team_id is missing.', 'swiss-floorball-api' ) );
 			return;
 		}
 		$page_size = $page_size > 0 ? min( $page_size, 50 ) : 4;
@@ -747,7 +747,7 @@ class SWFL_Widgets {
 
 		$rows = SWFL_Table_Data::prepare_game_rows( $result['rows'] );
 		if ( SWFL_Table_Data::is_list_mode( $list_args ) ) {
-			self::render_game_list( $result['data'], $rows, $list_args, ! $embedded, __( 'Teamspiele', 'swiss-floorball-api' ), __( 'Spiele des Teams', 'swiss-floorball-api' ) );
+			self::render_game_list( $result['data'], $rows, $list_args, ! $embedded, __( 'Team games', 'swiss-floorball-api' ), __( 'Games of the team', 'swiss-floorball-api' ) );
 			return;
 		}
 
@@ -774,15 +774,15 @@ class SWFL_Widgets {
 
 		?>
 		<div class="sfa-widget" data-sfa-widget="pager" data-sfa-page-size="<?php echo esc_attr( $page_size ); ?>" data-sfa-start="<?php echo esc_attr( $start ); ?>">
-			<?php self::render_title( $result['data'], ! $embedded, __( 'Teamspiele', 'swiss-floorball-api' ), 'hockey' ); ?>
+			<?php self::render_title( $result['data'], ! $embedded, __( 'Team games', 'swiss-floorball-api' ), 'hockey' ); ?>
 			<div class="sfa-widget__controls">
-				<button type="button" class="sfa-btn" data-sfa-action="prev" <?php disabled( $start <= 0 ); ?>><?php SWFL_Icons::render( 'chevron_left' ); ?> <?php esc_html_e( 'Frühere Spiele', 'swiss-floorball-api' ); ?></button>
+				<button type="button" class="sfa-btn" data-sfa-action="prev" <?php disabled( $start <= 0 ); ?>><?php SWFL_Icons::render( 'chevron_left' ); ?> <?php esc_html_e( 'Earlier games', 'swiss-floorball-api' ); ?></button>
 				<span class="sfa-widget__label" data-sfa-label>
 					<?php
 					echo esc_html(
 						sprintf(
 							/* translators: 1: first game number, 2: last game number, 3: total number of games. */
-							__( '%1$d–%2$d von %3$d', 'swiss-floorball-api' ),
+							__( '%1$d–%2$d of %3$d', 'swiss-floorball-api' ),
 							$total ? $start + 1 : 0,
 							min( $start + $page_size, $total ),
 							$total
@@ -790,7 +790,7 @@ class SWFL_Widgets {
 					);
 					?>
 				</span>
-				<button type="button" class="sfa-btn" data-sfa-action="next" <?php disabled( $start + $page_size >= $total ); ?>><?php esc_html_e( 'Weitere Spiele', 'swiss-floorball-api' ); ?> <?php SWFL_Icons::render( 'chevron_right' ); ?></button>
+				<button type="button" class="sfa-btn" data-sfa-action="next" <?php disabled( $start + $page_size >= $total ); ?>><?php esc_html_e( 'More games', 'swiss-floorball-api' ); ?> <?php SWFL_Icons::render( 'chevron_right' ); ?></button>
 			</div>
 			<?php
 			self::render_table(
@@ -798,11 +798,11 @@ class SWFL_Widgets {
 				$rows,
 				array(
 					'hidden'  => $hidden,
-					'caption' => __( 'Spiele des Teams', 'swiss-floorball-api' ),
+					'caption' => __( 'Games of the team', 'swiss-floorball-api' ),
 				)
 			);
 			if ( 0 === $total ) {
-				echo '<p class="sfa-empty">' . esc_html__( 'Keine Teamspiele gefunden.', 'swiss-floorball-api' ) . '</p>';
+				echo '<p class="sfa-empty">' . esc_html__( 'No team games found.', 'swiss-floorball-api' ) . '</p>';
 			}
 			?>
 		</div>
@@ -820,7 +820,7 @@ class SWFL_Widgets {
 	 */
 	public static function render_club_team_games( $club_id, $season, $page_size = 0 ) {
 		if ( ! $club_id ) {
-			self::render_missing( __( 'Attribut club_id fehlt.', 'swiss-floorball-api' ) );
+			self::render_missing( __( 'The attribute club_id is missing.', 'swiss-floorball-api' ) );
 			return;
 		}
 
@@ -855,9 +855,9 @@ class SWFL_Widgets {
 
 		?>
 		<div class="sfa-widget" data-sfa-widget="team-select" data-sfa-season="<?php echo esc_attr( $season ); ?>" data-sfa-page-size="<?php echo esc_attr( $page_size ); ?>">
-			<h3 class="sfa-section-title"><?php SWFL_Icons::render( 'group' ); ?> <?php esc_html_e( 'Teamspiele nach Verein', 'swiss-floorball-api' ); ?></h3>
+			<h3 class="sfa-section-title"><?php SWFL_Icons::render( 'group' ); ?> <?php esc_html_e( 'Team games by club', 'swiss-floorball-api' ); ?></h3>
 			<label class="sfa-widget__field" for="<?php echo esc_attr( $select_id ); ?>">
-				<span><?php esc_html_e( 'Team auswählen', 'swiss-floorball-api' ); ?></span>
+				<span><?php esc_html_e( 'Select a team', 'swiss-floorball-api' ); ?></span>
 				<select id="<?php echo esc_attr( $select_id ); ?>" class="sfa-widget__select" data-sfa-select>
 					<?php foreach ( $teams as $team_id => $team_name ) : ?>
 						<option value="<?php echo esc_attr( $team_id ); ?>"><?php echo esc_html( $team_name ); ?></option>
@@ -887,7 +887,7 @@ class SWFL_Widgets {
 	 */
 	public static function render_league_games( $game_class, $league, $season, $group = '', $context = array() ) {
 		if ( ! $game_class || ! $league ) {
-			self::render_missing( __( 'Attribute game_class und league fehlen.', 'swiss-floorball-api' ) );
+			self::render_missing( __( 'The attributes game_class and league are missing.', 'swiss-floorball-api' ) );
 			return;
 		}
 
@@ -916,9 +916,9 @@ class SWFL_Widgets {
 		?>
 		<div class="sfa-widget" data-sfa-widget="league" data-sfa-params="<?php echo esc_attr( wp_json_encode( $base_params ) ); ?>">
 			<div class="sfa-widget__controls">
-				<button type="button" class="sfa-btn" data-sfa-action="prev" data-sfa-context="<?php echo esc_attr( wp_json_encode( $prev ) ); ?>" <?php disabled( empty( $prev ) ); ?>><?php SWFL_Icons::render( 'chevron_left' ); ?> <?php esc_html_e( 'Frühere Spiele', 'swiss-floorball-api' ); ?></button>
-				<span class="sfa-widget__label"><?php echo esc_html( ! empty( $data['slider']['text'] ) ? $data['slider']['text'] : __( 'Aktuelle Runde', 'swiss-floorball-api' ) ); ?></span>
-				<button type="button" class="sfa-btn" data-sfa-action="next" data-sfa-context="<?php echo esc_attr( wp_json_encode( $next ) ); ?>" <?php disabled( empty( $next ) ); ?>><?php esc_html_e( 'Weitere Spiele', 'swiss-floorball-api' ); ?> <?php SWFL_Icons::render( 'chevron_right' ); ?></button>
+				<button type="button" class="sfa-btn" data-sfa-action="prev" data-sfa-context="<?php echo esc_attr( wp_json_encode( $prev ) ); ?>" <?php disabled( empty( $prev ) ); ?>><?php SWFL_Icons::render( 'chevron_left' ); ?> <?php esc_html_e( 'Earlier games', 'swiss-floorball-api' ); ?></button>
+				<span class="sfa-widget__label"><?php echo esc_html( ! empty( $data['slider']['text'] ) ? $data['slider']['text'] : __( 'Current round', 'swiss-floorball-api' ) ); ?></span>
+				<button type="button" class="sfa-btn" data-sfa-action="next" data-sfa-context="<?php echo esc_attr( wp_json_encode( $next ) ); ?>" <?php disabled( empty( $next ) ); ?>><?php esc_html_e( 'More games', 'swiss-floorball-api' ); ?> <?php SWFL_Icons::render( 'chevron_right' ); ?></button>
 			</div>
 			<?php
 			self::render_title( $data, true, '', 'hockey' );
@@ -954,7 +954,7 @@ class SWFL_Widgets {
 		if ( $single ) {
 			self::render_table( $headers, $single, array( 'drop_last' => $drop ) );
 		} elseif ( empty( $groups ) ) {
-			echo '<p class="sfa-empty">' . esc_html__( 'Keine Spiele gefunden.', 'swiss-floorball-api' ) . '</p>';
+			echo '<p class="sfa-empty">' . esc_html__( 'No games found.', 'swiss-floorball-api' ) . '</p>';
 		}
 	}
 
@@ -983,7 +983,7 @@ class SWFL_Widgets {
 					echo esc_html(
 						sprintf(
 							/* translators: %d: number of games in the series. */
-							_n( '%d Spiel', '%d Spiele', count( $series_rows ), 'swiss-floorball-api' ),
+							_n( '%d game', '%d games', count( $series_rows ), 'swiss-floorball-api' ),
 							count( $series_rows )
 						)
 					);
@@ -1071,7 +1071,7 @@ class SWFL_Widgets {
 	 */
 	public static function render_ranking( $season, $league, $game_class, $group = '', $view = '' ) {
 		if ( ! $league || ! $game_class ) {
-			self::render_missing( __( 'Attribute league und game_class fehlen.', 'swiss-floorball-api' ) );
+			self::render_missing( __( 'The attributes league and game_class are missing.', 'swiss-floorball-api' ) );
 			return;
 		}
 
@@ -1092,16 +1092,16 @@ class SWFL_Widgets {
 		$rows = SWFL_Table_Data::get_rows( $data );
 		?>
 		<div class="sfa-widget" data-sfa-widget="ranking">
-			<?php self::render_title( $data, true, __( 'Rangliste', 'swiss-floorball-api' ), 'chart' ); ?>
+			<?php self::render_title( $data, true, __( 'Ranking', 'swiss-floorball-api' ), 'chart' ); ?>
 			<?php
 			if ( $rows ) {
 				self::render_table(
 					isset( $data['headers'] ) ? $data['headers'] : array(),
 					$rows,
-					array( 'caption' => __( 'Rangliste', 'swiss-floorball-api' ) )
+					array( 'caption' => __( 'Ranking', 'swiss-floorball-api' ) )
 				);
 			} else {
-				echo '<p class="sfa-empty">' . esc_html__( 'Keine Daten gefunden.', 'swiss-floorball-api' ) . '</p>';
+				echo '<p class="sfa-empty">' . esc_html__( 'No data found.', 'swiss-floorball-api' ) . '</p>';
 			}
 			?>
 		</div>
@@ -1140,9 +1140,9 @@ class SWFL_Widgets {
 		?>
 		<div class="sfa-widget sfa-topscorers" data-sfa-widget="topscorers">
 			<?php if ( empty( $players ) ) : ?>
-				<p class="sfa-empty"><?php esc_html_e( 'Keine Mobiliar Topscorer gefunden.', 'swiss-floorball-api' ); ?></p>
+				<p class="sfa-empty"><?php esc_html_e( 'No Mobiliar topscorers found.', 'swiss-floorball-api' ); ?></p>
 			<?php else : ?>
-				<div class="sfa-topscorers__headline"><?php esc_html_e( 'die Mobiliar Topscorer', 'swiss-floorball-api' ); ?></div>
+				<div class="sfa-topscorers__headline"><?php esc_html_e( 'die Mobiliar topscorers', 'swiss-floorball-api' ); ?></div>
 				<div class="sfa-topscorers__list">
 					<?php
 					foreach ( $players as $player ) {
@@ -1220,7 +1220,7 @@ class SWFL_Widgets {
 			</div>
 			<div class="sfa-topscorers__points">
 				<strong><?php echo esc_html( '' !== $player['points'] ? $player['points'] : '-' ); ?></strong>
-				<span><?php esc_html_e( 'Punkte', 'swiss-floorball-api' ); ?></span>
+				<span><?php esc_html_e( 'Points', 'swiss-floorball-api' ); ?></span>
 			</div>
 		</article>
 		<?php

@@ -22,8 +22,8 @@ if ( ! current_user_can( 'manage_options' ) ) {
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
 <div class="wrap sfa-admin-wrap" data-sfa-theme="<?php echo esc_attr( SWFL_Theme::get_theme() ); ?>">
 	<div class="sfa-admin-header">
-		<h1><?php SWFL_Icons::render( 'settings' ); ?> Einstellungen</h1>
-		<p>Konfigurieren Sie Ihre Swiss Floorball API Verbindung</p>
+		<h1><?php SWFL_Icons::render( 'settings' ); ?> <?php esc_html_e( 'Settings', 'swiss-floorball-api' ); ?></h1>
+		<p><?php esc_html_e( 'Configure the connection to the Swiss Floorball API', 'swiss-floorball-api' ); ?></p>
 	</div>
 
 	<?php
@@ -33,7 +33,13 @@ if ( ! current_user_can( 'manage_options' ) ) {
 	if ( false !== $swfl_deleted_count ) {
 		delete_transient( 'swfl_cache_cleared_' . get_current_user_id() );
 		echo '<div class="notice notice-success is-dismissible">';
-		echo '<p><strong>' . wp_kses( SWFL_Icons::get( 'check' ), SWFL_Icons::allowed_html() ) . ' Cache erfolgreich geleert!</strong> ' . esc_html( (int) $swfl_deleted_count ) . ' zwischengespeicherte Einträge wurden gelöscht.</p>';
+		echo '<p><strong>' . wp_kses( SWFL_Icons::get( 'check' ), SWFL_Icons::allowed_html() ) . ' ' . esc_html__( 'Cache cleared.', 'swiss-floorball-api' ) . '</strong> ' . esc_html(
+			sprintf(
+				/* translators: %d: number of deleted cache entries. */
+				_n( '%d cached entry was deleted.', '%d cached entries were deleted.', (int) $swfl_deleted_count, 'swiss-floorball-api' ),
+				(int) $swfl_deleted_count
+			)
+		) . '</p>';
 		echo '</div>';
 	}
 	?>
@@ -54,10 +60,10 @@ if ( ! current_user_can( 'manage_options' ) ) {
 	?>
 
 	<div class="sfa-form-section">
-		<h2>Plugin Einstellungen</h2>
+		<h2><?php esc_html_e( 'Plugin settings', 'swiss-floorball-api' ); ?></h2>
 		<?php settings_errors(); ?>
-		<p class="sfa-helper-text">Geben Sie hier die erforderlichen Informationen für die Verbindung zur Swiss Floorball API ein.</p>
-		
+		<p class="sfa-helper-text"><?php esc_html_e( 'Enter the information the plugin needs to connect to the Swiss Floorball API.', 'swiss-floorball-api' ); ?></p>
+
 		<form method="POST" action="options.php" id="sfa-settings-form" class="sfa-autosave">
 			<?php
 				settings_fields( 'swfl_general_settings' );
@@ -120,21 +126,21 @@ if ( ! current_user_can( 'manage_options' ) ) {
 	</div>
 
 	<div class="sfa-form-section">
-		<h2><?php SWFL_Icons::render( 'delete' ); ?> Cache Verwaltung</h2>
-		<p class="sfa-helper-text">Löschen Sie alle zwischengespeicherten API-Daten, um frische Daten vom Server zu laden.</p>
+		<h2><?php SWFL_Icons::render( 'delete' ); ?> <?php esc_html_e( 'Cache', 'swiss-floorball-api' ); ?></h2>
+		<p class="sfa-helper-text"><?php esc_html_e( 'Delete all cached API data to load fresh data from the server.', 'swiss-floorball-api' ); ?></p>
 		<form method="POST" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="sfa-form--spaced-top">
 			<input type="hidden" name="action" value="swfl_clear_cache">
 			<?php wp_nonce_field( 'swfl_clear_cache_action', 'swfl_clear_cache_nonce' ); ?>
-			<button type="submit" class="button button-secondary" onclick="return confirm('Möchten Sie wirklich den gesamten Cache leeren?');">
-				<?php SWFL_Icons::render( 'delete' ); ?> Cache leeren
+			<button type="submit" class="button button-secondary" onclick="return confirm('<?php echo esc_js( __( 'Do you really want to clear the whole cache?', 'swiss-floorball-api' ) ); ?>');">
+				<?php SWFL_Icons::render( 'delete' ); ?> <?php esc_html_e( 'Clear cache', 'swiss-floorball-api' ); ?>
 			</button>
 		</form>
 	</div>
 
 	<div class="sfa-card">
-		<h3>ℹ️ Hilfe</h3>
-		<p><strong>Club Number:</strong> Die eindeutige ID Ihres Clubs bei Swiss Floorball</p>
-		<p><strong>Club Name:</strong> Der offizielle Name Ihres Clubs (wird automatisch geladen)</p>
-		<p><strong>Aktuelle Saison:</strong> Das Jahr der aktuellen Saison (z.B. 2024)</p>
+		<h3>ℹ️ <?php esc_html_e( 'Help', 'swiss-floorball-api' ); ?></h3>
+		<p><strong><?php esc_html_e( 'Club number:', 'swiss-floorball-api' ); ?></strong> <?php esc_html_e( 'The unique ID of your club at Swiss Floorball.', 'swiss-floorball-api' ); ?></p>
+		<p><strong><?php esc_html_e( 'Club name:', 'swiss-floorball-api' ); ?></strong> <?php esc_html_e( 'The official name of your club (loaded automatically).', 'swiss-floorball-api' ); ?></p>
+		<p><strong><?php esc_html_e( 'Current season:', 'swiss-floorball-api' ); ?></strong> <?php esc_html_e( 'The start year of the current season (e.g. 2025).', 'swiss-floorball-api' ); ?></p>
 	</div>
 </div>

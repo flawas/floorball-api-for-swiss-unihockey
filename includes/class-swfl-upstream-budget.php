@@ -306,7 +306,7 @@ class SWFL_Upstream_Budget {
 	private static function refusal( $status ) {
 		return new WP_Error(
 			self::ERROR_CODE,
-			429 === $status ? 'Too many requests' : 'The service is busy, please try again later.',
+			429 === $status ? __( 'Too many requests.', 'swiss-floorball-api' ) : __( 'The service is busy, please try again later.', 'swiss-floorball-api' ),
 			array(
 				'status'      => $status,
 				'retry_after' => SWFL_Counter::seconds_left( MINUTE_IN_SECONDS ),

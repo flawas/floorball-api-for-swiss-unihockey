@@ -93,7 +93,7 @@ class SWFL_Table_Data {
 			return $first;
 		}
 		if ( ! isset( $first['data']['regions'] ) ) {
-			return new WP_Error( 'swfl_invalid_response', 'Unexpected response shape' );
+			return new WP_Error( 'swfl_invalid_response', __( 'The answer of the API has an unexpected shape.', 'swiss-floorball-api' ) );
 		}
 
 		$rows = self::get_rows( $first['data'] );
@@ -415,18 +415,18 @@ class SWFL_Table_Data {
 		$prev_url = $page > 2 ? add_query_arg( 'swfl_page', $page - 1 ) : remove_query_arg( 'swfl_page' );
 		$next_url = add_query_arg( 'swfl_page', $page + 1 );
 		?>
-		<nav class="sfa-widget__controls sfa-pagination" aria-label="<?php esc_attr_e( 'Seitennavigation', 'swiss-floorball-api' ); ?>">
+		<nav class="sfa-widget__controls sfa-pagination" aria-label="<?php esc_attr_e( 'Page navigation', 'swiss-floorball-api' ); ?>">
 			<?php if ( $page > 1 ) : ?>
-				<a class="sfa-btn" rel="prev" href="<?php echo esc_url( $prev_url ); ?>"><?php esc_html_e( 'Zurück', 'swiss-floorball-api' ); ?></a>
+				<a class="sfa-btn" rel="prev" href="<?php echo esc_url( $prev_url ); ?>"><?php esc_html_e( 'Previous', 'swiss-floorball-api' ); ?></a>
 			<?php else : ?>
-				<span class="sfa-btn sfa-btn--disabled" aria-disabled="true"><?php esc_html_e( 'Zurück', 'swiss-floorball-api' ); ?></span>
+				<span class="sfa-btn sfa-btn--disabled" aria-disabled="true"><?php esc_html_e( 'Previous', 'swiss-floorball-api' ); ?></span>
 			<?php endif; ?>
 			<span class="sfa-widget__label">
 				<?php
 				echo esc_html(
 					sprintf(
 						/* translators: 1: current page, 2: number of pages. */
-						__( 'Seite %1$d von %2$d', 'swiss-floorball-api' ),
+						__( 'Page %1$d of %2$d', 'swiss-floorball-api' ),
 						$page,
 						$pages
 					)
@@ -434,9 +434,9 @@ class SWFL_Table_Data {
 				?>
 			</span>
 			<?php if ( $page < $pages ) : ?>
-				<a class="sfa-btn" rel="next" href="<?php echo esc_url( $next_url ); ?>"><?php esc_html_e( 'Weiter', 'swiss-floorball-api' ); ?></a>
+				<a class="sfa-btn" rel="next" href="<?php echo esc_url( $next_url ); ?>"><?php esc_html_e( 'Next', 'swiss-floorball-api' ); ?></a>
 			<?php else : ?>
-				<span class="sfa-btn sfa-btn--disabled" aria-disabled="true"><?php esc_html_e( 'Weiter', 'swiss-floorball-api' ); ?></span>
+				<span class="sfa-btn sfa-btn--disabled" aria-disabled="true"><?php esc_html_e( 'Next', 'swiss-floorball-api' ); ?></span>
 			<?php endif; ?>
 		</nav>
 		<?php

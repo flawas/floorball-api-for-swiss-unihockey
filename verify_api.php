@@ -9,7 +9,7 @@
  * IDs (season, league, group, club, game, team, player) are discovered from the API itself,
  * so the test doesn't rot when a season ends. Fails (exit 1) on PHP warnings/notices,
  * API errors, unexpected response shapes, or render methods that print the
- * "data could not be loaded" message.
+ * "The data could not be loaded" message.
  *
  * Dev-only: not part of the release ZIP and needs network access.
  */
@@ -274,7 +274,8 @@ function render( callable $fn ) {
 		$html = ob_get_clean();
 	}
 	ensure( '' !== trim( $html ), 'leere Ausgabe' );
-	ensure( false === strpos( $html, 'Daten konnten nicht geladen werden' ), 'Render-Methode meldet "Daten konnten nicht geladen werden"' );
+	// The stubbed __() returns the English source text.
+	ensure( false === strpos( $html, 'The data could not be loaded' ), 'Render-Methode meldet "The data could not be loaded"' );
 	return $html;
 }
 
@@ -368,7 +369,7 @@ check( 'Client: API-Fehlermeldung wird für Admins angezeigt', function () use (
 	ob_start();
 	SWFL_Display::render_fetch_error( $r );
 	$html = ob_get_clean();
-	ensure( false !== strpos( $html, 'Antwort der API' ) && false !== strpos( $html, 'Gibt es nicht' ), 'API-Meldung fehlt in der Ausgabe: ' . $html );
+	ensure( false !== strpos( $html, 'Answer of the API' ) && false !== strpos( $html, 'Gibt es nicht' ), 'API-Meldung fehlt in der Ausgabe: ' . $html );
 } );
 
 check( 'Client: zweiter Aufruf kommt aus dem Cache', function () use ( $client ) {
@@ -439,9 +440,9 @@ $widgets = array(
 	'widget club-team-games' => array( function () use ( $W, $season ) { $W::render_club_team_games( 372, $season, 6 ); }, 'data-sfa-widget="team-select"', '<option' ),
 	'widget team-games'    => array( function () use ( $W, $season ) { $W::render_team_games( 429626, $season, 5 ); }, 'data-sfa-widget="pager"', '<table' ),
 	'widget club-games'    => array( function () use ( $W, $season, $club_id ) { $W::render_club_games( $club_id, $season ); }, 'data-sfa-widget="week"', '<table' ),
-	'highlight next-game (Club)'   => array( function () use ( $season, $club_id ) { SWFL_Highlights::render_next_game( $club_id, $season ); }, 'class="sfa-widget"', 'Nächstes Spiel' ),
-	'highlight last-result (Club)' => array( function () use ( $season, $club_id ) { SWFL_Highlights::render_last_result( $club_id, $season ); }, 'class="sfa-widget"', 'Letztes Resultat' ),
-	'highlight last-result (Team)' => array( function () use ( $season ) { SWFL_Highlights::render_last_result( 0, $season, 429626, 3 ); }, 'class="sfa-widget"', 'Letzte Resultate' ),
+	'highlight next-game (Club)'   => array( function () use ( $season, $club_id ) { SWFL_Highlights::render_next_game( $club_id, $season ); }, 'class="sfa-widget"', 'Next game' ),
+	'highlight last-result (Club)' => array( function () use ( $season, $club_id ) { SWFL_Highlights::render_last_result( $club_id, $season ); }, 'class="sfa-widget"', 'Last result' ),
+	'highlight last-result (Team)' => array( function () use ( $season ) { SWFL_Highlights::render_last_result( 0, $season, 429626, 3 ); }, 'class="sfa-widget"', 'Last results' ),
 	'widget ranking'       => array( function () use ( $W, $season, $league, $game_class, $group ) { $W::render_ranking( $season, $league, $game_class, $group ); }, 'data-sfa-widget="ranking"', '<table' ),
 	'widget mobiliar-topscorer' => array( function () use ( $W, $season ) { $W::render_mobiliar_topscorers( 463845, $season ); }, 'data-sfa-widget="topscorers"', 'sfa-topscorers' ),
 );

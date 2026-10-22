@@ -252,7 +252,7 @@ class SWFL_Rest {
 
 		return self::respond(
 			array(
-				'title'   => self::get_title( $response['data'], 'Topscorer' ),
+				'title'   => self::get_title( $response['data'], __( 'Topscorers', 'swiss-floorball-api' ) ),
 				'players' => SWFL_Widgets::collect_topscorers( SWFL_Table_Data::get_rows( $response['data'] ) ),
 			)
 		);
@@ -314,7 +314,7 @@ class SWFL_Rest {
 			$params['game_class'] = $game_class;
 			$params['group']      = SWFL_Request_Guard::sanitize_group( $request->get_param( 'group' ) );
 		} else {
-			return new WP_Error( 'swfl_missing_params', 'team_id, club_id or league and game_class are required', array( 'status' => 400 ) );
+			return new WP_Error( 'swfl_missing_params', __( 'team_id, club_id or league and game_class are required.', 'swiss-floorball-api' ), array( 'status' => 400 ) );
 		}
 
 		return $params;
@@ -469,6 +469,6 @@ class SWFL_Rest {
 			return $response;
 		}
 
-		return new WP_Error( 'api_error', 'The data could not be loaded', array( 'status' => 502 ) );
+		return new WP_Error( 'api_error', __( 'The data could not be loaded.', 'swiss-floorball-api' ), array( 'status' => 502 ) );
 	}
 }

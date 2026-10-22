@@ -22,8 +22,8 @@ if ( ! current_user_can( 'manage_options' ) ) {
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
 <div class="wrap sfa-admin-wrap" data-sfa-theme="<?php echo esc_attr( SWFL_Theme::get_theme() ); ?>">
 	<div class="sfa-admin-header">
-		<h1><?php SWFL_Icons::render( 'calendar' ); ?> Saisons</h1>
-		<p>Übersicht aller verfügbaren Saisons</p>
+		<h1><?php SWFL_Icons::render( 'calendar' ); ?> <?php esc_html_e( 'Seasons', 'swiss-floorball-api' ); ?></h1>
+		<p><?php esc_html_e( 'All available seasons', 'swiss-floorball-api' ); ?></p>
 	</div>
 
 	<div class="sfa-table-container">

@@ -177,7 +177,7 @@ swfl_test(
 		$visitor = SWFL_Rest::rest_games( new WP_REST_Request( array( 'team_id' => 9999999, 'season' => 2025 ) ) );
 		swfl_same( 'api_error', $visitor->get_error_code() );
 		swfl_same( 502, $visitor->get_error_data()['status'] );
-		swfl_same( 'The data could not be loaded', $visitor->get_error_message() );
+		swfl_same( 'The data could not be loaded.', $visitor->get_error_message() );
 
 		$GLOBALS['swfl_t']['user_can'] = true;
 		$admin = SWFL_Rest::rest_games( new WP_REST_Request( array( 'team_id' => 9999999, 'season' => 2025 ) ) );

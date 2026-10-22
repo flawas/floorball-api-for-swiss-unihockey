@@ -48,9 +48,9 @@ class SWFL_Game_Widget extends WP_Widget {
 	public function __construct() {
 		parent::__construct(
 			self::ID_BASE,
-			__( 'Swiss Floorball: Nächstes Spiel und letztes Resultat', 'swiss-floorball-api' ),
+			__( 'Swiss Floorball: Next game and last result', 'swiss-floorball-api' ),
 			array(
-				'description'                 => __( 'Zeigt das nächste Spiel und das letzte Resultat des Vereins oder eines Teams.', 'swiss-floorball-api' ),
+				'description'                 => __( 'Shows the next game and the last result of the club or of a team.', 'swiss-floorball-api' ),
 				'customize_selective_refresh' => true,
 			)
 		);
@@ -115,17 +115,17 @@ class SWFL_Game_Widget extends WP_Widget {
 		$mode    = isset( $instance['display_mode'] ) ? $instance['display_mode'] : 'both';
 		$team_id = isset( $instance['team_id'] ) ? absint( $instance['team_id'] ) : 0;
 		$labels  = array(
-			'both' => __( 'Nächstes Spiel und letztes Resultat', 'swiss-floorball-api' ),
-			'next' => __( 'Nur nächstes Spiel', 'swiss-floorball-api' ),
-			'last' => __( 'Nur letztes Resultat', 'swiss-floorball-api' ),
+			'both' => __( 'Next game and last result', 'swiss-floorball-api' ),
+			'next' => __( 'Next game only', 'swiss-floorball-api' ),
+			'last' => __( 'Last result only', 'swiss-floorball-api' ),
 		);
 		?>
 		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php esc_html_e( 'Titel:', 'swiss-floorball-api' ); ?></label>
+			<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php esc_html_e( 'Title:', 'swiss-floorball-api' ); ?></label>
 			<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>" />
 		</p>
 		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'display_mode' ) ); ?>"><?php esc_html_e( 'Anzeige:', 'swiss-floorball-api' ); ?></label>
+			<label for="<?php echo esc_attr( $this->get_field_id( 'display_mode' ) ); ?>"><?php esc_html_e( 'Display:', 'swiss-floorball-api' ); ?></label>
 			<select class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'display_mode' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'display_mode' ) ); ?>">
 				<?php foreach ( $labels as $value => $label ) : ?>
 					<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $mode, $value ); ?>><?php echo esc_html( $label ); ?></option>
@@ -133,7 +133,7 @@ class SWFL_Game_Widget extends WP_Widget {
 			</select>
 		</p>
 		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'team_id' ) ); ?>"><?php esc_html_e( 'Team-ID (optional, sonst der ganze Verein):', 'swiss-floorball-api' ); ?></label>
+			<label for="<?php echo esc_attr( $this->get_field_id( 'team_id' ) ); ?>"><?php esc_html_e( 'Team ID (optional, otherwise the whole club):', 'swiss-floorball-api' ); ?></label>
 			<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'team_id' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'team_id' ) ); ?>" type="number" min="0" step="1" value="<?php echo esc_attr( $team_id > 0 ? $team_id : '' ); ?>" />
 		</p>
 		<?php

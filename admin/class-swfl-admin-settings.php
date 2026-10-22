@@ -40,7 +40,7 @@ class SWFL_Admin_Settings {
 			// ID used to identify this section and with which to register options.
 			'swfl_general_section',
 			// Title to be displayed on the administration page.
-			'Einstellungen',
+			__( 'Settings', 'swiss-floorball-api' ),
 			// Callback used to render the description of the section.
 			array( $this, 'settings_page_display_general_account' ),
 			// Page on which to add this section of options.
@@ -167,7 +167,7 @@ class SWFL_Admin_Settings {
 				'sanitize' => array( $this, 'sanitize_partner_secret' ),
 			),
 			array(
-				'label'    => 'Swiss Floorball Club Number',
+				'label'    => __( 'Club number', 'swiss-floorball-api' ),
 				'args'     => $this->input_args( 'swfl_club_number', 'number', array( 'required' => 'false' ) ),
 				'sanitize' => array(
 					'type'              => 'integer',
@@ -175,7 +175,7 @@ class SWFL_Admin_Settings {
 				),
 			),
 			array(
-				'label' => 'Swiss Floorball Club Name',
+				'label' => __( 'Club name', 'swiss-floorball-api' ),
 				'args'  => $this->input_args(
 					'swfl_club_name',
 					'text',
@@ -186,7 +186,7 @@ class SWFL_Admin_Settings {
 				),
 			),
 			array(
-				'label'    => 'Swiss Floorball Aktuelle Saison (Jahrzahl, z.B. 2023)',
+				'label'    => __( 'Current season (start year, e.g. 2025)', 'swiss-floorball-api' ),
 				'args'     => $this->input_args( 'swfl_actual_season', 'number', array( 'required' => 'false' ) ),
 				'sanitize' => array(
 					'type'              => 'integer',
@@ -818,7 +818,7 @@ class SWFL_Admin_Settings {
 	 * @since    1.0.0
 	 */
 	public function settings_page_display_general_account() {
-		echo '<p>Damit die Funktionalität des Plugins gewährleistet werden kann, müssen folgende Informationen ausgefüllt werden:</p>';
+		echo '<p>' . esc_html__( 'The plugin needs the following information to work:', 'swiss-floorball-api' ) . '</p>';
 	}
 
 	/**
