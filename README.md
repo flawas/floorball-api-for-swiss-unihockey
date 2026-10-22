@@ -23,7 +23,7 @@
 **Requires at least:** 5.0  
 **Tested up to:** 7.1  
 **Requires PHP:** 8.2  
-**Stable tag:** 2.1.2  
+**Stable tag:** 2.2.0  
 **License:** GPLv2 or later  
 **License URI:** https://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -260,7 +260,7 @@ Version 2.0.0 contains breaking changes (API source, calendar feed, shortcode at
 4. Check custom CSS, or set *Table style* to `classic`.
 
 ## 📜 Changelog
-### Unreleased
+### 2.2.0 (2026-10-22)
 * Security: The plugin needs PHP 8.2.35, 8.3.36, 8.4.27, 8.5.12 or newer (also newer branches), the releases that fix the critical remote code execution vulnerabilities CVE-2026-109618 and CVE-2026-109619 (`Requires PHP` is now 8.2). On an older release, and on PHP 8.1 and older, the plugin loads nothing, shows administrators the version they need and refuses to be activated. `define( 'SWFL_ALLOW_OTHER_PHP', true );` in `wp-config.php` runs it anyway, e.g. on distribution builds with backported fixes
 * Security: Failed API requests are cached briefly, so repeating a request with an unknown ID no longer reaches the Swiss Unihockey API every time. Permanent failures (such as 404 for an unknown ID) are remembered for 5 minutes, transient ones (timeouts, 5xx, 429) for at most 60 seconds, never longer than the cache lifetime of the endpoint (filter `swfl_error_cache_ttl`, 0 turns it off). Answers without any rows are cached just as briefly. Missing or rejected Partner API credentials are never cached, a forced refresh (cache warm-up) never writes a failure, and a failure never replaces cached data (Issue #112)
 * Security: Every argument of the public REST routes is validated before any upstream request: IDs are digits only from 1 to 10,000,000, `season` is empty, 0 or a start year from 1996 to next year, and `group` is up to 40 letters, digits, spaces or `. _ / -`. Invalid values get `400 rest_invalid_param` (Issue #113)
